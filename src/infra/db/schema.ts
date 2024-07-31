@@ -1,4 +1,11 @@
-import { date, decimal, pgTable, text, uuid } from 'drizzle-orm/pg-core';
+import {
+  date,
+  decimal,
+  pgTable,
+  text,
+  uuid,
+  integer,
+} from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 export const users = pgTable('users', {
@@ -29,7 +36,7 @@ export const userInfos = pgTable('user_infos', {
 
 export const teachers = pgTable('teachers', {
   id: uuid('id').primaryKey().defaultRandom(),
-  disPlayName: text('display_name').notNull(),
+  displayName: text('display_name').notNull(),
   email: text('email').unique().notNull(),
   password: text('password'),
 });
@@ -38,8 +45,8 @@ export const teacherInfos = pgTable('teacher_infos', {
   id: uuid('id').primaryKey().defaultRandom(),
   teacherId: uuid('teacher_id').unique().notNull(),
   name: text('name').notNull(),
-  birthDate: text('birth_date').notNull(),
   gender: text('gender').notNull(),
+  birthDate: text('birth_date').notNull(),
   phoneNumber: text('phone_number').unique().notNull(),
   connectingInformation: text('connecting_information').notNull(),
   duplicationInformation: text('duplication_information').notNull(),
@@ -58,8 +65,34 @@ export const courses = pgTable('courses', {
   categoryId: uuid('category_id').notNull(),
   title: text('title').notNull(),
   description: text('description').notNull(),
-  createdAt: date('created_at').notNull(),
-  updatedAt: date('updated_at').notNull(),
+  createdAt: date('created_at').notNull().defaultNow(),
+  updatedAt: date('updated_at').notNull().defaultNow(),
+});
+
+export const chapters = pgTable('chapters', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  courseId: uuid('course_id').notNull(),
+  title: text('title').notNull(),
+  description: text('description'),
+  sequence: integer('sequence').notNull(),
+});
+
+export const lessons = pgTable('lessons', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  chapterId: uuid('chapter_id').notNull(),
+  title: text('title').notNull(),
+  description: text('description'),
+  sequence: integer('sequence').notNull(),
+});
+
+export const lessonContents = pgTable('lesson_contents', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  lessonId: uuid('lesson_id').notNull(),
+  title: text('title').notNull(),
+  description: text('description'),
+  contentType: text('content_type').notNull(),
+  url: text('url').notNull(),
+  metadata: text('metadata'),
 });
 
 export const coursePricing = pgTable('course_pricing', {
@@ -118,10 +151,11 @@ export const courseCategoriesRelations = relations(
     children: many(courseCategories, {
       relationName: 'course_categories_relation',
     }),
+    courses: many(courses),
   }),
 );
 
-export const courseRelations = relations(courses, ({ one }) => ({
+export const coursesRelations = relations(courses, ({ one, many }) => ({
   teacher: one(teachers, {
     fields: [courses.teacherId],
     references: [teachers.id],
@@ -131,6 +165,23 @@ export const courseRelations = relations(courses, ({ one }) => ({
     references: [courseCategories.id],
   }),
   pricing: one(coursePricing),
+  chapters: many(chapters),
+}));
+
+export const chaptersRelations = relations(chapters, ({ one, many }) => ({
+  course: one(courses, {
+    fields: [chapters.courseId],
+    references: [courses.id],
+  }),
+  lessons: many(lessons),
+}));
+
+export const lessonsRelations = relations(lessons, ({ one, many }) => ({
+  chapter: one(chapters, {
+    fields: [lessons.chapterId],
+    references: [chapters.id],
+  }),
+  contents: many(lessonContents),
 }));
 
 export const coursePricingRelations = relations(
@@ -170,7 +221,12 @@ export const dbSchema = {
   courseCategories,
   courseCategoriesRelations,
   courses,
-  courseRelations,
+  coursesRelations,
+  chapters,
+  chaptersRelations,
+  lessons,
+  lessonsRelations,
+  lessonContents,
   coursePricing,
   coursePricingRelations,
   courseDiscounts,

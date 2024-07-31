@@ -1,4 +1,9 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import {
   IAccessTokenPayload,
@@ -11,7 +16,8 @@ import { signJwt, verifyJwt } from '../../shared/utils/jwt';
 import { ConfigsService } from '../../configs/configs.service';
 import { ACCESS_TOKEN_EXP_TIME, REFRESH_TOKEN_EXP_TIME } from './auth.constant';
 import * as typia from 'typia';
-import { IUserWithoutPassword } from '../user/user.interface';
+import { OmitPassword } from '../../shared/types/omit-password';
+import { IUser } from '../user/user.interface';
 
 @Injectable()
 export class AuthService {
@@ -27,8 +33,9 @@ export class AuthService {
 
   async login(params: IUserLogin): Promise<IAuthTokens> {
     const user = await this.userService.findUserByEmail(params);
+
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     const accessTokenPayload: IAccessTokenPayload = {
@@ -58,7 +65,7 @@ export class AuthService {
     };
   }
 
-  async signupUser(params: IUserSignup): Promise<IUserWithoutPassword> {
+  async signupUser(params: IUserSignup): Promise<OmitPassword<IUser>> {
     return await this.userService.createUser(params);
   }
 
@@ -73,7 +80,7 @@ export class AuthService {
 
       this.logger.debug('[VerifyAccessTokenPayload]', payload);
 
-      return typia.assert<IAccessTokenPayload>(payload);
+      return typia.misc.assertClone<IAccessTokenPayload>(payload);
     } catch (e) {
       this.logger.error(e);
       throw new UnauthorizedException('Invalid access token');
@@ -91,7 +98,7 @@ export class AuthService {
 
       this.logger.debug('[RefreshAccessTokenTokenPayload]', payload);
 
-      const { userId } = typia.assert<IRefreshTokenPayload>(payload);
+      const { userId } = typia.misc.assertClone<IRefreshTokenPayload>(payload);
 
       const { email } = await this.userService.findUserByIdOrThrow({
         id: userId,

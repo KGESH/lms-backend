@@ -3,9 +3,11 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { UserRepository } from './user.repository';
 
+const providers = [UserService, UserRepository];
+
 @Module({
   controllers: [UserController],
-  providers: [UserService, UserRepository],
-  exports: [UserService, UserRepository],
+  providers: [...providers],
+  exports: [...providers],
 })
 export class UserModule {}

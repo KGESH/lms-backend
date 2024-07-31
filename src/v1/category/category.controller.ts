@@ -1,9 +1,10 @@
 import { Controller } from '@nestjs/common';
 import { CategoryService } from './category.service';
-import { TypedBody, TypedRoute } from '@nestia/core';
+import { TypedBody, TypedParam, TypedRoute } from '@nestia/core';
 import { ICategory, ICategoryWithRelations } from './category.interface';
 import { IResponse } from '../../shared/types/response';
-import { CreateCategoryDto } from './category.dto';
+import { CreateCategoryDto, UpdateCategoryDto } from './category.dto';
+import { Uuid } from '../../shared/types/primitive';
 
 @Controller('/v1/category')
 export class CategoryController {
@@ -15,11 +16,36 @@ export class CategoryController {
     return { data: rootCategories };
   }
 
+  @TypedRoute.Get('/:id')
+  async getCategory(
+    @TypedParam('id') id: Uuid,
+  ): Promise<IResponse<ICategory | null>> {
+    const category = await this.categoryService.findCategory({ id });
+    return { data: category };
+  }
+
   @TypedRoute.Post('/')
   async createCategory(
     @TypedBody() body: CreateCategoryDto,
   ): Promise<IResponse<ICategory>> {
     const category = await this.categoryService.createCategory(body);
+    return { data: category };
+  }
+
+  @TypedRoute.Patch('/:id')
+  async updateCategory(
+    @TypedParam('id') id: Uuid,
+    @TypedBody() body: UpdateCategoryDto,
+  ): Promise<IResponse<ICategory>> {
+    const category = await this.categoryService.updateCategory({ id }, body);
+    return { data: category };
+  }
+
+  @TypedRoute.Delete('/:id')
+  async deleteCategory(
+    @TypedParam('id') id: Uuid,
+  ): Promise<IResponse<ICategory>> {
+    const category = await this.categoryService.deleteCategory({ id });
     return { data: category };
   }
 }

@@ -5,5 +5,6 @@ export type IResponse<T> = {
 export type IErrorResponse = {
   statusCode: number;
   message: string;
-  error: unknown;
+  timestamp: string;
+  path: string;
 };

@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DrizzleService } from '../../infra/db/drizzle.service';
-import { asc, eq, gt } from 'drizzle-orm';
+import { asc, desc, eq, gt } from 'drizzle-orm';
 import { dbSchema } from '../../infra/db/schema';
 import { IUser, IUserCreate } from './user.interface';
 import { IPagination } from '../../shared/types/pagination';
@@ -8,13 +8,13 @@ import {
   DEFAULT_CURSOR,
   DEFAULT_ORDER_BY,
   DEFAULT_PAGE_SIZE,
-} from './user.constant';
+} from '../../core/pagination.constant';
 
 @Injectable()
 export class UserRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async findUserById(where: Pick<IUser, 'id'>): Promise<IUser | null> {
+  async findOne(where: Pick<IUser, 'id'>): Promise<IUser | null> {
     const user = await this.drizzle.db.query.users.findFirst({
       where: eq(dbSchema.users.id, where.id),
     });
@@ -26,11 +26,11 @@ export class UserRepository {
     return user;
   }
 
-  async findUserByIdOrThrow(where: Pick<IUser, 'id'>): Promise<IUser> {
-    const user = await this.findUserById(where);
+  async findOneOrThrow(where: Pick<IUser, 'id'>): Promise<IUser> {
+    const user = await this.findOne(where);
 
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     return user;
@@ -64,7 +64,11 @@ export class UserRepository {
           : undefined,
       )
       .limit(pagination.pageSize)
-      .orderBy(asc(dbSchema.users.id));
+      .orderBy(
+        pagination.orderBy === 'asc'
+          ? asc(dbSchema.users.id)
+          : desc(dbSchema.users.id),
+      );
   }
 
   async create(params: IUserCreate): Promise<IUser> {

@@ -31,6 +31,12 @@ export class ConfigsService {
       DATABASE_URL: process.env.DATABASE_URL,
       JWT_SECRET: process.env.JWT_SECRET,
       APP_PORT: +`${process.env.APP_PORT}`,
+      AWS_S3_REGION: process.env.AWS_S3_REGION,
+      AWS_S3_ACCESS_KEY: process.env.AWS_S3_ACCESS_KEY,
+      AWS_S3_SECRET: process.env.AWS_S3_SECRET,
+      AWS_S3_BUCKET: process.env.AWS_S3_BUCKET,
+      AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS:
+        +`${process.env.AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS}`,
     };
 
     const productionConfigs = typia.validate<IEnvironment>(fromExternal);
@@ -52,6 +58,13 @@ export class ConfigsService {
       APP_PORT: +this.dotEnv.get('APP_PORT'),
       DATABASE_URL: this.dotEnv.get('DATABASE_URL'),
       JWT_SECRET: this.dotEnv.get('JWT_SECRET'),
+      AWS_S3_REGION: this.dotEnv.get('AWS_S3_REGION'),
+      AWS_S3_ACCESS_KEY: this.dotEnv.get('AWS_S3_ACCESS_KEY'),
+      AWS_S3_SECRET: this.dotEnv.get('AWS_S3_SECRET'),
+      AWS_S3_BUCKET: this.dotEnv.get('AWS_S3_BUCKET'),
+      AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS: +this.dotEnv.get(
+        'AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS',
+      ),
     };
 
     const devConfigs = typia.validate<IEnvironment>(fromDotEnv);

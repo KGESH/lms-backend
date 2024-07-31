@@ -7,23 +7,21 @@ export type IUser = {
   password: string | null;
 };
 
-export type IUserWithoutPassword = Omit<IUser, 'password'>;
-
 export type IUserCreate = Pick<IUser, 'email' | 'password' | 'displayName'>;
 
 export type IUserAccount = {
   id: Uuid;
-  userId: Uuid;
+  userId: IUser['id'];
   providerId: string;
 };
 
 export type IUserInfo = {
   id: Uuid;
-  userId: Uuid;
+  userId: IUser['id'];
   name: string;
-  birthDate: BirthDate;
   gender: string;
   phoneNumber: string;
+  birthDate: BirthDate;
   connectingInformation: string;
   duplicationInformation: string;
 };

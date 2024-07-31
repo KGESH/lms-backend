@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { DrizzleModule } from './drizzle.module';
 import { ConfigsService } from '../../configs/configs.service';
-import { createTestDbContainer } from '../../shared/helpers/mocks/db.mock';
+import { createTestDbContainer } from '../../../test/e2e/helpers/db.helper';
 
 @Global()
 @Module({

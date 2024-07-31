@@ -1,4 +1,4 @@
-import { IPagination } from '../../shared/types/pagination';
+import { IPagination } from '../shared/types/pagination';
 
 export const DEFAULT_CURSOR: IPagination['cursor'] = null;
 

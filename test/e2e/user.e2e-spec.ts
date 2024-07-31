@@ -1,9 +1,10 @@
 import { INestApplication } from '@nestjs/common';
 import * as UserApis from '../../nestia/api/functional/v1/user';
 import * as typia from 'typia';
-import { IUserWithoutPassword } from '../../src/v1/user/user.interface';
 import { Uri, Uuid } from '../../src/shared/types/primitive';
-import { createTestingServer } from './app.helper';
+import { createTestingServer } from './helpers/app.helper';
+import { OmitPassword } from '../../src/shared/types/omit-password';
+import { IUser } from '../../src/v1/user/user.interface';
 
 describe('UserController (e2e)', () => {
   let host: Uri;
@@ -29,11 +30,18 @@ describe('UserController (e2e)', () => {
 
   describe('[Get Users]', () => {
     it('should be get empty array', async () => {
-      const response = await UserApis.getUsers({ host }, {});
+      const response = await UserApis.getUsers(
+        { host },
+        {
+          cursor: null,
+          orderBy: 'asc',
+          pageSize: 10,
+        },
+      );
 
       console.log('[Get Users]', response.data);
 
-      expect(typia.is<IUserWithoutPassword[]>(response.data)).toEqual(true);
+      expect(typia.is<OmitPassword<IUser>[]>(response.data)).toEqual(true);
     });
   });
 });

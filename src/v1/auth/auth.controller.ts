@@ -8,8 +8,9 @@ import {
   VerifyTokenDto,
 } from './auth.dto';
 import { IAccessTokenPayload, IAuthTokens } from './auth.interface';
-import { IUserWithoutPassword } from '../user/user.interface';
 import { IResponse } from '../../shared/types/response';
+import { OmitPassword } from '../../shared/types/omit-password';
+import { IUser } from '../user/user.interface';
 
 @Controller('v1/auth')
 export class AuthController {
@@ -28,7 +29,7 @@ export class AuthController {
   @TypedRoute.Post('/signup')
   async signup(
     @TypedBody() body: SignupUserDto,
-  ): Promise<IResponse<IUserWithoutPassword>> {
+  ): Promise<IResponse<OmitPassword<IUser>>> {
     const user = await this.authService.signupUser(body);
     return { data: user };
   }

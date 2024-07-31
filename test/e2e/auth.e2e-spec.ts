@@ -6,7 +6,7 @@ import {
   IUserLogin,
   IUserSignup,
 } from '../../src/v1/auth/auth.interface';
-import { createTestingServer } from './app.helper';
+import { createTestingServer } from './helpers/app.helper';
 import type {
   RefreshTokenDto,
   VerifyTokenDto,

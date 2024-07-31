@@ -6,7 +6,7 @@ import {
   CONNECTION_POOL,
   DATABASE_OPTIONS,
 } from './db.module-def';
-import { IEnvironment } from '../../configs/configs.types';
+import { IDatabaseConfigs } from '../../configs/configs.types';
 
 @Module({
   providers: [
@@ -14,7 +14,7 @@ import { IEnvironment } from '../../configs/configs.types';
     {
       provide: CONNECTION_POOL,
       inject: [DATABASE_OPTIONS],
-      useFactory: async (env: Pick<IEnvironment, 'DATABASE_URL'>) => {
+      useFactory: async (env: IDatabaseConfigs) => {
         return new Pool({
           connectionString: env.DATABASE_URL,
         });

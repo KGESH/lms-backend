@@ -1,6 +1,8 @@
+import { Uuid } from '../../shared/types/primitive';
+
 export type CategoryDto = {
-  id: string;
-  parentId: string | null;
+  id: Uuid;
+  parentId: Uuid | null;
   name: string;
   description: string | null;
 };
@@ -9,3 +11,5 @@ export type CreateCategoryDto = Pick<
   CategoryDto,
   'name' | 'parentId' | 'description'
 >;
+
+export type UpdateCategoryDto = Omit<Partial<CategoryDto>, 'id'>;

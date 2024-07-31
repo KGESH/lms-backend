@@ -1,15 +1,16 @@
 import { Controller, Logger } from '@nestjs/common';
 import { UserService } from './user.service';
 import { TypedParam, TypedQuery, TypedRoute } from '@nestia/core';
-import { IUserWithoutPassword } from './user.interface';
 import { Uuid } from '../../shared/types/primitive';
-import { PaginationDto } from './user.dto';
 import {
   DEFAULT_CURSOR,
   DEFAULT_ORDER_BY,
   DEFAULT_PAGE_SIZE,
-} from './user.constant';
+} from '../../core/pagination.constant';
 import { IResponse } from '../../shared/types/response';
+import { IUser } from './user.interface';
+import { OmitPassword } from '../../shared/types/omit-password';
+import { PaginationDto } from '../../core/pagination.dto';
 
 @Controller('v1/user')
 export class UserController {
@@ -19,8 +20,7 @@ export class UserController {
   @TypedRoute.Get('/')
   async getUsers(
     @TypedQuery() query: PaginationDto,
-  ): Promise<IResponse<IUserWithoutPassword[]>> {
-    this.logger.debug('[PAGE QUERY]', query);
+  ): Promise<IResponse<OmitPassword<IUser>[]>> {
     const users = await this.userService.findUsers({
       cursor: query.cursor ?? DEFAULT_CURSOR,
       pageSize: query.pageSize ?? DEFAULT_PAGE_SIZE,
@@ -34,8 +34,7 @@ export class UserController {
   @TypedRoute.Get('/:id')
   async getUser(
     @TypedParam('id') id: Uuid,
-  ): Promise<IResponse<IUserWithoutPassword | null>> {
-    this.logger.debug(`Get user by id: ${id}`);
+  ): Promise<IResponse<OmitPassword<IUser> | null>> {
     const user = await this.userService.findUserById({ id });
     return {
       data: user,

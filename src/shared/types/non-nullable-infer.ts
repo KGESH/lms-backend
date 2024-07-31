@@ -10,7 +10,7 @@
  *   description: string | null;
  * };
  *
- * type NonNullableCategory = NonNullableInfer<ICategory>;
+ * type NonNullableCategory = NonNullableInfer<Category>;
  * // {
  * //  id: Uuid;
  * //  name: string;
