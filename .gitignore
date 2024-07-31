@@ -61,4 +61,4 @@ local
 # nestia sdk
 packages
 
-nestia
+nestia/*
