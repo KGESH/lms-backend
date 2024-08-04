@@ -2,6 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { DrizzleModule } from './drizzle.module';
 import { ConfigsService } from '../../configs/configs.service';
 import { createTestDbContainer } from '../../../test/e2e/helpers/db.helper';
+import { NODE_ENV_TEST } from '../../configs/configs.constant';
 
 @Global()
 @Module({
@@ -11,7 +12,7 @@ import { createTestDbContainer } from '../../../test/e2e/helpers/db.helper';
       useFactory: async ({ env }: ConfigsService) => {
         return {
           DATABASE_URL:
-            env.NODE_ENV === 'test'
+            env.NODE_ENV === NODE_ENV_TEST
               ? await createTestDbContainer()
               : env.DATABASE_URL,
         };
