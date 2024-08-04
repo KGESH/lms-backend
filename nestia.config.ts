@@ -14,7 +14,7 @@ const NESTIA_CONFIG: INestiaConfig = {
     // })
     return app;
   },
-  output: 'nestia/api',
+  output: 'src/api',
   simulate: true,
   e2e: 'test/e2e',
   distribute: 'packages/api',

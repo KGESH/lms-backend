@@ -92,6 +92,6 @@
     "strictNullChecks": true
   },
   "include": [
-    "../../nestia/api"
+    "../../src/api"
   ]
 }

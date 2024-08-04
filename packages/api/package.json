@@ -1,12 +1,12 @@
 {
   "name": "@kgesh/lms",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "갈길이 머니 LMS 서비스 API",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
     "build": "pnpm install && pnpm run build:sdk && NODE_ENV=production pnpm run compile",
-    "build:sdk": "rimraf ../../nestia/api/functional && cd ../.. && NODE_ENV=production npx nestia sdk && cd packages/api",
+    "build:sdk": "rimraf ../../src/api/functional && cd ../.. && NODE_ENV=production pnpm dlx nestia sdk && cd packages/api",
     "compile": "rimraf lib && tsc",
     "deploy": "pnpm run build && pnpm publish",
     "prepare": "ts-patch install && typia patch"
