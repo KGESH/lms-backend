@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import * as UserApis from '../../nestia/api/functional/v1/user';
+import * as UserApis from '../../src/api/functional/v1/user';
 import * as typia from 'typia';
 import { Uri, Uuid } from '../../src/shared/types/primitive';
 import { createTestingServer } from './helpers/app.helper';

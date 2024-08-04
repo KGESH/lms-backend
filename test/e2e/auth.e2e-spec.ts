@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import * as AuthApis from '../../nestia/api/functional/v1/auth';
+import * as AuthApis from '../../src/api/functional/v1/auth';
 import * as typia from 'typia';
 import {
   IAuthTokens,
