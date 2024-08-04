@@ -59,7 +59,9 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 local
 
 # nestia sdk
-packages
+packages/.npmrc
+packages/node_modules
+packages/lib
 nestia/*
 
 # npm package
