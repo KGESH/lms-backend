@@ -14,7 +14,7 @@ export class LessonContentController {
   ) {}
 
   @TypedRoute.Get('/')
-  async getLessons(
+  async getLessonContents(
     @TypedParam('courseId') courseId: Uuid,
     @TypedParam('lessonId') lessonId: Uuid,
   ): Promise<IResponse<ILessonContent[]>> {
