@@ -6,7 +6,7 @@
   "typings": "lib/index.d.ts",
   "scripts": {
     "build": "pnpm install && pnpm run build:sdk && NODE_ENV=production pnpm run compile",
-    "build:sdk": "rimraf ../../src/api/functional && cd ../.. && NODE_ENV=production pnpm dlx nestia sdk && cd packages/api",
+    "build:sdk": "rimraf ../../src/api/functional && cd ../.. && NODE_ENV=production npx nestia sdk && cd packages/api",
     "compile": "rimraf lib && tsc",
     "deploy": "pnpm run build && pnpm publish",
     "prepare": "ts-patch install && typia patch"
