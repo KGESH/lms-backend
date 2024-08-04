@@ -15,6 +15,8 @@ const NESTIA_CONFIG: INestiaConfig = {
     return app;
   },
   output: 'src/api',
+  clone: true,
+  assert: true,
   simulate: true,
   e2e: 'test/e2e',
   distribute: 'packages/api',
