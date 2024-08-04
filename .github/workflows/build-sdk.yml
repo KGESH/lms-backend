@@ -30,8 +30,8 @@ jobs:
 
       - name: Create .npmrc
         run: |
-          echo "//npm.pkg.github.com/:_authToken=${{secrets.GH_NPM_PUBLISH_TOKEN}}" > .npmrc
-          echo "@${{secrets.NPM_ORG_NAME}}=https://npm.pkg.github.com/" >> .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{secrets.GH_NPM_PUBLISH_TOKEN}}" > packages/api/.npmrc
+          echo "@${{secrets.NPM_ORG_NAME}}=https://npm.pkg.github.com/" >> packages/api/.npmrc
 
       - name: Build & Publish SDK
         run: npm run deploy
