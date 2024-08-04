@@ -1,0 +1,41 @@
+{
+  "name": "@kgesh/lms",
+  "version": "0.1.0",
+  "description": "갈길이 머니 LMS 서비스 API",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "build": "npm run build:sdk && NODE_ENV=production npm run compile",
+    "build:sdk": "rimraf ../../nestia/api/functional && cd ../.. && NODE_ENV=production npx nestia sdk && cd packages/api",
+    "compile": "rimraf lib && tsc",
+    "deploy": "npm run build && npm publish",
+    "prepare": "ts-patch install && typia patch"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KGESH/lms-backend"
+  },
+  "author": "KGESH",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/KGESH/lms-backend/issues"
+  },
+  "homepage": "http://localhost:3000",
+  "files": [
+    "lib",
+    "package.json",
+    "README.md"
+  ],
+  "devDependencies": {
+    "rimraf": "^6.0.1",
+    "ts-patch": "^3.2.1",
+    "typescript": "^5.5.2"
+  },
+  "dependencies": {
+    "@nestia/fetcher": "^3.9.0",
+    "typia": "^6.6.0"
+  }
+}
