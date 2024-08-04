@@ -63,7 +63,7 @@ local
 packages/api/.npmrc
 packages/api/node_modules
 packages/api/lib
-nestia/api/*
+src/api/*
 
 # npm package
 .npmrc
