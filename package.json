@@ -19,7 +19,6 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "pnpm run nestia:build && NODE_ENV=test jest --config test/e2e/jest-e2e.json",
     "prepare": "ts-patch install && typia patch",
-    "postinstall": "npm run nestia:build",
     "nestia:build": "NODE_ENV=development nestia swagger & NODE_ENV=development nestia sdk",
     "db:push:dev": "dotenv -e .env.development -- drizzle-kit push",
     "db:migrate:gen:dev": "dotenv -e .env.development -- drizzle-kit generate"
