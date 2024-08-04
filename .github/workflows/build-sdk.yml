@@ -28,4 +28,4 @@ jobs:
 
       - name: Build & Publish SDK
         run: npm run deploy
-        working-directory: ./packages/api
+        working-directory: packages/api
