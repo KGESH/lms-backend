@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   Logger,
   NotFoundException,
@@ -66,6 +67,14 @@ export class AuthService {
   }
 
   async signupUser(params: IUserSignup): Promise<OmitPassword<IUser>> {
+    const exist = await this.userService.findUserByEmail({
+      email: params.email,
+    });
+
+    if (exist) {
+      throw new ConflictException('User already exists');
+    }
+
     return await this.userService.createUser(params);
   }
 
