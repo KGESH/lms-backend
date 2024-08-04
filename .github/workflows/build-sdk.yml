@@ -37,7 +37,7 @@ jobs:
           echo "@${{secrets.NPM_ORG_NAME}}=https://npm.pkg.github.com/" >> packages/api/.npmrc
 
       - name: Build SDK
-        run: pnpm run nestia:build
+        run: pnpm run nestia:build:sdk:prod
 
       - name: Publish SDK
         run: npm run deploy
