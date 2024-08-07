@@ -10,6 +10,7 @@ import { CourseModule } from './v1/course/course.module';
 import { TeacherModule } from './v1/teacher/teacher.module';
 import { S3Module } from './infra/s3/s3.module';
 import { HttpClientModule } from './infra/http/http-client.module';
+import { UiModule } from './v1/ui/ui.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { HttpClientModule } from './infra/http/http-client.module';
     CourseModule,
     TeacherModule,
     S3Module,
+    UiModule,
   ],
   controllers: [AppController],
   providers: [AppService],

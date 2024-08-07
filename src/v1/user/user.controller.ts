@@ -8,8 +8,7 @@ import {
   DEFAULT_PAGE_SIZE,
 } from '../../core/pagination.constant';
 import { IResponse } from '../../shared/types/response';
-import { IUser } from './user.interface';
-import { OmitPassword } from '../../shared/types/omit-password';
+import { IUserWithoutPassword } from './user.interface';
 import { PaginationDto } from '../../core/pagination.dto';
 
 @Controller('v1/user')
@@ -20,7 +19,7 @@ export class UserController {
   @TypedRoute.Get('/')
   async getUsers(
     @TypedQuery() query: PaginationDto,
-  ): Promise<IResponse<OmitPassword<IUser>[]>> {
+  ): Promise<IResponse<IUserWithoutPassword[]>> {
     const users = await this.userService.findUsers({
       cursor: query.cursor ?? DEFAULT_CURSOR,
       pageSize: query.pageSize ?? DEFAULT_PAGE_SIZE,
@@ -34,7 +33,7 @@ export class UserController {
   @TypedRoute.Get('/:id')
   async getUser(
     @TypedParam('id') id: Uuid,
-  ): Promise<IResponse<OmitPassword<IUser> | null>> {
+  ): Promise<IResponse<IUserWithoutPassword | null>> {
     const user = await this.userService.findUserById({ id });
     return {
       data: user,

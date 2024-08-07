@@ -1,17 +1,17 @@
 import { INestApplication } from '@nestjs/common';
-import * as AuthApis from '../../src/api/functional/v1/auth';
+import * as AuthApis from '../../../src/api/functional/v1/auth';
 import * as typia from 'typia';
 import {
   IAuthTokens,
   IUserLogin,
   IUserSignup,
-} from '../../src/v1/auth/auth.interface';
-import { createTestingServer } from './helpers/app.helper';
+} from '../../../src/v1/auth/auth.interface';
+import { createTestingServer } from '../helpers/app.helper';
 import type {
   RefreshTokenDto,
   VerifyTokenDto,
-} from '../../src/v1/auth/auth.dto';
-import { Uri } from '../../src/shared/types/primitive';
+} from '../../../src/v1/auth/auth.dto';
+import { Uri } from '../../../src/shared/types/primitive';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;

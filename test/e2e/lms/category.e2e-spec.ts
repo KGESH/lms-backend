@@ -1,16 +1,16 @@
 import { INestApplication } from '@nestjs/common';
-import * as CategoryApis from '../../src/api/functional/v1/category';
+import * as CategoryApis from '../../../src/api/functional/v1/category';
 import * as typia from 'typia';
-import { createTestingServer } from './helpers/app.helper';
-import { Uri, Uuid } from '../../src/shared/types/primitive';
-import { ICategory } from '../../src/v1/category/category.interface';
+import { createTestingServer } from '../helpers/app.helper';
+import { Uri, Uuid } from '../../../src/shared/types/primitive';
+import { ICategory } from '../../../src/v1/category/category.interface';
 import {
   CreateCategoryDto,
   UpdateCategoryDto,
-} from '../../src/v1/category/category.dto';
+} from '../../../src/v1/category/category.dto';
 import { HttpError } from '@nestia/fetcher';
-import { IErrorResponse } from '../../src/shared/types/response';
-import { convertException } from '../../src/shared/helpers/nestia/convert-exception';
+import { IErrorResponse } from '../../../src/shared/types/response';
+import { convertException } from '../../../src/shared/helpers/nestia/convert-exception';
 
 describe('CategoryController (e2e)', () => {
   let host: Uri;

@@ -7,3 +7,5 @@ export type Uuid = string & tags.Format<'uuid'>;
 export type EMail = string & tags.Format<'email'>;
 
 export type BirthDate = string & tags.Format<'date'>;
+
+export type UInt = number & tags.Type<'uint32'>;

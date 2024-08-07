@@ -5,6 +5,7 @@ import {
   text,
   uuid,
   integer,
+  pgEnum,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -205,7 +206,46 @@ export const courseDiscountsRelations = relations(
   }),
 );
 
+export const uiCategory = pgEnum('ui_categories', [
+  'carousel',
+  'repeat-timer',
+  'banner',
+  'marketing-banner',
+]);
+
+export const uiComponents = pgTable('ui_components', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  category: uiCategory('category').notNull(),
+  name: text('name').unique().notNull(),
+  sequence: integer('sequence').notNull(),
+  description: text('description'),
+});
+
+export const uiRepeatTimers = pgTable('ui_repeat_timers', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  uiComponentId: uuid('ui_component_id')
+    .notNull()
+    .references(() => uiComponents.id, { onDelete: 'cascade' }),
+  title: text('title').notNull(),
+  description: text('description'),
+  repeatMinutes: integer('repeat_minutes').notNull(),
+  buttonLabel: text('button_label'),
+  buttonHref: text('button_href'),
+});
+
+export const uiComponentsRelations = relations(uiComponents, ({ many }) => ({
+  repeatTimers: many(uiRepeatTimers),
+}));
+
+export const uiRepeatTimersRelations = relations(uiRepeatTimers, ({ one }) => ({
+  uiComponent: one(uiComponents, {
+    fields: [uiRepeatTimers.uiComponentId],
+    references: [uiComponents.id],
+  }),
+}));
+
 export const dbSchema = {
+  // 사용자 (일반 사용자, 관리자(매니저), 최고 관리자)
   users,
   userAccounts,
   userInfos,
@@ -213,11 +253,13 @@ export const dbSchema = {
   userInfosRelations,
   userAccountsRelations,
 
+  // 강사 (강의, 전자책 판매자)
   teachers,
   teacherInfos,
   teachersRelations,
   teacherInfosRelations,
 
+  // 동영상 강의
   courseCategories,
   courseCategoriesRelations,
   courses,
@@ -231,4 +273,13 @@ export const dbSchema = {
   coursePricingRelations,
   courseDiscounts,
   courseDiscountsRelations,
+
+  // UI 빌더
+  // uiCategories,
+  // uiCategoriesRelations,
+  uiCategory,
+  uiComponents,
+  uiComponentsRelations,
+  uiRepeatTimers,
+  uiRepeatTimersRelations,
 };

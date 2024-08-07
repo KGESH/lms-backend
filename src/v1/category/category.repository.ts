@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DrizzleService } from '../../infra/db/drizzle.service';
 import { asc, desc, eq, isNull } from 'drizzle-orm';
 import { dbSchema } from '../../infra/db/schema';
@@ -27,7 +27,7 @@ export class CategoryRepository implements IRepository<ICategory> {
     const category = await this.findOne(where);
 
     if (!category) {
-      throw new Error('Category not found');
+      throw new NotFoundException('Category not found');
     }
 
     return category;

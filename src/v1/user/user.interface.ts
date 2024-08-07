@@ -1,4 +1,5 @@
 import { BirthDate, EMail, Uuid } from '../../shared/types/primitive';
+import { OmitPassword } from '../../shared/types/omit-password';
 
 export type IUser = {
   id: Uuid;
@@ -6,6 +7,8 @@ export type IUser = {
   email: EMail;
   password: string | null;
 };
+
+export type IUserWithoutPassword = OmitPassword<IUser>;
 
 export type IUserCreate = Pick<IUser, 'email' | 'password' | 'displayName'>;
 

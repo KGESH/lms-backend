@@ -31,11 +31,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Create .npmrc
-        run: |
-          echo "//npm.pkg.github.com/:_authToken=${{secrets.GH_NPM_PUBLISH_TOKEN}}" > packages/api/.npmrc
-          echo "@${{secrets.NPM_ORG_NAME}}=https://npm.pkg.github.com/" >> packages/api/.npmrc
-
       - name: Build SDK
         run: pnpm run nestia:build:sdk:prod
         env:
