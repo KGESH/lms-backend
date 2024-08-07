@@ -34,6 +34,9 @@ describe('UiRepeatTimerController (e2e)', () => {
         },
         createDto,
       );
+      if (!response.success) {
+        throw new Error('assert');
+      }
 
       const uiRepeatTimer = response.data;
       expect(uiRepeatTimer.ui.title).toEqual(createDto.ui.title);
@@ -51,6 +54,10 @@ describe('UiRepeatTimerController (e2e)', () => {
         },
         createDto,
       );
+      if (!createResponse.success) {
+        throw new Error('assert');
+      }
+
       const uiRepeatTimer = createResponse.data;
 
       const getResponse = await RepeatTimerAPI.getUiRepeatTimer(
@@ -59,6 +66,9 @@ describe('UiRepeatTimerController (e2e)', () => {
         },
         uiRepeatTimer.ui.id,
       );
+      if (!getResponse.success) {
+        throw new Error('assert');
+      }
 
       const fetchedUiRepeatTimer = getResponse.data;
       if (!fetchedUiRepeatTimer) {
@@ -85,6 +95,10 @@ describe('UiRepeatTimerController (e2e)', () => {
         },
         createDto,
       );
+      if (!createResponse.success) {
+        throw new Error('assert');
+      }
+
       const uiRepeatTimer = createResponse.data;
 
       const updateDto: UpdateUiRepeatTimerDto = {
@@ -102,6 +116,9 @@ describe('UiRepeatTimerController (e2e)', () => {
         uiRepeatTimer.ui.id,
         updateDto,
       );
+      if (!updateResponse.success) {
+        throw new Error('assert');
+      }
 
       const updatedUiRepeatTimer = updateResponse.data;
       expect(updatedUiRepeatTimer.ui.title).toEqual(updateDto.ui?.title);
@@ -121,6 +138,10 @@ describe('UiRepeatTimerController (e2e)', () => {
         },
         createDto,
       );
+      if (!createResponse.success) {
+        throw new Error('assert');
+      }
+
       const uiRepeatTimer = createResponse.data;
 
       const deleteResponse = await UiComponentAPI.deleteUiComponent(
@@ -129,6 +150,9 @@ describe('UiRepeatTimerController (e2e)', () => {
         },
         uiRepeatTimer.ui.uiComponentId,
       );
+      if (!deleteResponse.success) {
+        throw new Error('assert');
+      }
 
       const deletedUiComponent = deleteResponse.data;
       expect(deletedUiComponent.id).toEqual(uiRepeatTimer.ui.uiComponentId);
@@ -138,6 +162,9 @@ describe('UiRepeatTimerController (e2e)', () => {
         { host },
         uiRepeatTimer.ui.id,
       );
+      if (!afterDeleteResponse.success) {
+        throw new Error('assert');
+      }
 
       expect(afterDeleteResponse.data).toBeNull();
     });

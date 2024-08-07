@@ -23,6 +23,9 @@ describe('UserController (e2e)', () => {
     it('should be get null', async () => {
       const randomId = typia.random<Uuid>();
       const response = await UserApis.getUser({ host }, randomId);
+      if (!response.success) {
+        throw new Error('assert');
+      }
 
       expect(response.data).toBe(null);
     });
@@ -38,8 +41,9 @@ describe('UserController (e2e)', () => {
           pageSize: 10,
         },
       );
-
-      console.log('[Get Users]', response.data);
+      if (!response.success) {
+        throw new Error('assert');
+      }
 
       expect(typia.is<OmitPassword<IUser>[]>(response.data)).toEqual(true);
     });

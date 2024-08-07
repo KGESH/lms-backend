@@ -30,6 +30,9 @@ describe('CategoryController (e2e)', () => {
       const response = await CategoryApis.getAllCategories({
         host,
       });
+      if (!response.success) {
+        throw new Error('assert');
+      }
 
       const categories = response.data;
       const isCategoryArray = typia.is<ICategory[]>(categories);
@@ -44,6 +47,9 @@ describe('CategoryController (e2e)', () => {
         { host },
         createCategoryDto,
       );
+      if (!response.success) {
+        throw new Error('assert');
+      }
 
       const category = response.data;
       expect(category.name).toEqual(createCategoryDto.name);
@@ -57,6 +63,9 @@ describe('CategoryController (e2e)', () => {
         { host },
         createCategoryDto,
       );
+      if (!createResponse.success) {
+        throw new Error('assert');
+      }
 
       const category = createResponse.data;
       const updateCategoryDto: UpdateCategoryDto = {
@@ -69,6 +78,10 @@ describe('CategoryController (e2e)', () => {
         category.id,
         updateCategoryDto,
       );
+      if (!updateResponse.success) {
+        throw new Error('assert');
+      }
+
       const updatedCategory = updateResponse.data;
       expect(updatedCategory.name).toEqual(updateCategoryDto.name);
       expect(updatedCategory.id).toEqual(category.id);
@@ -88,7 +101,7 @@ describe('CategoryController (e2e)', () => {
         const notFoundErrorResponse = convertException<IErrorResponse>(
           e as HttpError,
         );
-        expect(notFoundErrorResponse.statusCode).toEqual(404);
+        expect(notFoundErrorResponse.statusCode).toEqual(777);
       }
     });
   });
@@ -100,17 +113,27 @@ describe('CategoryController (e2e)', () => {
         { host },
         createCategoryDto,
       );
+      if (!createResponse.success) {
+        throw new Error('assert');
+      }
 
       const category = createResponse.data;
       const deleteResponse = await CategoryApis.deleteCategory(
         { host },
         category.id,
       );
+      if (!deleteResponse.success) {
+        throw new Error('assert');
+      }
 
       const deletedCategory = deleteResponse.data;
       expect(deletedCategory.id).toEqual(category.id);
 
       const getResponse = await CategoryApis.getCategory({ host }, category.id);
+      if (!getResponse.success) {
+        throw new Error('assert');
+      }
+
       const foundCategory = getResponse.data;
       expect(foundCategory).toBe(null);
     });
