@@ -6,7 +6,6 @@ import {
   DEFAULT_ORDER_BY,
   DEFAULT_PAGE_SIZE,
 } from '../../core/pagination.constant';
-import { IResponse } from '../../shared/types/response';
 import { TeacherService } from './teacher.service';
 import { OmitPassword } from '../../shared/types/omit-password';
 import { ITeacher } from './teacher.interface';
@@ -20,24 +19,20 @@ export class TeacherController {
   @TypedRoute.Get('/')
   async getTeachers(
     @TypedQuery() query: PaginationDto,
-  ): Promise<IResponse<OmitPassword<ITeacher>[]>> {
+  ): Promise<OmitPassword<ITeacher>[]> {
     const teachers = await this.teacherService.findTeachers({
       cursor: query.cursor ?? DEFAULT_CURSOR,
       pageSize: query.pageSize ?? DEFAULT_PAGE_SIZE,
       orderBy: query.orderBy ?? DEFAULT_ORDER_BY,
     });
-    return {
-      data: teachers,
-    };
+    return teachers;
   }
 
   @TypedRoute.Get('/:id')
   async getTeacher(
     @TypedParam('id') id: Uuid,
-  ): Promise<IResponse<OmitPassword<ITeacher> | null>> {
+  ): Promise<OmitPassword<ITeacher> | null> {
     const teacher = await this.teacherService.findTeacherById({ id });
-    return {
-      data: teacher,
-    };
+    return teacher;
   }
 }

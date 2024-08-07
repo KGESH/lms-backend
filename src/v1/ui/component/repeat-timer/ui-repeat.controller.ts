@@ -2,7 +2,6 @@ import { Controller, Logger } from '@nestjs/common';
 import { UiRepeatTimerService } from './ui-repeat-timer.service';
 import { TypedBody, TypedParam, TypedRoute } from '@nestia/core';
 import { Uuid } from '../../../../shared/types/primitive';
-import { IResponse } from '../../../../shared/types/response';
 import {
   CreateUiRepeatTimerDto,
   DeletedUiRepeatTimerDto,
@@ -19,49 +18,48 @@ export class UiRepeatTimerController {
   @TypedRoute.Get('/:id')
   async getUiRepeatTimer(
     @TypedParam('id') id: Uuid,
-  ): Promise<IResponse<UiRepeatTimerDto | null>> {
+  ): Promise<UiRepeatTimerDto | null> {
     const uiRepeatTimer = await this.uiRepeatTimerService.findUiRepeatTimer({
       id,
     });
-    return { data: uiRepeatTimer };
+    return uiRepeatTimer;
   }
 
   @TypedRoute.Post('/')
   async createUiRepeatTimer(
     @TypedBody() body: CreateUiRepeatTimerDto,
-  ): Promise<IResponse<UiRepeatTimerDto>> {
+  ): Promise<UiRepeatTimerDto> {
     const uiRepeatTimer = await this.uiRepeatTimerService.createUiRepeatTimer({
       ...body,
       ui: {
         ...body.ui,
       },
     });
-    return { data: uiRepeatTimer };
+    return uiRepeatTimer;
   }
 
   @TypedRoute.Patch('/:id')
   async updateUiRepeatTimer(
     @TypedParam('id') id: Uuid,
     @TypedBody() body: UpdateUiRepeatTimerDto,
-  ): Promise<IResponse<UiRepeatTimerDto>> {
+  ): Promise<UiRepeatTimerDto> {
     const updated = await this.uiRepeatTimerService.updateUiRepeatTimer(
       { id },
       body,
     );
-    return { data: updated };
+    return updated;
   }
 
   @TypedRoute.Delete('/:id')
   async deleteUiRepeatTimer(
     @TypedParam('id') id: Uuid,
-  ): Promise<IResponse<DeletedUiRepeatTimerDto>> {
+  ): Promise<DeletedUiRepeatTimerDto> {
     const deletedId = await this.uiRepeatTimerService.deleteUiRepeatTimer({
       id,
     });
 
-    const dto: DeletedUiRepeatTimerDto = {
+    return {
       id: deletedId,
     };
-    return { data: dto };
   }
 }

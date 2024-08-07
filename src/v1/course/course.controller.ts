@@ -3,7 +3,6 @@ import { CourseService } from './course.service';
 import { TypedParam, TypedRoute } from '@nestia/core';
 import { CourseQueryService } from './course-query.service';
 import { ICourse } from './course.interface';
-import { IResponse } from '../../shared/types/response';
 import { Uuid } from '../../shared/types/primitive';
 
 @Controller('v1/course')
@@ -14,16 +13,14 @@ export class CourseController {
   ) {}
 
   @TypedRoute.Get('/')
-  async getCourses(): Promise<IResponse<ICourse[]>> {
+  async getCourses(): Promise<ICourse[]> {
     const courses = await this.courseQueryService.findCourses();
-    return { data: courses };
+    return courses;
   }
 
   @TypedRoute.Get('/:id')
-  async getCourse(
-    @TypedParam('id') id: Uuid,
-  ): Promise<IResponse<ICourse | null>> {
+  async getCourse(@TypedParam('id') id: Uuid): Promise<ICourse | null> {
     const course = await this.courseQueryService.findCourseById({ id });
-    return { data: course };
+    return course;
   }
 }
