@@ -8,7 +8,7 @@
     "build": "pnpm install && pnpm run build:sdk && NODE_ENV=production pnpm run compile",
     "build:sdk": "rimraf ../../src/api/functional && cd ../.. && NODE_ENV=production npx nestia sdk && cd packages/api",
     "compile": "rimraf lib && tsc",
-    "deploy": "pnpm run build && pnpm publish",
+    "deploy": "pnpm run build && pnpm publish --no-git-checks",
     "prepare": "ts-patch install && typia patch"
   },
   "publishConfig": {
