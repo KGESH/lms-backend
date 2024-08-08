@@ -6,10 +6,14 @@ import {
   IUiComponentBaseUpdate,
 } from './ui-component.interface';
 import { TransactionClient } from '../../../infra/db/drizzle.types';
+import { UiComponentQueryRepository } from './ui-component-query.repository';
 
 @Injectable()
 export class UiComponentService {
-  constructor(private readonly uiComponentRepository: UiComponentRepository) {}
+  constructor(
+    private readonly uiComponentRepository: UiComponentRepository,
+    private readonly uiComponentQueryRepository: UiComponentQueryRepository,
+  ) {}
 
   async createUiComponent(
     params: IUiComponentBaseCreate,
@@ -31,5 +35,9 @@ export class UiComponentService {
     tx?: TransactionClient,
   ): Promise<IUiComponentBase> {
     return await this.uiComponentRepository.delete(where, tx);
+  }
+
+  async getUiComponentsByPath(where: Pick<IUiComponentBase, 'path'>) {
+    return await this.uiComponentQueryRepository.getUiComponentsByPath(where);
   }
 }

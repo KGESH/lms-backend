@@ -217,6 +217,7 @@ export const uiComponents = pgTable('ui_components', {
   id: uuid('id').primaryKey().defaultRandom(),
   category: uiCategory('category').notNull(),
   name: text('name').unique().notNull(),
+  path: text('path').notNull(),
   sequence: integer('sequence').notNull(),
   description: text('description'),
 });

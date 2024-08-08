@@ -13,7 +13,7 @@ export type UiRepeatTimerDto = UiComponentDto<{
 
 export type CreateUiRepeatTimerDto = Pick<
   UiRepeatTimerDto,
-  'category' | 'name' | 'sequence' | 'description' | 'ui'
+  'category' | 'name' | 'path' | 'sequence' | 'description' | 'ui'
 >;
 
 export type UpdateUiRepeatTimerDto = Partial<UiRepeatTimerDto>;

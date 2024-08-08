@@ -92,6 +92,7 @@ export class UiRepeatTimerComponentRepository
           id: uiComponentId,
           category: 'repeat-timer',
           name: params.name,
+          path: params.path,
           sequence: params.sequence,
           description: params.description,
         })
