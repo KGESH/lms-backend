@@ -1,24 +1,21 @@
-import { Uuid } from '../../../shared/types/primitive';
+import { UInt, Uuid } from '../../../shared/types/primitive';
 import { UiCategory } from '../category/ui-category.interface';
+import { Optional } from '../../../shared/types/optional';
 
 export type IUiComponentBase = {
   id: Uuid;
   category: UiCategory;
   name: string;
   path: string;
-  sequence: number;
+  sequence: UInt;
   description: string | null;
 };
 
-export type IUiComponentBaseCreate = Partial<Pick<IUiComponentBase, 'id'>> &
-  Pick<
-    IUiComponentBase,
-    'category' | 'name' | 'path' | 'sequence' | 'description'
-  >;
+export type IUiComponentBaseCreate = Optional<IUiComponentBase, 'id'>;
 
 export type IUiComponentBaseUpdate = Partial<Omit<IUiComponentBase, 'id'>>;
 
-export type IUiComponent<C, U> = IUiComponentBase & {
+export type IUiComponent<C extends UiCategory, U> = IUiComponentBase & {
   category: C;
   ui: U;
 };
@@ -30,7 +27,4 @@ export type IUiSectionGroupBase = Record<
   IUiComponentBase[]
 >;
 
-export type IUiComponentGroup<
-  C extends IUiComponentBase['category'],
-  T,
-> = Record<C, T>;
+export type IUiComponentGroup<C extends UiCategory, T> = Record<C, T>;

@@ -90,7 +90,7 @@ export class UiRepeatTimerComponentRepository
         .insert(dbSchema.uiComponents)
         .values({
           id: uiComponentId,
-          category: 'repeat-timer',
+          category: UI_CATEGORY.REPEAT_TIMER,
           name: params.name,
           path: params.path,
           sequence: params.sequence,
@@ -114,7 +114,7 @@ export class UiRepeatTimerComponentRepository
 
     return {
       ...uiComponent,
-      category: 'repeat-timer',
+      category: UI_CATEGORY.REPEAT_TIMER,
       ui: {
         ...uiRepeatTimer,
       },
@@ -127,10 +127,10 @@ export class UiRepeatTimerComponentRepository
     db = this.drizzle.db,
   ): Promise<IUiRepeatTimerComponent> {
     const { ui, ...uiComponent } = params;
+    const uiComponentId = where.uiComponentId;
+    const uiRepeatTimerId = where.id;
 
     await db.transaction(async (tx) => {
-      const uiComponentId = where.uiComponentId;
-      const uiRepeatTimerId = where.id;
       if (uiRepeatTimerId && ui) {
         await tx
           .update(dbSchema.uiRepeatTimers)
@@ -158,7 +158,7 @@ export class UiRepeatTimerComponentRepository
 
     return {
       ...updated.uiComponent,
-      category: 'repeat-timer',
+      category: UI_CATEGORY.REPEAT_TIMER,
       ui: {
         ...updated,
       },

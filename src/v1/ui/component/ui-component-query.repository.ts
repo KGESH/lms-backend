@@ -8,7 +8,12 @@ import {
 import { eq, inArray } from 'drizzle-orm';
 import { dbSchema } from '../../../infra/db/schema';
 import { IUiRepeatTimerComponent } from './repeat-timer/ui-repeat-timer.interface';
-import { UiCategory } from '../category/ui-category.interface';
+import {
+  UI_CATEGORY,
+  UiCarouselType,
+  UiCategory,
+} from '../category/ui-category.interface';
+import { IUiCarouselComponent } from './carousel/ui-carousel.interface';
 
 @Injectable()
 export class UiComponentQueryRepository {
@@ -17,7 +22,7 @@ export class UiComponentQueryRepository {
   async getUiComponentsByPath(where: Pick<IUiComponentBase, 'path'>): Promise<
     IUiComponentGroup<
       UiCategory,
-      IUiRepeatTimerComponent[]
+      IUiRepeatTimerComponent[] | IUiCarouselComponent<UiCarouselType>[]
       // | IUiComponent<'banner', unknown>
       // | IUiComponent<'marketing-banner', unknown>
       // | IUiComponent<'carousel', unknown>
@@ -60,12 +65,35 @@ export class UiComponentQueryRepository {
     const carouselUiComponentIds = groupedSections['carousel'].map(
       (ui) => ui.id,
     );
+    const carouselUiPromises = this.drizzle.db.query.uiCarousels.findMany({
+      where: inArray(
+        dbSchema.uiCarousels.uiComponentId,
+        carouselUiComponentIds,
+      ),
+      with: {
+        uiComponent: true,
+        reviews: true,
+        // Todo: add other relations
+      },
+    });
 
-    const [repeatTimerEntities] = await Promise.all([repeatTimerUiPromises]);
+    const [repeatTimerEntities, carouselEntities] = await Promise.all([
+      repeatTimerUiPromises,
+      carouselUiPromises,
+    ]);
     const repeatTimerUiComponents: IUiRepeatTimerComponent[] =
       repeatTimerEntities.map((ui) => ({
         ...ui.uiComponent,
-        category: 'repeat-timer',
+        category: UI_CATEGORY.REPEAT_TIMER,
+        ui: {
+          ...ui,
+        },
+      }));
+
+    const carouselUiComponents: IUiCarouselComponent<UiCarouselType>[] =
+      carouselEntities.map((ui) => ({
+        ...ui.uiComponent,
+        category: UI_CATEGORY.CAROUSEL,
         ui: {
           ...ui,
         },
@@ -75,7 +103,7 @@ export class UiComponentQueryRepository {
       'repeat-timer': repeatTimerUiComponents,
       banner: [],
       'marketing-banner': [],
-      carousel: [],
+      carousel: carouselUiComponents,
     };
   }
 }

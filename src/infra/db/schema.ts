@@ -6,6 +6,7 @@ import {
   uuid,
   integer,
   pgEnum,
+  real,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -234,8 +235,36 @@ export const uiRepeatTimers = pgTable('ui_repeat_timers', {
   buttonHref: text('button_href'),
 });
 
+export const uiCarouselType = pgEnum('ui_carousel_type', [
+  'carousel.main-banner',
+  'carousel.review',
+  'carousel.product',
+]);
+
+export const uiCarousels = pgTable('ui_carousels', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  uiComponentId: uuid('ui_component_id')
+    .notNull()
+    .references(() => uiComponents.id, { onDelete: 'cascade' }),
+  carouselType: uiCarouselType('carousel_type').notNull(),
+  title: text('title').notNull(),
+  description: text('description'),
+});
+
+export const uiCarouselReviews = pgTable('ui_carousel_reviews', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  uiCarouselId: uuid('ui_carousel_id')
+    .notNull()
+    .references(() => uiCarousels.id, { onDelete: 'cascade' }),
+  sequence: integer('sequence').notNull(),
+  title: text('title').notNull(),
+  content: text('content').notNull(),
+  rating: real('rating').notNull(), // 4bytes float
+});
+
 export const uiComponentsRelations = relations(uiComponents, ({ many }) => ({
   repeatTimers: many(uiRepeatTimers),
+  carousels: many(uiCarousels),
 }));
 
 export const uiRepeatTimersRelations = relations(uiRepeatTimers, ({ one }) => ({
@@ -244,6 +273,24 @@ export const uiRepeatTimersRelations = relations(uiRepeatTimers, ({ one }) => ({
     references: [uiComponents.id],
   }),
 }));
+
+export const uiCarouselsRelations = relations(uiCarousels, ({ one, many }) => ({
+  uiComponent: one(uiComponents, {
+    fields: [uiCarousels.uiComponentId],
+    references: [uiComponents.id],
+  }),
+  reviews: many(uiCarouselReviews),
+}));
+
+export const uiCarouselReviewsRelations = relations(
+  uiCarouselReviews,
+  ({ one }) => ({
+    carousel: one(uiCarousels, {
+      fields: [uiCarouselReviews.uiCarouselId],
+      references: [uiCarousels.id],
+    }),
+  }),
+);
 
 export const dbSchema = {
   // 사용자 (일반 사용자, 관리자(매니저), 최고 관리자)
@@ -276,11 +323,16 @@ export const dbSchema = {
   courseDiscountsRelations,
 
   // UI 빌더
-  // uiCategories,
-  // uiCategoriesRelations,
   uiCategory,
   uiComponents,
   uiComponentsRelations,
+  // 무한 타이머
   uiRepeatTimers,
   uiRepeatTimersRelations,
+  // 캐러셀
+  uiCarousels,
+  uiCarouselsRelations,
+  // 캐러셀 리뷰
+  uiCarouselReviews,
+  uiCarouselReviewsRelations,
 };
