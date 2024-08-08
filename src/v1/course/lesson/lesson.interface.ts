@@ -1,11 +1,11 @@
-import { Uuid } from '../../../shared/types/primitive';
+import { UInt, Uuid } from '../../../shared/types/primitive';
 
 export type ILesson = {
   id: Uuid;
   chapterId: Uuid;
   title: string;
   description: string | null;
-  sequence: number;
+  sequence: UInt;
 };
 
 export type ILessonCreate = Pick<
