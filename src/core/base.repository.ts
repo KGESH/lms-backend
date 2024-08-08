@@ -8,7 +8,7 @@ export type IRepository<T> = {
 
   findMany(pagination: IPagination): Promise<T[]>;
 
-  create(params: Partial<T>, db: TransactionClient): Promise<T>;
+  create(params: unknown, db: TransactionClient): Promise<T>;
 
   update(
     where: Partial<T>,
