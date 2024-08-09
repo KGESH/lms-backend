@@ -9,6 +9,7 @@ import {
   DEFAULT_ORDER_BY,
   DEFAULT_PAGE_SIZE,
 } from '../../core/pagination.constant';
+import { hash } from '../../shared/helpers/hash';
 
 @Injectable()
 export class UserRepository {
@@ -74,7 +75,10 @@ export class UserRepository {
   async create(params: IUserCreate): Promise<IUser> {
     const [user] = await this.drizzle.db
       .insert(dbSchema.users)
-      .values(params)
+      .values({
+        ...params,
+        password: params.password ? await hash(params.password) : null,
+      })
       .returning();
     return user;
   }

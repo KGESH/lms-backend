@@ -18,6 +18,7 @@ import { ConfigsService } from '../../configs/configs.service';
 import { ACCESS_TOKEN_EXP_TIME, REFRESH_TOKEN_EXP_TIME } from './auth.constant';
 import * as typia from 'typia';
 import { IUserWithoutPassword } from '../user/user.interface';
+import { compareHash } from '../../shared/helpers/hash';
 
 @Injectable()
 export class AuthService {
@@ -37,7 +38,16 @@ export class AuthService {
   }> {
     const user = await this.userService.findUserByEmail(params);
 
-    if (!user) {
+    if (!user?.password || !params.password) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isCorrectPassword = await compareHash({
+      rawValue: params.password,
+      hash: user.password,
+    });
+
+    if (!isCorrectPassword) {
       throw new NotFoundException('User not found');
     }
 

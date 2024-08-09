@@ -20,6 +20,8 @@ export class AuthController {
 
   @TypedRoute.Post('/login')
   async login(@TypedBody() body: LoginUserDto): Promise<UserWithTokensDto> {
+    this.logger.log('Login request received', body);
+
     const { user, tokens } = await this.authService.login(body);
     return {
       ...user,
@@ -29,6 +31,7 @@ export class AuthController {
 
   @TypedRoute.Post('/signup')
   async signup(@TypedBody() body: SignupUserDto): Promise<OmitPassword<IUser>> {
+    this.logger.log('Signup request received', body);
     const user = await this.authService.signupUser(body);
     return user;
   }

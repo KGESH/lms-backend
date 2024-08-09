@@ -27,11 +27,9 @@ export class UserService {
     return typia.misc.clone<IUserWithoutPassword>(user);
   }
 
-  async findUserByEmail(
-    query: Pick<IUser, 'email'>,
-  ): Promise<IUserWithoutPassword | null> {
+  async findUserByEmail(query: Pick<IUser, 'email'>): Promise<IUser | null> {
     const user = await this.userRepository.findUserByEmail(query);
-    return user ? typia.misc.clone<IUserWithoutPassword>(user) : null;
+    return user;
   }
 
   async createUser(params: IUserCreate): Promise<IUserWithoutPassword> {
