@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import * as UserApis from '../../../src/api/functional/v1/user';
+import * as UserAPI from '../../../src/api/functional/v1/user';
 import * as typia from 'typia';
 import { Uri, Uuid } from '../../../src/shared/types/primitive';
 import { createTestingServer } from '../helpers/app.helper';
@@ -22,7 +22,7 @@ describe('UserController (e2e)', () => {
   describe('[GET User]', () => {
     it('should be get null', async () => {
       const randomId = typia.random<Uuid>();
-      const response = await UserApis.getUser({ host }, randomId);
+      const response = await UserAPI.getUser({ host }, randomId);
       if (!response.success) {
         throw new Error('assert');
       }
@@ -33,7 +33,7 @@ describe('UserController (e2e)', () => {
 
   describe('[Get Users]', () => {
     it('should be get empty array', async () => {
-      const response = await UserApis.getUsers(
+      const response = await UserAPI.getUsers(
         { host },
         {
           cursor: null,

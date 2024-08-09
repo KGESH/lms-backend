@@ -2,13 +2,12 @@ import { INestApplication } from '@nestjs/common';
 import * as typia from 'typia';
 import { createTestingServer } from '../helpers/app.helper';
 import { Uri } from '../../../src/shared/types/primitive';
-import * as RepeatTimerAPI from '../../../src/api/functional/v1/ui/component/repeat_timer';
-import * as UiComponentAPI from '../../../src/api/functional/v1/ui/component';
-
 import {
   CreateUiRepeatTimerDto,
   UpdateUiRepeatTimerDto,
 } from '../../../src/v1/ui/component/repeat-timer/ui-repeat-timer.dto';
+import * as RepeatTimerAPI from '../../../src/api/functional/v1/ui/component/repeat_timer';
+import * as UiComponentAPI from '../../../src/api/functional/v1/ui/component';
 
 describe('UiRepeatTimerController (e2e)', () => {
   let host: Uri;

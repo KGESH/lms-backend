@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import * as AuthApis from '../../../src/api/functional/v1/auth';
+import * as AuthAPI from '../../../src/api/functional/v1/auth';
 import * as typia from 'typia';
 import {
   IAuthTokens,
@@ -29,7 +29,7 @@ describe('AuthController (e2e)', () => {
   describe('[Signup]', () => {
     it('should be signup success', async () => {
       const signupDto = typia.random<IUserSignup>();
-      const response = await AuthApis.signup({ host }, signupDto);
+      const response = await AuthAPI.signup({ host }, signupDto);
       if (!response.success) {
         throw new Error('assert');
       }
@@ -43,7 +43,7 @@ describe('AuthController (e2e)', () => {
     it('should be login success', async () => {
       const signupDto: IUserSignup = typia.random<IUserSignup>();
       const loginDto: IUserLogin = { ...signupDto };
-      const signupResponse = await AuthApis.signup({ host }, signupDto);
+      const signupResponse = await AuthAPI.signup({ host }, signupDto);
       if (!signupResponse.success) {
         throw new Error('assert');
       }
@@ -51,7 +51,7 @@ describe('AuthController (e2e)', () => {
       const createdUser = signupResponse.data;
       expect(createdUser.email).toEqual(signupDto.email);
 
-      const loginResponse = await AuthApis.login({ host }, loginDto);
+      const loginResponse = await AuthAPI.login({ host }, loginDto);
       if (!loginResponse.success) {
         throw new Error('assert');
       }
@@ -66,7 +66,7 @@ describe('AuthController (e2e)', () => {
     it('should be verify access token success', async () => {
       const signupDto: IUserSignup = typia.random<IUserSignup>();
       const loginDto: IUserLogin = { ...signupDto };
-      const signupResponse = await AuthApis.signup({ host }, signupDto);
+      const signupResponse = await AuthAPI.signup({ host }, signupDto);
       if (!signupResponse.success) {
         throw new Error('assert');
       }
@@ -74,7 +74,7 @@ describe('AuthController (e2e)', () => {
       const createdUser = signupResponse.data;
       expect(createdUser.email).toEqual(signupDto.email);
 
-      const loginResponse = await AuthApis.login({ host }, loginDto);
+      const loginResponse = await AuthAPI.login({ host }, loginDto);
       if (!loginResponse.success) {
         throw new Error('assert');
       }
@@ -86,7 +86,7 @@ describe('AuthController (e2e)', () => {
       const verifyTokenDto: VerifyTokenDto = {
         accessToken: tokens.accessToken,
       };
-      const jwtVerifyResponse = await AuthApis.verify.verifyAccessToken(
+      const jwtVerifyResponse = await AuthAPI.verify.verifyAccessToken(
         { host },
         verifyTokenDto,
       );
@@ -103,7 +103,7 @@ describe('AuthController (e2e)', () => {
     it('should be refresh access token success', async () => {
       const signupDto: IUserSignup = typia.random<IUserSignup>();
       const loginDto: IUserLogin = { ...signupDto };
-      const signupResponse = await AuthApis.signup({ host }, signupDto);
+      const signupResponse = await AuthAPI.signup({ host }, signupDto);
       if (!signupResponse.success) {
         throw new Error('assert');
       }
@@ -111,7 +111,7 @@ describe('AuthController (e2e)', () => {
       const createdUser = signupResponse.data;
       expect(createdUser.email).toEqual(signupDto.email);
 
-      const loginResponse = await AuthApis.login({ host }, loginDto);
+      const loginResponse = await AuthAPI.login({ host }, loginDto);
       if (!loginResponse.success) {
         throw new Error('assert');
       }
@@ -123,7 +123,7 @@ describe('AuthController (e2e)', () => {
       const verifyTokenDto: VerifyTokenDto = {
         accessToken: tokens.accessToken,
       };
-      const jwtVerifyResponse = await AuthApis.verify.verifyAccessToken(
+      const jwtVerifyResponse = await AuthAPI.verify.verifyAccessToken(
         { host },
         verifyTokenDto,
       );
@@ -137,7 +137,7 @@ describe('AuthController (e2e)', () => {
       const refreshTokenDto: RefreshTokenDto = {
         refreshToken: tokens.refreshToken,
       };
-      const refreshResponse = await AuthApis.refresh_token.refreshToken(
+      const refreshResponse = await AuthAPI.refresh_token.refreshToken(
         { host },
         refreshTokenDto,
       );

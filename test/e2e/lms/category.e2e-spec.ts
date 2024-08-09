@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import * as CategoryApis from '../../../src/api/functional/v1/category';
+import * as CategoryAPI from '../../../src/api/functional/v1/category';
 import * as typia from 'typia';
 import { createTestingServer } from '../helpers/app.helper';
 import { Uri, Uuid } from '../../../src/shared/types/primitive';
@@ -27,7 +27,7 @@ describe('CategoryController (e2e)', () => {
 
   describe('[Get categories]', () => {
     it('should be get all categories', async () => {
-      const response = await CategoryApis.getAllCategories({
+      const response = await CategoryAPI.getAllCategories({
         host,
       });
       if (!response.success) {
@@ -43,7 +43,7 @@ describe('CategoryController (e2e)', () => {
   describe('[Create category]', () => {
     it('should be create category success', async () => {
       const createCategoryDto = typia.random<CreateCategoryDto>();
-      const response = await CategoryApis.createCategory(
+      const response = await CategoryAPI.createCategory(
         { host },
         createCategoryDto,
       );
@@ -59,7 +59,7 @@ describe('CategoryController (e2e)', () => {
   describe('Update category', () => {
     it('should be update category success', async () => {
       const createCategoryDto = typia.random<CreateCategoryDto>();
-      const createResponse = await CategoryApis.createCategory(
+      const createResponse = await CategoryAPI.createCategory(
         { host },
         createCategoryDto,
       );
@@ -73,7 +73,7 @@ describe('CategoryController (e2e)', () => {
         name: `Updated ${createCategoryDto.name}`,
       };
 
-      const updateResponse = await CategoryApis.updateCategory(
+      const updateResponse = await CategoryAPI.updateCategory(
         { host },
         category.id,
         updateCategoryDto,
@@ -92,7 +92,7 @@ describe('CategoryController (e2e)', () => {
       const updateCategoryDto = typia.random<UpdateCategoryDto>();
 
       try {
-        await CategoryApis.updateCategory(
+        await CategoryAPI.updateCategory(
           { host },
           notFoundId,
           updateCategoryDto,
@@ -109,7 +109,7 @@ describe('CategoryController (e2e)', () => {
   describe('Delete category', () => {
     it('should be delete category success', async () => {
       const createCategoryDto = typia.random<CreateCategoryDto>();
-      const createResponse = await CategoryApis.createCategory(
+      const createResponse = await CategoryAPI.createCategory(
         { host },
         createCategoryDto,
       );
@@ -118,7 +118,7 @@ describe('CategoryController (e2e)', () => {
       }
 
       const category = createResponse.data;
-      const deleteResponse = await CategoryApis.deleteCategory(
+      const deleteResponse = await CategoryAPI.deleteCategory(
         { host },
         category.id,
       );
@@ -129,7 +129,7 @@ describe('CategoryController (e2e)', () => {
       const deletedCategory = deleteResponse.data;
       expect(deletedCategory.id).toEqual(category.id);
 
-      const getResponse = await CategoryApis.getCategory({ host }, category.id);
+      const getResponse = await CategoryAPI.getCategory({ host }, category.id);
       if (!getResponse.success) {
         throw new Error('assert');
       }
