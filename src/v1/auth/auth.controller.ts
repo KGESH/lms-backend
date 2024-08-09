@@ -22,8 +22,8 @@ export class AuthController {
   async login(@TypedBody() body: LoginUserDto): Promise<UserWithTokensDto> {
     const { user, tokens } = await this.authService.login(body);
     return {
-      user,
-      tokens,
+      ...user,
+      ...tokens,
     };
   }
 

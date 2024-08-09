@@ -12,7 +12,6 @@ export type RefreshTokenDto = {
   refreshToken: string;
 };
 
-export type UserWithTokensDto = {
-  user: UserWithoutPasswordDto;
-  tokens: AccessTokenDto & RefreshTokenDto;
-};
+export type UserWithTokensDto = UserWithoutPasswordDto &
+  AccessTokenDto &
+  RefreshTokenDto;
