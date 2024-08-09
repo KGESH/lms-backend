@@ -9,7 +9,7 @@ import {
 import { createTestingServer } from '../helpers/app.helper';
 import type {
   RefreshTokenDto,
-  VerifyTokenDto,
+  AccessTokenDto,
 } from '../../../src/v1/auth/auth.dto';
 import { Uri } from '../../../src/shared/types/primitive';
 import { DrizzleService } from '../../../src/infra/db/drizzle.service';
@@ -45,14 +45,6 @@ describe('AuthController (e2e)', () => {
 
   describe('[Login]', () => {
     it('should be login success', async () => {
-      // const signupResponse = await AuthAPI.signup({ host }, signupDto);
-      // if (!signupResponse.success) {
-      //   throw new Error('assert');
-      // }
-      //
-      // const createdUser = signupResponse.data;
-      // expect(createdUser.email).toEqual(signupDto.email);
-
       const signupDto: IUserSignup = typia.random<IUserSignup>();
       const loginDto: IUserLogin = { ...signupDto };
       await UserHelper.createUser(signupDto, drizzle);
@@ -62,8 +54,9 @@ describe('AuthController (e2e)', () => {
         throw new Error('assert');
       }
 
-      const tokens = loginResponse.data;
+      const { user, tokens } = loginResponse.data;
       const isAuthTokens = typia.is<IAuthTokens>(tokens);
+      expect(user.email).toEqual(loginDto.email);
       expect(isAuthTokens).toEqual(true);
     });
 
@@ -74,29 +67,24 @@ describe('AuthController (e2e)', () => {
     it('should be verify access token success', async () => {
       const signupDto: IUserSignup = typia.random<IUserSignup>();
       const loginDto: IUserLogin = { ...signupDto };
-      // const signupResponse = await AuthAPI.signup({ host }, signupDto);
-      // if (!signupResponse.success) {
-      //   throw new Error('assert');
-      // }
-
-      // const createdUser = signupResponse.data;
-      // expect(createdUser.email).toEqual(signupDto.email);
       await UserHelper.createUser(signupDto, drizzle);
+
       const loginResponse = await AuthAPI.login({ host }, loginDto);
       if (!loginResponse.success) {
         throw new Error('assert');
       }
 
-      const tokens = loginResponse.data;
+      const { user, tokens } = loginResponse.data;
       const isAuthTokens = typia.is<IAuthTokens>(tokens);
+      expect(user.email).toEqual(loginDto.email);
       expect(isAuthTokens).toEqual(true);
 
-      const verifyTokenDto: VerifyTokenDto = {
+      const accessTokenDto: AccessTokenDto = {
         accessToken: tokens.accessToken,
       };
       const jwtVerifyResponse = await AuthAPI.verify.verifyAccessToken(
         { host },
-        verifyTokenDto,
+        accessTokenDto,
       );
       if (!jwtVerifyResponse.success) {
         throw new Error('assert');
@@ -124,16 +112,17 @@ describe('AuthController (e2e)', () => {
         throw new Error('assert');
       }
 
-      const tokens = loginResponse.data;
+      const { user, tokens } = loginResponse.data;
       const isAuthTokens = typia.is<IAuthTokens>(tokens);
+      expect(user.email).toEqual(loginDto.email);
       expect(isAuthTokens).toBe(true);
 
-      const verifyTokenDto: VerifyTokenDto = {
+      const accessTokenDto: AccessTokenDto = {
         accessToken: tokens.accessToken,
       };
       const jwtVerifyResponse = await AuthAPI.verify.verifyAccessToken(
         { host },
-        verifyTokenDto,
+        accessTokenDto,
       );
       if (!jwtVerifyResponse.success) {
         throw new Error('assert');
