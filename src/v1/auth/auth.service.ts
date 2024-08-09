@@ -17,8 +17,7 @@ import { signJwt, verifyJwt } from '../../shared/utils/jwt';
 import { ConfigsService } from '../../configs/configs.service';
 import { ACCESS_TOKEN_EXP_TIME, REFRESH_TOKEN_EXP_TIME } from './auth.constant';
 import * as typia from 'typia';
-import { OmitPassword } from '../../shared/types/omit-password';
-import { IUser } from '../user/user.interface';
+import { IUserWithoutPassword } from '../user/user.interface';
 
 @Injectable()
 export class AuthService {
@@ -32,7 +31,10 @@ export class AuthService {
     this.jwtSecret = this.configsService.env.JWT_SECRET;
   }
 
-  async login(params: IUserLogin): Promise<IAuthTokens> {
+  async login(params: IUserLogin): Promise<{
+    user: IUserWithoutPassword;
+    tokens: IAuthTokens;
+  }> {
     const user = await this.userService.findUserByEmail(params);
 
     if (!user) {
@@ -60,13 +62,18 @@ export class AuthService {
       expirationTime: REFRESH_TOKEN_EXP_TIME,
     });
 
-    return {
+    const tokens: IAuthTokens = {
       accessToken,
       refreshToken,
     };
+
+    return {
+      user,
+      tokens,
+    };
   }
 
-  async signupUser(params: IUserSignup): Promise<OmitPassword<IUser>> {
+  async signupUser(params: IUserSignup): Promise<IUserWithoutPassword> {
     const exist = await this.userService.findUserByEmail({
       email: params.email,
     });

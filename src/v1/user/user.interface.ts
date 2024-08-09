@@ -5,7 +5,9 @@ export type IUser = {
   id: Uuid;
   displayName: string;
   email: EMail;
+  emailVerified: string | null;
   password: string | null;
+  image: string | null;
 };
 
 export type IUserWithoutPassword = OmitPassword<IUser>;
