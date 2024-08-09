@@ -3,9 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Pool } from 'pg';
 import { dbSchema } from './src/infra/db/schema';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import * as path from 'path';
 import { sql } from 'drizzle-orm';
-import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { IS_PRODUCTION } from './src/shared/utils/is-production';
 import { seedUiRepeatTimer } from './test/e2e/helpers/db/ui/repeat-timer.helper';
 import { seedCarouselReview } from './test/e2e/helpers/db/ui/carousel-review.helper';
@@ -26,9 +24,6 @@ async function seed() {
 
   const pool = new Pool({ connectionString });
   const db = drizzle(pool, { schema: dbSchema });
-  // const migrationPath = path.join(process.cwd(), 'drizzle');
-
-  // await migrate(db, { migrationsFolder: migrationPath });
   const confirmDatabaseReady = await db.execute(sql`SELECT 1`);
 
   console.debug(`[Test container ready]`, confirmDatabaseReady.rowCount);
