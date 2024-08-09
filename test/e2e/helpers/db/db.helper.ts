@@ -1,9 +1,9 @@
 import { PostgreSqlContainer } from '@testcontainers/postgresql';
 import * as path from 'path';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
-import { IS_PRODUCTION } from '../../../src/shared/utils/is-production';
+import { IS_PRODUCTION } from '../../../../src/shared/utils/is-production';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { dbSchema } from '../../../src/infra/db/schema';
+import { dbSchema } from '../../../../src/infra/db/schema';
 import { Pool } from 'pg';
 import { sql } from 'drizzle-orm';
 

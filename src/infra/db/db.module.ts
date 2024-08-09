@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { DrizzleModule } from './drizzle.module';
 import { ConfigsService } from '../../configs/configs.service';
-import { createTestDbContainer } from '../../../test/e2e/helpers/db.helper';
+import { createTestDbContainer } from '../../../test/e2e/helpers/db/db.helper';
 import { NODE_ENV_TEST } from '../../configs/configs.constant';
 
 @Global()

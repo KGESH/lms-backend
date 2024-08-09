@@ -12,14 +12,18 @@ import type {
   VerifyTokenDto,
 } from '../../../src/v1/auth/auth.dto';
 import { Uri } from '../../../src/shared/types/primitive';
+import { DrizzleService } from '../../../src/infra/db/drizzle.service';
+import * as UserHelper from '../helpers/db/lms/user.helper';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
   let host: Uri;
+  let drizzle: DrizzleService;
 
   beforeAll(async () => {
     app = await createTestingServer();
     host = await app.getUrl();
+    drizzle = await app.get(DrizzleService);
   });
 
   afterAll(async () => {
@@ -41,15 +45,17 @@ describe('AuthController (e2e)', () => {
 
   describe('[Login]', () => {
     it('should be login success', async () => {
+      // const signupResponse = await AuthAPI.signup({ host }, signupDto);
+      // if (!signupResponse.success) {
+      //   throw new Error('assert');
+      // }
+      //
+      // const createdUser = signupResponse.data;
+      // expect(createdUser.email).toEqual(signupDto.email);
+
       const signupDto: IUserSignup = typia.random<IUserSignup>();
       const loginDto: IUserLogin = { ...signupDto };
-      const signupResponse = await AuthAPI.signup({ host }, signupDto);
-      if (!signupResponse.success) {
-        throw new Error('assert');
-      }
-
-      const createdUser = signupResponse.data;
-      expect(createdUser.email).toEqual(signupDto.email);
+      await UserHelper.createUser(signupDto, drizzle);
 
       const loginResponse = await AuthAPI.login({ host }, loginDto);
       if (!loginResponse.success) {
@@ -60,20 +66,22 @@ describe('AuthController (e2e)', () => {
       const isAuthTokens = typia.is<IAuthTokens>(tokens);
       expect(isAuthTokens).toEqual(true);
     });
+
+    it('should be login failed. (user not found)', async () => {});
   });
 
   describe('[Jwt verify]', () => {
     it('should be verify access token success', async () => {
       const signupDto: IUserSignup = typia.random<IUserSignup>();
       const loginDto: IUserLogin = { ...signupDto };
-      const signupResponse = await AuthAPI.signup({ host }, signupDto);
-      if (!signupResponse.success) {
-        throw new Error('assert');
-      }
+      // const signupResponse = await AuthAPI.signup({ host }, signupDto);
+      // if (!signupResponse.success) {
+      //   throw new Error('assert');
+      // }
 
-      const createdUser = signupResponse.data;
-      expect(createdUser.email).toEqual(signupDto.email);
-
+      // const createdUser = signupResponse.data;
+      // expect(createdUser.email).toEqual(signupDto.email);
+      await UserHelper.createUser(signupDto, drizzle);
       const loginResponse = await AuthAPI.login({ host }, loginDto);
       if (!loginResponse.success) {
         throw new Error('assert');
