@@ -54,9 +54,13 @@ describe('AuthController (e2e)', () => {
         throw new Error('assert');
       }
 
-      const { user, tokens } = loginResponse.data;
-      const isAuthTokens = typia.is<IAuthTokens>(tokens);
-      expect(user.email).toEqual(loginDto.email);
+      const userWIthTokens = loginResponse.data;
+      const isAuthTokens = typia.is<IAuthTokens>({
+        accessToken: userWIthTokens.accessToken,
+        refreshToken: userWIthTokens.refreshToken,
+      } satisfies IAuthTokens);
+
+      expect(userWIthTokens.email).toEqual(loginDto.email);
       expect(isAuthTokens).toEqual(true);
     });
 
@@ -74,13 +78,17 @@ describe('AuthController (e2e)', () => {
         throw new Error('assert');
       }
 
-      const { user, tokens } = loginResponse.data;
-      const isAuthTokens = typia.is<IAuthTokens>(tokens);
-      expect(user.email).toEqual(loginDto.email);
+      const userWIthTokens = loginResponse.data;
+      const isAuthTokens = typia.is<IAuthTokens>({
+        accessToken: userWIthTokens.accessToken,
+        refreshToken: userWIthTokens.refreshToken,
+      } satisfies IAuthTokens);
+
+      expect(userWIthTokens.email).toEqual(loginDto.email);
       expect(isAuthTokens).toEqual(true);
 
       const accessTokenDto: AccessTokenDto = {
-        accessToken: tokens.accessToken,
+        accessToken: userWIthTokens.accessToken,
       };
       const jwtVerifyResponse = await AuthAPI.verify.verifyAccessToken(
         { host },
@@ -112,13 +120,17 @@ describe('AuthController (e2e)', () => {
         throw new Error('assert');
       }
 
-      const { user, tokens } = loginResponse.data;
-      const isAuthTokens = typia.is<IAuthTokens>(tokens);
-      expect(user.email).toEqual(loginDto.email);
+      const userWIthTokens = loginResponse.data;
+      const isAuthTokens = typia.is<IAuthTokens>({
+        accessToken: userWIthTokens.accessToken,
+        refreshToken: userWIthTokens.refreshToken,
+      } satisfies IAuthTokens);
+
+      expect(userWIthTokens.email).toEqual(loginDto.email);
       expect(isAuthTokens).toBe(true);
 
       const accessTokenDto: AccessTokenDto = {
-        accessToken: tokens.accessToken,
+        accessToken: userWIthTokens.accessToken,
       };
       const jwtVerifyResponse = await AuthAPI.verify.verifyAccessToken(
         { host },
@@ -132,7 +144,7 @@ describe('AuthController (e2e)', () => {
       expect(payload.email).toEqual(loginDto.email);
 
       const refreshTokenDto: RefreshTokenDto = {
-        refreshToken: tokens.refreshToken,
+        refreshToken: userWIthTokens.refreshToken,
       };
       const refreshResponse = await AuthAPI.refresh_token.refreshToken(
         { host },
