@@ -7,6 +7,7 @@ import {
   integer,
   pgEnum,
   real,
+  timestamp,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -17,6 +18,17 @@ export const users = pgTable('users', {
   password: text('password'),
   emailVerified: date('emailVerified'),
   image: text('image'),
+});
+
+export const userSessions = pgTable('user_sessions', {
+  id: text('id').primaryKey(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id),
+  expiresAt: timestamp('expires_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull(),
 });
 
 export const userAccounts = pgTable('user_accounts', {
@@ -115,6 +127,7 @@ export const courseDiscounts = pgTable('course_discounts', {
 });
 
 export const usersRelations = relations(users, ({ one, many }) => ({
+  session: one(userSessions),
   info: one(userInfos),
   accounts: many(userAccounts),
 }));
@@ -297,6 +310,7 @@ export const uiCarouselReviewsRelations = relations(
 export const dbSchema = {
   // 사용자 (일반 사용자, 관리자(매니저), 최고 관리자)
   users,
+  userSessions,
   userAccounts,
   userInfos,
   usersRelations,
