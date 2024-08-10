@@ -91,5 +91,5 @@
     ],
     "strictNullChecks": true
   },
-  "include": ["../../src/api", "../../src/infra/db/schema.ts"]
+  "include": ["../../src/api", "../../src/shared/types/lucia-auth.ts"]
 }

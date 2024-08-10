@@ -5,7 +5,7 @@ import 'dotenv/config';
 const env = new ConfigService();
 
 export default defineConfig({
-  schema: './src/infra/db/schema.ts',
+  schema: './src/infra/db/schema',
   out: './drizzle',
   dialect: 'postgresql',
   dbCredentials: {

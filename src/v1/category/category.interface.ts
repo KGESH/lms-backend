@@ -9,5 +9,5 @@ export type ICategory = {
 
 export type ICategoryWithRelations = ICategory & {
   parent: ICategoryWithRelations | null;
-  children: ICategoryWithRelations[];
+  children: Array<ICategoryWithRelations>;
 };
