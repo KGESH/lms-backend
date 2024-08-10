@@ -352,3 +352,9 @@ export const dbSchema = {
   uiCarouselReviews,
   uiCarouselReviewsRelations,
 };
+
+export type UserSchema = typeof users;
+
+export type UserSessionSchema = typeof userSessions;
+
+export type DbSchema = typeof dbSchema;
