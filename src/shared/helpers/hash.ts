@@ -1,9 +1,7 @@
-import * as bcrypt from 'bcryptjs';
-
-const SALT_ROUNDS = 10;
+import * as Argon2 from '@node-rs/argon2';
 
 export const hash = async (rawValue: string): Promise<string> => {
-  return bcrypt.hash(rawValue, SALT_ROUNDS);
+  return await Argon2.hash(rawValue);
 };
 
 type CompareHashFn = (params: {
@@ -11,5 +9,5 @@ type CompareHashFn = (params: {
   hash: string;
 }) => Promise<boolean>;
 export const compareHash: CompareHashFn = async ({ rawValue, hash }) => {
-  return bcrypt.compare(rawValue, hash);
+  return await Argon2.verify(hash, rawValue);
 };
