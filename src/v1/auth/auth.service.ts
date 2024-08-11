@@ -45,7 +45,7 @@ export class AuthService {
     });
 
     if (!isCorrectPassword) {
-      throw new NotFoundException('User password not matched');
+      throw new NotFoundException('User not found');
     }
 
     return typia.misc.clone<IUserWithoutPassword>(user);
