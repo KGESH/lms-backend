@@ -98,9 +98,9 @@ describe('CategoryController (e2e)', () => {
           updateCategoryDto,
         );
       } catch (e) {
-        const notFoundErrorResponse = convertException<IErrorResponse>(
-          e as HttpError,
-        );
+        const httpError = e as HttpError;
+        const notFoundErrorResponse =
+          convertException<IErrorResponse<typeof httpError.status>>(httpError);
         expect(notFoundErrorResponse.statusCode).toEqual(777);
       }
     });

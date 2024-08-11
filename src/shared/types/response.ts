@@ -2,8 +2,8 @@ export type IResponse<T> = {
   data: T;
 };
 
-export type IErrorResponse = {
-  statusCode: number;
+export type IErrorResponse<S extends number> = {
+  statusCode: S;
   message: string;
   timestamp: string;
   path: string;

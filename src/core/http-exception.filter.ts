@@ -31,6 +31,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
       message,
       timestamp,
       statusCode,
-    } satisfies IErrorResponse);
+    } satisfies IErrorResponse<typeof statusCode>);
   }
 }

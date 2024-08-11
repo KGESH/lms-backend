@@ -1,6 +1,6 @@
 import { Controller, Logger } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { TypedBody, TypedRoute } from '@nestia/core';
+import { TypedBody, TypedException, TypedRoute } from '@nestia/core';
 import {
   LoginUserDto,
   RefreshTokenDto,
@@ -11,6 +11,8 @@ import { IAccessTokenPayload, IAuthTokens } from './auth.interface';
 import { KakaoLoginDto } from './kakao-auth.dto';
 import { KakaoAuthService } from './kakao-auth.service';
 import { UserWithoutPasswordDto } from '../user/user.dto';
+import { TypeGuardError } from 'typia';
+import { IErrorResponse } from '../../shared/types/response';
 
 @Controller('v1/auth')
 export class AuthController {
@@ -31,6 +33,8 @@ export class AuthController {
     return user;
   }
 
+  @TypedException<TypeGuardError>(400, 'invalid request')
+  @TypedException<IErrorResponse<404>>(404, 'user not found')
   @TypedRoute.Post('/login')
   async login(
     @TypedBody() body: LoginUserDto,
@@ -41,6 +45,8 @@ export class AuthController {
     return user;
   }
 
+  @TypedException<TypeGuardError>(400, 'invalid request')
+  @TypedException<IErrorResponse<409>>(409, 'user already exists')
   @TypedRoute.Post('/signup')
   async signup(
     @TypedBody() body: SignupUserDto,
