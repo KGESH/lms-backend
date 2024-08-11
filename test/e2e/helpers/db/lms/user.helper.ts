@@ -2,6 +2,7 @@ import { DrizzleService } from '../../../../../src/infra/db/drizzle.service';
 import { dbSchema } from '../../../../../src/infra/db/schema';
 import { IUser, IUserCreate } from '../../../../../src/v1/user/user.interface';
 import { eq } from 'drizzle-orm';
+import { hash } from '../../../../../src/shared/helpers/hash';
 
 export const findUser = async (
   where: Pick<IUser, 'id'>,
@@ -23,7 +24,10 @@ export const createUser = async (
 ): Promise<IUser> => {
   const [user] = await drizzle.db
     .insert(dbSchema.users)
-    .values(params)
+    .values({
+      ...params,
+      password: params.password ? await hash(params.password) : null,
+    })
     .returning();
   return user;
 };
