@@ -15,7 +15,7 @@ import {
 } from './auth.interface';
 import { signJwt, verifyJwt } from '../../shared/utils/jwt';
 import { ConfigsService } from '../../configs/configs.service';
-import { ACCESS_TOKEN_EXP_TIME, REFRESH_TOKEN_EXP_TIME } from './auth.constant';
+import { ACCESS_TOKEN_EXP_TIME } from './auth.constant';
 import * as typia from 'typia';
 import { IUserWithoutPassword } from '../user/user.interface';
 import { compareHash } from '../../shared/helpers/hash';
@@ -32,10 +32,7 @@ export class AuthService {
     this.jwtSecret = this.configsService.env.JWT_SECRET;
   }
 
-  async login(params: IUserLogin): Promise<{
-    user: IUserWithoutPassword;
-    tokens: IAuthTokens;
-  }> {
+  async login(params: IUserLogin): Promise<IUserWithoutPassword> {
     const user = await this.userService.findUserByEmail(params);
 
     if (!user?.password || !params.password) {
@@ -48,39 +45,10 @@ export class AuthService {
     });
 
     if (!isCorrectPassword) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('User password not matched');
     }
 
-    const accessTokenPayload: IAccessTokenPayload = {
-      userId: user.id,
-      email: user.email,
-    };
-
-    const refreshTokenPayload: IRefreshTokenPayload = {
-      userId: user.id,
-    };
-
-    const accessToken = await signJwt({
-      payload: accessTokenPayload,
-      jwtSecret: this.jwtSecret,
-      expirationTime: ACCESS_TOKEN_EXP_TIME,
-    });
-
-    const refreshToken = await signJwt({
-      payload: refreshTokenPayload,
-      jwtSecret: this.jwtSecret,
-      expirationTime: REFRESH_TOKEN_EXP_TIME,
-    });
-
-    const tokens: IAuthTokens = {
-      accessToken,
-      refreshToken,
-    };
-
-    return {
-      user,
-      tokens,
-    };
+    return typia.misc.clone<IUserWithoutPassword>(user);
   }
 
   async signupUser(params: IUserSignup): Promise<IUserWithoutPassword> {

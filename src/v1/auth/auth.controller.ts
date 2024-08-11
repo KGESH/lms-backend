@@ -6,31 +6,45 @@ import {
   RefreshTokenDto,
   SignupUserDto,
   AccessTokenDto,
-  UserWithTokensDto,
 } from './auth.dto';
 import { IAccessTokenPayload, IAuthTokens } from './auth.interface';
-import { OmitPassword } from '../../shared/types/omit-password';
-import { IUser } from '../user/user.interface';
+import { KakaoLoginDto } from './kakao-auth.dto';
+import { KakaoAuthService } from './kakao-auth.service';
+import { UserWithoutPasswordDto } from '../user/user.dto';
 
 @Controller('v1/auth')
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly kakaoAuthService: KakaoAuthService,
+  ) {}
+
+  @TypedRoute.Post('/kakao/login')
+  async kakaoLogin(
+    @TypedBody() body: KakaoLoginDto,
+  ): Promise<UserWithoutPasswordDto> {
+    this.logger.log('Kakao login request received', body);
+
+    const user = await this.kakaoAuthService.login(body);
+    return user;
+  }
 
   @TypedRoute.Post('/login')
-  async login(@TypedBody() body: LoginUserDto): Promise<UserWithTokensDto> {
+  async login(
+    @TypedBody() body: LoginUserDto,
+  ): Promise<UserWithoutPasswordDto> {
     this.logger.log('Login request received', body);
 
-    const { user, tokens } = await this.authService.login(body);
-    return {
-      ...user,
-      ...tokens,
-    };
+    const user = await this.authService.login(body);
+    return user;
   }
 
   @TypedRoute.Post('/signup')
-  async signup(@TypedBody() body: SignupUserDto): Promise<OmitPassword<IUser>> {
+  async signup(
+    @TypedBody() body: SignupUserDto,
+  ): Promise<UserWithoutPasswordDto> {
     this.logger.log('Signup request received', body);
     const user = await this.authService.signupUser(body);
     return user;
