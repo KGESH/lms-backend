@@ -1,7 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import * as AuthAPI from '../../../src/api/functional/v1/auth';
 import * as typia from 'typia';
-import { IUserSignup } from '../../../src/v1/auth/auth.interface';
 import { createTestingServer } from '../helpers/app.helper';
 import { SignupUserDto, LoginUserDto } from '../../../src/v1/auth/auth.dto';
 import { Uri } from '../../../src/shared/types/primitive';
@@ -44,24 +43,40 @@ describe('AuthController (e2e)', () => {
 
   describe('[Signup]', () => {
     it('should be signup success', async () => {
-      const signupDto = typia.random<IUserSignup>();
+      const userCreateParams: SignupUserDto['userCreateParams'] = {
+        ...typia.random<SignupUserDto['userCreateParams']>(),
+        password: 'mock-password',
+      };
+      const infoCreateParams: SignupUserDto['infoCreateParams'] =
+        typia.random<SignupUserDto['infoCreateParams']>();
+      const signupDto: SignupUserDto = {
+        userCreateParams,
+        infoCreateParams,
+      };
+
       const response = await AuthAPI.signup({ host }, signupDto);
       if (!response.success) {
         throw new Error('assert');
       }
 
       const user = response.data;
-      expect(user.email).toEqual(signupDto.email);
+      expect(user.email).toEqual(signupDto.userCreateParams.email);
     });
   });
 
   describe('[Login]', () => {
     it('should be login success', async () => {
-      const signupDto: SignupUserDto = {
-        ...typia.random<SignupUserDto>(),
+      const userCreateParams: SignupUserDto['userCreateParams'] = {
+        ...typia.random<SignupUserDto['userCreateParams']>(),
         password: 'mock-password',
       };
-      const loginDto: LoginUserDto = { ...signupDto };
+      const infoCreateParams: SignupUserDto['infoCreateParams'] =
+        typia.random<SignupUserDto['infoCreateParams']>();
+      const signupDto: SignupUserDto = {
+        userCreateParams,
+        infoCreateParams,
+      };
+      const loginDto: LoginUserDto = { ...userCreateParams };
       await UserHelper.createUser(signupDto, drizzle);
 
       const loginResponse = await AuthAPI.login({ host }, loginDto);
@@ -70,7 +85,7 @@ describe('AuthController (e2e)', () => {
       }
 
       const user = loginResponse.data;
-      expect(user.email).toEqual(signupDto.email);
+      expect(user.email).toEqual(signupDto.userCreateParams.email);
     });
   });
 });

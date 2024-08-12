@@ -1,8 +1,10 @@
 import { DrizzleService } from '../../../../../src/infra/db/drizzle.service';
 import { dbSchema } from '../../../../../src/infra/db/schema';
-import { IUser, IUserCreate } from '../../../../../src/v1/user/user.interface';
+import { IUser } from '../../../../../src/v1/user/user.interface';
 import { eq } from 'drizzle-orm';
 import { hash } from '../../../../../src/shared/helpers/hash';
+import { IUserSignup } from '../../../../../src/v1/auth/auth.interface';
+import { IUserInfo } from '../../../../../src/v1/user/user.interface';
 
 export const findUser = async (
   where: Pick<IUser, 'id'>,
@@ -19,15 +21,30 @@ export const findUsers = async (drizzle: DrizzleService): Promise<IUser[]> => {
 };
 
 export const createUser = async (
-  params: IUserCreate,
+  { userCreateParams, infoCreateParams }: IUserSignup,
   drizzle: DrizzleService,
-): Promise<IUser> => {
-  const [user] = await drizzle.db
-    .insert(dbSchema.users)
-    .values({
-      ...params,
-      password: params.password ? await hash(params.password) : null,
-    })
-    .returning();
-  return user;
+): Promise<{
+  user: IUser;
+  userInfo: IUserInfo;
+}> => {
+  return await drizzle.db.transaction(async (tx) => {
+    const [user] = await tx
+      .insert(dbSchema.users)
+      .values({
+        ...userCreateParams,
+        password: userCreateParams.password
+          ? await hash(userCreateParams.password)
+          : null,
+      })
+      .returning();
+    const [userInfo] = await tx
+      .insert(dbSchema.userInfos)
+      .values({
+        ...infoCreateParams,
+        userId: user.id,
+      })
+      .returning();
+
+    return { user, userInfo };
+  });
 };
