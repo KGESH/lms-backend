@@ -10,6 +10,8 @@ export type BirthDate = string & tags.Format<'date'>;
 
 export type UInt = number & tags.Type<'uint32'>;
 
+export type PhoneNumber = string; // Todo: typing
+
 export type Gender = 'male' | 'female';
 
 export type BirthdayType = 'SOLAR' | 'LUNAR';

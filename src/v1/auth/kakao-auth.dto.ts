@@ -3,6 +3,7 @@ import {
   BirthdayType,
   EMail,
   Gender,
+  PhoneNumber,
 } from '../../shared/types/primitive';
 
 export type KakaoLoginDto = {
@@ -11,4 +12,7 @@ export type KakaoLoginDto = {
   gender: Gender;
   birthDate: BirthDate;
   birthdayType: BirthdayType;
+  phoneNumber: PhoneNumber;
+  connectingInformation: string | null;
+  duplicationInformation: string | null;
 };

@@ -16,9 +16,19 @@ export class KakaoAuthService {
 
     if (!existUser) {
       const user = await this.authService.signupUser({
-        email: params.email,
-        password: null,
-        displayName: params.name,
+        userCreateParams: {
+          email: params.email,
+          password: null,
+          displayName: params.name,
+        },
+        infoCreateParams: {
+          name: params.name,
+          gender: params.gender,
+          phoneNumber: params.phoneNumber,
+          birthDate: params.birthDate,
+          connectingInformation: params.connectingInformation,
+          duplicationInformation: params.duplicationInformation,
+        },
       });
       return user;
     }

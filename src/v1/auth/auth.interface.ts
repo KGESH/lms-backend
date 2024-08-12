@@ -1,19 +1,9 @@
-import { IUser, IUserCreate } from '../user/user.interface';
+import { IUser, IUserCreate, IUserInfoCreate } from '../user/user.interface';
+import { Optional } from '../../shared/types/optional';
 
 export type IUserLogin = Pick<IUser, 'email' | 'password'>;
 
-export type IUserSignup = IUserCreate;
-
-export type IAccessTokenPayload = {
-  userId: string;
-  email: string;
-};
-
-export type IRefreshTokenPayload = {
-  userId: string;
-};
-
-export type IAuthTokens = {
-  accessToken: string;
-  refreshToken: string;
+export type IUserSignup = {
+  userCreateParams: Optional<IUserCreate, 'id'>;
+  infoCreateParams: Optional<IUserInfoCreate, 'userId'>;
 };

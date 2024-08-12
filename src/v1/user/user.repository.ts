@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DrizzleService } from '../../infra/db/drizzle.service';
 import { asc, desc, eq, gt } from 'drizzle-orm';
 import { dbSchema } from '../../infra/db/schema';
-import { IUser, IUserCreate } from './user.interface';
+import { IUser, IUserCreate, IUserUpdate } from './user.interface';
 import { IPagination } from '../../shared/types/pagination';
 import {
   DEFAULT_CURSOR,
@@ -10,10 +10,31 @@ import {
   DEFAULT_PAGE_SIZE,
 } from '../../core/pagination.constant';
 import { hash } from '../../shared/helpers/hash';
+import { IRepository } from '../../core/base.repository';
+import { TransactionClient } from 'src/infra/db/drizzle.types';
 
 @Injectable()
-export class UserRepository {
+export class UserRepository implements IRepository<IUser> {
   constructor(private readonly drizzle: DrizzleService) {}
+
+  async update(
+    where: Pick<IUser, 'id'>,
+    params: IUserUpdate,
+    db = this.drizzle.db,
+  ): Promise<IUser> {
+    const [updated] = await db
+      .update(dbSchema.users)
+      .set(params)
+      .where(eq(dbSchema.users.id, where.id))
+      .returning();
+
+    return updated;
+  }
+
+  // Todo: Impl soft delete
+  delete(where: Partial<IUser>, db: TransactionClient): Promise<IUser> {
+    throw new Error('Method not implemented.');
+  }
 
   async findOne(where: Pick<IUser, 'id'>): Promise<IUser | null> {
     const user = await this.drizzle.db.query.users.findFirst({
@@ -72,8 +93,8 @@ export class UserRepository {
       );
   }
 
-  async create(params: IUserCreate): Promise<IUser> {
-    const [user] = await this.drizzle.db
+  async create(params: IUserCreate, db = this.drizzle.db): Promise<IUser> {
+    const [user] = await db
       .insert(dbSchema.users)
       .values({
         ...params,

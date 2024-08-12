@@ -30,14 +30,16 @@ export const userAccounts = pgTable('user_accounts', {
 
 export const userInfos = pgTable('user_infos', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').unique().notNull(),
-  // .references(() => users.id),
+  userId: uuid('user_id')
+    .unique()
+    .notNull()
+    .references(() => users.id),
   name: text('name').notNull(),
-  birthDate: text('birth_date').notNull(),
-  gender: text('gender').notNull(),
-  phoneNumber: text('phone_number').unique().notNull(),
-  connectingInformation: text('connecting_information').notNull(),
-  duplicationInformation: text('duplication_information').notNull(),
+  birthDate: text('birth_date'),
+  gender: text('gender'),
+  phoneNumber: text('phone_number').unique(),
+  connectingInformation: text('connecting_information'),
+  duplicationInformation: text('duplication_information'),
 });
 
 export const usersRelations = relations(users, ({ one, many }) => ({

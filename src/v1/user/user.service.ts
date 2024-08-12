@@ -1,12 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
-import { IUser, IUserCreate, IUserWithoutPassword } from './user.interface';
+import { IUser, IUserWithoutPassword } from './user.interface';
 import { IPagination } from '../../shared/types/pagination';
 import * as typia from 'typia';
+import { DrizzleService } from '../../infra/db/drizzle.service';
+import { UserInfoRepository } from './user-info.repository';
+import { IUserSignup } from '../auth/auth.interface';
+import { createUuid } from '../../shared/utils/uuid';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly userInfoRepository: UserInfoRepository,
+    private readonly drizzle: DrizzleService,
+  ) {}
 
   async findUsers(pagination?: IPagination): Promise<IUserWithoutPassword[]> {
     const users = await this.userRepository.findMany(pagination);
@@ -32,8 +40,29 @@ export class UserService {
     return user;
   }
 
-  async createUser(params: IUserCreate): Promise<IUserWithoutPassword> {
-    const user = await this.userRepository.create(params);
+  async createUser({
+    userCreateParams,
+    infoCreateParams,
+  }: IUserSignup): Promise<IUserWithoutPassword> {
+    const userId = userCreateParams.id ?? createUuid();
+
+    const { user, userInfo } = await this.drizzle.db.transaction(async (tx) => {
+      const user = await this.userRepository.create(
+        {
+          ...userCreateParams,
+          id: userId,
+        },
+        tx,
+      );
+      const userInfo = await this.userInfoRepository.create(
+        {
+          ...infoCreateParams,
+          userId,
+        },
+        tx,
+      );
+      return { user, userInfo };
+    });
     return typia.misc.clone<IUserWithoutPassword>(user);
   }
 }

@@ -43,6 +43,13 @@
       "when": 1723362975806,
       "tag": "0005_graceful_colossus",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1723456243777,
+      "tag": "0006_hot_ink",
+      "breakpoints": true
     }
   ]
 }

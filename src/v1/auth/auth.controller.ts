@@ -1,13 +1,7 @@
 import { Controller, Logger } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { TypedBody, TypedException, TypedRoute } from '@nestia/core';
-import {
-  LoginUserDto,
-  RefreshTokenDto,
-  SignupUserDto,
-  AccessTokenDto,
-} from './auth.dto';
-import { IAccessTokenPayload, IAuthTokens } from './auth.interface';
+import { LoginUserDto, SignupUserDto } from './auth.dto';
 import { KakaoLoginDto } from './kakao-auth.dto';
 import { KakaoAuthService } from './kakao-auth.service';
 import { UserWithoutPasswordDto } from '../user/user.dto';
@@ -54,21 +48,5 @@ export class AuthController {
     this.logger.log('Signup request received', body);
     const user = await this.authService.signupUser(body);
     return user;
-  }
-
-  @TypedRoute.Post('/verify')
-  async verifyAccessToken(
-    @TypedBody() body: AccessTokenDto,
-  ): Promise<IAccessTokenPayload> {
-    const payload = await this.authService.verifyAccessToken(body.accessToken);
-    return payload;
-  }
-
-  @TypedRoute.Post('/refresh-token')
-  async refreshToken(
-    @TypedBody() body: RefreshTokenDto,
-  ): Promise<Pick<IAuthTokens, 'accessToken'>> {
-    const token = await this.authService.refreshToken(body.refreshToken);
-    return token;
   }
 }
