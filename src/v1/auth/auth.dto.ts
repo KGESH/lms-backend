@@ -6,7 +6,6 @@ export type CreateUserDto = Pick<UserDto, 'email' | 'displayName' | 'password'>;
 
 export type CreateUserInfoDto = Pick<
   UserInfoDto,
-  | 'userId'
   | 'name'
   | 'gender'
   | 'phoneNumber'
