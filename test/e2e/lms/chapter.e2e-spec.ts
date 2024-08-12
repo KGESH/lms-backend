@@ -92,7 +92,6 @@ describe('ChapterController (e2e)', () => {
       const { course } = await createRandomCourse(drizzle);
       const createDto: ChapterCreateDto = {
         title: 'mock-chapter',
-        courseId: course.id,
         sequence: 0,
         description: '',
       };
