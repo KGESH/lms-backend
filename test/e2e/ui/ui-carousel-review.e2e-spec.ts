@@ -14,12 +14,12 @@ describe('UiCarouselReviewController (e2e)', () => {
   let host: Uri;
   let app: INestApplication;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     app = await createTestingServer();
     host = await app.getUrl();
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await app.close();
   });
 

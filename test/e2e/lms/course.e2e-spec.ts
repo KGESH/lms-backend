@@ -5,13 +5,13 @@ import { createTestingServer } from '../helpers/app.helper';
 import { Uri } from '../../../src/shared/types/primitive';
 import { createCategory } from '../helpers/db/lms/category.helper';
 import { DrizzleService } from '../../../src/infra/db/drizzle.service';
-import { createCourse } from '../helpers/db/lms/course.helper';
+import { createCourse, findCourse } from '../helpers/db/lms/course.helper';
 import { ICategoryCreate } from '../../../src/v1/category/category.interface';
 import { createTeacher } from '../helpers/db/lms/teacher.helper';
 import { ITeacherSignUp } from '../../../src/v1/teacher/teacher.interface';
-import { OptionPredicator } from 'typia/lib/programmers/helpers/OptionPredicator';
-import undefined = OptionPredicator.undefined;
 import { CourseCreateDto } from '../../../src/v1/course/course.dto';
+import { ICourseCreate } from '../../../packages/api/lib/v1/course/course.interface';
+import { ICourseUpdate } from '../../../src/v1/course/course.interface';
 
 describe('CourseController (e2e)', () => {
   let host: Uri;
@@ -129,8 +129,72 @@ describe('CourseController (e2e)', () => {
       expect(course.title).toEqual('mock-course');
     });
 
-    // describe('[Update course]', () => {
-    //   it('should be update course success', async () => {});
-    // });
+    describe('[Update course]', () => {
+      it('should be update course success', async () => {
+        const category = await createCategory(
+          typia.random<ICategoryCreate>(),
+          drizzle,
+        );
+        const { teacher } = await createTeacher(
+          typia.random<ITeacherSignUp>(),
+          drizzle,
+        );
+        const course = await createCourse(
+          {
+            ...typia.random<ICourseCreate>(),
+            categoryId: category.id,
+            teacherId: teacher.id,
+          },
+          drizzle,
+        );
+        const updateDto: ICourseUpdate = {
+          title: 'updated-course',
+        };
+
+        const response = await CourseAPI.updateCourse(
+          { host },
+          course.id,
+          updateDto,
+        );
+        if (!response.success) {
+          throw new Error('assert');
+        }
+
+        const updatedCourse = response.data;
+        expect(updatedCourse.title).toEqual('updated-course');
+      });
+    });
+
+    describe('[Delete course]', () => {
+      it('should be delete course success', async () => {
+        const category = await createCategory(
+          typia.random<ICategoryCreate>(),
+          drizzle,
+        );
+        const { teacher } = await createTeacher(
+          typia.random<ITeacherSignUp>(),
+          drizzle,
+        );
+        const course = await createCourse(
+          {
+            ...typia.random<ICourseCreate>(),
+            categoryId: category.id,
+            teacherId: teacher.id,
+          },
+          drizzle,
+        );
+
+        const response = await CourseAPI.deleteCourse({ host }, course.id);
+        if (!response.success) {
+          throw new Error('assert');
+        }
+
+        const deletedCourse = response.data;
+        expect(deletedCourse.id).toEqual(course.id);
+
+        const notFoundResult = await findCourse({ id: course.id }, drizzle);
+        expect(notFoundResult).toBeNull();
+      });
+    });
   });
 });

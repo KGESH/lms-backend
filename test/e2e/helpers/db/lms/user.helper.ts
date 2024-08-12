@@ -3,7 +3,7 @@ import { dbSchema } from '../../../../../src/infra/db/schema';
 import { IUser } from '../../../../../src/v1/user/user.interface';
 import { eq } from 'drizzle-orm';
 import { hash } from '../../../../../src/shared/helpers/hash';
-import { IUserSignup } from '../../../../../src/v1/auth/auth.interface';
+import { IUserSignUp } from '../../../../../src/v1/auth/auth.interface';
 import { IUserInfo } from '../../../../../src/v1/user/user.interface';
 
 export const findUser = async (
@@ -21,7 +21,7 @@ export const findUsers = async (drizzle: DrizzleService): Promise<IUser[]> => {
 };
 
 export const createUser = async (
-  { userCreateParams, infoCreateParams }: IUserSignup,
+  { userCreateParams, infoCreateParams }: IUserSignUp,
   drizzle: DrizzleService,
 ): Promise<{
   user: IUser;
