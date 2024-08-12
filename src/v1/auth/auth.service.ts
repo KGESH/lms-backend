@@ -3,10 +3,9 @@ import {
   Injectable,
   Logger,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { IUserLogin, IUserSignup } from './auth.interface';
+import { IUserLogin, IUserSignUp } from './auth.interface';
 import * as typia from 'typia';
 import { IUserWithoutPassword } from '../user/user.interface';
 import { compareHash } from '../../shared/helpers/hash';
@@ -36,7 +35,7 @@ export class AuthService {
     return typia.misc.clone<IUserWithoutPassword>(user);
   }
 
-  async signupUser(params: IUserSignup): Promise<IUserWithoutPassword> {
+  async signupUser(params: IUserSignUp): Promise<IUserWithoutPassword> {
     const exist = await this.userService.findUserByEmail({
       email: params.userCreateParams.email,
     });

@@ -13,13 +13,13 @@ describe('AuthController (e2e)', () => {
   let host: Uri;
   let drizzle: DrizzleService;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     app = await createTestingServer();
     host = await app.getUrl();
     drizzle = await app.get(DrizzleService);
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await app.close();
   });
 

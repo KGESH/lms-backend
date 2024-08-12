@@ -3,7 +3,7 @@ import { Optional } from '../../shared/types/optional';
 
 export type IUserLogin = Pick<IUser, 'email' | 'password'>;
 
-export type IUserSignup = {
+export type IUserSignUp = {
   userCreateParams: Optional<IUserCreate, 'id'>;
   infoCreateParams: Optional<IUserInfoCreate, 'userId'>;
 };
