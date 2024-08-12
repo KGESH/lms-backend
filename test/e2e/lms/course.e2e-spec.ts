@@ -49,7 +49,8 @@ describe('CourseController (e2e)', () => {
       );
       const response = await CourseAPI.getCourse({ host }, course.id);
       if (!response.success) {
-        throw new Error('assert');
+        console.error(response.data);
+        throw new Error(`assert - ${JSON.stringify(response.data, null, 4)}`);
       }
 
       const foundCourse = response.data;
