@@ -4,6 +4,7 @@ import { TypedBody, TypedParam, TypedRoute } from '@nestia/core';
 import { CourseQueryService } from './course-query.service';
 import { Uuid } from '../../shared/types/primitive';
 import { CourseCreateDto, CourseDto, CourseUpdateDto } from './course.dto';
+import { CourseWithRelationsDto } from './course-with-relations.dto';
 
 @Controller('v1/course')
 export class CourseController {
@@ -19,8 +20,12 @@ export class CourseController {
   }
 
   @TypedRoute.Get('/:id')
-  async getCourse(@TypedParam('id') id: Uuid): Promise<CourseDto | null> {
-    const course = await this.courseQueryService.findCourseById({ id });
+  async getCourse(
+    @TypedParam('id') id: Uuid,
+  ): Promise<CourseWithRelationsDto | null> {
+    const course = await this.courseQueryService.findCourseWithRelations({
+      id,
+    });
     return course;
   }
 

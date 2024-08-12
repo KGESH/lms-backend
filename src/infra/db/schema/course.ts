@@ -108,7 +108,14 @@ export const lessonsRelations = relations(lessons, ({ one, many }) => ({
     fields: [lessons.chapterId],
     references: [chapters.id],
   }),
-  contents: many(lessonContents),
+  lessonContents: many(lessonContents),
+}));
+
+export const lessonContentsRelations = relations(lessonContents, ({ one }) => ({
+  lesson: one(lessons, {
+    fields: [lessonContents.lessonId],
+    references: [lessons.id],
+  }),
 }));
 
 export const coursePricingRelations = relations(
@@ -146,6 +153,7 @@ export const courseDbSchemas = {
   coursesRelations,
   chaptersRelations,
   lessonsRelations,
+  lessonContentsRelations,
   coursePricingRelations,
   courseDiscountsRelations,
 };
