@@ -4,7 +4,7 @@ import {
   ILessonContent,
   ILessonContentCreate,
 } from './lesson-content.interface';
-import { TransactionClient } from '../../../../infra/db/drizzle.types';
+import { TransactionClient } from '../../../../../infra/db/drizzle.types';
 
 @Injectable()
 export class LessonContentService {

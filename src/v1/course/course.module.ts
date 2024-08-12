@@ -4,7 +4,7 @@ import { CourseService } from './course.service';
 import { CourseQueryRepository } from './course-query.repository';
 import { CourseQueryService } from './course-query.service';
 import { CourseRepository } from './course.repository';
-import { LessonModule } from './lesson/lesson.module';
+import { TeacherModule } from '../teacher/teacher.module';
 
 const providers = [
   CourseService,
@@ -14,9 +14,9 @@ const providers = [
 ];
 
 @Module({
-  imports: [LessonModule],
+  imports: [TeacherModule],
   controllers: [CourseController],
   providers: [...providers],
-  exports: [...providers, LessonModule],
+  exports: [...providers],
 })
 export class CourseModule {}

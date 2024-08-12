@@ -12,11 +12,11 @@ export const teacherInfos = pgTable('teacher_infos', {
   id: uuid('id').primaryKey().defaultRandom(),
   teacherId: uuid('teacher_id').unique().notNull(),
   name: text('name').notNull(),
-  gender: text('gender').notNull(),
-  birthDate: text('birth_date').notNull(),
-  phoneNumber: text('phone_number').unique().notNull(),
-  connectingInformation: text('connecting_information').notNull(),
-  duplicationInformation: text('duplication_information').notNull(),
+  gender: text('gender'),
+  birthDate: text('birth_date'),
+  phoneNumber: text('phone_number').unique(),
+  connectingInformation: text('connecting_information'),
+  duplicationInformation: text('duplication_information'),
 });
 
 export const teachersRelations = relations(teachers, ({ one }) => ({

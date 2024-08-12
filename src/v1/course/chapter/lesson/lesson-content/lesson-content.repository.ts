@@ -4,15 +4,15 @@ import {
   ILessonContentCreate,
 } from './lesson-content.interface';
 import { asc, desc, eq, gt } from 'drizzle-orm';
-import { IRepository } from '../../../../core/base.repository';
-import { DrizzleService } from '../../../../infra/db/drizzle.service';
-import { dbSchema } from '../../../../infra/db/schema';
-import { IPagination } from '../../../../shared/types/pagination';
+import { IRepository } from '../../../../../core/base.repository';
+import { DrizzleService } from '../../../../../infra/db/drizzle.service';
+import { dbSchema } from '../../../../../infra/db/schema';
+import { IPagination } from '../../../../../shared/types/pagination';
 import {
   DEFAULT_CURSOR,
   DEFAULT_ORDER_BY,
   DEFAULT_PAGE_SIZE,
-} from '../../../../core/pagination.constant';
+} from '../../../../../core/pagination.constant';
 
 @Injectable()
 export class LessonContentRepository implements IRepository<ILessonContent> {

@@ -1,4 +1,4 @@
-import { Uri, Uuid } from '../../../../shared/types/primitive';
+import { Uri, Uuid } from '../../../../../shared/types/primitive';
 
 export type ILessonContent = {
   id: Uuid;

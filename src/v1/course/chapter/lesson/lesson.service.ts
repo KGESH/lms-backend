@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { LessonRepository } from './lesson.repository';
 import { ILesson, ILessonCreate } from './lesson.interface';
-import { TransactionClient } from '../../../infra/db/drizzle.types';
+import { TransactionClient } from '../../../../infra/db/drizzle.types';
 
 @Injectable()
 export class LessonService {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DrizzleService } from '../../infra/db/drizzle.service';
-import { ICourse, ICourseCreate } from './course.interface';
+import { ICourse, ICourseCreate, ICourseUpdate } from './course.interface';
 import { asc, desc, eq, gt } from 'drizzle-orm';
 import { dbSchema } from '../../infra/db/schema';
 import { IRepository } from '../../core/base.repository';
@@ -70,7 +70,7 @@ export class CourseRepository implements IRepository<ICourse> {
 
   async update(
     where: Pick<ICourse, 'id'>,
-    params: Partial<ICourse>,
+    params: ICourseUpdate,
     db = this.drizzle.db,
   ): Promise<ICourse> {
     const [updated] = await db

@@ -1,4 +1,5 @@
 import { Uuid } from '../../shared/types/primitive';
+import { Optional } from '../../shared/types/optional';
 
 export type ICourse = {
   id: Uuid;
@@ -11,6 +12,8 @@ export type ICourse = {
 };
 
 export type ICourseCreate = Pick<
-  ICourse,
-  'teacherId' | 'title' | 'description' | 'categoryId'
+  Optional<ICourse, 'id'>,
+  'id' | 'teacherId' | 'title' | 'description' | 'categoryId'
 >;
+
+export type ICourseUpdate = Omit<Partial<ICourseCreate>, 'id'>;

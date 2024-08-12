@@ -5,7 +5,7 @@ import { IPagination } from '../../shared/types/pagination';
 import * as typia from 'typia';
 import { DrizzleService } from '../../infra/db/drizzle.service';
 import { UserInfoRepository } from './user-info.repository';
-import { IUserSignup } from '../auth/auth.interface';
+import { IUserSignUp } from '../auth/auth.interface';
 import { createUuid } from '../../shared/utils/uuid';
 
 @Injectable()
@@ -43,7 +43,7 @@ export class UserService {
   async createUser({
     userCreateParams,
     infoCreateParams,
-  }: IUserSignup): Promise<IUserWithoutPassword> {
+  }: IUserSignUp): Promise<IUserWithoutPassword> {
     const userId = userCreateParams.id ?? createUuid();
 
     const { user, userInfo } = await this.drizzle.db.transaction(async (tx) => {

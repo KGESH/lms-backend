@@ -1,0 +1,16 @@
+import { UInt, Uuid } from '../../../../shared/types/primitive';
+
+export type LessonDto = {
+  id: Uuid;
+  chapterId: Uuid;
+  title: string;
+  description: string | null;
+  sequence: UInt;
+};
+
+export type LessonCreateDto = Pick<
+  LessonDto,
+  'chapterId' | 'title' | 'description' | 'sequence'
+>;
+
+export type LessonUpdateDto = Partial<LessonDto>;

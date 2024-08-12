@@ -1,22 +1,34 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ChapterRepository } from './chapter.repository';
-import { IChapter, IChapterCreate } from './chapter.interface';
-import { TransactionClient } from '../../infra/db/drizzle.types';
+import { IChapter, IChapterCreate, IChapterUpdate } from './chapter.interface';
+import { TransactionClient } from '../../../infra/db/drizzle.types';
+import { CourseQueryService } from '../course-query.service';
 
 @Injectable()
 export class ChapterService {
-  constructor(private readonly chapterRepository: ChapterRepository) {}
+  constructor(
+    private readonly courseQueryService: CourseQueryService,
+    private readonly chapterRepository: ChapterRepository,
+  ) {}
 
   async createChapter(
     params: IChapterCreate,
     tx?: TransactionClient,
   ): Promise<IChapter> {
+    const course = await this.courseQueryService.findCourseById({
+      id: params.courseId,
+    });
+
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+
     return await this.chapterRepository.create(params, tx);
   }
 
   async updateChapter(
     where: Pick<IChapter, 'id'>,
-    params: Partial<IChapter>,
+    params: IChapterUpdate,
     tx?: TransactionClient,
   ): Promise<IChapter> {
     await this.chapterRepository.findOneOrThrow({ id: where.id });

@@ -1,15 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DrizzleService } from '../../../infra/db/drizzle.service';
+import { DrizzleService } from '../../../../infra/db/drizzle.service';
 import { ILesson, ILessonCreate } from './lesson.interface';
 import { asc, desc, eq, gt } from 'drizzle-orm';
-import { dbSchema } from '../../../infra/db/schema';
-import { IRepository } from '../../../core/base.repository';
-import { IPagination } from '../../../shared/types/pagination';
+import { dbSchema } from '../../../../infra/db/schema';
+import { IRepository } from '../../../../core/base.repository';
+import { IPagination } from '../../../../shared/types/pagination';
 import {
   DEFAULT_CURSOR,
   DEFAULT_ORDER_BY,
   DEFAULT_PAGE_SIZE,
-} from '../../../core/pagination.constant';
+} from '../../../../core/pagination.constant';
 
 @Injectable()
 export class LessonRepository implements IRepository<ILesson> {

@@ -3,9 +3,9 @@ import { LessonService } from './lesson.service';
 import { TypedParam, TypedRoute } from '@nestia/core';
 import { LessonQueryService } from './lesson-query.service';
 import { ILesson } from './lesson.interface';
-import { Uuid } from '../../../shared/types/primitive';
+import { Uuid } from '../../../../shared/types/primitive';
 
-@Controller('v1/course/:courseId/lesson')
+@Controller('v1/course/:courseId/chapter/:chapterId/lesson')
 export class LessonController {
   constructor(
     private readonly lessonService: LessonService,
@@ -13,7 +13,10 @@ export class LessonController {
   ) {}
 
   @TypedRoute.Get('/')
-  async getLessons(@TypedParam('courseId') courseId: Uuid): Promise<ILesson[]> {
+  async getLessons(
+    @TypedParam('courseId') courseId: Uuid,
+    @TypedParam('chapterId') chapterId: Uuid,
+  ): Promise<ILesson[]> {
     const lessons = await this.lessonQueryService.findLessons();
     return lessons;
   }
@@ -21,6 +24,7 @@ export class LessonController {
   @TypedRoute.Get('/:id')
   async getLesson(
     @TypedParam('courseId') courseId: Uuid,
+    @TypedParam('chapterId') chapterId: Uuid,
     @TypedParam('id') lessonId: Uuid,
   ): Promise<ILesson | null> {
     console.log(courseId);

@@ -1,4 +1,4 @@
-import { UInt, Uuid } from '../../../shared/types/primitive';
+import { UInt, Uuid } from '../../../../shared/types/primitive';
 
 export type ILesson = {
   id: Uuid;
