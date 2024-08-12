@@ -3,7 +3,7 @@ import { dbSchema } from '../../../../../src/infra/db/schema';
 import { eq, isNull } from 'drizzle-orm';
 import {
   ICategory,
-  ICategoryWithRelations,
+  ICategoryWithChildren,
   ICategoryCreate,
 } from '../../../../../src/v1/category/category.interface';
 
@@ -19,17 +19,14 @@ export const findCategory = async (
 
 export const findRootCategories = async (
   drizzle: DrizzleService,
-): Promise<ICategoryWithRelations[]> => {
+): Promise<ICategoryWithChildren[]> => {
   const categories = await drizzle.db.query.courseCategories.findMany({
     where: isNull(dbSchema.courseCategories.parentId),
     with: {
-      parent: true,
       children: {
         with: {
-          parent: true,
           children: {
             with: {
-              parent: true,
               children: true,
             },
           },
@@ -38,21 +35,14 @@ export const findRootCategories = async (
     },
   });
 
-  const roots: ICategoryWithRelations[] = categories.map((category) => {
-    return {
-      ...category,
-      parent: null,
-      children: [],
-    } satisfies ICategoryWithRelations;
-  });
-
+  const roots: ICategoryWithChildren[] = categories;
   return roots;
 };
 
 export const findRootCategoryById = async (
   id: string,
   drizzle: DrizzleService,
-): Promise<ICategoryWithRelations | null> => {
+): Promise<ICategoryWithChildren | null> => {
   const rootCategory = await findRootCategories(drizzle);
   return rootCategory.find((category) => category.id === id) ?? null;
 };

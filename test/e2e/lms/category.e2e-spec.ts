@@ -3,46 +3,106 @@ import * as CategoryAPI from '../../../src/api/functional/v1/category';
 import * as typia from 'typia';
 import { createTestingServer } from '../helpers/app.helper';
 import { Uri, Uuid } from '../../../src/shared/types/primitive';
-import { ICategory } from '../../../src/v1/category/category.interface';
 import {
   CreateCategoryDto,
   UpdateCategoryDto,
 } from '../../../src/v1/category/category.dto';
-import { HttpError } from '@nestia/fetcher';
-import { IErrorResponse } from '../../../src/shared/types/response';
-import { convertException } from '../../../src/shared/helpers/nestia/convert-exception';
+import {
+  createCategory,
+  createManyCategories,
+} from '../helpers/db/lms/category.helper';
+import { DrizzleService } from '../../../src/infra/db/drizzle.service';
 
 describe('CategoryController (e2e)', () => {
   let host: Uri;
   let app: INestApplication;
+  let drizzle: DrizzleService;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     app = await createTestingServer();
     host = await app.getUrl();
+    drizzle = await app.get(DrizzleService);
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await app.close();
   });
 
-  describe('[Get categories]', () => {
-    it('should be get all categories', async () => {
-      const response = await CategoryAPI.getAllCategories({
-        host,
-      });
+  describe('[Get category]', () => {
+    it('should be get a category', async () => {
+      const categoryId: Uuid = typia.random<Uuid>();
+      await createCategory(
+        {
+          id: categoryId,
+          name: 'category',
+          description: 'GET category test',
+          parentId: null,
+        },
+        drizzle,
+      );
+
+      const response = await CategoryAPI.getCategory({ host }, categoryId);
       if (!response.success) {
         throw new Error('assert');
       }
 
-      const categories = response.data;
-      const isCategoryArray = typia.is<ICategory[]>(categories);
-      expect(isCategoryArray).toBe(true);
+      const category = response.data;
+
+      expect(category).not.toBeNull();
+      expect(category!.id).toEqual(categoryId);
+    });
+  });
+
+  describe('[Get categories]', () => {
+    it('should be get all categories', async () => {
+      const rootCategoryId: Uuid = typia.random<Uuid>();
+      const levelTwoCategoryId: Uuid = typia.random<Uuid>();
+      const levelThreeCategoryId: Uuid = typia.random<Uuid>();
+      await createManyCategories(
+        [
+          {
+            id: rootCategoryId,
+            name: 'root category',
+            description: null,
+            parentId: null,
+          },
+          {
+            id: levelTwoCategoryId,
+            name: 'level two category',
+            description: null,
+            parentId: rootCategoryId,
+          },
+          {
+            id: levelThreeCategoryId,
+            name: 'level three category',
+            description: null,
+            parentId: levelTwoCategoryId,
+          },
+        ],
+        drizzle,
+      );
+
+      const response = await CategoryAPI.getAllCategories({
+        host,
+      });
+      if (!response.success) {
+        throw new Error(`assert`);
+      }
+
+      const rootCategories = response.data;
+      const levelTwoCategory = rootCategories[0].children[0];
+      const levelThreeCategory = levelTwoCategory.children[0];
+
+      expect(levelTwoCategory.name).toEqual('level two category');
+      expect(levelThreeCategory.name).toEqual('level three category');
     });
   });
 
   describe('[Create category]', () => {
     it('should be create category success', async () => {
-      const createCategoryDto = typia.random<CreateCategoryDto>();
+      const createCategoryDto: CreateCategoryDto = {
+        ...typia.random<CreateCategoryDto>(),
+      };
       const response = await CategoryAPI.createCategory(
         { host },
         createCategoryDto,
@@ -58,24 +118,21 @@ describe('CategoryController (e2e)', () => {
 
   describe('Update category', () => {
     it('should be update category success', async () => {
-      const createCategoryDto = typia.random<CreateCategoryDto>();
-      const createResponse = await CategoryAPI.createCategory(
-        { host },
-        createCategoryDto,
+      const categoryId: Uuid = typia.random<Uuid>();
+      await createCategory(
+        {
+          id: categoryId,
+          name: 'category',
+          description: 'GET category test',
+          parentId: null,
+        },
+        drizzle,
       );
-      if (!createResponse.success) {
-        throw new Error('assert');
-      }
-
-      const category = createResponse.data;
-      const updateCategoryDto: UpdateCategoryDto = {
-        ...createCategoryDto,
-        name: `Updated ${createCategoryDto.name}`,
-      };
+      const updateCategoryDto: UpdateCategoryDto = { name: 'updated' };
 
       const updateResponse = await CategoryAPI.updateCategory(
         { host },
-        category.id,
+        categoryId,
         updateCategoryDto,
       );
       if (!updateResponse.success) {
@@ -83,53 +140,48 @@ describe('CategoryController (e2e)', () => {
       }
 
       const updatedCategory = updateResponse.data;
-      expect(updatedCategory.name).toEqual(updateCategoryDto.name);
-      expect(updatedCategory.id).toEqual(category.id);
+      expect(updatedCategory.name).toEqual('updated');
     });
 
     it('should be update category fail', async () => {
       const notFoundId = typia.random<Uuid>();
       const updateCategoryDto = typia.random<UpdateCategoryDto>();
 
-      try {
-        await CategoryAPI.updateCategory(
-          { host },
-          notFoundId,
-          updateCategoryDto,
-        );
-      } catch (e) {
-        const httpError = e as HttpError;
-        const notFoundErrorResponse =
-          convertException<IErrorResponse<typeof httpError.status>>(httpError);
-        expect(notFoundErrorResponse.statusCode).toEqual(777);
-      }
+      const notFoundResponse = await CategoryAPI.updateCategory(
+        { host },
+        notFoundId,
+        updateCategoryDto,
+      );
+
+      expect(notFoundResponse.status).toEqual(404);
     });
   });
 
   describe('Delete category', () => {
     it('should be delete category success', async () => {
-      const createCategoryDto = typia.random<CreateCategoryDto>();
-      const createResponse = await CategoryAPI.createCategory(
-        { host },
-        createCategoryDto,
+      const categoryId: Uuid = typia.random<Uuid>();
+      await createCategory(
+        {
+          id: categoryId,
+          name: 'category',
+          description: 'GET category test',
+          parentId: null,
+        },
+        drizzle,
       );
-      if (!createResponse.success) {
-        throw new Error('assert');
-      }
 
-      const category = createResponse.data;
       const deleteResponse = await CategoryAPI.deleteCategory(
         { host },
-        category.id,
+        categoryId,
       );
       if (!deleteResponse.success) {
         throw new Error('assert');
       }
 
       const deletedCategory = deleteResponse.data;
-      expect(deletedCategory.id).toEqual(category.id);
+      expect(deletedCategory.id).toEqual(categoryId);
 
-      const getResponse = await CategoryAPI.getCategory({ host }, category.id);
+      const getResponse = await CategoryAPI.getCategory({ host }, categoryId);
       if (!getResponse.success) {
         throw new Error('assert');
       }
