@@ -8,13 +8,15 @@ import { TransactionClient } from '../../../../../infra/db/drizzle.types';
 
 @Injectable()
 export class LessonContentService {
-  constructor(private readonly lessonRepository: LessonContentRepository) {}
+  constructor(
+    private readonly lessonContentRepository: LessonContentRepository,
+  ) {}
 
   async createLessonContent(
     params: ILessonContentCreate,
     tx?: TransactionClient,
   ): Promise<ILessonContent> {
-    return await this.lessonRepository.create(params, tx);
+    return await this.lessonContentRepository.create(params, tx);
   }
 
   async updateLessonContent(
@@ -22,15 +24,15 @@ export class LessonContentService {
     params: Partial<ILessonContent>,
     tx?: TransactionClient,
   ): Promise<ILessonContent> {
-    await this.lessonRepository.findOneOrThrow({ id: where.id });
-    return await this.lessonRepository.update(where, params, tx);
+    await this.lessonContentRepository.findOneOrThrow({ id: where.id });
+    return await this.lessonContentRepository.update(where, params, tx);
   }
 
   async deleteLessonContent(
     where: Pick<ILessonContent, 'id'>,
     tx?: TransactionClient,
   ): Promise<ILessonContent> {
-    await this.lessonRepository.findOneOrThrow({ id: where.id });
-    return await this.lessonRepository.delete(where, tx);
+    await this.lessonContentRepository.findOneOrThrow({ id: where.id });
+    return await this.lessonContentRepository.delete(where, tx);
   }
 }

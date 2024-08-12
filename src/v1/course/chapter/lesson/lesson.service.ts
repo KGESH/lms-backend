@@ -1,22 +1,34 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { LessonRepository } from './lesson.repository';
-import { ILesson, ILessonCreate } from './lesson.interface';
+import { ILesson, ILessonCreate, ILessonUpdate } from './lesson.interface';
 import { TransactionClient } from '../../../../infra/db/drizzle.types';
+import { ChapterQueryService } from '../chapter-query.service';
 
 @Injectable()
 export class LessonService {
-  constructor(private readonly lessonRepository: LessonRepository) {}
+  constructor(
+    private readonly chapterQueryService: ChapterQueryService,
+    private readonly lessonRepository: LessonRepository,
+  ) {}
 
   async createLesson(
     params: ILessonCreate,
     tx?: TransactionClient,
   ): Promise<ILesson> {
+    const chapter = await this.chapterQueryService.findChapterById({
+      id: params.chapterId,
+    });
+
+    if (!chapter) {
+      throw new NotFoundException('Chapter not found');
+    }
+
     return await this.lessonRepository.create(params, tx);
   }
 
   async updateLesson(
     where: Pick<ILesson, 'id'>,
-    params: Partial<ILesson>,
+    params: ILessonUpdate,
     tx?: TransactionClient,
   ): Promise<ILesson> {
     await this.lessonRepository.findOneOrThrow({ id: where.id });

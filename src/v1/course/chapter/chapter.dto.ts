@@ -10,7 +10,7 @@ export type ChapterDto = {
 
 export type ChapterCreateDto = Pick<
   ChapterDto,
-  'courseId' | 'title' | 'description' | 'sequence'
+  'title' | 'description' | 'sequence'
 >;
 
 export type ChapterUpdateDto = Partial<ChapterDto>;

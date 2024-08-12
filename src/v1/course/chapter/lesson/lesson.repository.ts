@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DrizzleService } from '../../../../infra/db/drizzle.service';
-import { ILesson, ILessonCreate } from './lesson.interface';
+import { ILesson, ILessonCreate, ILessonUpdate } from './lesson.interface';
 import { asc, desc, eq, gt } from 'drizzle-orm';
 import { dbSchema } from '../../../../infra/db/schema';
 import { IRepository } from '../../../../core/base.repository';
@@ -70,7 +70,7 @@ export class LessonRepository implements IRepository<ILesson> {
 
   async update(
     where: Pick<ILesson, 'id'>,
-    params: Partial<ILesson>,
+    params: ILessonUpdate,
     db = this.drizzle.db,
   ): Promise<ILesson> {
     const [updated] = await db

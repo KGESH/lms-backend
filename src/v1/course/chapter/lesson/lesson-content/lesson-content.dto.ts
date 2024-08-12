@@ -12,7 +12,7 @@ export type LessonContentDto = {
 
 export type LessonContentCreateDto = Pick<
   LessonContentDto,
-  'lessonId' | 'title' | 'description' | 'contentType' | 'url' | 'metadata'
+  'title' | 'description' | 'contentType' | 'url' | 'metadata'
 >;
 
 export type LessonContentUpdateDto = Partial<LessonContentDto>;

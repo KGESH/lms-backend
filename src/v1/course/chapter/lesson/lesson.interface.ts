@@ -1,4 +1,5 @@
 import { UInt, Uuid } from '../../../../shared/types/primitive';
+import { Optional } from '../../../../shared/types/optional';
 
 export type ILesson = {
   id: Uuid;
@@ -9,6 +10,8 @@ export type ILesson = {
 };
 
 export type ILessonCreate = Pick<
-  ILesson,
-  'chapterId' | 'title' | 'description' | 'sequence'
+  Optional<ILesson, 'id'>,
+  'id' | 'chapterId' | 'title' | 'description' | 'sequence'
 >;
+
+export type ILessonUpdate = Omit<Partial<ILessonCreate>, 'id'>;

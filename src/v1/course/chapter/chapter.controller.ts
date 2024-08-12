@@ -44,7 +44,10 @@ export class ChapterController {
     @TypedParam('courseId') courseId: Uuid,
     @TypedBody() body: ChapterCreateDto,
   ): Promise<ChapterDto> {
-    const chapter = await this.chapterService.createChapter(body);
+    const chapter = await this.chapterService.createChapter({
+      ...body,
+      courseId,
+    });
     return chapter;
   }
 
