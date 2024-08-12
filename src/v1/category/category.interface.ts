@@ -1,4 +1,5 @@
 import { Uuid } from '../../shared/types/primitive';
+import { Optional } from '../../shared/types/optional';
 
 export type ICategory = {
   id: Uuid;
@@ -7,7 +8,8 @@ export type ICategory = {
   description: string | null;
 };
 
-export type ICategoryWithRelations = ICategory & {
-  parent: ICategoryWithRelations | null;
-  children: Array<ICategoryWithRelations>;
+export type ICategoryWithChildren = ICategory & {
+  children: Array<ICategoryWithChildren>;
 };
+
+export type ICategoryCreate = Optional<ICategory, 'id'>;

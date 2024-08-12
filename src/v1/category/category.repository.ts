@@ -2,7 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DrizzleService } from '../../infra/db/drizzle.service';
 import { asc, desc, eq, isNull } from 'drizzle-orm';
 import { dbSchema } from '../../infra/db/schema';
-import { ICategory, ICategoryWithRelations } from './category.interface';
+import {
+  ICategory,
+  ICategoryCreate,
+  ICategoryWithChildren,
+} from './category.interface';
 import { ICourse } from '../course/course.interface';
 import { IRepository } from '../../core/base.repository';
 import { IPagination } from 'src/shared/types/pagination';
@@ -69,41 +73,28 @@ export class CategoryRepository implements IRepository<ICategory> {
     return category;
   }
 
-  async findManyRootCategoriesWithChildren(): Promise<
-    ICategoryWithRelations[]
-  > {
-    const categories = await this.drizzle.db.query.courseCategories.findMany({
-      where: isNull(dbSchema.courseCategories.parentId),
-      with: {
-        children: {
-          with: {
-            parent: true,
-            children: {
-              with: {
-                parent: true,
-                children: true,
+  async findManyRootCategoriesWithChildren(): Promise<ICategoryWithChildren[]> {
+    const rootCategories =
+      await this.drizzle.db.query.courseCategories.findMany({
+        where: isNull(dbSchema.courseCategories.parentId),
+        with: {
+          children: {
+            with: {
+              children: {
+                with: {
+                  children: true,
+                },
               },
             },
           },
         },
-      },
-    });
+      });
 
-    const roots: ICategoryWithRelations[] = categories.map((category) => {
-      return {
-        ...category,
-        parent: null,
-        children: category.children
-          .filter((child) => child !== null)
-          .map((child) => child) as ICategoryWithRelations[],
-      } satisfies ICategoryWithRelations;
-    });
-
-    return roots;
+    return rootCategories;
   }
 
   async create(
-    params: Pick<ICategory, 'name' | 'parentId' | 'description'>,
+    params: ICategoryCreate,
     db = this.drizzle.db,
   ): Promise<ICategory> {
     const [category] = await db

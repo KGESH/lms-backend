@@ -1,54 +1,64 @@
 import { Controller } from '@nestjs/common';
 import { CategoryService } from './category.service';
-import { TypedBody, TypedParam, TypedRoute } from '@nestia/core';
-import { ICategory, ICategoryWithRelations } from './category.interface';
-// import { IResponse } from '../../shared/types/response';
-import { CreateCategoryDto, UpdateCategoryDto } from './category.dto';
+import {
+  TypedBody,
+  TypedException,
+  TypedParam,
+  TypedRoute,
+} from '@nestia/core';
+import {
+  CategoryDto,
+  CategoryWithChildrenDto,
+  CreateCategoryDto,
+  UpdateCategoryDto,
+} from './category.dto';
 import { Uuid } from '../../shared/types/primitive';
+import { TypeGuardError } from 'typia';
+import { IErrorResponse } from '../../shared/types/response';
 
-@Controller('/v1/category')
+@Controller('v1/category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @TypedRoute.Get('/')
-  async getAllCategories(): Promise<ICategoryWithRelations[]> {
-    // async getAllCategories(): Promise<IResponse<ICategoryWithRelations[]>> {
+  async getAllCategories(): Promise<CategoryWithChildrenDto[]> {
     const rootCategories = await this.categoryService.findRootCategories();
     return rootCategories;
-    // return { data: rootCategories };
   }
 
+  @TypedException<TypeGuardError>(400, 'invalid request')
   @TypedRoute.Get('/:id')
-  async getCategory(@TypedParam('id') id: Uuid): Promise<ICategory | null> {
-    // ): Promise<IResponse<ICategory | null>> {
+  async getCategory(@TypedParam('id') id: Uuid): Promise<CategoryDto | null> {
     const category = await this.categoryService.findCategory({ id });
     return category;
-    // return { data: category };
   }
 
+  @TypedException<TypeGuardError>(400, 'invalid request')
   @TypedRoute.Post('/')
   async createCategory(
     @TypedBody() body: CreateCategoryDto,
-  ): Promise<ICategory> {
+  ): Promise<CategoryDto> {
     const category = await this.categoryService.createCategory(body);
     return category;
-    // return { data: category };
   }
 
+  @TypedException<TypeGuardError>(400, 'invalid request')
+  @TypedException<IErrorResponse<404>>(404, 'category not found')
   @TypedRoute.Patch('/:id')
   async updateCategory(
     @TypedParam('id') id: Uuid,
     @TypedBody() body: UpdateCategoryDto,
-  ): Promise<ICategory> {
+  ): Promise<CategoryDto> {
     const category = await this.categoryService.updateCategory({ id }, body);
     return category;
-    // return { data: category };
   }
 
+  @TypedException<TypeGuardError>(400, 'invalid request')
+  @TypedException<IErrorResponse<403>>(403, 'category has courses')
+  @TypedException<IErrorResponse<404>>(404, 'category not found')
   @TypedRoute.Delete('/:id')
-  async deleteCategory(@TypedParam('id') id: Uuid): Promise<ICategory> {
+  async deleteCategory(@TypedParam('id') id: Uuid): Promise<CategoryDto> {
     const category = await this.categoryService.deleteCategory({ id });
     return category;
-    // return { data: category };
   }
 }

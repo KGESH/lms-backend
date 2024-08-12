@@ -7,6 +7,10 @@ export type CategoryDto = {
   description: string | null;
 };
 
+export type CategoryWithChildrenDto = CategoryDto & {
+  children: Array<CategoryWithChildrenDto>;
+};
+
 export type CreateCategoryDto = Pick<
   CategoryDto,
   'name' | 'parentId' | 'description'
