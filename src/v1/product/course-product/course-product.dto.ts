@@ -1,4 +1,4 @@
-import { Uuid } from '../../../shared/types/primitive';
+import { ISO8601, Uuid } from '../../../shared/types/primitive';
 import { CourseProductSnapshotDiscountDto } from './snapshot/discount/course-product-snapshot-discount.dto';
 import { CourseProductSnapshotPricingDto } from './snapshot/pricing/course-product-snapshot-pricing.dto';
 
@@ -10,7 +10,9 @@ export type CourseProductDto = {
   description: string | null;
   pricing: CourseProductSnapshotPricingDto;
   discount: CourseProductSnapshotDiscountDto | null;
-  createdAt: string;
+  createdAt: ISO8601;
+  updatedAt: ISO8601;
+  deletedAt: ISO8601 | null;
 };
 
 export type CourseProductCreateDto = Omit<

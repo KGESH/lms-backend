@@ -1,6 +1,7 @@
 import {
   DiscountType,
   FixedAmount,
+  ISO8601,
   Percent,
   Percentage,
   Price,
@@ -17,8 +18,8 @@ export type CourseProductSnapshotPercentDiscount = {
 };
 
 export type CourseProductSnapshotDiscountDto = {
-  validFrom: string | null;
-  validTo: string | null;
+  validFrom: ISO8601 | null;
+  validTo: ISO8601 | null;
 } & (
   | CourseProductSnapshotFixedAmountDiscount
   | CourseProductSnapshotPercentDiscount

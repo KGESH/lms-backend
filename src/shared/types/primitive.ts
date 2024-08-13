@@ -23,6 +23,10 @@ export type Percent = 'percent';
 
 export type DiscountType = Percent | FixedAmount;
 
-export type Price = `${number & Minimum<0> & tags.Type<'double'>}`;
+export type Price = `${number & Minimum<0>}`;
 
-export type Percentage = `${number & Minimum<0> & tags.Type<'double'>}`;
+export type Percentage = `${number & Minimum<0>}`;
+
+export type DiscountValue = Price | Percentage;
+
+export type ISO8601 = string & tags.Format<'date-time'>;

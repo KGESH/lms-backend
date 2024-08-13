@@ -1,5 +1,5 @@
 {
-  "id": "6ac0c458-5c92-4cf3-af22-f58083d51349",
+  "id": "d6a0ba80-7ae8-463b-91c3-76ee3a3e3989",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -80,8 +80,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.course_discounts": {
-      "name": "course_discounts",
+    "public.course_product_snapshot_discounts": {
+      "name": "course_product_snapshot_discounts",
       "schema": "",
       "columns": {
         "id": {
@@ -91,15 +91,16 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "course_pricing_id": {
-          "name": "course_pricing_id",
+        "course_product_snapshot_id": {
+          "name": "course_product_snapshot_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
         "discount_type": {
           "name": "discount_type",
-          "type": "text",
+          "type": "discount_type",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         },
@@ -111,13 +112,13 @@
         },
         "valid_from": {
           "name": "valid_from",
-          "type": "date",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
         "valid_to": {
           "name": "valid_to",
-          "type": "date",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         }
@@ -127,8 +128,92 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.course_pricing": {
-      "name": "course_pricing",
+    "public.course_product_snapshot_pricing": {
+      "name": "course_product_snapshot_pricing",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "course_product_snapshot_id": {
+          "name": "course_product_snapshot_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.course_product_snapshots": {
+      "name": "course_product_snapshots",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "course_product_id": {
+          "name": "course_product_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.course_products": {
+      "name": "course_products",
       "schema": "",
       "columns": {
         "id": {
@@ -141,12 +226,6 @@
         "course_id": {
           "name": "course_id",
           "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "amount": {
-          "name": "amount",
-          "type": "numeric",
           "primaryKey": false,
           "notNull": true
         }
@@ -193,14 +272,14 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "date",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "date",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
@@ -332,31 +411,31 @@
           "name": "gender",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "birth_date": {
           "name": "birth_date",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "phone_number": {
           "name": "phone_number",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "connecting_information": {
           "name": "connecting_information",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "duplication_information": {
           "name": "duplication_information",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
@@ -422,6 +501,123 @@
         }
       }
     },
+    "public.ui_carousel_reviews": {
+      "name": "ui_carousel_reviews",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "ui_carousel_id": {
+          "name": "ui_carousel_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sequence": {
+          "name": "sequence",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rating": {
+          "name": "rating",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ui_carousel_reviews_ui_carousel_id_ui_carousels_id_fk": {
+          "name": "ui_carousel_reviews_ui_carousel_id_ui_carousels_id_fk",
+          "tableFrom": "ui_carousel_reviews",
+          "tableTo": "ui_carousels",
+          "columnsFrom": [
+            "ui_carousel_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.ui_carousels": {
+      "name": "ui_carousels",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "ui_component_id": {
+          "name": "ui_component_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "carousel_type": {
+          "name": "carousel_type",
+          "type": "ui_carousel_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ui_carousels_ui_component_id_ui_components_id_fk": {
+          "name": "ui_carousels_ui_component_id_ui_components_id_fk",
+          "tableFrom": "ui_carousels",
+          "tableTo": "ui_components",
+          "columnsFrom": [
+            "ui_component_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.ui_components": {
       "name": "ui_components",
       "schema": "",
@@ -442,6 +638,12 @@
         },
         "name": {
           "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "path": {
+          "name": "path",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -595,35 +797,49 @@
           "name": "birth_date",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "gender": {
           "name": "gender",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "phone_number": {
           "name": "phone_number",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "connecting_information": {
           "name": "connecting_information",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "duplication_information": {
           "name": "duplication_information",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "user_infos_user_id_users_id_fk": {
+          "name": "user_infos_user_id_users_id_fk",
+          "tableFrom": "user_infos",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "user_infos_user_id_unique": {
@@ -641,6 +857,48 @@
           ]
         }
       }
+    },
+    "public.user_sessions": {
+      "name": "user_sessions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_sessions_user_id_users_id_fk": {
+          "name": "user_sessions_user_id_users_id_fk",
+          "tableFrom": "user_sessions",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
     "public.users": {
       "name": "users",
@@ -670,6 +928,18 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "emailVerified": {
+          "name": "emailVerified",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "image": {
+          "name": "image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -687,6 +957,23 @@
     }
   },
   "enums": {
+    "public.discount_type": {
+      "name": "discount_type",
+      "schema": "public",
+      "values": [
+        "fixed_amount",
+        "percent"
+      ]
+    },
+    "public.ui_carousel_type": {
+      "name": "ui_carousel_type",
+      "schema": "public",
+      "values": [
+        "carousel.main-banner",
+        "carousel.review",
+        "carousel.product"
+      ]
+    },
     "public.ui_categories": {
       "name": "ui_categories",
       "schema": "public",

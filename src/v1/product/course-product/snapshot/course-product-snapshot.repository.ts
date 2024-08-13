@@ -9,7 +9,7 @@ import { TransactionClient } from 'src/infra/db/drizzle.types';
 import { IPagination } from 'src/shared/types/pagination';
 import { asc, desc, eq } from 'drizzle-orm';
 import { dbSchema } from '../../../../infra/db/schema';
-import * as date from '../../../../shared/utils/date';
+import { now } from '../../../../shared/utils/date';
 
 @Injectable()
 export class CourseProductSnapshotRepository
@@ -85,7 +85,7 @@ export class CourseProductSnapshotRepository
   ): Promise<ICourseProductSnapshot> {
     const [deleted] = await db
       .update(dbSchema.courseProductSnapshots)
-      .set({ deletedAt: date.now('iso') })
+      .set({ deletedAt: now('date') })
       .where(eq(dbSchema.courseProductSnapshots.id, where.id))
       .returning();
     return deleted;

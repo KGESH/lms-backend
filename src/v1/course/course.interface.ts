@@ -7,8 +7,8 @@ export type ICourse = {
   categoryId: Uuid;
   title: string;
   description: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type ICourseCreate = Pick<

@@ -1,4 +1,4 @@
-import { Uuid } from '../../shared/types/primitive';
+import { ISO8601, Uuid } from '../../shared/types/primitive';
 
 export type CourseDto = {
   id: Uuid;
@@ -6,8 +6,8 @@ export type CourseDto = {
   categoryId: Uuid;
   title: string;
   description: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: ISO8601;
+  updatedAt: ISO8601;
 };
 
 export type CourseCreateDto = Pick<

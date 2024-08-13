@@ -6,9 +6,12 @@ export type ICourseProductSnapshot = {
   courseProductId: Uuid;
   title: string;
   description: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
 };
 
-export type ICourseProductSnapshotCreate = Optional<
-  ICourseProductSnapshot,
-  'id'
+export type ICourseProductSnapshotCreate = Pick<
+  Optional<ICourseProductSnapshot, 'id'>,
+  'id' | 'courseProductId' | 'title' | 'description'
 >;

@@ -11,9 +11,7 @@ import { asc, desc, eq } from 'drizzle-orm';
 
 @Injectable()
 export class CourseProductRepository implements IRepository<ICourseProduct> {
-  constructor(
-    private readonly drizzle: DrizzleService
-  ) {}
+  constructor(private readonly drizzle: DrizzleService) {}
 
   async findOne(
     where: Pick<ICourseProduct, 'id'>,

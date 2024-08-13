@@ -11,6 +11,7 @@ import { S3Module } from './infra/s3/s3.module';
 import { HttpClientModule } from './infra/http/http-client.module';
 import { UiModule } from './v1/ui/ui.module';
 import { LessonContentModule } from './v1/course/chapter/lesson/lesson-content/lesson-content.module';
+import { ProductModule } from './v1/product/product.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { LessonContentModule } from './v1/course/chapter/lesson/lesson-content/l
     TeacherModule,
     S3Module,
     UiModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -9,7 +9,6 @@ import {
 import { relations } from 'drizzle-orm';
 import { teachers } from './teacher';
 import { discountType } from './enum';
-import * as date from '../../../shared/utils/date';
 
 export const courseCategories = pgTable('course_categories', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -24,8 +23,13 @@ export const courses = pgTable('courses', {
   categoryId: uuid('category_id').notNull(),
   title: text('title').notNull(),
   description: text('description').notNull(),
-  createdAt: timestamp('created_at', { mode: 'string' }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { mode: 'string' }).notNull().defaultNow(),
+  createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp('updated_at', { mode: 'date', withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
 
 export const chapters = pgTable('chapters', {
@@ -64,12 +68,14 @@ export const courseProductSnapshots = pgTable('course_product_snapshots', {
   courseProductId: uuid('course_product_id').notNull(),
   title: text('title').notNull(),
   description: text('description'),
-  createdAt: timestamp('created_at', { mode: 'string' }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { mode: 'string' })
+  createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp('updated_at', { mode: 'date', withTimezone: true })
     .notNull()
     .defaultNow()
-    .$onUpdate(() => date.now('iso')),
-  deletedAt: timestamp('deleted_at', { mode: 'string' }),
+    .$onUpdate(() => new Date()),
+  deletedAt: timestamp('deleted_at', { mode: 'date', withTimezone: true }),
 });
 
 export const courseProductSnapshotPricing = pgTable(
@@ -88,8 +94,8 @@ export const courseProductSnapshotDiscounts = pgTable(
     courseProductSnapshotId: uuid('course_product_snapshot_id').notNull(),
     discountType: discountType('discount_type').notNull(),
     value: decimal('value').notNull(),
-    validFrom: timestamp('valid_from', { mode: 'string' }),
-    validTo: timestamp('valid_to', { mode: 'string' }),
+    validFrom: timestamp('valid_from', { mode: 'date', withTimezone: true }),
+    validTo: timestamp('valid_to', { mode: 'date', withTimezone: true }),
   },
 );
 

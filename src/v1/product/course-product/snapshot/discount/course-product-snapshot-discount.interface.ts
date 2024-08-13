@@ -1,6 +1,7 @@
 import {
   DiscountType,
   FixedAmount,
+  ISO8601,
   Percent,
   Percentage,
   Price,
@@ -21,8 +22,8 @@ export type ICourseProductSnapshotPercentDiscount = {
 export type ICourseProductSnapshotDiscount = {
   id: Uuid;
   courseProductSnapshotId: Uuid;
-  validFrom: string | null;
-  validTo: string | null;
+  validFrom: Date | null;
+  validTo: Date | null;
 } & (
   | ICourseProductSnapshotFixedAmountDiscount
   | ICourseProductSnapshotPercentDiscount

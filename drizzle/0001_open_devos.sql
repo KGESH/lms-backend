@@ -1,1 +1,0 @@
-ALTER TABLE "ui_components" ADD COLUMN "path" text NOT NULL;

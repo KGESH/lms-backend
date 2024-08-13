@@ -23,7 +23,7 @@ export class CourseProductSnapshotPricingRepository {
 
     return {
       ...pricing,
-      amount: typia.assert<Price>(pricing.amount),
+      amount: typia.assert<Price>(`${pricing.amount}`),
     };
   }
 }
