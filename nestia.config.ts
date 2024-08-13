@@ -2,6 +2,7 @@ import { INestiaConfig } from '@nestia/sdk';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './src/app.module';
 import { ConfigService } from '@nestjs/config';
+import * as path from 'path';
 import 'dotenv/config';
 
 const env = new ConfigService();
@@ -26,7 +27,7 @@ const NESTIA_CONFIG: INestiaConfig = {
   distribute: 'packages/api',
   swagger: {
     openapi: '3.1',
-    output: 'dist/src/swagger.json',
+    output: path.join(process.env.PWD as string, `swagger.json`),
     security: {
       bearer: {
         type: 'apiKey',

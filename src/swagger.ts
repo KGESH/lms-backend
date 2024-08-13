@@ -5,7 +5,7 @@ import * as path from 'path';
 
 export const buildSwagger = (app: INestApplication) => {
   const swaggerConfig = fs.readFileSync(
-    path.join(__dirname, 'swagger.json'),
+    path.join(process.env.PWD as string, 'swagger.json'),
     'utf-8',
   );
 
