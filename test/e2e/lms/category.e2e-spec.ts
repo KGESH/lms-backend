@@ -38,7 +38,7 @@ describe('CategoryController (e2e)', () => {
           description: 'GET category test',
           parentId: null,
         },
-        drizzle,
+        drizzle.db,
       );
 
       const response = await CategoryAPI.getCategory({ host }, categoryId);
@@ -79,7 +79,7 @@ describe('CategoryController (e2e)', () => {
             parentId: levelTwoCategoryId,
           },
         ],
-        drizzle,
+        drizzle.db,
       );
 
       const response = await CategoryAPI.getAllCategories({
@@ -126,7 +126,7 @@ describe('CategoryController (e2e)', () => {
           description: 'GET category test',
           parentId: null,
         },
-        drizzle,
+        drizzle.db,
       );
       const updateCategoryDto: UpdateCategoryDto = { name: 'updated' };
 
@@ -167,7 +167,7 @@ describe('CategoryController (e2e)', () => {
           description: 'GET category test',
           parentId: null,
         },
-        drizzle,
+        drizzle.db,
       );
 
       const deleteResponse = await CategoryAPI.deleteCategory(

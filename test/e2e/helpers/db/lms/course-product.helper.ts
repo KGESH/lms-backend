@@ -1,4 +1,3 @@
-import { DrizzleService } from '../../../../../src/infra/db/drizzle.service';
 import { dbSchema } from '../../../../../src/infra/db/schema';
 import * as typia from 'typia';
 import { createRandomCourse } from './course.helper';
@@ -21,15 +20,15 @@ import {
 import { ICourseProductWithRelations } from '../../../../../src/v1/product/course-product/course-product-relations.interface';
 import {
   DiscountValue,
-  Percentage,
   Price,
 } from '../../../../../src/shared/types/primitive';
+import { TransactionClient } from '../../../../../src/infra/db/drizzle.types';
 
 export const createCourseProduct = async (
   params: ICourseProductCreate,
-  drizzle: DrizzleService,
+  db: TransactionClient,
 ): Promise<ICourseProduct> => {
-  const [product] = await drizzle.db
+  const [product] = await db
     .insert(dbSchema.courseProducts)
     .values(params)
     .returning();
@@ -39,9 +38,9 @@ export const createCourseProduct = async (
 
 export const createCourseProductSnapshot = async (
   params: ICourseProductSnapshotCreate,
-  drizzle: DrizzleService,
+  db: TransactionClient,
 ): Promise<ICourseProductSnapshot> => {
-  const [snapshot] = await drizzle.db
+  const [snapshot] = await db
     .insert(dbSchema.courseProductSnapshots)
     .values(params)
     .returning();
@@ -51,9 +50,9 @@ export const createCourseProductSnapshot = async (
 
 export const createCourseProductSnapshotPricing = async (
   params: ICourseProductSnapshotPricingCreate,
-  drizzle: DrizzleService,
+  db: TransactionClient,
 ): Promise<ICourseProductSnapshotPricing> => {
-  const [pricing] = await drizzle.db
+  const [pricing] = await db
     .insert(dbSchema.courseProductSnapshotPricing)
     .values(params)
     .returning();
@@ -66,9 +65,9 @@ export const createCourseProductSnapshotPricing = async (
 
 export const createCourseProductSnapshotDiscount = async (
   params: ICourseProductSnapshotDiscountCreate,
-  drizzle: DrizzleService,
+  db: TransactionClient,
 ): Promise<ICourseProductSnapshotDiscount> => {
-  const [discount] = await drizzle.db
+  const [discount] = await db
     .insert(dbSchema.courseProductSnapshotDiscounts)
     .values(params)
     .returning();
@@ -80,36 +79,36 @@ export const createCourseProductSnapshotDiscount = async (
 };
 
 export const createRandomCourseProduct = async (
-  drizzle: DrizzleService,
+  db: TransactionClient,
 ): Promise<ICourseProductWithRelations> => {
-  const { course } = await createRandomCourse(drizzle);
+  const { course } = await createRandomCourse(db);
   const product = await createCourseProduct(
     {
       ...typia.random<ICourseProductCreate>(),
       courseId: course.id,
     },
-    drizzle,
+    db,
   );
   const snapshot = await createCourseProductSnapshot(
     {
       ...typia.random<ICourseProductSnapshotCreate>(),
       courseProductId: product.id,
     },
-    drizzle,
+    db,
   );
   const pricing = await createCourseProductSnapshotPricing(
     {
       ...typia.random<ICourseProductSnapshotPricingCreate>(),
       courseProductSnapshotId: snapshot.id,
     },
-    drizzle,
+    db,
   );
   const discount = await createCourseProductSnapshotDiscount(
     {
       ...typia.random<ICourseProductSnapshotDiscountCreate>(),
       courseProductSnapshotId: snapshot.id,
     },
-    drizzle,
+    db,
   );
 
   return {
@@ -120,4 +119,13 @@ export const createRandomCourseProduct = async (
       discount,
     },
   };
+};
+
+export const seedCourseProducts = async (
+  { count }: { count: number },
+  db: TransactionClient,
+) => {
+  return await Promise.all(
+    Array.from({ length: count }).map(() => createRandomCourseProduct(db)),
+  );
 };

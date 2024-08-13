@@ -25,7 +25,7 @@ describe('ChapterController (e2e)', () => {
 
   describe('[Get chapter]', () => {
     it('should be get a chapter', async () => {
-      const { course } = await createRandomCourse(drizzle);
+      const { course } = await createRandomCourse(drizzle.db);
       const chapter = await createChapter(
         {
           title: 'mock-chapter',
@@ -33,7 +33,7 @@ describe('ChapterController (e2e)', () => {
           description: '',
           sequence: 0,
         },
-        drizzle,
+        drizzle.db,
       );
       const response = await ChapterAPI.getChapter(
         { host },
@@ -52,7 +52,7 @@ describe('ChapterController (e2e)', () => {
 
   describe('[Get chapters]', () => {
     it('should be get all chapters', async () => {
-      const { course } = await createRandomCourse(drizzle);
+      const { course } = await createRandomCourse(drizzle.db);
       const chapterOne = await createChapter(
         {
           title: 'chapter-one',
@@ -60,7 +60,7 @@ describe('ChapterController (e2e)', () => {
           description: '',
           sequence: 0,
         },
-        drizzle,
+        drizzle.db,
       );
       const chapterTwo = await createChapter(
         {
@@ -69,7 +69,7 @@ describe('ChapterController (e2e)', () => {
           description: '',
           sequence: 1,
         },
-        drizzle,
+        drizzle.db,
       );
 
       const response = await ChapterAPI.getChapters({ host }, course.id);
@@ -89,7 +89,7 @@ describe('ChapterController (e2e)', () => {
 
   describe('[Create chapter]', () => {
     it('should be create chapter success', async () => {
-      const { course } = await createRandomCourse(drizzle);
+      const { course } = await createRandomCourse(drizzle.db);
       const createDto: ChapterCreateDto = {
         title: 'mock-chapter',
         sequence: 0,
@@ -111,7 +111,7 @@ describe('ChapterController (e2e)', () => {
 
     describe('[Update chapter]', () => {
       it('should be update chapter success', async () => {
-        const { course } = await createRandomCourse(drizzle);
+        const { course } = await createRandomCourse(drizzle.db);
         const chapter = await createChapter(
           {
             title: 'old-chapter',
@@ -119,7 +119,7 @@ describe('ChapterController (e2e)', () => {
             description: '',
             sequence: 0,
           },
-          drizzle,
+          drizzle.db,
         );
         const updateDto: IChapterUpdate = {
           title: 'updated-chapter',
@@ -142,7 +142,7 @@ describe('ChapterController (e2e)', () => {
 
     describe('[Delete chapter]', () => {
       it('should be delete chapter success', async () => {
-        const { course } = await createRandomCourse(drizzle);
+        const { course } = await createRandomCourse(drizzle.db);
         const chapter = await createChapter(
           {
             title: 'chapter',
@@ -150,7 +150,7 @@ describe('ChapterController (e2e)', () => {
             description: '',
             sequence: 0,
           },
-          drizzle,
+          drizzle.db,
         );
 
         const response = await ChapterAPI.deleteChapter(
@@ -165,7 +165,10 @@ describe('ChapterController (e2e)', () => {
         const deletedChapter = response.data;
         expect(deletedChapter.id).toEqual(chapter.id);
 
-        const notFoundResult = await findChapter({ id: chapter.id }, drizzle);
+        const notFoundResult = await findChapter(
+          { id: chapter.id },
+          drizzle.db,
+        );
         expect(notFoundResult).toBeNull();
       });
     });

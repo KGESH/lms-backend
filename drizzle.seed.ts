@@ -7,6 +7,9 @@ import { sql } from 'drizzle-orm';
 import { IS_PRODUCTION } from './src/shared/utils/is-production';
 import { seedUiRepeatTimer } from './test/e2e/helpers/db/ui/repeat-timer.helper';
 import { seedCarouselReview } from './test/e2e/helpers/db/ui/carousel-review.helper';
+import { seedUsers } from './test/e2e/helpers/db/lms/user.helper';
+import { seedTeachers } from './test/e2e/helpers/db/lms/teacher.helper';
+import { seedCourseProducts } from './test/e2e/helpers/db/lms/course-product.helper';
 
 const env = new ConfigService();
 
@@ -31,8 +34,11 @@ async function seed() {
 
   // Seed data
   await db.transaction(async (tx) => {
-    await seedUiRepeatTimer(tx);
-    await seedCarouselReview(tx);
+    await seedUiRepeatTimer({ count: 2 }, tx);
+    await seedCarouselReview({ count: 4 }, tx);
+    await seedTeachers({ count: 2 }, tx);
+    await seedUsers({ count: 3 }, tx);
+    await seedCourseProducts({ count: 5 }, tx);
   });
 }
 

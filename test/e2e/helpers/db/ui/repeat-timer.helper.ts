@@ -18,10 +18,22 @@ export const createUiRepeatTimer = async (
   });
 };
 
-export const seedUiRepeatTimer = async (db: TransactionClient) => {
-  const params: IUiRepeatTimerComponentCreate = {
-    ...typia.random<IUiRepeatTimerComponentCreate>(),
-  };
+export const createManyUiRepeatTimer = async (
+  createManyParams: IUiRepeatTimerComponentCreate[],
+  db: TransactionClient,
+) => {
+  await Promise.all(
+    createManyParams.map((params) => createUiRepeatTimer(params, db)),
+  );
+};
 
-  await createUiRepeatTimer(params, db);
+export const seedUiRepeatTimer = async (
+  { count }: { count: number },
+  db: TransactionClient,
+) => {
+  const createManyParams = Array.from({ length: count }).map(() => ({
+    ...typia.random<IUiRepeatTimerComponentCreate>(),
+  }));
+
+  await createManyUiRepeatTimer(createManyParams, db);
 };

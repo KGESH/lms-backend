@@ -32,11 +32,11 @@ describe('CourseController (e2e)', () => {
     it('should be get a course', async () => {
       const category = await createCategory(
         typia.random<ICategoryCreate>(),
-        drizzle,
+        drizzle.db,
       );
       const { teacher } = await createTeacher(
         typia.random<ITeacherSignUp>(),
-        drizzle,
+        drizzle.db,
       );
       const course = await createCourse(
         {
@@ -45,7 +45,7 @@ describe('CourseController (e2e)', () => {
           title: 'mock-course',
           description: '',
         },
-        drizzle,
+        drizzle.db,
       );
       const response = await CourseAPI.getCourse({ host }, course.id);
       if (!response.success) {
@@ -63,11 +63,11 @@ describe('CourseController (e2e)', () => {
     it('should be get all courses', async () => {
       const category = await createCategory(
         typia.random<ICategoryCreate>(),
-        drizzle,
+        drizzle.db,
       );
       const { teacher } = await createTeacher(
         typia.random<ITeacherSignUp>(),
-        drizzle,
+        drizzle.db,
       );
       const courseOne = await createCourse(
         {
@@ -76,7 +76,7 @@ describe('CourseController (e2e)', () => {
           title: 'course-one',
           description: '',
         },
-        drizzle,
+        drizzle.db,
       );
       const courseTwo = await createCourse(
         {
@@ -85,7 +85,7 @@ describe('CourseController (e2e)', () => {
           title: 'course-two',
           description: '',
         },
-        drizzle,
+        drizzle.db,
       );
 
       const response = await CourseAPI.getCourses({ host });
@@ -108,11 +108,11 @@ describe('CourseController (e2e)', () => {
     it('should be create course success', async () => {
       const category = await createCategory(
         typia.random<ICategoryCreate>(),
-        drizzle,
+        drizzle.db,
       );
       const { teacher } = await createTeacher(
         typia.random<ITeacherSignUp>(),
-        drizzle,
+        drizzle.db,
       );
       const createDto: CourseCreateDto = {
         categoryId: category.id,
@@ -134,11 +134,11 @@ describe('CourseController (e2e)', () => {
       it('should be update course success', async () => {
         const category = await createCategory(
           typia.random<ICategoryCreate>(),
-          drizzle,
+          drizzle.db,
         );
         const { teacher } = await createTeacher(
           typia.random<ITeacherSignUp>(),
-          drizzle,
+          drizzle.db,
         );
         const course = await createCourse(
           {
@@ -146,7 +146,7 @@ describe('CourseController (e2e)', () => {
             categoryId: category.id,
             teacherId: teacher.id,
           },
-          drizzle,
+          drizzle.db,
         );
         const updateDto: ICourseUpdate = {
           title: 'updated-course',
@@ -170,11 +170,11 @@ describe('CourseController (e2e)', () => {
       it('should be delete course success', async () => {
         const category = await createCategory(
           typia.random<ICategoryCreate>(),
-          drizzle,
+          drizzle.db,
         );
         const { teacher } = await createTeacher(
           typia.random<ITeacherSignUp>(),
-          drizzle,
+          drizzle.db,
         );
         const course = await createCourse(
           {
@@ -182,7 +182,7 @@ describe('CourseController (e2e)', () => {
             categoryId: category.id,
             teacherId: teacher.id,
           },
-          drizzle,
+          drizzle.db,
         );
 
         const response = await CourseAPI.deleteCourse({ host }, course.id);
@@ -193,7 +193,7 @@ describe('CourseController (e2e)', () => {
         const deletedCourse = response.data;
         expect(deletedCourse.id).toEqual(course.id);
 
-        const notFoundResult = await findCourse({ id: course.id }, drizzle);
+        const notFoundResult = await findCourse({ id: course.id }, drizzle.db);
         expect(notFoundResult).toBeNull();
       });
     });

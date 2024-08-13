@@ -1,33 +1,20 @@
-import { DrizzleService } from '../../../../../src/infra/db/drizzle.service';
 import { dbSchema } from '../../../../../src/infra/db/schema';
 import { IUser } from '../../../../../src/v1/user/user.interface';
-import { eq } from 'drizzle-orm';
 import { hash } from '../../../../../src/shared/helpers/hash';
 import { IUserSignUp } from '../../../../../src/v1/auth/auth.interface';
 import { IUserInfo } from '../../../../../src/v1/user/user.interface';
-
-export const findUser = async (
-  where: Pick<IUser, 'id'>,
-  drizzle: DrizzleService,
-): Promise<IUser | null> => {
-  const user = await drizzle.db.query.users.findFirst({
-    where: eq(dbSchema.users.id, where.id),
-  });
-  return user ?? null;
-};
-
-export const findUsers = async (drizzle: DrizzleService): Promise<IUser[]> => {
-  return await drizzle.db.query.users.findMany();
-};
+import * as typia from 'typia';
+import { createUuid } from '../../../../../src/shared/utils/uuid';
+import { TransactionClient } from '../../../../../src/infra/db/drizzle.types';
 
 export const createUser = async (
   { userCreateParams, infoCreateParams }: IUserSignUp,
-  drizzle: DrizzleService,
+  db: TransactionClient,
 ): Promise<{
   user: IUser;
   userInfo: IUserInfo;
 }> => {
-  return await drizzle.db.transaction(async (tx) => {
+  return await db.transaction(async (tx) => {
     const [user] = await tx
       .insert(dbSchema.users)
       .values({
@@ -47,4 +34,41 @@ export const createUser = async (
 
     return { user, userInfo };
   });
+};
+
+export const createManyUsers = async (
+  createManyParams: IUserSignUp[],
+  db: TransactionClient,
+) => {
+  return await Promise.all(
+    createManyParams.map((params) => createUser(params, db)),
+  );
+};
+
+export const seedUsers = async (
+  { count }: { count: number },
+  db: TransactionClient,
+): Promise<
+  {
+    user: IUser;
+    userInfo: IUserInfo;
+  }[]
+> => {
+  const userCreateDtos: IUserSignUp[] = Array.from({ length: count }).map(
+    () => {
+      const userId = createUuid();
+      return {
+        userCreateParams: {
+          ...typia.random<IUserSignUp['userCreateParams']>(),
+          id: userId,
+        },
+        infoCreateParams: {
+          ...typia.random<IUserSignUp['infoCreateParams']>(),
+          userId,
+        },
+      };
+    },
+  );
+
+  return await createManyUsers(userCreateDtos, db);
 };

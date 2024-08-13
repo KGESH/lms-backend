@@ -77,7 +77,7 @@ describe('AuthController (e2e)', () => {
         infoCreateParams,
       };
       const loginDto: LoginUserDto = { ...userCreateParams };
-      await UserHelper.createUser(signupDto, drizzle);
+      await UserHelper.createUser(signupDto, drizzle.db);
 
       const loginResponse = await AuthAPI.login({ host }, loginDto);
       if (!loginResponse.success) {

@@ -34,12 +34,32 @@ export const createCarouselReview = async (
   );
 };
 
-export const seedCarouselReview = async (db: TransactionClient) => {
-  const carouselParams: IUiCarouselComponentCreate<UiCarouselReview> = {
-    ...typia.random<IUiCarouselComponentCreate<UiCarouselReview>>(),
-  };
-  const carouselItemParams: IUiCarouselReviewCreate[] =
-    typia.random<IUiCarouselReviewCreate[]>();
+const createManyCarouselReview = async (
+  createManyParams: {
+    carouselParams: IUiCarouselComponentCreate<UiCarouselReview>;
+    carouselItemParams: IUiCarouselReviewCreate[];
+  }[],
+  db: TransactionClient,
+) => {
+  return await Promise.all(
+    createManyParams.map(({ carouselParams, carouselItemParams }) =>
+      createCarouselReview(carouselParams, carouselItemParams, db),
+    ),
+  );
+};
 
-  await createCarouselReview(carouselParams, carouselItemParams, db);
+export const seedCarouselReview = async (
+  { count }: { count: number },
+  db: TransactionClient,
+) => {
+  const createManyParams = Array.from({ length: count }).map(() => ({
+    carouselParams: {
+      ...typia.random<IUiCarouselComponentCreate<UiCarouselReview>>(),
+    },
+    carouselItemParams: Array.from({ length: count }).map(() =>
+      typia.random<IUiCarouselReviewCreate>(),
+    ),
+  }));
+
+  return await createManyCarouselReview(createManyParams, db);
 };

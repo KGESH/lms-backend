@@ -25,7 +25,7 @@ describe('CourseProductController (e2e)', () => {
 
   describe('[Get course product]', () => {
     it('should be get a course product success', async () => {
-      const product = await createRandomCourseProduct(drizzle);
+      const product = await createRandomCourseProduct(drizzle.db);
 
       const response = await CourseProductAPI.getCourseProduct(
         { host },
@@ -43,7 +43,7 @@ describe('CourseProductController (e2e)', () => {
 
   describe('[Create course product]', () => {
     it('should be create course product success', async () => {
-      const { course } = await createRandomCourse(drizzle);
+      const { course } = await createRandomCourse(drizzle.db);
       const createDto: CourseProductCreateDto = {
         ...typia.random<CourseProductCreateDto>(),
         title: 'mock-product',

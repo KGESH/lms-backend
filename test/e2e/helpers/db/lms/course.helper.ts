@@ -1,4 +1,3 @@
-import { DrizzleService } from '../../../../../src/infra/db/drizzle.service';
 import { dbSchema } from '../../../../../src/infra/db/schema';
 import { eq } from 'drizzle-orm';
 import {
@@ -10,12 +9,15 @@ import * as typia from 'typia';
 import { ICategoryCreate } from '../../../../../src/v1/category/category.interface';
 import { createTeacher } from './teacher.helper';
 import { ITeacherSignUp } from '../../../../../src/v1/teacher/teacher.interface';
+import { TransactionClient } from '../../../../../src/infra/db/drizzle.types';
+import { createChapter } from './chapter.helper';
+import { IChapterCreate } from '../../../../../src/v1/course/chapter/chapter.interface';
 
 export const findCourse = async (
   where: Pick<ICourse, 'id'>,
-  drizzle: DrizzleService,
+  db: TransactionClient,
 ): Promise<ICourse | null> => {
-  const course = await drizzle.db.query.courses.findFirst({
+  const course = await db.query.courses.findFirst({
     where: eq(dbSchema.courses.id, where.id),
   });
   return course ?? null;
@@ -23,25 +25,16 @@ export const findCourse = async (
 
 export const createCourse = async (
   params: ICourseCreate,
-  drizzle: DrizzleService,
+  db: TransactionClient,
 ): Promise<ICourse> => {
-  const [course] = await drizzle.db
-    .insert(dbSchema.courses)
-    .values(params)
-    .returning();
+  const [course] = await db.insert(dbSchema.courses).values(params).returning();
 
   return course;
 };
 
-export const createRandomCourse = async (drizzle: DrizzleService) => {
-  const category = await createCategory(
-    typia.random<ICategoryCreate>(),
-    drizzle,
-  );
-  const { teacher } = await createTeacher(
-    typia.random<ITeacherSignUp>(),
-    drizzle,
-  );
+export const createRandomCourse = async (db: TransactionClient) => {
+  const category = await createCategory(typia.random<ICategoryCreate>(), db);
+  const { teacher } = await createTeacher(typia.random<ITeacherSignUp>(), db);
   const course = await createCourse(
     {
       title: 'mock-course',
@@ -49,8 +42,15 @@ export const createRandomCourse = async (drizzle: DrizzleService) => {
       teacherId: teacher.id,
       description: '',
     },
-    drizzle,
+    db,
+  );
+  const chapter = await createChapter(
+    {
+      ...typia.random<IChapterCreate>(),
+      courseId: course.id,
+    },
+    db,
   );
 
-  return { category, teacher, course };
+  return { category, teacher, course, chapter };
 };
