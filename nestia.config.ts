@@ -1,7 +1,10 @@
 import { INestiaConfig } from '@nestia/sdk';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './src/app.module';
-import { NESTIA_MOCK_HOST } from './src/shared/helpers/mocks/host.mock';
+import { ConfigService } from '@nestjs/config';
+import 'dotenv/config';
+
+const env = new ConfigService();
 
 const NESTIA_CONFIG: INestiaConfig = {
   // input: 'src/**/*.controller.ts',
@@ -23,7 +26,7 @@ const NESTIA_CONFIG: INestiaConfig = {
   distribute: 'packages/api',
   swagger: {
     openapi: '3.1',
-    output: 'dist/swagger.json',
+    output: 'dist/src/swagger.json',
     security: {
       bearer: {
         type: 'apiKey',
@@ -33,7 +36,7 @@ const NESTIA_CONFIG: INestiaConfig = {
     },
     servers: [
       {
-        url: NESTIA_MOCK_HOST,
+        url: `http://localhost:${env.get('APP_PORT')}`,
         description: 'Local Server',
       },
     ],

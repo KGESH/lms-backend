@@ -37,3 +37,11 @@ export function format(
 ): string {
   return dayjs(date).format(format);
 }
+
+export function toDate(date: string): Date {
+  return dayjs(date).toDate();
+}
+
+export function toISOString(date: Date): string {
+  return dayjs(date).toISOString();
+}
