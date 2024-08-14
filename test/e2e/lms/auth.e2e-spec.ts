@@ -2,11 +2,12 @@ import { INestApplication } from '@nestjs/common';
 import * as AuthAPI from '../../../src/api/functional/v1/auth';
 import * as typia from 'typia';
 import { createTestingServer } from '../helpers/app.helper';
-import { SignupUserDto, LoginUserDto } from '../../../src/v1/auth/auth.dto';
+import { SignUpUserDto, LoginUserDto } from '../../../src/v1/auth/auth.dto';
 import { Uri } from '../../../src/shared/types/primitive';
 import { DrizzleService } from '../../../src/infra/db/drizzle.service';
 import { KakaoLoginDto } from '../../../src/v1/auth/kakao-auth.dto';
 import * as UserHelper from '../helpers/db/lms/user.helper';
+import { seedUsers } from '../helpers/db/lms/user.helper';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -43,15 +44,18 @@ describe('AuthController (e2e)', () => {
 
   describe('[Signup]', () => {
     it('should be signup success', async () => {
-      const userCreateParams: SignupUserDto['userCreateParams'] = {
-        ...typia.random<SignupUserDto['userCreateParams']>(),
+      const userCreateParams: SignUpUserDto['userCreateParams'] = {
+        ...typia.random<SignUpUserDto['userCreateParams']>(),
         password: 'mock-password',
       };
-      const infoCreateParams: SignupUserDto['infoCreateParams'] =
-        typia.random<SignupUserDto['infoCreateParams']>();
-      const signupDto: SignupUserDto = {
+      const infoCreateParams: SignUpUserDto['infoCreateParams'] =
+        typia.random<SignUpUserDto['infoCreateParams']>();
+      const accountCreateParams: SignUpUserDto['accountCreateParams'] =
+        typia.random<SignUpUserDto['accountCreateParams']>();
+      const signupDto: SignUpUserDto = {
         userCreateParams,
         infoCreateParams,
+        accountCreateParams,
       };
 
       const response = await AuthAPI.signup({ host }, signupDto);
@@ -66,15 +70,18 @@ describe('AuthController (e2e)', () => {
 
   describe('[Login]', () => {
     it('should be login success', async () => {
-      const userCreateParams: SignupUserDto['userCreateParams'] = {
-        ...typia.random<SignupUserDto['userCreateParams']>(),
+      const userCreateParams: SignUpUserDto['userCreateParams'] = {
+        ...typia.random<SignUpUserDto['userCreateParams']>(),
         password: 'mock-password',
       };
-      const infoCreateParams: SignupUserDto['infoCreateParams'] =
-        typia.random<SignupUserDto['infoCreateParams']>();
-      const signupDto: SignupUserDto = {
+      const infoCreateParams: SignUpUserDto['infoCreateParams'] =
+        typia.random<SignUpUserDto['infoCreateParams']>();
+      const accountCreateParams: SignUpUserDto['accountCreateParams'] =
+        typia.random<SignUpUserDto['accountCreateParams']>();
+      const signupDto: SignUpUserDto = {
         userCreateParams,
         infoCreateParams,
+        accountCreateParams,
       };
       const loginDto: LoginUserDto = { ...userCreateParams };
       await UserHelper.createUser(signupDto, drizzle.db);
@@ -86,6 +93,27 @@ describe('AuthController (e2e)', () => {
 
       const user = loginResponse.data;
       expect(user.email).toEqual(signupDto.userCreateParams.email);
+    });
+  });
+
+  describe('[UpdateUserRole]', () => {
+    it("should be update role 'user' -> 'teacher' success", async () => {
+      const users = await seedUsers({ count: 1 }, drizzle.db);
+      const { user } = users[0];
+
+      const response = await AuthAPI.role.updateUserRole(
+        { host },
+        {
+          id: user.id,
+          role: 'teacher',
+        },
+      );
+      if (!response.success) {
+        throw new Error('assert');
+      }
+
+      const updatedUser = response.data;
+      expect(updatedUser.role).toEqual('sdasdsd');
     });
   });
 });

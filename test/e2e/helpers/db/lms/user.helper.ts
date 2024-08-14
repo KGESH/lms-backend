@@ -8,7 +8,7 @@ import { createUuid } from '../../../../../src/shared/utils/uuid';
 import { TransactionClient } from '../../../../../src/infra/db/drizzle.types';
 
 export const createUser = async (
-  { userCreateParams, infoCreateParams }: IUserSignUp,
+  { userCreateParams, infoCreateParams, accountCreateParams }: IUserSignUp,
   db: TransactionClient,
 ): Promise<{
   user: IUser;
@@ -31,8 +31,15 @@ export const createUser = async (
         userId: user.id,
       })
       .returning();
+    const [userAccount] = await tx
+      .insert(dbSchema.userAccounts)
+      .values({
+        ...accountCreateParams,
+        userId: user.id,
+      })
+      .returning();
 
-    return { user, userInfo };
+    return { user, userInfo, userAccount };
   });
 };
 
@@ -64,6 +71,10 @@ export const seedUsers = async (
         },
         infoCreateParams: {
           ...typia.random<IUserSignUp['infoCreateParams']>(),
+          userId,
+        },
+        accountCreateParams: {
+          ...typia.random<IUserSignUp['accountCreateParams']>(),
           userId,
         },
       };

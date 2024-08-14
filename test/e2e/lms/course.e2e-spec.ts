@@ -34,7 +34,7 @@ describe('CourseController (e2e)', () => {
         typia.random<ICategoryCreate>(),
         drizzle.db,
       );
-      const { teacher } = await createTeacher(
+      const teacher = await createTeacher(
         typia.random<ITeacherSignUp>(),
         drizzle.db,
       );
@@ -65,7 +65,7 @@ describe('CourseController (e2e)', () => {
         typia.random<ICategoryCreate>(),
         drizzle.db,
       );
-      const { teacher } = await createTeacher(
+      const teacher = await createTeacher(
         typia.random<ITeacherSignUp>(),
         drizzle.db,
       );
@@ -110,7 +110,7 @@ describe('CourseController (e2e)', () => {
         typia.random<ICategoryCreate>(),
         drizzle.db,
       );
-      const { teacher } = await createTeacher(
+      const teacher = await createTeacher(
         typia.random<ITeacherSignUp>(),
         drizzle.db,
       );
@@ -136,7 +136,7 @@ describe('CourseController (e2e)', () => {
           typia.random<ICategoryCreate>(),
           drizzle.db,
         );
-        const { teacher } = await createTeacher(
+        const teacher = await createTeacher(
           typia.random<ITeacherSignUp>(),
           drizzle.db,
         );
@@ -172,7 +172,7 @@ describe('CourseController (e2e)', () => {
           typia.random<ICategoryCreate>(),
           drizzle.db,
         );
-        const { teacher } = await createTeacher(
+        const teacher = await createTeacher(
           typia.random<ITeacherSignUp>(),
           drizzle.db,
         );

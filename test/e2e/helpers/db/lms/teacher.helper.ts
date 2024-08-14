@@ -2,12 +2,12 @@ import { dbSchema } from '../../../../../src/infra/db/schema';
 import { eq } from 'drizzle-orm';
 import {
   ITeacher,
-  ITeacherInfo,
   ITeacherSignUp,
 } from '../../../../../src/v1/teacher/teacher.interface';
 import { TransactionClient } from '../../../../../src/infra/db/drizzle.types';
 import { createUuid } from '../../../../../src/shared/utils/uuid';
 import * as typia from 'typia';
+import { createUser } from './user.helper';
 
 export const findTeacher = async (
   where: Pick<ITeacher, 'id'>,
@@ -20,27 +20,24 @@ export const findTeacher = async (
 };
 
 export const createTeacher = async (
-  { teacherCreateParams, infoCreateParams }: ITeacherSignUp,
+  params: ITeacherSignUp,
   db: TransactionClient,
-): Promise<{
-  teacher: ITeacher;
-  teacherInfo: ITeacherInfo;
-}> => {
+): Promise<ITeacher> => {
   return await db.transaction(async (tx) => {
+    const { user } = await createUser(
+      {
+        userCreateParams: { ...params.userCreateParams, role: 'teacher' },
+        accountCreateParams: params.accountCreateParams,
+        infoCreateParams: params.infoCreateParams,
+      },
+      tx,
+    );
     const [teacher] = await tx
       .insert(dbSchema.teachers)
-      .values(teacherCreateParams)
+      .values({ userId: user.id })
       .returning();
 
-    const [teacherInfo] = await tx
-      .insert(dbSchema.teacherInfos)
-      .values({
-        ...infoCreateParams,
-        teacherId: teacher.id,
-      })
-      .returning();
-
-    return { teacher, teacherInfo };
+    return teacher;
   });
 };
 
@@ -56,23 +53,22 @@ export const createManyTeachers = async (
 export const seedTeachers = async (
   { count }: { count: number },
   db: TransactionClient,
-): Promise<
-  {
-    teacher: ITeacher;
-    teacherInfo: ITeacherInfo;
-  }[]
-> => {
+): Promise<ITeacher[]> => {
   const teacherCreateDtos: ITeacherSignUp[] = Array.from({ length: count }).map(
     () => {
-      const teacherId = createUuid();
+      const userId = createUuid();
       return {
-        teacherCreateParams: {
-          ...typia.random<ITeacherSignUp['teacherCreateParams']>(),
-          id: teacherId,
+        userCreateParams: {
+          ...typia.random<ITeacherSignUp['userCreateParams']>(),
+          id: userId,
         },
         infoCreateParams: {
           ...typia.random<ITeacherSignUp['infoCreateParams']>(),
-          teacherId,
+          userId,
+        },
+        accountCreateParams: {
+          ...typia.random<ITeacherSignUp['accountCreateParams']>(),
+          userId,
         },
       };
     },
