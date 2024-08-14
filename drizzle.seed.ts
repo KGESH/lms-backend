@@ -10,6 +10,7 @@ import { seedCarouselReview } from './test/e2e/helpers/db/ui/carousel-review.hel
 import { seedUsers } from './test/e2e/helpers/db/lms/user.helper';
 import { seedTeachers } from './test/e2e/helpers/db/lms/teacher.helper';
 import { seedCourseProducts } from './test/e2e/helpers/db/lms/course-product.helper';
+import { clearDatabase } from './src/shared/helpers/db';
 
 const env = new ConfigService();
 
@@ -32,23 +33,31 @@ async function seed() {
   console.debug(`[Test container ready]`, confirmDatabaseReady.rowCount);
   console.debug('[Test container uri]', connectionString);
 
+  await clearDatabase(db);
+
   // Seed data
-  await db.transaction(async (tx) => {
-    await seedUiRepeatTimer({ count: 2 }, tx);
-    await seedCarouselReview({ count: 4 }, tx);
-    await seedTeachers({ count: 2 }, tx);
-    await seedUsers({ count: 3 }, tx);
-    await seedCourseProducts({ count: 5 }, tx);
-  });
+  try {
+    await seedUiRepeatTimer({ count: 2 }, db);
+    await seedCarouselReview({ count: 4 }, db);
+    await seedTeachers({ count: 2 }, db);
+    await seedUsers({ count: 3 }, db);
+    await seedCourseProducts({ count: 10 }, db);
+  } catch (e) {
+    console.error(e);
+    await clearDatabase(db);
+    throw new Error('Seed failed. Database is cleared.');
+  } finally {
+    await pool.end();
+  }
 }
 
 seed()
   .then(() => {
-    console.log('Seed completed.');
+    console.log('🌱 Seed completed.');
     process.exit(0);
   })
   .catch((e) => {
-    console.error('Seed failed.');
+    console.error('❗️ Seed failed. maybe too many connection pool.');
     console.error(e);
     process.exit(1);
   });

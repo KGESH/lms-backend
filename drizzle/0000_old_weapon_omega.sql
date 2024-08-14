@@ -1,5 +1,17 @@
 DO $$ BEGIN
+ CREATE TYPE "public"."auth_provider" AS ENUM('email', 'kakao');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  CREATE TYPE "public"."discount_type" AS ENUM('fixed_amount', 'percent');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."user_role" AS ENUM('user', 'teacher', 'manager', 'admin');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -36,8 +48,8 @@ CREATE TABLE IF NOT EXISTS "course_product_snapshot_discounts" (
 	"course_product_snapshot_id" uuid NOT NULL,
 	"discount_type" "discount_type" NOT NULL,
 	"value" numeric NOT NULL,
-	"valid_from" timestamp,
-	"valid_to" timestamp
+	"valid_from" timestamp with time zone,
+	"valid_to" timestamp with time zone
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "course_product_snapshot_pricing" (
@@ -51,9 +63,9 @@ CREATE TABLE IF NOT EXISTS "course_product_snapshots" (
 	"course_product_id" uuid NOT NULL,
 	"title" text NOT NULL,
 	"description" text,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL,
-	"deleted_at" timestamp
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"deleted_at" timestamp with time zone
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "course_products" (
@@ -67,8 +79,8 @@ CREATE TABLE IF NOT EXISTS "courses" (
 	"category_id" uuid NOT NULL,
 	"title" text NOT NULL,
 	"description" text NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "lesson_contents" (
@@ -87,27 +99,6 @@ CREATE TABLE IF NOT EXISTS "lessons" (
 	"title" text NOT NULL,
 	"description" text,
 	"sequence" integer NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "teacher_infos" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"teacher_id" uuid NOT NULL,
-	"name" text NOT NULL,
-	"gender" text,
-	"birth_date" text,
-	"phone_number" text,
-	"connecting_information" text,
-	"duplication_information" text,
-	CONSTRAINT "teacher_infos_teacher_id_unique" UNIQUE("teacher_id"),
-	CONSTRAINT "teacher_infos_phone_number_unique" UNIQUE("phone_number")
-);
---> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "teachers" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"display_name" text NOT NULL,
-	"email" text NOT NULL,
-	"password" text,
-	CONSTRAINT "teachers_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "ui_carousel_reviews" (
@@ -147,10 +138,17 @@ CREATE TABLE IF NOT EXISTS "ui_repeat_timers" (
 	"button_href" text
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "teachers" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid NOT NULL,
+	CONSTRAINT "teachers_user_id_unique" UNIQUE("user_id")
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user_accounts" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" uuid NOT NULL,
-	"provider_id" text NOT NULL
+	"provider_type" "auth_provider" NOT NULL,
+	"provider_id" text
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user_infos" (
@@ -178,6 +176,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"email" text NOT NULL,
 	"password" text,
 	"emailVerified" date,
+	"role" "user_role" DEFAULT 'user' NOT NULL,
 	"image" text,
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
@@ -201,7 +200,19 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "user_infos" ADD CONSTRAINT "user_infos_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "teachers" ADD CONSTRAINT "teachers_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "user_accounts" ADD CONSTRAINT "user_accounts_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "user_infos" ADD CONSTRAINT "user_infos_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

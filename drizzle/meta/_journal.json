@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1723553772299,
-      "tag": "0000_clumsy_madame_masque",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1723614017216,
-      "tag": "0001_short_clint_barton",
+      "when": 1723615806020,
+      "tag": "0000_old_weapon_omega",
       "breakpoints": true
     }
   ]

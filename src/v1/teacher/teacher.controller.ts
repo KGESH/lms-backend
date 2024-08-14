@@ -1,5 +1,5 @@
 import { Controller, Logger } from '@nestjs/common';
-import { TypedBody, TypedParam, TypedQuery, TypedRoute } from '@nestia/core';
+import { TypedParam, TypedQuery, TypedRoute } from '@nestia/core';
 import { Uuid } from '../../shared/types/primitive';
 import {
   DEFAULT_CURSOR,
