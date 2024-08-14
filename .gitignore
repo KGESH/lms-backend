@@ -63,7 +63,6 @@ local
 packages/api/.npmrc
 packages/api/node_modules
 packages/api/lib
-src/api/*
 
 # npm package
 .npmrc
