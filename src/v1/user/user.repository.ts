@@ -17,25 +17,6 @@ import { TransactionClient } from 'src/infra/db/drizzle.types';
 export class UserRepository implements IRepository<IUser> {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async update(
-    where: Pick<IUser, 'id'>,
-    params: IUserUpdate,
-    db = this.drizzle.db,
-  ): Promise<IUser> {
-    const [updated] = await db
-      .update(dbSchema.users)
-      .set(params)
-      .where(eq(dbSchema.users.id, where.id))
-      .returning();
-
-    return updated;
-  }
-
-  // Todo: Impl soft delete
-  delete(where: Partial<IUser>, db: TransactionClient): Promise<IUser> {
-    throw new Error('Method not implemented.');
-  }
-
   async findOne(where: Pick<IUser, 'id'>): Promise<IUser | null> {
     const user = await this.drizzle.db.query.users.findFirst({
       where: eq(dbSchema.users.id, where.id),
@@ -102,5 +83,24 @@ export class UserRepository implements IRepository<IUser> {
       })
       .returning();
     return user;
+  }
+
+  async update(
+    where: Pick<IUser, 'id'>,
+    params: IUserUpdate,
+    db = this.drizzle.db,
+  ): Promise<IUser> {
+    const [updated] = await db
+      .update(dbSchema.users)
+      .set(params)
+      .where(eq(dbSchema.users.id, where.id))
+      .returning();
+
+    return updated;
+  }
+
+  // Todo: Impl soft delete
+  delete(where: Partial<IUser>, db: TransactionClient): Promise<IUser> {
+    throw new Error('Method not implemented.');
   }
 }

@@ -15,11 +15,12 @@ export class KakaoAuthService {
     const existUser = await this.userService.findUserByEmail(params);
 
     if (!existUser) {
-      const user = await this.authService.signupUser({
+      const user = await this.authService.signUpUser({
         userCreateParams: {
           email: params.email,
           password: null,
           displayName: params.name,
+          role: 'user',
         },
         infoCreateParams: {
           name: params.name,
@@ -28,6 +29,10 @@ export class KakaoAuthService {
           birthDate: params.birthDate,
           connectingInformation: params.connectingInformation,
           duplicationInformation: params.duplicationInformation,
+        },
+        accountCreateParams: {
+          providerId: 'kakao', // Todo: 심사 통과 이후 수정
+          providerType: 'kakao',
         },
       });
       return user;

@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm';
 import { dbSchema } from '../../infra/db/schema';
 import { ICourse } from './course.interface';
 import { ICourseWithRelations } from './course-with-relations.interface';
+import * as typia from 'typia';
 
 @Injectable()
 export class CourseQueryRepository {
@@ -15,7 +16,11 @@ export class CourseQueryRepository {
     const course = await this.drizzle.db.query.courses.findFirst({
       where: eq(dbSchema.courses.id, where.id),
       with: {
-        teacher: true,
+        teacher: {
+          with: {
+            account: true,
+          },
+        },
         category: true,
         chapters: {
           with: {
@@ -29,11 +34,12 @@ export class CourseQueryRepository {
       },
     });
 
-    if (!course) {
+    if (!course?.teacher?.account) {
       return null;
     }
 
-    return course;
+    return typia.assert<ICourseWithRelations>(course);
+    // return course;
   }
 
   // async findManyWithTeacher() {

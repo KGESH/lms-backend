@@ -1,5 +1,6 @@
 import { date, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+import { authProvider, userRole } from './enum';
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -7,6 +8,7 @@ export const users = pgTable('users', {
   email: text('email').unique().notNull(),
   password: text('password'),
   emailVerified: date('emailVerified'),
+  role: userRole('role').notNull().default('user'),
   image: text('image'),
 });
 
@@ -23,9 +25,11 @@ export const userSessions = pgTable('user_sessions', {
 
 export const userAccounts = pgTable('user_accounts', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').notNull(),
-  // .references(() => users.id),
-  providerId: text('provider_id').notNull(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  providerType: authProvider('provider_type').notNull(),
+  providerId: text('provider_id'),
 });
 
 export const userInfos = pgTable('user_infos', {
@@ -33,7 +37,7 @@ export const userInfos = pgTable('user_infos', {
   userId: uuid('user_id')
     .unique()
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
   birthDate: text('birth_date'),
   gender: text('gender'),
@@ -41,6 +45,21 @@ export const userInfos = pgTable('user_infos', {
   connectingInformation: text('connecting_information'),
   duplicationInformation: text('duplication_information'),
 });
+
+export const teachers = pgTable('teachers', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .unique()
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+});
+
+export const teachersRelations = relations(teachers, ({ one }) => ({
+  account: one(users, {
+    fields: [teachers.userId],
+    references: [users.id],
+  }),
+}));
 
 export const usersRelations = relations(users, ({ one, many }) => ({
   session: one(userSessions),
@@ -68,8 +87,10 @@ export const userDbSchemas = {
   userSessions,
   userAccounts,
   userInfos,
+  teachers,
   // Relations
   usersRelations,
   userInfosRelations,
   userAccountsRelations,
+  teachersRelations,
 };

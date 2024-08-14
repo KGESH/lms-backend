@@ -1,14 +1,21 @@
 import { Controller } from '@nestjs/common';
-import { TypedBody, TypedParam, TypedRoute } from '@nestia/core';
+import {
+  TypedBody,
+  TypedException,
+  TypedParam,
+  TypedRoute,
+} from '@nestia/core';
 import { CourseProductService } from './course-product.service';
 import { Uuid } from '../../../shared/types/primitive';
 import { CourseProductCreateDto, CourseProductDto } from './course-product.dto';
 import * as date from '../../../shared/utils/date';
+import { TypeGuardError } from 'typia';
 
 @Controller('v1/product/course')
 export class CourseProductController {
   constructor(private readonly courseProductService: CourseProductService) {}
 
+  @TypedException<TypeGuardError>(400, 'invalid request')
   @TypedRoute.Get('/:courseId')
   async getCourseProduct(
     @TypedParam('courseId') courseId: Uuid,
@@ -47,6 +54,7 @@ export class CourseProductController {
     };
   }
 
+  @TypedException<TypeGuardError>(400, 'invalid request')
   @TypedRoute.Post('/:courseId')
   async createProductCourse(
     @TypedParam('courseId') courseId: Uuid,

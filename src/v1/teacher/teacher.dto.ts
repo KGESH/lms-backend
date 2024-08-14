@@ -1,8 +1,8 @@
-import { EMail, Uuid } from '../../shared/types/primitive';
+import { Uuid } from '../../shared/types/primitive';
+import { UserWithoutPasswordDto } from '../user/user.dto';
 
 export type TeacherDto = {
   id: Uuid;
-  displayName: string;
-  email: EMail;
-  password: string | null;
+  userId: Uuid;
+  account: UserWithoutPasswordDto;
 };

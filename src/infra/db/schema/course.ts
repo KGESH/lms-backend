@@ -7,8 +7,8 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { teachers } from './teacher';
 import { discountType } from './enum';
+import { teachers } from './user';
 
 export const courseCategories = pgTable('course_categories', {
   id: uuid('id').primaryKey().defaultRandom(),

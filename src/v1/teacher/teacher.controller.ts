@@ -1,5 +1,5 @@
 import { Controller, Logger } from '@nestjs/common';
-import { TypedParam, TypedQuery, TypedRoute } from '@nestia/core';
+import { TypedBody, TypedParam, TypedQuery, TypedRoute } from '@nestia/core';
 import { Uuid } from '../../shared/types/primitive';
 import {
   DEFAULT_CURSOR,
@@ -7,9 +7,8 @@ import {
   DEFAULT_PAGE_SIZE,
 } from '../../core/pagination.constant';
 import { TeacherService } from './teacher.service';
-import { OmitPassword } from '../../shared/types/omit-password';
-import { ITeacher } from './teacher.interface';
 import { PaginationDto } from '../../core/pagination.dto';
+import { TeacherDto } from './teacher.dto';
 
 @Controller('v1/teacher')
 export class TeacherController {
@@ -17,9 +16,7 @@ export class TeacherController {
   constructor(private readonly teacherService: TeacherService) {}
 
   @TypedRoute.Get('/')
-  async getTeachers(
-    @TypedQuery() query: PaginationDto,
-  ): Promise<OmitPassword<ITeacher>[]> {
+  async getTeachers(@TypedQuery() query: PaginationDto): Promise<TeacherDto[]> {
     const teachers = await this.teacherService.findTeachers({
       cursor: query.cursor ?? DEFAULT_CURSOR,
       pageSize: query.pageSize ?? DEFAULT_PAGE_SIZE,
@@ -29,9 +26,7 @@ export class TeacherController {
   }
 
   @TypedRoute.Get('/:id')
-  async getTeacher(
-    @TypedParam('id') id: Uuid,
-  ): Promise<OmitPassword<ITeacher> | null> {
+  async getTeacher(@TypedParam('id') id: Uuid): Promise<TeacherDto | null> {
     const teacher = await this.teacherService.findTeacherById({ id });
     return teacher;
   }

@@ -7,14 +7,19 @@ import {
 import { UserService } from '../user/user.service';
 import { IUserLogin, IUserSignUp } from './auth.interface';
 import * as typia from 'typia';
-import { IUserWithoutPassword } from '../user/user.interface';
+import { IUser, IUserWithoutPassword } from '../user/user.interface';
 import { compareHash } from '../../shared/helpers/hash';
+import { DrizzleService } from '../../infra/db/drizzle.service';
+import { UserRole } from '../../shared/types/primitive';
 
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly drizzle: DrizzleService,
+  ) {}
 
   async login(params: IUserLogin): Promise<IUserWithoutPassword> {
     const user = await this.userService.findUserByEmail(params);
@@ -35,7 +40,7 @@ export class AuthService {
     return typia.misc.clone<IUserWithoutPassword>(user);
   }
 
-  async signupUser(params: IUserSignUp): Promise<IUserWithoutPassword> {
+  async signUpUser(params: IUserSignUp): Promise<IUserWithoutPassword> {
     const exist = await this.userService.findUserByEmail({
       email: params.userCreateParams.email,
     });
@@ -44,6 +49,17 @@ export class AuthService {
       throw new ConflictException('User already exists');
     }
 
-    return await this.userService.createUser(params);
+    const user = await this.drizzle.db.transaction(async (tx) => {
+      return await this.userService.createUser(params, tx);
+    });
+
+    return user;
+  }
+
+  async updateUserRole({
+    id,
+    role,
+  }: Pick<IUser, 'id' | 'role'>): Promise<IUserWithoutPassword> {
+    return await this.userService.updateUser({ id }, { role }, this.drizzle.db);
   }
 }

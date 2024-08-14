@@ -1,7 +1,7 @@
 import { Controller, Logger } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { TypedBody, TypedException, TypedRoute } from '@nestia/core';
-import { LoginUserDto, SignupUserDto } from './auth.dto';
+import { LoginUserDto, SignUpUserDto, UpdateUserRoleDto } from './auth.dto';
 import { KakaoLoginDto } from './kakao-auth.dto';
 import { KakaoAuthService } from './kakao-auth.service';
 import { UserWithoutPasswordDto } from '../user/user.dto';
@@ -43,10 +43,20 @@ export class AuthController {
   @TypedException<IErrorResponse<409>>(409, 'user already exists')
   @TypedRoute.Post('/signup')
   async signup(
-    @TypedBody() body: SignupUserDto,
+    @TypedBody() body: SignUpUserDto,
   ): Promise<UserWithoutPasswordDto> {
     this.logger.log('Signup request received', body);
-    const user = await this.authService.signupUser(body);
+    const user = await this.authService.signUpUser(body);
     return user;
+  }
+
+  @TypedException<TypeGuardError>(400, 'invalid request')
+  @TypedException<IErrorResponse<404>>(404, 'user not found')
+  @TypedRoute.Patch('/role')
+  async updateUserRole(
+    @TypedBody() body: UpdateUserRoleDto,
+  ): Promise<UserWithoutPasswordDto> {
+    const updated = await this.authService.updateUserRole(body);
+    return updated;
   }
 }

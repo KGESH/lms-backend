@@ -1,46 +1,80 @@
 import { Injectable } from '@nestjs/common';
 import { TeacherRepository } from './teacher.repository';
-import { ITeacher, ITeacherCreate } from './teacher.interface';
+import {
+  ITeacher,
+  ITeacherSignUp,
+  ITeacherWithAccount,
+  ITeacherWithoutPassword,
+} from './teacher.interface';
 import { IPagination } from '../../shared/types/pagination';
 import * as typia from 'typia';
-import { OmitPassword } from '../../shared/types/omit-password';
+import { IUser } from '../user/user.interface';
+import { DrizzleService } from '../../infra/db/drizzle.service';
+import { UserRepository } from '../user/user.repository';
+import { createUuid } from '../../shared/utils/uuid';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class TeacherService {
-  constructor(private readonly teacherRepository: TeacherRepository) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly userRepository: UserRepository,
+    private readonly teacherRepository: TeacherRepository,
+    private readonly drizzle: DrizzleService,
+  ) {}
 
-  async findTeachers(
-    pagination?: IPagination,
-  ): Promise<OmitPassword<ITeacher>[]> {
+  async findTeachers(pagination?: IPagination): Promise<ITeacherWithAccount[]> {
     const teachers = await this.teacherRepository.findMany(pagination);
     return teachers.map((teacher) =>
-      typia.misc.clone<OmitPassword<ITeacher>>(teacher),
+      typia.misc.clone<ITeacherWithAccount>(teacher),
     );
   }
 
   async findTeacherById(
     query: Pick<ITeacher, 'id'>,
-  ): Promise<OmitPassword<ITeacher> | null> {
+  ): Promise<ITeacherWithAccount | null> {
     const teacher = await this.teacherRepository.findOne(query);
-    return teacher ? typia.misc.clone<OmitPassword<ITeacher>>(teacher) : null;
-  }
-
-  async findTeacherByIdOrThrow(
-    query: Pick<ITeacher, 'id'>,
-  ): Promise<OmitPassword<ITeacher>> {
-    const teacher = await this.teacherRepository.findOneOrThrow(query);
-    return typia.misc.clone<OmitPassword<ITeacher>>(teacher);
+    return teacher ? typia.misc.clone<ITeacherWithAccount>(teacher) : null;
   }
 
   async findTeacherByEmail(
-    query: Pick<ITeacher, 'email'>,
-  ): Promise<OmitPassword<ITeacher> | null> {
+    query: Pick<IUser, 'email'>,
+  ): Promise<ITeacherWithoutPassword | null> {
     const teacher = await this.teacherRepository.findTeacherByEmail(query);
-    return teacher ? typia.misc.clone<OmitPassword<ITeacher>>(teacher) : null;
+    return teacher ? typia.misc.clone<ITeacherWithoutPassword>(teacher) : null;
   }
 
-  async createTeacher(params: ITeacherCreate): Promise<OmitPassword<ITeacher>> {
-    const teacher = await this.teacherRepository.create(params);
-    return typia.misc.clone<OmitPassword<ITeacher>>(teacher);
+  async createTeacher(
+    params: ITeacherSignUp,
+  ): Promise<ITeacherWithoutPassword> {
+    const userId = createUuid();
+    const { user, teacher } = await this.drizzle.db.transaction(async (tx) => {
+      const user = await this.userService.createUser(
+        {
+          userCreateParams: {
+            ...params.userCreateParams,
+            id: userId,
+            role: 'teacher',
+          },
+          infoCreateParams: {
+            ...params.infoCreateParams,
+            userId,
+          },
+          accountCreateParams: {
+            ...params.accountCreateParams,
+            userId,
+          },
+        },
+        tx,
+      );
+      const teacher = await this.teacherRepository.create({ userId }, tx);
+
+      return { user, teacher };
+    });
+
+    return typia.misc.clone<ITeacherWithoutPassword>({
+      ...teacher,
+      account: user,
+    });
   }
 }

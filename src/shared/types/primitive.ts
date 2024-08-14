@@ -30,3 +30,7 @@ export type Percentage = `${number & Minimum<0>}`;
 export type DiscountValue = Price | Percentage;
 
 export type ISO8601 = string & tags.Format<'date-time'>;
+
+export type UserRole = 'user' | 'teacher' | 'manager' | 'admin';
+
+export type AuthProvider = 'email' | 'kakao';

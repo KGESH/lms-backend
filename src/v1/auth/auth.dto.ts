@@ -1,8 +1,13 @@
-import { UserDto, UserInfoDto, UserWithoutPasswordDto } from '../user/user.dto';
+import { UserDto, UserInfoDto } from '../user/user.dto';
+import { AuthProvider, Uuid } from '../../shared/types/primitive';
+import { IUser } from '../user/user.interface';
 
 export type LoginUserDto = Pick<UserDto, 'email' | 'password'>;
 
-export type CreateUserDto = Pick<UserDto, 'email' | 'displayName' | 'password'>;
+export type CreateUserDto = Pick<
+  UserDto,
+  'email' | 'displayName' | 'password' | 'role'
+>;
 
 export type CreateUserInfoDto = Pick<
   UserInfoDto,
@@ -14,19 +19,22 @@ export type CreateUserInfoDto = Pick<
   | 'duplicationInformation'
 >;
 
-export type SignupUserDto = {
+export type UserAccountDto = {
+  id: Uuid;
+  userId: IUser['id'];
+  providerId: string | null;
+  providerType: AuthProvider;
+};
+
+export type CreateUserAccountDto = Pick<
+  UserAccountDto,
+  'providerId' | 'providerType'
+>;
+
+export type SignUpUserDto = {
   userCreateParams: CreateUserDto;
   infoCreateParams: CreateUserInfoDto;
+  accountCreateParams: CreateUserAccountDto;
 };
 
-export type AccessTokenDto = {
-  accessToken: string;
-};
-
-export type RefreshTokenDto = {
-  refreshToken: string;
-};
-
-export type UserWithTokensDto = UserWithoutPasswordDto &
-  AccessTokenDto &
-  RefreshTokenDto;
+export type UpdateUserRoleDto = Pick<UserDto, 'id' | 'role'>;

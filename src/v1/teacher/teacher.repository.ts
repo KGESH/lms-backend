@@ -1,8 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DrizzleService } from '../../infra/db/drizzle.service';
-import { asc, desc, eq, gt } from 'drizzle-orm';
+import { asc, desc, eq } from 'drizzle-orm';
 import { dbSchema } from '../../infra/db/schema';
-import { ITeacher, ITeacherCreate } from './teacher.interface';
+import {
+  ITeacher,
+  ITeacherCreate,
+  ITeacherWithAccount,
+} from './teacher.interface';
 import { IPagination } from '../../shared/types/pagination';
 import {
   DEFAULT_CURSOR,
@@ -10,45 +14,57 @@ import {
   DEFAULT_PAGE_SIZE,
 } from '../../core/pagination.constant';
 import { IRepository } from '../../core/base.repository';
+import * as typia from 'typia';
+import { IUser } from '../user/user.interface';
 
 @Injectable()
 export class TeacherRepository implements IRepository<ITeacher> {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async findOne(where: Pick<ITeacher, 'id'>): Promise<ITeacher | null> {
+  async findOne(
+    where: Pick<ITeacher, 'id'>,
+  ): Promise<ITeacherWithAccount | null> {
     const teacher = await this.drizzle.db.query.teachers.findFirst({
       where: eq(dbSchema.teachers.id, where.id),
+      with: {
+        account: true,
+      },
     });
 
     if (!teacher) {
       return null;
     }
 
-    return teacher;
+    return typia.assert<ITeacherWithAccount>(teacher);
   }
 
-  async findOneOrThrow(where: Pick<ITeacher, 'id'>): Promise<ITeacher> {
+  async findOneOrThrow(
+    where: Pick<ITeacher, 'id'>,
+  ): Promise<ITeacherWithAccount> {
     const teacher = await this.findOne(where);
 
     if (!teacher) {
-      throw new Error('Teacher not found');
+      throw new NotFoundException('Teacher not found');
     }
 
     return teacher;
   }
 
   async findTeacherByEmail(
-    where: Pick<ITeacher, 'email'>,
-  ): Promise<ITeacher | null> {
+    where: Pick<IUser, 'email'>,
+  ): Promise<ITeacherWithAccount | null> {
     const teacher = await this.drizzle.db.query.teachers.findFirst({
-      where: eq(dbSchema.teachers.email, where.email),
+      where: eq(dbSchema.users.email, where.email),
+      with: {
+        account: true,
+      },
     });
 
     if (!teacher) {
       return null;
     }
 
-    return teacher;
+    return typia.assert<ITeacherWithAccount>(teacher);
   }
 
   async findMany(
@@ -57,21 +73,22 @@ export class TeacherRepository implements IRepository<ITeacher> {
       pageSize: DEFAULT_PAGE_SIZE,
       orderBy: DEFAULT_ORDER_BY,
     },
-  ): Promise<ITeacher[]> {
-    return await this.drizzle.db
-      .select()
-      .from(dbSchema.teachers)
-      .where(
-        pagination.cursor
-          ? gt(dbSchema.teachers.id, pagination.cursor)
-          : undefined,
-      )
-      .limit(pagination.pageSize)
-      .orderBy(
+  ): Promise<ITeacherWithAccount[]> {
+    const teachers = await this.drizzle.db.query.teachers.findMany({
+      with: {
+        account: true,
+      },
+      where: pagination.cursor
+        ? eq(dbSchema.teachers.id, pagination.cursor)
+        : undefined,
+      orderBy:
         pagination.orderBy === 'asc'
           ? asc(dbSchema.teachers.id)
           : desc(dbSchema.teachers.id),
-      );
+      limit: pagination.pageSize,
+    });
+
+    return typia.assert<ITeacherWithAccount[]>(teachers);
   }
 
   async create(

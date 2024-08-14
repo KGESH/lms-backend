@@ -1,19 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
-import { IUser, IUserWithoutPassword } from './user.interface';
+import { IUser, IUserUpdate, IUserWithoutPassword } from './user.interface';
 import { IPagination } from '../../shared/types/pagination';
 import * as typia from 'typia';
 import { DrizzleService } from '../../infra/db/drizzle.service';
 import { UserInfoRepository } from './user-info.repository';
 import { IUserSignUp } from '../auth/auth.interface';
 import { createUuid } from '../../shared/utils/uuid';
+import { UserAccountRepository } from './user-account.repository';
+import { TransactionClient } from '../../infra/db/drizzle.types';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly userInfoRepository: UserInfoRepository,
-    private readonly drizzle: DrizzleService,
+    private readonly userAccountRepository: UserAccountRepository,
   ) {}
 
   async findUsers(pagination?: IPagination): Promise<IUserWithoutPassword[]> {
@@ -40,29 +42,49 @@ export class UserService {
     return user;
   }
 
-  async createUser({
-    userCreateParams,
-    infoCreateParams,
-  }: IUserSignUp): Promise<IUserWithoutPassword> {
+  async createUser(
+    { userCreateParams, infoCreateParams, accountCreateParams }: IUserSignUp,
+    tx: TransactionClient,
+  ): Promise<IUserWithoutPassword> {
     const userId = userCreateParams.id ?? createUuid();
 
-    const { user, userInfo } = await this.drizzle.db.transaction(async (tx) => {
-      const user = await this.userRepository.create(
-        {
-          ...userCreateParams,
-          id: userId,
-        },
-        tx,
-      );
-      const userInfo = await this.userInfoRepository.create(
-        {
-          ...infoCreateParams,
-          userId,
-        },
-        tx,
-      );
-      return { user, userInfo };
-    });
+    const user = await this.userRepository.create(
+      {
+        ...userCreateParams,
+        id: userId,
+      },
+      tx,
+    );
+    await this.userInfoRepository.create(
+      {
+        ...infoCreateParams,
+        userId,
+      },
+      tx,
+    );
+    await this.userAccountRepository.create(
+      {
+        ...accountCreateParams,
+        userId,
+      },
+      tx,
+    );
+
     return typia.misc.clone<IUserWithoutPassword>(user);
+  }
+
+  async updateUser(
+    where: Pick<IUser, 'id'>,
+    params: IUserUpdate,
+    tx: TransactionClient,
+  ): Promise<IUserWithoutPassword> {
+    const user = await this.findUserByIdOrThrow(where);
+    const updated = await this.userRepository.update(
+      { id: user.id },
+      params,
+      tx,
+    );
+
+    return typia.misc.clone<IUserWithoutPassword>(updated);
   }
 }
