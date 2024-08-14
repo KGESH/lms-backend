@@ -10,8 +10,12 @@ import { ICategoryCreate } from '../../../../../src/v1/category/category.interfa
 import { createTeacher } from './teacher.helper';
 import { ITeacherSignUp } from '../../../../../src/v1/teacher/teacher.interface';
 import { TransactionClient } from '../../../../../src/infra/db/drizzle.types';
-import { createChapter } from './chapter.helper';
+import { createManyChapter } from './chapter.helper';
 import { IChapterCreate } from '../../../../../src/v1/course/chapter/chapter.interface';
+import { createManyLesson } from './lesson.helper';
+import { createManyLessonContent } from './lesson-content.helper';
+import { ILessonContentCreate } from '../../../../../src/v1/course/chapter/lesson/lesson-content/lesson-content.interface';
+import { ILessonCreate } from '../../../../../src/v1/course/chapter/lesson/lesson.interface';
 
 export const findCourse = async (
   where: Pick<ICourse, 'id'>,
@@ -44,13 +48,39 @@ export const createRandomCourse = async (db: TransactionClient) => {
     },
     db,
   );
-  const chapter = await createChapter(
-    {
+  const chapters = await createManyChapter(
+    Array.from({ length: 10 }, () => ({
       ...typia.random<IChapterCreate>(),
       courseId: course.id,
-    },
+    })),
     db,
   );
+  const lessons = (
+    await Promise.all(
+      chapters.map((chapter) => {
+        return createManyLesson(
+          Array.from({ length: 10 }, () => ({
+            ...typia.random<ILessonCreate>(),
+            chapterId: chapter.id,
+          })),
+          db,
+        );
+      }),
+    )
+  ).flat();
+  const lessonContents = (
+    await Promise.all(
+      lessons.map((lesson) => {
+        return createManyLessonContent(
+          Array.from({ length: 10 }, () => ({
+            ...typia.random<ILessonContentCreate>(),
+            lessonId: lesson.id,
+          })),
+          db,
+        );
+      }),
+    )
+  ).flat();
 
-  return { category, teacher, course, chapter };
+  return { category, teacher, course, chapters, lessons, lessonContents };
 };

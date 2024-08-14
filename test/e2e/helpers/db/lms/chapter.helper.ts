@@ -27,3 +27,15 @@ export const createChapter = async (
 
   return chapter;
 };
+
+export const createManyChapter = async (
+  params: IChapterCreate[],
+  db: TransactionClient,
+) => {
+  const chapters = await db
+    .insert(dbSchema.chapters)
+    .values(params)
+    .returning();
+
+  return chapters;
+};
