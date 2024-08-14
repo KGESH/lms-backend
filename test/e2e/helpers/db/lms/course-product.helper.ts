@@ -8,7 +8,7 @@ import {
 import {
   ICourseProductSnapshot,
   ICourseProductSnapshotCreate,
-} from '../../../../../src/v1/product/course-product/conrse-product-snapshot.interface';
+} from '../../../../../src/v1/product/course-product/snapshot/conrse-product-snapshot.interface';
 import {
   ICourseProductSnapshotPricing,
   ICourseProductSnapshotPricingCreate,

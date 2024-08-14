@@ -9,7 +9,7 @@ import { CourseProductSnapshotDiscountRepository } from './snapshot/discount/cou
 import { CourseProductSnapshotRepository } from './snapshot/course-product-snapshot.repository';
 import { DrizzleService } from '../../../infra/db/drizzle.service';
 import { CourseProductQueryRepository } from './course-product-query.repository';
-import { ICourseProductSnapshotCreate } from './conrse-product-snapshot.interface';
+import { ICourseProductSnapshotCreate } from './snapshot/conrse-product-snapshot.interface';
 import { ICourseProductSnapshotPricingCreate } from './snapshot/pricing/course-product-snapshot-pricing.interface';
 import { ICourseProductSnapshotDiscountCreate } from './snapshot/discount/course-product-snapshot-discount.interface';
 import { ICourseProductWithRelations } from './course-product-relations.interface';

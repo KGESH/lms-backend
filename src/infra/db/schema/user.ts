@@ -61,10 +61,10 @@ export const teachersRelations = relations(teachers, ({ one }) => ({
   }),
 }));
 
-export const usersRelations = relations(users, ({ one, many }) => ({
+export const usersRelations = relations(users, ({ one }) => ({
   session: one(userSessions),
   info: one(userInfos),
-  accounts: many(userAccounts),
+  accounts: one(userAccounts),
 }));
 
 export const userInfosRelations = relations(userInfos, ({ one }) => ({

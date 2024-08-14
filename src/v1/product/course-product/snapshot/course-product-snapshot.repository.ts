@@ -4,7 +4,7 @@ import { IRepository } from '../../../../core/base.repository';
 import {
   ICourseProductSnapshot,
   ICourseProductSnapshotCreate,
-} from '../conrse-product-snapshot.interface';
+} from './conrse-product-snapshot.interface';
 import { TransactionClient } from 'src/infra/db/drizzle.types';
 import { IPagination } from 'src/shared/types/pagination';
 import { asc, desc, eq } from 'drizzle-orm';
