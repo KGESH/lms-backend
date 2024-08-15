@@ -1,6 +1,7 @@
 import * as dayjs from 'dayjs';
 import * as utc from 'dayjs/plugin/utc';
 import * as timezone from 'dayjs/plugin/timezone';
+import { ISO8601 } from '../types/primitive';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -42,6 +43,6 @@ export function toDate(date: string): Date {
   return dayjs(date).toDate();
 }
 
-export function toISOString(date: Date): string {
+export function toISOString(date: Date): ISO8601 {
   return dayjs(date).toISOString();
 }

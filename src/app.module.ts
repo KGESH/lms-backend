@@ -7,11 +7,12 @@ import { UserModule } from './v1/user/user.module';
 import { AuthModule } from './v1/auth/auth.module';
 import { CategoryModule } from './v1/category/category.module';
 import { TeacherModule } from './v1/teacher/teacher.module';
-import { S3Module } from './infra/s3/s3.module';
 import { HttpClientModule } from './infra/http/http-client.module';
 import { UiModule } from './v1/ui/ui.module';
 import { LessonContentModule } from './v1/course/chapter/lesson/lesson-content/lesson-content.module';
 import { ProductModule } from './v1/product/product.module';
+import { OrderModule } from './v1/order/order.module';
+import { FileModule } from './v1/file/file.module';
 
 @Module({
   imports: [
@@ -23,9 +24,10 @@ import { ProductModule } from './v1/product/product.module';
     CategoryModule,
     LessonContentModule,
     TeacherModule,
-    S3Module,
+    FileModule,
     UiModule,
     ProductModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

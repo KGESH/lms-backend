@@ -1,4 +1,4 @@
-import { Uuid } from '../../../shared/types/primitive';
+import { Price, Uuid } from '../../../shared/types/primitive';
 import { Optional } from '../../../shared/types/optional';
 
 export type ICourseOrder = {
@@ -6,8 +6,10 @@ export type ICourseOrder = {
   userId: Uuid;
   courseProductSnapshotId: Uuid;
   paymentMethod: string;
-  amount: string;
+  amount: Price;
   paidAt: Date | null;
 };
 
 export type ICourseOrderCreate = Optional<ICourseOrder, 'id'>;
+
+export type ICourseOrderUpdate = Partial<Omit<ICourseOrder, 'id' | 'userId'>>;

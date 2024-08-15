@@ -20,7 +20,7 @@ export class CourseProductController {
   async getCourseProduct(
     @TypedParam('courseId') courseId: Uuid,
   ): Promise<CourseProductDto | null> {
-    const product = await this.courseProductService.findCourseProductById({
+    const product = await this.courseProductService.findCourseProduct({
       courseId,
     });
 

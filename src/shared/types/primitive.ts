@@ -1,15 +1,14 @@
-import { tags } from 'typia';
-import { Minimum } from 'typia/lib/tags';
+import * as typia from 'typia';
 
-export type Uri = string & tags.Format<'uri'>;
+export type Uri = string & typia.tags.Format<'uri'>;
 
-export type Uuid = string & tags.Format<'uuid'>;
+export type Uuid = string & typia.tags.Format<'uuid'>;
 
-export type EMail = string & tags.Format<'email'>;
+export type EMail = string & typia.tags.Format<'email'>;
 
-export type BirthDate = string & tags.Format<'date'>;
+export type BirthDate = string & typia.tags.Format<'date'>;
 
-export type UInt = number & tags.Type<'uint32'>;
+export type UInt = number & typia.tags.Type<'uint32'>;
 
 export type PhoneNumber = string; // Todo: typing
 
@@ -23,13 +22,13 @@ export type Percent = 'percent';
 
 export type DiscountType = Percent | FixedAmount;
 
-export type Price = `${number & Minimum<0>}`;
+export type Price = `${number & typia.tags.Minimum<0>}`;
 
-export type Percentage = `${number & Minimum<0>}`;
+export type Percentage = `${number & typia.tags.Minimum<0>}`;
 
 export type DiscountValue = Price | Percentage;
 
-export type ISO8601 = string & tags.Format<'date-time'>;
+export type ISO8601 = string & typia.tags.Format<'date-time'>;
 
 export type UserRole = 'user' | 'teacher' | 'manager' | 'admin';
 

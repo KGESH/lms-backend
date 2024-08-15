@@ -15,14 +15,11 @@ import { DiscountValue, Price } from '../../../shared/types/primitive';
 export class CourseProductQueryRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async findOneWithRelations({
-    courseId,
-  }: Pick<
-    ICourseProduct,
-    'courseId'
-  >): Promise<ICourseProductWithRelations | null> {
+  async findOneWithRelations(
+    where: Pick<ICourseProduct, 'courseId'>,
+  ): Promise<ICourseProductWithRelations | null> {
     const product = await this.drizzle.db.query.courseProducts.findFirst({
-      where: eq(dbSchema.courseProducts.courseId, courseId),
+      where: eq(dbSchema.courseProducts.courseId, where.courseId),
       with: {
         snapshots: {
           where: isNull(dbSchema.courseProductSnapshots.deletedAt),

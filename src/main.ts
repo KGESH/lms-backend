@@ -9,6 +9,7 @@ async function bootstrap() {
 
   const { env } = app.get(ConfigsService);
 
+  app.enableCors();
   app.useGlobalFilters(new HttpExceptionFilter());
   buildSwagger(app);
 

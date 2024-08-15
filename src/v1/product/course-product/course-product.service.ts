@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CourseProductRepository } from './course-product-repository.service';
 import {
   ICourseProduct,
@@ -27,15 +27,25 @@ export class CourseProductService {
     private readonly drizzle: DrizzleService,
   ) {}
 
-  async findCourseProductById({
-    courseId,
-  }: Pick<
-    ICourseProduct,
-    'courseId'
-  >): Promise<ICourseProductWithRelations | null> {
-    return await this.courseProductQueryRepository.findOneWithRelations({
-      courseId,
-    });
+  async findCourseProduct(
+    where: Pick<ICourseProduct, 'courseId'>,
+  ): Promise<ICourseProductWithRelations | null> {
+    return await this.courseProductQueryRepository.findOneWithRelations(where);
+  }
+
+  async findCourseProductOrThrow(
+    where: Pick<ICourseProduct, 'courseId'>,
+  ): Promise<NonNullableInfer<ICourseProductWithRelations>> {
+    const courseProduct = await this.findCourseProduct(where);
+
+    if (!courseProduct?.lastSnapshot) {
+      throw new NotFoundException('Course product snapshot not found');
+    }
+
+    return {
+      ...courseProduct,
+      lastSnapshot: courseProduct.lastSnapshot,
+    };
   }
 
   async createCourseProduct({

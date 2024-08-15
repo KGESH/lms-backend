@@ -113,7 +113,7 @@ describe('AuthController (e2e)', () => {
       }
 
       const updatedUser = response.data;
-      expect(updatedUser.role).toEqual('sdasdsd');
+      expect(updatedUser.role).toEqual('teacher');
     });
   });
 });

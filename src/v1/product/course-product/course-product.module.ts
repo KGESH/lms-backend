@@ -7,6 +7,9 @@ import { CourseProductSnapshotRepository } from './snapshot/course-product-snaps
 import { CourseProductSnapshotPricingRepository } from './snapshot/pricing/course-product-snapshot-pricing.repository';
 import { CourseProductSnapshotDiscountRepository } from './snapshot/discount/course-product-snapshot-discount.repository';
 import { CourseModule } from '../../course/course.module';
+import { UserModule } from '../../user/user.module';
+
+const modules = [CourseModule, UserModule];
 
 const providers = [
   CourseProductService,
@@ -18,9 +21,9 @@ const providers = [
 ];
 
 @Module({
-  imports: [CourseModule],
+  imports: [...modules],
   controllers: [CourseProductController],
   providers: [...providers],
-  exports: [...providers],
+  exports: [...providers, ...modules],
 })
 export class CourseProductModule {}
