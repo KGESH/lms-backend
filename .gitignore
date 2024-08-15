@@ -56,13 +56,14 @@ pids
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-# local database
-local
+# local database (postgres)
+local/data
 
 # nestia sdk
 packages/api/.npmrc
 packages/api/node_modules
 packages/api/lib
+src/api
 
 # npm package
 .npmrc
