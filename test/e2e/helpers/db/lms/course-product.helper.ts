@@ -23,6 +23,10 @@ import {
   Price,
 } from '../../../../../src/shared/types/primitive';
 import { TransactionClient } from '../../../../../src/infra/db/drizzle.types';
+import {
+  ICourseProductSnapshotContent,
+  ICourseProductSnapshotContentCreate,
+} from '../../../../../src/v1/product/course-product/snapshot/content/course-product-snapshot-content.interface';
 
 export const createCourseProduct = async (
   params: ICourseProductCreate,
@@ -46,6 +50,18 @@ export const createCourseProductSnapshot = async (
     .returning();
 
   return snapshot;
+};
+
+export const createCourseProductSnapshotContent = async (
+  params: ICourseProductSnapshotContentCreate,
+  db: TransactionClient,
+): Promise<ICourseProductSnapshotContent> => {
+  const [content] = await db
+    .insert(dbSchema.courseProductSnapshotContents)
+    .values(params)
+    .returning();
+
+  return content;
 };
 
 export const createCourseProductSnapshotPricing = async (
@@ -96,6 +112,13 @@ export const createRandomCourseProduct = async (
     },
     db,
   );
+  const content = await createCourseProductSnapshotContent(
+    {
+      ...typia.random<ICourseProductSnapshotContentCreate>(),
+      courseProductSnapshotId: snapshot.id,
+    },
+    db,
+  );
   const pricing = await createCourseProductSnapshotPricing(
     {
       ...typia.random<ICourseProductSnapshotPricingCreate>(),
@@ -115,6 +138,7 @@ export const createRandomCourseProduct = async (
     ...product,
     lastSnapshot: {
       ...snapshot,
+      content,
       pricing,
       discount,
     },

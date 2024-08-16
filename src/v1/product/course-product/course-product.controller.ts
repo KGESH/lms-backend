@@ -39,6 +39,7 @@ export class CourseProductController {
       deletedAt: product.lastSnapshot.deletedAt
         ? date.toISOString(product.lastSnapshot.deletedAt)
         : null,
+      content: product.lastSnapshot.content,
       pricing: product.lastSnapshot.pricing,
       discount: product.lastSnapshot.discount
         ? {
@@ -68,6 +69,9 @@ export class CourseProductController {
         title: body.title,
         description: body.description,
       },
+      courseProductSnapshotContentCreateParams: {
+        richTextContent: body.content.richTextContent,
+      },
       courseProductSnapshotPricingCreateParams: {
         amount: body.pricing.amount,
       },
@@ -96,6 +100,7 @@ export class CourseProductController {
       deletedAt: product.lastSnapshot.deletedAt
         ? date.toISOString(product.lastSnapshot.deletedAt)
         : null,
+      content: product.lastSnapshot.content,
       pricing: product.lastSnapshot.pricing,
       discount: product.lastSnapshot.discount
         ? {

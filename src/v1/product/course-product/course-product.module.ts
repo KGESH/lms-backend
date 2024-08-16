@@ -8,6 +8,7 @@ import { CourseProductSnapshotPricingRepository } from './snapshot/pricing/cours
 import { CourseProductSnapshotDiscountRepository } from './snapshot/discount/course-product-snapshot-discount.repository';
 import { CourseModule } from '../../course/course.module';
 import { UserModule } from '../../user/user.module';
+import { CourseProductSnapshotContentRepository } from './snapshot/content/course-product-snapshot-content.repository';
 
 const modules = [CourseModule, UserModule];
 
@@ -18,6 +19,7 @@ const providers = [
   CourseProductSnapshotRepository,
   CourseProductSnapshotPricingRepository,
   CourseProductSnapshotDiscountRepository,
+  CourseProductSnapshotContentRepository,
 ];
 
 @Module({

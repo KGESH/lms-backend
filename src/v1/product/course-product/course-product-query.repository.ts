@@ -10,6 +10,7 @@ import {
 } from './course-product-relations.interface';
 import { ICourseProductSnapshotPricing } from './snapshot/pricing/course-product-snapshot-pricing.interface';
 import { DiscountValue, Price } from '../../../shared/types/primitive';
+import { ICourseProductSnapshotContent } from './snapshot/content/course-product-snapshot-content.interface';
 
 @Injectable()
 export class CourseProductQueryRepository {
@@ -26,6 +27,7 @@ export class CourseProductQueryRepository {
           orderBy: desc(dbSchema.courseProductSnapshots.createdAt),
           limit: 1,
           with: {
+            content: true,
             pricing: true,
             discounts: true,
           },
@@ -37,16 +39,15 @@ export class CourseProductQueryRepository {
       return null;
     }
 
-    console.log(product.snapshots[0]);
-    console.log(product.snapshots[0].pricing);
-    console.log(product.snapshots[0].discounts);
-
     const lastSnapshot = product.snapshots[0];
     return {
       ...product,
       lastSnapshot: lastSnapshot
         ? {
             ...lastSnapshot,
+            content: typia.assert<ICourseProductSnapshotContent>(
+              lastSnapshot.content,
+            ),
             pricing: typia.assert<ICourseProductSnapshotPricing>({
               ...lastSnapshot.pricing,
               amount: typia.assert<Price>(`${lastSnapshot.pricing!.amount}`),
@@ -62,25 +63,6 @@ export class CourseProductQueryRepository {
           }
         : null,
     };
-    // return {
-    //   ...product,
-    //   lastSnapshot: lastSnapshot
-    //     ? {
-    //       ...lastSnapshot,
-    //       pricing: {
-    //         ...lastSnapshot.pricing,
-    //         amount: typia.assert<Price>(`${lastSnapshot.pricing.amount}`),
-    //       },
-    //     },
-    //
-    //         discount: product.snapshots[0].discounts
-    //           ? typia.assert<ICourseProductSnapshotDiscount>(
-    //               product.snapshots[0].discounts,
-    //             )
-    //           : null,
-    //       }
-    //     : null,
-    // };
   }
 
   async findOneWithLastSnapshot({

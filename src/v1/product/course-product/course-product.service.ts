@@ -15,6 +15,8 @@ import { ICourseProductSnapshotDiscountCreate } from './snapshot/discount/course
 import { ICourseProductWithRelations } from './course-product-relations.interface';
 import { NonNullableInfer } from '../../../shared/types/non-nullable-infer';
 import { Optional } from '../../../shared/types/optional';
+import { CourseProductSnapshotContentRepository } from './snapshot/content/course-product-snapshot-content.repository';
+import { ICourseProductSnapshotContentCreate } from './snapshot/content/course-product-snapshot-content.interface';
 
 @Injectable()
 export class CourseProductService {
@@ -24,6 +26,7 @@ export class CourseProductService {
     private readonly courseProductSnapshotRepository: CourseProductSnapshotRepository,
     private readonly courseProductSnapshotPricingRepository: CourseProductSnapshotPricingRepository,
     private readonly courseProductSnapshotDiscountRepository: CourseProductSnapshotDiscountRepository,
+    private readonly courseProductSnapshotContentRepository: CourseProductSnapshotContentRepository,
     private readonly drizzle: DrizzleService,
   ) {}
 
@@ -51,6 +54,7 @@ export class CourseProductService {
   async createCourseProduct({
     courseProductCreateParams,
     courseProductSnapshotCreateParams,
+    courseProductSnapshotContentCreateParams,
     courseProductSnapshotPricingCreateParams,
     courseProductSnapshotDiscountCreateParams,
   }: {
@@ -58,6 +62,10 @@ export class CourseProductService {
     courseProductSnapshotCreateParams: Optional<
       ICourseProductSnapshotCreate,
       'courseProductId'
+    >;
+    courseProductSnapshotContentCreateParams: Optional<
+      ICourseProductSnapshotContentCreate,
+      'courseProductSnapshotId'
     >;
     courseProductSnapshotPricingCreateParams: Optional<
       ICourseProductSnapshotPricingCreate,
@@ -73,40 +81,48 @@ export class CourseProductService {
         courseId: courseProductCreateParams.courseId,
       });
 
-    const product = await this.drizzle.db.transaction(async (tx) => {
-      const courseProduct =
-        existProduct ??
-        (await this.courseProductRepository.create(
-          courseProductCreateParams,
+    const product: NonNullableInfer<ICourseProductWithRelations> =
+      await this.drizzle.db.transaction(async (tx) => {
+        const courseProduct =
+          existProduct ??
+          (await this.courseProductRepository.create(
+            courseProductCreateParams,
+            tx,
+          ));
+        const snapshot = await this.courseProductSnapshotRepository.create(
+          {
+            ...courseProductSnapshotCreateParams,
+            courseProductId: courseProduct.id,
+          },
           tx,
-        ));
-      const snapshot = await this.courseProductSnapshotRepository.create(
-        {
-          ...courseProductSnapshotCreateParams,
-          courseProductId: courseProduct.id,
-        },
-        tx,
-      );
-      const pricing = await this.courseProductSnapshotPricingRepository.create({
-        ...courseProductSnapshotPricingCreateParams,
-        courseProductSnapshotId: snapshot.id,
-      });
-      const discount = courseProductSnapshotDiscountCreateParams
-        ? await this.courseProductSnapshotDiscountRepository.create({
-            ...courseProductSnapshotDiscountCreateParams,
+        );
+        const content =
+          await this.courseProductSnapshotContentRepository.create({
+            ...courseProductSnapshotContentCreateParams,
             courseProductSnapshotId: snapshot.id,
-          })
-        : null;
+          });
+        const pricing =
+          await this.courseProductSnapshotPricingRepository.create({
+            ...courseProductSnapshotPricingCreateParams,
+            courseProductSnapshotId: snapshot.id,
+          });
+        const discount = courseProductSnapshotDiscountCreateParams
+          ? await this.courseProductSnapshotDiscountRepository.create({
+              ...courseProductSnapshotDiscountCreateParams,
+              courseProductSnapshotId: snapshot.id,
+            })
+          : null;
 
-      return {
-        ...courseProduct,
-        lastSnapshot: {
-          ...snapshot,
-          pricing,
-          discount,
-        },
-      } satisfies NonNullableInfer<ICourseProductWithRelations>;
-    });
+        return {
+          ...courseProduct,
+          lastSnapshot: {
+            ...snapshot,
+            pricing,
+            discount,
+            content,
+          },
+        } satisfies NonNullableInfer<ICourseProductWithRelations>;
+      });
 
     return product;
   }

@@ -15,6 +15,13 @@
       "when": 1723701783197,
       "tag": "0001_good_deathstrike",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1723782379066,
+      "tag": "0002_stale_skullbuster",
+      "breakpoints": true
     }
   ]
 }

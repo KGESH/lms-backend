@@ -99,6 +99,15 @@ export const courseProductSnapshotDiscounts = pgTable(
   },
 );
 
+export const courseProductSnapshotContents = pgTable(
+  'course_product_snapshot_contents',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    courseProductSnapshotId: uuid('course_product_snapshot_id').notNull(),
+    richTextContent: text('rich_text_content').notNull(),
+  },
+);
+
 export const courseCategoriesRelations = relations(
   courseCategories,
   ({ one, many }) => ({
@@ -145,8 +154,19 @@ export const courseProductSnapshotsRelations = relations(
       fields: [courseProductSnapshots.courseProductId],
       references: [courseProducts.id],
     }),
+    content: one(courseProductSnapshotContents),
     pricing: one(courseProductSnapshotPricing),
     discounts: one(courseProductSnapshotDiscounts),
+  }),
+);
+
+export const courseProductSnapshotContentsRelations = relations(
+  courseProductSnapshotContents,
+  ({ one }) => ({
+    productSnapshot: one(courseProductSnapshots, {
+      fields: [courseProductSnapshotContents.courseProductSnapshotId],
+      references: [courseProductSnapshots.id],
+    }),
   }),
 );
 
@@ -204,6 +224,7 @@ export const courseDbSchemas = {
   courseProductSnapshots,
   courseProductSnapshotPricing,
   courseProductSnapshotDiscounts,
+  courseProductSnapshotContents,
 
   // Relations
   courseCategoriesRelations,
@@ -215,4 +236,5 @@ export const courseDbSchemas = {
   courseProductSnapshotsRelations,
   courseProductSnapshotPricingRelations,
   courseProductSnapshotDiscountsRelations,
+  courseProductSnapshotContentsRelations,
 };
