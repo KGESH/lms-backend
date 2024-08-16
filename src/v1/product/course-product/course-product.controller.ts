@@ -15,7 +15,10 @@ import { TypeGuardError } from 'typia';
 export class CourseProductController {
   constructor(private readonly courseProductService: CourseProductService) {}
 
-  @TypedException<TypeGuardError>(400, 'invalid request')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
   @TypedRoute.Get('/:courseId')
   async getCourseProduct(
     @TypedParam('courseId') courseId: Uuid,
@@ -55,7 +58,10 @@ export class CourseProductController {
     };
   }
 
-  @TypedException<TypeGuardError>(400, 'invalid request')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
   @TypedRoute.Post('/:courseId')
   async createProductCourse(
     @TypedParam('courseId') courseId: Uuid,

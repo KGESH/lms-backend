@@ -27,8 +27,14 @@ export class AuthController {
     return user;
   }
 
-  @TypedException<TypeGuardError>(400, 'invalid request')
-  @TypedException<IErrorResponse<404>>(404, 'user not found')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'user not found',
+  })
   @TypedRoute.Post('/login')
   async login(
     @TypedBody() body: LoginUserDto,
@@ -39,8 +45,14 @@ export class AuthController {
     return user;
   }
 
-  @TypedException<TypeGuardError>(400, 'invalid request')
-  @TypedException<IErrorResponse<409>>(409, 'user already exists')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<409>>({
+    status: 409,
+    description: 'user already exists',
+  })
   @TypedRoute.Post('/signup')
   async signup(
     @TypedBody() body: SignUpUserDto,
@@ -50,8 +62,14 @@ export class AuthController {
     return user;
   }
 
-  @TypedException<TypeGuardError>(400, 'invalid request')
-  @TypedException<IErrorResponse<404>>(404, 'user not found')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'user not found',
+  })
   @TypedRoute.Patch('/role')
   async updateUserRole(
     @TypedBody() body: UpdateUserRoleDto,

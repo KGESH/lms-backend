@@ -1,0 +1,1 @@
+export const CONNECTION_POOL = 'CONNECTION_POOL';

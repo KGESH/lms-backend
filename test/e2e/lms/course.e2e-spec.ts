@@ -10,8 +10,10 @@ import { ICategoryCreate } from '../../../src/v1/category/category.interface';
 import { createTeacher } from '../helpers/db/lms/teacher.helper';
 import { ITeacherSignUp } from '../../../src/v1/teacher/teacher.interface';
 import { CourseCreateDto } from '../../../src/v1/course/course.dto';
-import { ICourseCreate } from '../../../packages/api/lib/v1/course/course.interface';
-import { ICourseUpdate } from '../../../src/v1/course/course.interface';
+import {
+  ICourseCreate,
+  ICourseUpdate,
+} from '../../../src/v1/course/course.interface';
 
 describe('CourseController (e2e)', () => {
   let host: Uri;

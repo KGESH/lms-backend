@@ -27,7 +27,10 @@ export class ChapterController {
     return chapters;
   }
 
-  @TypedException<TypeGuardError>(400, 'invalid request')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
   @TypedRoute.Get('/:id')
   async getChapter(
     @TypedParam('courseId') courseId: Uuid,
@@ -37,8 +40,14 @@ export class ChapterController {
     return chapter;
   }
 
-  @TypedException<TypeGuardError>(400, 'invalid request')
-  @TypedException<IErrorResponse<404>>(404, 'course not found')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'course not found',
+  })
   @TypedRoute.Post('/')
   async createChapter(
     @TypedParam('courseId') courseId: Uuid,
@@ -51,8 +60,14 @@ export class ChapterController {
     return chapter;
   }
 
-  @TypedException<TypeGuardError>(400, 'invalid request')
-  @TypedException<IErrorResponse<404>>(404, 'chapter not found')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'chapter not found',
+  })
   @TypedRoute.Patch('/:id')
   async updateChapter(
     @TypedParam('courseId') courseId: Uuid,
@@ -63,8 +78,14 @@ export class ChapterController {
     return chapter;
   }
 
-  @TypedException<TypeGuardError>(400, 'invalid request')
-  @TypedException<IErrorResponse<404>>(404, 'chapter not found')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'chapter not found',
+  })
   @TypedRoute.Delete('/:id')
   async deleteChapter(
     @TypedParam('courseId') courseId: Uuid,

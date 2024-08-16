@@ -26,14 +26,20 @@ export class CategoryController {
     return rootCategories;
   }
 
-  @TypedException<TypeGuardError>(400, 'invalid request')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
   @TypedRoute.Get('/:id')
   async getCategory(@TypedParam('id') id: Uuid): Promise<CategoryDto | null> {
     const category = await this.categoryService.findCategory({ id });
     return category;
   }
 
-  @TypedException<TypeGuardError>(400, 'invalid request')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
   @TypedRoute.Post('/')
   async createCategory(
     @TypedBody() body: CreateCategoryDto,
@@ -42,8 +48,14 @@ export class CategoryController {
     return category;
   }
 
-  @TypedException<TypeGuardError>(400, 'invalid request')
-  @TypedException<IErrorResponse<404>>(404, 'category not found')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'category not found',
+  })
   @TypedRoute.Patch('/:id')
   async updateCategory(
     @TypedParam('id') id: Uuid,
@@ -53,9 +65,18 @@ export class CategoryController {
     return category;
   }
 
-  @TypedException<TypeGuardError>(400, 'invalid request')
-  @TypedException<IErrorResponse<403>>(403, 'category has courses')
-  @TypedException<IErrorResponse<404>>(404, 'category not found')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'category has courses',
+  })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'category not found',
+  })
   @TypedRoute.Delete('/:id')
   async deleteCategory(@TypedParam('id') id: Uuid): Promise<CategoryDto> {
     const category = await this.categoryService.deleteCategory({ id });

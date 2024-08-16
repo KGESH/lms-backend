@@ -1,26 +1,11 @@
 import { Module } from '@nestjs/common';
-import { Pool } from 'pg';
 import { DrizzleService } from './drizzle.service';
-import {
-  ConfigurableDatabaseModule,
-  CONNECTION_POOL,
-  DATABASE_OPTIONS,
-} from './db.module-def';
-import { IDatabaseConfigs } from '../../configs/configs.types';
+import { ConnectionPoolProvider } from './connection-pool.provider';
+
+const providers = [ConnectionPoolProvider, DrizzleService];
 
 @Module({
-  providers: [
-    DrizzleService,
-    {
-      provide: CONNECTION_POOL,
-      inject: [DATABASE_OPTIONS],
-      useFactory: async (env: IDatabaseConfigs) => {
-        return new Pool({
-          connectionString: env.DATABASE_URL,
-        });
-      },
-    },
-  ],
-  exports: [DrizzleService],
+  providers: [...providers],
+  exports: [...providers],
 })
-export class DrizzleModule extends ConfigurableDatabaseModule {}
+export class DrizzleModule {}

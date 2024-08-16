@@ -28,7 +28,10 @@ export class LessonController {
     return lessons;
   }
 
-  @TypedException<TypeGuardError>(400, 'invalid request')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
   @TypedRoute.Get('/:id')
   async getLesson(
     @TypedParam('courseId') courseId: Uuid,
@@ -41,8 +44,14 @@ export class LessonController {
     return lesson;
   }
 
-  @TypedException<TypeGuardError>(400, 'invalid request')
-  @TypedException<IErrorResponse<404>>(404, 'chapter not found')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'chapter not found',
+  })
   @TypedRoute.Post('/')
   async createLesson(
     @TypedParam('courseId') courseId: Uuid,
@@ -56,8 +65,14 @@ export class LessonController {
     return lesson;
   }
 
-  @TypedException<TypeGuardError>(400, 'invalid request')
-  @TypedException<IErrorResponse<404>>(404, 'lesson not found')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'lesson not found',
+  })
   @TypedRoute.Patch('/:id')
   async updateLesson(
     @TypedParam('courseId') courseId: Uuid,
@@ -75,8 +90,14 @@ export class LessonController {
     return lesson;
   }
 
-  @TypedException<TypeGuardError>(400, 'invalid request')
-  @TypedException<IErrorResponse<404>>(404, 'lesson not found')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'lesson not found',
+  })
   @TypedRoute.Delete('/:id')
   async deleteLesson(
     @TypedParam('courseId') courseId: Uuid,

@@ -5,5 +5,6 @@ import { FileController } from './file.controller';
 @Module({
   imports: [S3Module],
   controllers: [FileController],
+  exports: [S3Module],
 })
 export class FileModule {}

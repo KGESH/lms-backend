@@ -1,5 +1,5 @@
-import { PostgreSqlContainer } from '@testcontainers/postgresql';
 import * as path from 'path';
+import { PostgreSqlContainer } from '@testcontainers/postgresql';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { IS_PRODUCTION } from '../../../../src/shared/utils/is-production';
 import { drizzle } from 'drizzle-orm/node-postgres';
