@@ -1,13 +1,13 @@
 import { Price, Uuid } from '../../../../../shared/types/primitive';
 import { Optional } from '../../../../../shared/types/optional';
 
-export type ICourseProductSnapshotPricing = {
+export type IProductSnapshotPricing = {
   id: Uuid;
-  courseProductSnapshotId: Uuid;
+  productSnapshotId: Uuid;
   amount: Price; // Todo: decimal
 };
 
-export type ICourseProductSnapshotPricingCreate = Optional<
-  ICourseProductSnapshotPricing,
+export type IProductSnapshotPricingCreate = Optional<
+  IProductSnapshotPricing,
   'id'
 >;

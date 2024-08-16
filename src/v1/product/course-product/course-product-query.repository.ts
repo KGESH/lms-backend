@@ -8,9 +8,9 @@ import {
   ICourseProductWithLastSnapshot,
   ICourseProductWithRelations,
 } from './course-product-relations.interface';
-import { ICourseProductSnapshotPricing } from './snapshot/pricing/course-product-snapshot-pricing.interface';
+import { IProductSnapshotPricing } from '../common/snapshot/pricing/product-snapshot-pricing.interface';
 import { DiscountValue, Price } from '../../../shared/types/primitive';
-import { ICourseProductSnapshotContent } from './snapshot/content/course-product-snapshot-content.interface';
+import { IProductSnapshotContent } from '../common/snapshot/content/product-snapshot-content.interface';
 
 @Injectable()
 export class CourseProductQueryRepository {
@@ -45,14 +45,14 @@ export class CourseProductQueryRepository {
       lastSnapshot: lastSnapshot
         ? {
             ...lastSnapshot,
-            content: typia.assert<ICourseProductSnapshotContent>(
+            content: typia.assert<IProductSnapshotContent>(
               lastSnapshot.content,
             ),
-            pricing: typia.assert<ICourseProductSnapshotPricing>({
+            pricing: typia.assert<IProductSnapshotPricing>({
               ...lastSnapshot.pricing,
               amount: typia.assert<Price>(`${lastSnapshot.pricing!.amount}`),
             }),
-            discount: lastSnapshot.discounts
+            discounts: lastSnapshot.discounts
               ? {
                   ...lastSnapshot.discounts,
                   value: typia.assert<DiscountValue>(

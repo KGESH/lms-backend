@@ -1,7 +1,7 @@
 import { Uuid } from '../../../../../shared/types/primitive';
 
-export type CourseProductSnapshotContentDto = {
+export type ProductSnapshotContentDto = {
   id: Uuid;
-  courseProductSnapshotId: Uuid;
+  productSnapshotId: Uuid;
   richTextContent: string;
 };

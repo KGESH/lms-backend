@@ -4,19 +4,19 @@ import {
   ICourseProduct,
   ICourseProductCreate,
 } from './course-product.interface';
-import { CourseProductSnapshotPricingRepository } from './snapshot/pricing/course-product-snapshot-pricing.repository';
-import { CourseProductSnapshotDiscountRepository } from './snapshot/discount/course-product-snapshot-discount.repository';
-import { CourseProductSnapshotRepository } from './snapshot/course-product-snapshot.repository';
+import { CourseProductSnapshotPricingRepository } from './course-product-snapshot-pricing.repository';
+import { CourseProductSnapshotDiscountRepository } from './course-product-snapshot-discount.repository';
+import { CourseProductSnapshotRepository } from './course-product-snapshot.repository';
 import { DrizzleService } from '../../../infra/db/drizzle.service';
 import { CourseProductQueryRepository } from './course-product-query.repository';
-import { ICourseProductSnapshotCreate } from './snapshot/conrse-product-snapshot.interface';
-import { ICourseProductSnapshotPricingCreate } from './snapshot/pricing/course-product-snapshot-pricing.interface';
-import { ICourseProductSnapshotDiscountCreate } from './snapshot/discount/course-product-snapshot-discount.interface';
+import { IProductSnapshotCreate } from '../common/snapshot/conrse-product-snapshot.interface';
+import { IProductSnapshotPricingCreate } from '../common/snapshot/pricing/product-snapshot-pricing.interface';
+import { IProductSnapshotDiscountCreate } from '../common/snapshot/discount/product-snapshot-discount.interface';
 import { ICourseProductWithRelations } from './course-product-relations.interface';
 import { NonNullableInfer } from '../../../shared/types/non-nullable-infer';
 import { Optional } from '../../../shared/types/optional';
-import { CourseProductSnapshotContentRepository } from './snapshot/content/course-product-snapshot-content.repository';
-import { ICourseProductSnapshotContentCreate } from './snapshot/content/course-product-snapshot-content.interface';
+import { CourseProductSnapshotContentRepository } from './course-product-snapshot-content.repository';
+import { IProductSnapshotContentCreate } from '../common/snapshot/content/product-snapshot-content.interface';
 
 @Injectable()
 export class CourseProductService {
@@ -60,20 +60,20 @@ export class CourseProductService {
   }: {
     courseProductCreateParams: ICourseProductCreate;
     courseProductSnapshotCreateParams: Optional<
-      ICourseProductSnapshotCreate,
-      'courseProductId'
+      IProductSnapshotCreate,
+      'productId'
     >;
     courseProductSnapshotContentCreateParams: Optional<
-      ICourseProductSnapshotContentCreate,
-      'courseProductSnapshotId'
+      IProductSnapshotContentCreate,
+      'productSnapshotId'
     >;
     courseProductSnapshotPricingCreateParams: Optional<
-      ICourseProductSnapshotPricingCreate,
-      'courseProductSnapshotId'
+      IProductSnapshotPricingCreate,
+      'productSnapshotId'
     >;
     courseProductSnapshotDiscountCreateParams: Optional<
-      ICourseProductSnapshotDiscountCreate,
-      'courseProductSnapshotId'
+      IProductSnapshotDiscountCreate,
+      'productSnapshotId'
     > | null;
   }): Promise<NonNullableInfer<ICourseProductWithRelations>> {
     const existProduct =
@@ -92,24 +92,24 @@ export class CourseProductService {
         const snapshot = await this.courseProductSnapshotRepository.create(
           {
             ...courseProductSnapshotCreateParams,
-            courseProductId: courseProduct.id,
+            productId: courseProduct.id,
           },
           tx,
         );
         const content =
           await this.courseProductSnapshotContentRepository.create({
             ...courseProductSnapshotContentCreateParams,
-            courseProductSnapshotId: snapshot.id,
+            productSnapshotId: snapshot.id,
           });
         const pricing =
           await this.courseProductSnapshotPricingRepository.create({
             ...courseProductSnapshotPricingCreateParams,
-            courseProductSnapshotId: snapshot.id,
+            productSnapshotId: snapshot.id,
           });
         const discount = courseProductSnapshotDiscountCreateParams
           ? await this.courseProductSnapshotDiscountRepository.create({
               ...courseProductSnapshotDiscountCreateParams,
-              courseProductSnapshotId: snapshot.id,
+              productSnapshotId: snapshot.id,
             })
           : null;
 
@@ -118,7 +118,7 @@ export class CourseProductService {
           lastSnapshot: {
             ...snapshot,
             pricing,
-            discount,
+            discounts: discount,
             content,
           },
         } satisfies NonNullableInfer<ICourseProductWithRelations>;

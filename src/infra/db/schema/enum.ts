@@ -13,3 +13,18 @@ export const userRole = pgEnum('user_role', [
 ]);
 
 export const authProvider = pgEnum('auth_provider', ['email', 'kakao']);
+
+export const productType = pgEnum('product_type', ['course', 'ebook']);
+
+export const uiCategory = pgEnum('ui_categories', [
+  'carousel',
+  'repeat-timer',
+  'banner',
+  'marketing-banner',
+]);
+
+export const uiCarouselType = pgEnum('ui_carousel_type', [
+  'carousel.main-banner',
+  'carousel.review',
+  'carousel.product',
+]);

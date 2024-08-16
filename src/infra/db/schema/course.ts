@@ -65,7 +65,8 @@ export const courseProducts = pgTable('course_products', {
 
 export const courseProductSnapshots = pgTable('course_product_snapshots', {
   id: uuid('id').primaryKey().defaultRandom(),
-  courseProductId: uuid('course_product_id').notNull(),
+  productId: uuid('product_id').notNull(),
+  // courseProductId: uuid('course_product_id').notNull(),
   title: text('title').notNull(),
   description: text('description'),
   createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
@@ -82,7 +83,7 @@ export const courseProductSnapshotPricing = pgTable(
   'course_product_snapshot_pricing',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    courseProductSnapshotId: uuid('course_product_snapshot_id').notNull(),
+    productSnapshotId: uuid('product_snapshot_id').notNull(),
     amount: decimal('amount').notNull(),
   },
 );
@@ -91,7 +92,7 @@ export const courseProductSnapshotDiscounts = pgTable(
   'course_product_snapshot_discounts',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    courseProductSnapshotId: uuid('course_product_snapshot_id').notNull(),
+    productSnapshotId: uuid('product_snapshot_id').notNull(),
     discountType: discountType('discount_type').notNull(),
     value: decimal('value').notNull(),
     validFrom: timestamp('valid_from', { mode: 'date', withTimezone: true }),
@@ -103,7 +104,7 @@ export const courseProductSnapshotContents = pgTable(
   'course_product_snapshot_contents',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    courseProductSnapshotId: uuid('course_product_snapshot_id').notNull(),
+    productSnapshotId: uuid('product_snapshot_id').notNull(),
     richTextContent: text('rich_text_content').notNull(),
   },
 );
@@ -151,7 +152,7 @@ export const courseProductSnapshotsRelations = relations(
   courseProductSnapshots,
   ({ one }) => ({
     product: one(courseProducts, {
-      fields: [courseProductSnapshots.courseProductId],
+      fields: [courseProductSnapshots.productId],
       references: [courseProducts.id],
     }),
     content: one(courseProductSnapshotContents),
@@ -164,7 +165,7 @@ export const courseProductSnapshotContentsRelations = relations(
   courseProductSnapshotContents,
   ({ one }) => ({
     productSnapshot: one(courseProductSnapshots, {
-      fields: [courseProductSnapshotContents.courseProductSnapshotId],
+      fields: [courseProductSnapshotContents.productSnapshotId],
       references: [courseProductSnapshots.id],
     }),
   }),
@@ -174,7 +175,7 @@ export const courseProductSnapshotPricingRelations = relations(
   courseProductSnapshotPricing,
   ({ one }) => ({
     productSnapshot: one(courseProductSnapshots, {
-      fields: [courseProductSnapshotPricing.courseProductSnapshotId],
+      fields: [courseProductSnapshotPricing.productSnapshotId],
       references: [courseProductSnapshots.id],
     }),
   }),
@@ -184,7 +185,7 @@ export const courseProductSnapshotDiscountsRelations = relations(
   courseProductSnapshotDiscounts,
   ({ one }) => ({
     productSnapshot: one(courseProductSnapshots, {
-      fields: [courseProductSnapshotDiscounts.courseProductSnapshotId],
+      fields: [courseProductSnapshotDiscounts.productSnapshotId],
       references: [courseProductSnapshots.id],
     }),
   }),

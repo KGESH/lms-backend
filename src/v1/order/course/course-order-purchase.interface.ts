@@ -1,8 +1,8 @@
 import { Uuid } from '../../../shared/types/primitive';
-import { ICourseOrder } from './course-order.interface';
+import { IOrderCreate } from '../order.interface';
 
 export type ICourseOrderPurchase = Pick<
-  ICourseOrder,
+  IOrderCreate,
   'userId' | 'amount' | 'paymentMethod' | 'paidAt'
 > & {
   courseId: Uuid;

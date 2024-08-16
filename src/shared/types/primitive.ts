@@ -33,3 +33,9 @@ export type ISO8601 = string & typia.tags.Format<'date-time'>;
 export type UserRole = 'user' | 'teacher' | 'manager' | 'admin';
 
 export type AuthProvider = 'email' | 'kakao';
+
+export type Course = 'course';
+
+export type Ebook = 'ebook';
+
+export type ProductType = Course | Ebook;

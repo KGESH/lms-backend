@@ -1,19 +1,6 @@
-import {
-  integer,
-  pgEnum,
-  pgTable,
-  real,
-  text,
-  uuid,
-} from 'drizzle-orm/pg-core';
+import { integer, pgTable, real, text, uuid } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-
-export const uiCategory = pgEnum('ui_categories', [
-  'carousel',
-  'repeat-timer',
-  'banner',
-  'marketing-banner',
-]);
+import { uiCarouselType, uiCategory } from './enum';
 
 export const uiComponents = pgTable('ui_components', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -35,12 +22,6 @@ export const uiRepeatTimers = pgTable('ui_repeat_timers', {
   buttonLabel: text('button_label'),
   buttonHref: text('button_href'),
 });
-
-export const uiCarouselType = pgEnum('ui_carousel_type', [
-  'carousel.main-banner',
-  'carousel.review',
-  'carousel.product',
-]);
 
 export const uiCarousels = pgTable('ui_carousels', {
   id: uuid('id').primaryKey().defaultRandom(),

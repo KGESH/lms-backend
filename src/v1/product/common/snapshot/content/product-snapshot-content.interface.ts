@@ -1,13 +1,13 @@
 import { Uuid } from '../../../../../shared/types/primitive';
 import { Optional } from '../../../../../shared/types/optional';
 
-export type ICourseProductSnapshotContent = {
+export type IProductSnapshotContent = {
   id: Uuid;
-  courseProductSnapshotId: Uuid;
+  productSnapshotId: Uuid;
   richTextContent: string;
 };
 
-export type ICourseProductSnapshotContentCreate = Optional<
-  ICourseProductSnapshotContent,
+export type IProductSnapshotContentCreate = Optional<
+  IProductSnapshotContent,
   'id'
 >;

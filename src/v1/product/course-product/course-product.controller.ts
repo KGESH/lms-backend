@@ -32,7 +32,7 @@ export class CourseProductController {
     }
 
     return {
-      id: product.id,
+      // id: product.id,
       courseId: product.courseId,
       snapshotId: product.lastSnapshot.id,
       title: product.lastSnapshot.title,
@@ -44,14 +44,14 @@ export class CourseProductController {
         : null,
       content: product.lastSnapshot.content,
       pricing: product.lastSnapshot.pricing,
-      discount: product.lastSnapshot.discount
+      discounts: product.lastSnapshot.discounts
         ? {
-            ...product.lastSnapshot.discount,
-            validFrom: product.lastSnapshot.discount?.validFrom
-              ? date.toISOString(product.lastSnapshot.discount.validFrom)
+            ...product.lastSnapshot.discounts,
+            validFrom: product.lastSnapshot.discounts?.validFrom
+              ? date.toISOString(product.lastSnapshot.discounts.validFrom)
               : null,
-            validTo: product.lastSnapshot.discount?.validTo
-              ? date.toISOString(product.lastSnapshot.discount.validTo)
+            validTo: product.lastSnapshot.discounts?.validTo
+              ? date.toISOString(product.lastSnapshot.discounts.validTo)
               : null,
           }
         : null,
@@ -81,22 +81,22 @@ export class CourseProductController {
       courseProductSnapshotPricingCreateParams: {
         amount: body.pricing.amount,
       },
-      courseProductSnapshotDiscountCreateParams: body.discount
+      courseProductSnapshotDiscountCreateParams: body.discounts
         ? {
-            discountType: body.discount.discountType,
-            value: body.discount.value,
-            validFrom: body.discount.validFrom
-              ? date.toDate(body.discount.validFrom)
+            discountType: body.discounts.discountType,
+            value: body.discounts.value,
+            validFrom: body.discounts.validFrom
+              ? date.toDate(body.discounts.validFrom)
               : null,
-            validTo: body.discount.validTo
-              ? date.toDate(body.discount.validTo)
+            validTo: body.discounts.validTo
+              ? date.toDate(body.discounts.validTo)
               : null,
           }
         : null,
     });
 
     return {
-      id: product.id,
+      // id: product.id,
       courseId: product.courseId,
       snapshotId: product.lastSnapshot.id,
       title: product.lastSnapshot.title,
@@ -108,14 +108,14 @@ export class CourseProductController {
         : null,
       content: product.lastSnapshot.content,
       pricing: product.lastSnapshot.pricing,
-      discount: product.lastSnapshot.discount
+      discounts: product.lastSnapshot.discounts
         ? {
-            ...product.lastSnapshot.discount,
-            validFrom: product.lastSnapshot.discount?.validFrom
-              ? date.toISOString(product.lastSnapshot.discount.validFrom)
+            ...product.lastSnapshot.discounts,
+            validFrom: product.lastSnapshot.discounts?.validFrom
+              ? date.toISOString(product.lastSnapshot.discounts.validFrom)
               : null,
-            validTo: product.lastSnapshot.discount?.validTo
-              ? date.toISOString(product.lastSnapshot.discount.validTo)
+            validTo: product.lastSnapshot.discounts?.validTo
+              ? date.toISOString(product.lastSnapshot.discounts.validTo)
               : null,
           }
         : null,

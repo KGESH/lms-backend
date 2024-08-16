@@ -21,7 +21,6 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -79,7 +78,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -110,7 +108,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -145,7 +142,6 @@
         },
         "responses": {
           "201": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -173,7 +169,6 @@
         },
         "responses": {
           "201": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -221,7 +216,6 @@
         },
         "responses": {
           "201": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -269,7 +263,6 @@
         },
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -307,7 +300,6 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -336,7 +328,6 @@
         },
         "responses": {
           "201": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -374,7 +365,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -427,7 +417,6 @@
         },
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -473,7 +462,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -549,7 +537,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -606,7 +593,6 @@
         },
         "responses": {
           "201": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -681,7 +667,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -761,7 +746,6 @@
         },
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -834,7 +818,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -891,7 +874,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -939,7 +921,6 @@
         },
         "responses": {
           "201": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1005,7 +986,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1076,7 +1056,6 @@
         },
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1140,7 +1119,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1188,7 +1166,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1227,7 +1204,6 @@
         },
         "responses": {
           "201": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1284,7 +1260,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1346,7 +1321,6 @@
         },
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1401,7 +1375,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1439,7 +1412,6 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1468,7 +1440,6 @@
         },
         "responses": {
           "201": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1496,7 +1467,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1539,7 +1509,6 @@
         },
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1565,7 +1534,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1623,7 +1591,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1654,7 +1621,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1666,6 +1632,32 @@
                       "$ref": "#/components/schemas/TeacherDto"
                     }
                   ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/file/{key}/pre-signed": {
+      "post": {
+        "tags": [],
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreSignedUrlDto"
                 }
               }
             }
@@ -1688,7 +1680,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {}
@@ -1714,7 +1705,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1742,7 +1732,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1753,7 +1742,13 @@
                     {
                       "$ref": "#/components/schemas/UiRepeatTimerDto"
                     }
-                  ]
+                  ],
+                  "discriminator": {
+                    "propertyName": "category",
+                    "mapping": {
+                      "repeat-timer": "#/components/schemas/UiRepeatTimerDto"
+                    }
+                  }
                 }
               }
             }
@@ -1785,7 +1780,6 @@
         },
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1811,7 +1805,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1839,7 +1832,6 @@
         },
         "responses": {
           "201": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1867,7 +1859,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1902,7 +1893,6 @@
         },
         "responses": {
           "201": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1933,7 +1923,6 @@
         },
         "responses": {
           "201": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1965,7 +1954,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1996,7 +1984,6 @@
         ],
         "responses": {
           "200": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -2049,7 +2036,6 @@
         },
         "responses": {
           "201": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -2070,10 +2056,168 @@
           }
         }
       }
+    },
+    "/v1/order/{id}": {
+      "get": {
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "$ref": "#/components/schemas/OrderEbookDto"
+                    },
+                    {
+                      "$ref": "#/components/schemas/OrderCourseDto"
+                    }
+                  ],
+                  "discriminator": {
+                    "propertyName": "productType",
+                    "mapping": {
+                      "ebook": "#/components/schemas/OrderEbookDto",
+                      "course": "#/components/schemas/OrderCourseDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/order/ebook": {
+      "post": {
+        "tags": [],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/v1/order/course": {
+      "post": {
+        "tags": [],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CourseOrderPurchaseDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/OrderEbookDto"
+                    },
+                    {
+                      "$ref": "#/components/schemas/OrderCourseDto"
+                    }
+                  ],
+                  "discriminator": {
+                    "propertyName": "productType",
+                    "mapping": {
+                      "ebook": "#/components/schemas/OrderEbookDto",
+                      "course": "#/components/schemas/OrderCourseDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "ExcludePasswordUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "emailVerified": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "role": {
+            "oneOf": [
+              {
+                "const": "user"
+              },
+              {
+                "const": "teacher"
+              },
+              {
+                "const": "manager"
+              },
+              {
+                "const": "admin"
+              }
+            ]
+          },
+          "image": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "displayName",
+          "email",
+          "emailVerified",
+          "role",
+          "image"
+        ]
+      },
       "PaginationDto": {
         "type": "object",
         "properties": {
@@ -2106,75 +2250,6 @@
           "cursor",
           "pageSize",
           "orderBy"
-        ]
-      },
-      "ExcludePasswordUserDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "$ref": "#/components/schemas/Uuid"
-          },
-          "displayName": {
-            "type": "string"
-          },
-          "email": {
-            "$ref": "#/components/schemas/EMail"
-          },
-          "emailVerified": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "string"
-              }
-            ]
-          },
-          "role": {
-            "$ref": "#/components/schemas/UserRole"
-          },
-          "image": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "string"
-              }
-            ]
-          }
-        },
-        "required": [
-          "id",
-          "displayName",
-          "email",
-          "emailVerified",
-          "role",
-          "image"
-        ]
-      },
-      "Uuid": {
-        "type": "string",
-        "format": "uuid"
-      },
-      "EMail": {
-        "type": "string",
-        "format": "email"
-      },
-      "UserRole": {
-        "oneOf": [
-          {
-            "const": "user"
-          },
-          {
-            "const": "teacher"
-          },
-          {
-            "const": "manager"
-          },
-          {
-            "const": "admin"
-          }
         ]
       },
       "KakaoLoginDto": {
@@ -2249,6 +2324,10 @@
       "LoginUserDto": {
         "type": "object",
         "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
           "password": {
             "oneOf": [
               {
@@ -2258,15 +2337,11 @@
                 "type": "string"
               }
             ]
-          },
-          "email": {
-            "type": "string",
-            "format": "email"
           }
         },
         "required": [
-          "password",
-          "email"
+          "email",
+          "password"
         ]
       },
       "TypeGuardErrorany": {
@@ -2346,6 +2421,13 @@
       "CreateUserDto": {
         "type": "object",
         "properties": {
+          "displayName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
           "password": {
             "oneOf": [
               {
@@ -2355,13 +2437,6 @@
                 "type": "string"
               }
             ]
-          },
-          "displayName": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string",
-            "format": "email"
           },
           "role": {
             "oneOf": [
@@ -2381,9 +2456,9 @@
           }
         },
         "required": [
-          "password",
           "displayName",
           "email",
+          "password",
           "role"
         ]
       },
@@ -2392,6 +2467,17 @@
         "properties": {
           "name": {
             "type": "string"
+          },
+          "birthDate": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "format": "date"
+              }
+            ]
           },
           "gender": {
             "oneOf": [
@@ -2410,17 +2496,6 @@
               },
               {
                 "type": "string"
-              }
-            ]
-          },
-          "birthDate": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "string",
-                "format": "date"
               }
             ]
           },
@@ -2447,9 +2522,9 @@
         },
         "required": [
           "name",
+          "birthDate",
           "gender",
           "phoneNumber",
-          "birthDate",
           "connectingInformation",
           "duplicationInformation"
         ]
@@ -2457,16 +2532,6 @@
       "CreateUserAccountDto": {
         "type": "object",
         "properties": {
-          "providerId": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "string"
-              }
-            ]
-          },
           "providerType": {
             "oneOf": [
               {
@@ -2476,11 +2541,21 @@
                 "const": "kakao"
               }
             ]
+          },
+          "providerId": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
           }
         },
         "required": [
-          "providerId",
-          "providerType"
+          "providerType",
+          "providerId"
         ]
       },
       "IErrorResponse409": {
@@ -2539,7 +2614,8 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "parentId": {
             "oneOf": [
@@ -2547,7 +2623,8 @@
                 "type": "null"
               },
               {
-                "$ref": "#/components/schemas/Uuid"
+                "type": "string",
+                "format": "uuid"
               }
             ]
           },
@@ -2583,7 +2660,8 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "parentId": {
             "oneOf": [
@@ -2591,7 +2669,8 @@
                 "type": "null"
               },
               {
-                "$ref": "#/components/schemas/Uuid"
+                "type": "string",
+                "format": "uuid"
               }
             ]
           },
@@ -2622,6 +2701,16 @@
           "name": {
             "type": "string"
           },
+          "description": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
           "parentId": {
             "oneOf": [
               {
@@ -2632,22 +2721,12 @@
                 "format": "uuid"
               }
             ]
-          },
-          "description": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "string"
-              }
-            ]
           }
         },
         "required": [
           "name",
-          "parentId",
-          "description"
+          "description",
+          "parentId"
         ]
       },
       "UpdateCategoryDto": {
@@ -2656,6 +2735,16 @@
           "name": {
             "type": "string"
           },
+          "description": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
           "parentId": {
             "oneOf": [
               {
@@ -2664,16 +2753,6 @@
               {
                 "type": "string",
                 "format": "uuid"
-              }
-            ]
-          },
-          "description": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "string"
               }
             ]
           }
@@ -2706,10 +2785,12 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "lessonId": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "title": {
             "type": "string"
@@ -2728,7 +2809,8 @@
             "type": "string"
           },
           "url": {
-            "$ref": "#/components/schemas/Uri"
+            "type": "string",
+            "format": "uri"
           },
           "metadata": {
             "oneOf": [
@@ -2750,10 +2832,6 @@
           "url",
           "metadata"
         ]
-      },
-      "Uri": {
-        "type": "string",
-        "format": "uri"
       },
       "LessonContentCreateDto": {
         "type": "object",
@@ -2845,10 +2923,12 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "chapterId": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "title": {
             "type": "string"
@@ -2864,7 +2944,7 @@
             ]
           },
           "sequence": {
-            "$ref": "#/components/schemas/UInt"
+            "type": "integer"
           }
         },
         "required": [
@@ -2874,9 +2954,6 @@
           "description",
           "sequence"
         ]
-      },
-      "UInt": {
-        "type": "integer"
       },
       "LessonCreateDto": {
         "type": "object",
@@ -2938,10 +3015,12 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "courseId": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "title": {
             "type": "string"
@@ -2957,7 +3036,7 @@
             ]
           },
           "sequence": {
-            "$ref": "#/components/schemas/UInt"
+            "type": "integer"
           }
         },
         "required": [
@@ -3028,13 +3107,16 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "teacherId": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "categoryId": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "title": {
             "type": "string"
@@ -3043,10 +3125,12 @@
             "type": "string"
           },
           "createdAt": {
-            "$ref": "#/components/schemas/ISO8601"
+            "type": "string",
+            "format": "date-time"
           },
           "updatedAt": {
-            "$ref": "#/components/schemas/ISO8601"
+            "type": "string",
+            "format": "date-time"
           }
         },
         "required": [
@@ -3059,21 +3143,20 @@
           "updatedAt"
         ]
       },
-      "ISO8601": {
-        "type": "string",
-        "format": "date-time"
-      },
       "CourseWithRelationsDto": {
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "teacherId": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "categoryId": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "title": {
             "type": "string"
@@ -3082,10 +3165,12 @@
             "type": "string"
           },
           "createdAt": {
-            "$ref": "#/components/schemas/ISO8601"
+            "type": "string",
+            "format": "date-time"
           },
           "updatedAt": {
-            "$ref": "#/components/schemas/ISO8601"
+            "type": "string",
+            "format": "date-time"
           },
           "teacher": {
             "$ref": "#/components/schemas/TeacherDto"
@@ -3117,10 +3202,12 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "userId": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "account": {
             "$ref": "#/components/schemas/ExcludePasswordUserDto"
@@ -3136,10 +3223,12 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "courseId": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "title": {
             "type": "string"
@@ -3155,7 +3244,7 @@
             ]
           },
           "sequence": {
-            "$ref": "#/components/schemas/UInt"
+            "type": "integer"
           },
           "lessons": {
             "type": "array",
@@ -3177,10 +3266,12 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "chapterId": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "title": {
             "type": "string"
@@ -3196,7 +3287,7 @@
             ]
           },
           "sequence": {
-            "$ref": "#/components/schemas/UInt"
+            "type": "integer"
           },
           "lessonContents": {
             "type": "array",
@@ -3220,9 +3311,6 @@
           "description": {
             "type": "string"
           },
-          "title": {
-            "type": "string"
-          },
           "teacherId": {
             "type": "string",
             "format": "uuid"
@@ -3230,13 +3318,16 @@
           "categoryId": {
             "type": "string",
             "format": "uuid"
+          },
+          "title": {
+            "type": "string"
           }
         },
         "required": [
           "description",
-          "title",
           "teacherId",
-          "categoryId"
+          "categoryId",
+          "title"
         ]
       },
       "PartialPartialCourseCreateDto": {
@@ -3245,9 +3336,6 @@
           "description": {
             "type": "string"
           },
-          "title": {
-            "type": "string"
-          },
           "teacherId": {
             "type": "string",
             "format": "uuid"
@@ -3255,9 +3343,24 @@
           "categoryId": {
             "type": "string",
             "format": "uuid"
+          },
+          "title": {
+            "type": "string"
           }
         },
         "description": "Make all properties in T optional"
+      },
+      "PreSignedUrlDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "url"
+        ]
       },
       "IUiComponentQuery": {
         "type": "object",
@@ -3274,10 +3377,24 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "category": {
-            "$ref": "#/components/schemas/UiCategory"
+            "oneOf": [
+              {
+                "const": "carousel"
+              },
+              {
+                "const": "repeat-timer"
+              },
+              {
+                "const": "banner"
+              },
+              {
+                "const": "marketing-banner"
+              }
+            ]
           },
           "name": {
             "type": "string"
@@ -3286,7 +3403,7 @@
             "type": "string"
           },
           "sequence": {
-            "$ref": "#/components/schemas/UInt"
+            "type": "integer"
           },
           "description": {
             "oneOf": [
@@ -3308,22 +3425,6 @@
           "description"
         ]
       },
-      "UiCategory": {
-        "oneOf": [
-          {
-            "const": "carousel"
-          },
-          {
-            "const": "repeat-timer"
-          },
-          {
-            "const": "banner"
-          },
-          {
-            "const": "marketing-banner"
-          }
-        ]
-      },
       "UiRepeatTimerDto": {
         "type": "object",
         "properties": {
@@ -3337,7 +3438,7 @@
             "type": "string"
           },
           "sequence": {
-            "$ref": "#/components/schemas/UInt"
+            "type": "integer"
           },
           "description": {
             "oneOf": [
@@ -3353,10 +3454,12 @@
             "type": "object",
             "properties": {
               "id": {
-                "$ref": "#/components/schemas/Uuid"
+                "type": "string",
+                "format": "uuid"
               },
               "uiComponentId": {
-                "$ref": "#/components/schemas/Uuid"
+                "type": "string",
+                "format": "uuid"
               },
               "title": {
                 "type": "string"
@@ -3372,7 +3475,7 @@
                 ]
               },
               "repeatMinutes": {
-                "$ref": "#/components/schemas/UInt"
+                "type": "integer"
               },
               "buttonLabel": {
                 "oneOf": [
@@ -3434,11 +3537,11 @@
           "sequence": {
             "type": "integer"
           },
-          "path": {
-            "type": "string"
-          },
           "category": {
             "const": "repeat-timer"
+          },
+          "path": {
+            "type": "string"
           },
           "ui": {
             "$ref": "#/components/schemas/Omit__typeiduiComponentId"
@@ -3448,8 +3551,8 @@
           "name",
           "description",
           "sequence",
-          "path",
           "category",
+          "path",
           "ui"
         ]
       },
@@ -3531,10 +3634,12 @@
             "type": "object",
             "properties": {
               "id": {
-                "$ref": "#/components/schemas/Uuid"
+                "type": "string",
+                "format": "uuid"
               },
               "uiComponentId": {
-                "$ref": "#/components/schemas/Uuid"
+                "type": "string",
+                "format": "uuid"
               },
               "title": {
                 "type": "string"
@@ -3550,7 +3655,7 @@
                 ]
               },
               "repeatMinutes": {
-                "$ref": "#/components/schemas/UInt"
+                "type": "integer"
               },
               "buttonLabel": {
                 "oneOf": [
@@ -3590,7 +3695,8 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           }
         },
         "required": [
@@ -3628,7 +3734,7 @@
             "type": "string"
           },
           "sequence": {
-            "$ref": "#/components/schemas/UInt"
+            "type": "integer"
           },
           "description": {
             "oneOf": [
@@ -3644,10 +3750,12 @@
             "type": "object",
             "properties": {
               "id": {
-                "$ref": "#/components/schemas/Uuid"
+                "type": "string",
+                "format": "uuid"
               },
               "uiComponentId": {
-                "$ref": "#/components/schemas/Uuid"
+                "type": "string",
+                "format": "uuid"
               },
               "carouselType": {
                 "const": "carousel.review"
@@ -3688,13 +3796,15 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "uiCarouselId": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "sequence": {
-            "$ref": "#/components/schemas/UInt"
+            "type": "integer"
           },
           "title": {
             "type": "string"
@@ -3734,11 +3844,11 @@
           "sequence": {
             "type": "integer"
           },
-          "path": {
-            "type": "string"
-          },
           "category": {
             "const": "carousel"
+          },
+          "path": {
+            "type": "string"
           },
           "ui": {
             "$ref": "#/components/schemas/Omit__typeiduiComponentId.o1"
@@ -3748,8 +3858,8 @@
           "name",
           "description",
           "sequence",
-          "path",
           "category",
+          "path",
           "ui"
         ]
       },
@@ -3789,12 +3899,12 @@
           "sequence": {
             "type": "integer"
           },
+          "content": {
+            "type": "string"
+          },
           "uiCarouselId": {
             "type": "string",
             "format": "uuid"
-          },
-          "content": {
-            "type": "string"
           },
           "rating": {
             "type": "number"
@@ -3803,8 +3913,8 @@
         "required": [
           "title",
           "sequence",
-          "uiCarouselId",
           "content",
+          "uiCarouselId",
           "rating"
         ]
       },
@@ -3826,14 +3936,13 @@
       "CourseProductDto": {
         "type": "object",
         "properties": {
-          "id": {
-            "$ref": "#/components/schemas/Uuid"
-          },
           "courseId": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "snapshotId": {
-            "$ref": "#/components/schemas/Uuid"
+            "type": "string",
+            "format": "uuid"
           },
           "title": {
             "type": "string"
@@ -3848,191 +3957,29 @@
               }
             ]
           },
-          "pricing": {
-            "$ref": "#/components/schemas/CourseProductSnapshotPricingDto"
+          "content": {
+            "$ref": "#/components/schemas/ProductSnapshotContentDto"
           },
-          "discount": {
+          "pricing": {
+            "$ref": "#/components/schemas/ProductSnapshotPricingDto"
+          },
+          "discounts": {
             "oneOf": [
               {
                 "type": "null"
               },
               {
-                "$ref": "#/components/schemas/validFromISO8601nullvalidToISO8601nullCourseProductSnapshotPercentDiscount"
+                "$ref": "#/components/schemas/idUuidproductSnapshotIdUuidvalidFromISO8601nullvalidToISO8601nullProductSnapshotFixedAmountDiscount"
               },
               {
-                "$ref": "#/components/schemas/validFromISO8601nullvalidToISO8601nullCourseProductSnapshotFixedAmountDiscount"
+                "$ref": "#/components/schemas/idUuidproductSnapshotIdUuidvalidFromISO8601nullvalidToISO8601nullProductSnapshotPercentDiscount"
               }
             ],
             "discriminator": {
               "propertyName": "discountType",
               "mapping": {
-                "percent": "#/components/schemas/validFromISO8601nullvalidToISO8601nullCourseProductSnapshotPercentDiscount",
-                "fixed_amount": "#/components/schemas/validFromISO8601nullvalidToISO8601nullCourseProductSnapshotFixedAmountDiscount"
-              }
-            }
-          },
-          "createdAt": {
-            "$ref": "#/components/schemas/ISO8601"
-          },
-          "updatedAt": {
-            "$ref": "#/components/schemas/ISO8601"
-          },
-          "deletedAt": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/ISO8601"
-              }
-            ]
-          }
-        },
-        "required": [
-          "id",
-          "courseId",
-          "snapshotId",
-          "title",
-          "description",
-          "pricing",
-          "discount",
-          "createdAt",
-          "updatedAt",
-          "deletedAt"
-        ]
-      },
-      "CourseProductSnapshotPricingDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "$ref": "#/components/schemas/Uuid"
-          },
-          "courseProductSnapshotId": {
-            "$ref": "#/components/schemas/Uuid"
-          },
-          "amount": {
-            "type": "string",
-            "pattern": "^([+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)$"
-          }
-        },
-        "required": [
-          "id",
-          "courseProductSnapshotId",
-          "amount"
-        ]
-      },
-      "validFromISO8601nullvalidToISO8601nullCourseProductSnapshotPercentDiscount": {
-        "type": "object",
-        "properties": {
-          "validFrom": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/ISO8601"
-              }
-            ]
-          },
-          "validTo": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/ISO8601"
-              }
-            ]
-          },
-          "discountType": {
-            "const": "percent"
-          },
-          "value": {
-            "type": "string",
-            "pattern": "^([+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)$"
-          }
-        },
-        "required": [
-          "validFrom",
-          "validTo",
-          "discountType",
-          "value"
-        ]
-      },
-      "validFromISO8601nullvalidToISO8601nullCourseProductSnapshotFixedAmountDiscount": {
-        "type": "object",
-        "properties": {
-          "validFrom": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/ISO8601"
-              }
-            ]
-          },
-          "validTo": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/ISO8601"
-              }
-            ]
-          },
-          "discountType": {
-            "const": "fixed_amount"
-          },
-          "value": {
-            "type": "string",
-            "pattern": "^([+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)$"
-          }
-        },
-        "required": [
-          "validFrom",
-          "validTo",
-          "discountType",
-          "value"
-        ]
-      },
-      "CourseProductCreateDto": {
-        "type": "object",
-        "properties": {
-          "description": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "string"
-              }
-            ]
-          },
-          "title": {
-            "type": "string"
-          },
-          "pricing": {
-            "$ref": "#/components/schemas/CourseProductSnapshotPricingDto"
-          },
-          "discount": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/validFromISO8601nullvalidToISO8601nullCourseProductSnapshotPercentDiscount"
-              },
-              {
-                "$ref": "#/components/schemas/validFromISO8601nullvalidToISO8601nullCourseProductSnapshotFixedAmountDiscount"
-              }
-            ],
-            "discriminator": {
-              "propertyName": "discountType",
-              "mapping": {
-                "percent": "#/components/schemas/validFromISO8601nullvalidToISO8601nullCourseProductSnapshotPercentDiscount",
-                "fixed_amount": "#/components/schemas/validFromISO8601nullvalidToISO8601nullCourseProductSnapshotFixedAmountDiscount"
+                "fixed_amount": "#/components/schemas/idUuidproductSnapshotIdUuidvalidFromISO8601nullvalidToISO8601nullProductSnapshotFixedAmountDiscount",
+                "percent": "#/components/schemas/idUuidproductSnapshotIdUuidvalidFromISO8601nullvalidToISO8601nullProductSnapshotPercentDiscount"
               }
             }
           },
@@ -4057,13 +4004,348 @@
           }
         },
         "required": [
-          "description",
+          "courseId",
+          "snapshotId",
           "title",
+          "description",
+          "content",
           "pricing",
-          "discount",
+          "discounts",
           "createdAt",
           "updatedAt",
           "deletedAt"
+        ]
+      },
+      "ProductSnapshotContentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "productSnapshotId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "richTextContent": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "productSnapshotId",
+          "richTextContent"
+        ]
+      },
+      "ProductSnapshotPricingDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "productSnapshotId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^([+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)$"
+          }
+        },
+        "required": [
+          "id",
+          "productSnapshotId",
+          "amount"
+        ]
+      },
+      "idUuidproductSnapshotIdUuidvalidFromISO8601nullvalidToISO8601nullProductSnapshotFixedAmountDiscount": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "productSnapshotId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "validFrom": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "format": "date-time"
+              }
+            ]
+          },
+          "validTo": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "format": "date-time"
+              }
+            ]
+          },
+          "discountType": {
+            "const": "fixed_amount"
+          },
+          "value": {
+            "type": "string",
+            "pattern": "^([+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)$"
+          }
+        },
+        "required": [
+          "id",
+          "productSnapshotId",
+          "validFrom",
+          "validTo",
+          "discountType",
+          "value"
+        ]
+      },
+      "idUuidproductSnapshotIdUuidvalidFromISO8601nullvalidToISO8601nullProductSnapshotPercentDiscount": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "productSnapshotId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "validFrom": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "format": "date-time"
+              }
+            ]
+          },
+          "validTo": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "format": "date-time"
+              }
+            ]
+          },
+          "discountType": {
+            "const": "percent"
+          },
+          "value": {
+            "type": "string",
+            "pattern": "^([+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)$"
+          }
+        },
+        "required": [
+          "id",
+          "productSnapshotId",
+          "validFrom",
+          "validTo",
+          "discountType",
+          "value"
+        ]
+      },
+      "CourseProductCreateDto": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deletedAt": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "format": "date-time"
+              }
+            ]
+          },
+          "content": {
+            "$ref": "#/components/schemas/ProductSnapshotContentDto"
+          },
+          "pricing": {
+            "$ref": "#/components/schemas/ProductSnapshotPricingDto"
+          },
+          "discounts": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/idUuidproductSnapshotIdUuidvalidFromISO8601nullvalidToISO8601nullProductSnapshotFixedAmountDiscount"
+              },
+              {
+                "$ref": "#/components/schemas/idUuidproductSnapshotIdUuidvalidFromISO8601nullvalidToISO8601nullProductSnapshotPercentDiscount"
+              }
+            ],
+            "discriminator": {
+              "propertyName": "discountType",
+              "mapping": {
+                "fixed_amount": "#/components/schemas/idUuidproductSnapshotIdUuidvalidFromISO8601nullvalidToISO8601nullProductSnapshotFixedAmountDiscount",
+                "percent": "#/components/schemas/idUuidproductSnapshotIdUuidvalidFromISO8601nullvalidToISO8601nullProductSnapshotPercentDiscount"
+              }
+            }
+          }
+        },
+        "required": [
+          "description",
+          "title",
+          "createdAt",
+          "updatedAt",
+          "deletedAt",
+          "content",
+          "pricing",
+          "discounts"
+        ]
+      },
+      "OrderEbookDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "paymentMethod": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^([+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)$"
+          },
+          "paidAt": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "format": "date-time"
+              }
+            ]
+          },
+          "productType": {
+            "const": "ebook"
+          },
+          "product": {}
+        },
+        "required": [
+          "id",
+          "userId",
+          "paymentMethod",
+          "amount",
+          "paidAt",
+          "productType",
+          "product"
+        ]
+      },
+      "OrderCourseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "paymentMethod": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^([+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)$"
+          },
+          "paidAt": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "format": "date-time"
+              }
+            ]
+          },
+          "productType": {
+            "const": "course"
+          },
+          "product": {
+            "$ref": "#/components/schemas/CourseProductDto"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "paymentMethod",
+          "amount",
+          "paidAt",
+          "productType",
+          "product"
+        ]
+      },
+      "CourseOrderPurchaseDto": {
+        "type": "object",
+        "properties": {
+          "courseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "paymentMethod": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^([+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)$"
+          }
+        },
+        "required": [
+          "courseId",
+          "userId",
+          "paymentMethod",
+          "amount"
         ]
       }
     },

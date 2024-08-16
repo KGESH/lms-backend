@@ -1,7 +1,6 @@
 import {
   DiscountType,
   FixedAmount,
-  ISO8601,
   Percent,
   Percentage,
   Price,
@@ -9,27 +8,24 @@ import {
 } from '../../../../../shared/types/primitive';
 import { Optional } from '../../../../../shared/types/optional';
 
-export type ICourseProductSnapshotFixedAmountDiscount = {
+export type IProductSnapshotFixedAmountDiscount = {
   discountType: Extract<DiscountType, FixedAmount>;
   value: Price;
 };
 
-export type ICourseProductSnapshotPercentDiscount = {
+export type IProductSnapshotPercentDiscount = {
   discountType: Extract<DiscountType, Percent>;
   value: Percentage;
 };
 
-export type ICourseProductSnapshotDiscount = {
+export type IProductSnapshotDiscount = {
   id: Uuid;
-  courseProductSnapshotId: Uuid;
+  productSnapshotId: Uuid;
   validFrom: Date | null;
   validTo: Date | null;
-} & (
-  | ICourseProductSnapshotFixedAmountDiscount
-  | ICourseProductSnapshotPercentDiscount
-);
+} & (IProductSnapshotFixedAmountDiscount | IProductSnapshotPercentDiscount);
 
-export type ICourseProductSnapshotDiscountCreate = Optional<
-  ICourseProductSnapshotDiscount,
+export type IProductSnapshotDiscountCreate = Optional<
+  IProductSnapshotDiscount,
   'id'
 >;

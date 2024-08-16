@@ -5,22 +5,22 @@ import {
   Percent,
   Percentage,
   Price,
+  Uuid,
 } from '../../../../../shared/types/primitive';
 
-export type CourseProductSnapshotFixedAmountDiscount = {
+export type ProductSnapshotFixedAmountDiscount = {
   discountType: Extract<DiscountType, FixedAmount>;
   value: Price;
 };
 
-export type CourseProductSnapshotPercentDiscount = {
+export type ProductSnapshotPercentDiscount = {
   discountType: Extract<DiscountType, Percent>;
   value: Percentage;
 };
 
-export type CourseProductSnapshotDiscountDto = {
+export type ProductSnapshotDiscountDto = {
+  id: Uuid;
+  productSnapshotId: Uuid;
   validFrom: ISO8601 | null;
   validTo: ISO8601 | null;
-} & (
-  | CourseProductSnapshotFixedAmountDiscount
-  | CourseProductSnapshotPercentDiscount
-);
+} & (ProductSnapshotFixedAmountDiscount | ProductSnapshotPercentDiscount);

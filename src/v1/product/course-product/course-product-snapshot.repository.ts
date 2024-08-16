@@ -1,25 +1,25 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DrizzleService } from '../../../../infra/db/drizzle.service';
-import { IRepository } from '../../../../core/base.repository';
+import { DrizzleService } from '../../../infra/db/drizzle.service';
+import { IRepository } from '../../../core/base.repository';
 import {
-  ICourseProductSnapshot,
-  ICourseProductSnapshotCreate,
-} from './conrse-product-snapshot.interface';
+  IProductSnapshot,
+  IProductSnapshotCreate,
+} from '../common/snapshot/conrse-product-snapshot.interface';
 import { TransactionClient } from 'src/infra/db/drizzle.types';
 import { IPagination } from 'src/shared/types/pagination';
 import { asc, desc, eq } from 'drizzle-orm';
-import { dbSchema } from '../../../../infra/db/schema';
-import { now } from '../../../../shared/utils/date';
+import { dbSchema } from '../../../infra/db/schema';
+import { now } from '../../../shared/utils/date';
 
 @Injectable()
 export class CourseProductSnapshotRepository
-  implements IRepository<ICourseProductSnapshot>
+  implements IRepository<IProductSnapshot>
 {
   constructor(private readonly drizzle: DrizzleService) {}
 
   async findOne(
-    where: Pick<ICourseProductSnapshot, 'id'>,
-  ): Promise<ICourseProductSnapshot | null> {
+    where: Pick<IProductSnapshot, 'id'>,
+  ): Promise<IProductSnapshot | null> {
     const snapshot =
       await this.drizzle.db.query.courseProductSnapshots.findFirst({
         where: eq(dbSchema.courseProductSnapshots.id, where.id),
@@ -33,8 +33,8 @@ export class CourseProductSnapshotRepository
   }
 
   async findOneOrThrow(
-    where: Pick<ICourseProductSnapshot, 'id'>,
-  ): Promise<ICourseProductSnapshot> {
+    where: Pick<IProductSnapshot, 'id'>,
+  ): Promise<IProductSnapshot> {
     const snapshot = await this.findOne(where);
 
     if (!snapshot) {
@@ -44,7 +44,7 @@ export class CourseProductSnapshotRepository
     return snapshot;
   }
 
-  async findMany(pagination: IPagination): Promise<ICourseProductSnapshot[]> {
+  async findMany(pagination: IPagination): Promise<IProductSnapshot[]> {
     const snapshots =
       await this.drizzle.db.query.courseProductSnapshots.findMany({
         where: pagination.cursor
@@ -60,9 +60,9 @@ export class CourseProductSnapshotRepository
   }
 
   async create(
-    params: ICourseProductSnapshotCreate,
+    params: IProductSnapshotCreate,
     db = this.drizzle.db,
-  ): Promise<ICourseProductSnapshot> {
+  ): Promise<IProductSnapshot> {
     const [snapshot] = await db
       .insert(dbSchema.courseProductSnapshots)
       .values(params)
@@ -71,18 +71,18 @@ export class CourseProductSnapshotRepository
   }
 
   async update(
-    where: Partial<ICourseProductSnapshot>,
-    params: Partial<ICourseProductSnapshot>,
+    where: Partial<IProductSnapshot>,
+    params: Partial<IProductSnapshot>,
     db: TransactionClient,
-  ): Promise<ICourseProductSnapshot> {
+  ): Promise<IProductSnapshot> {
     throw new Error('Method not implemented.');
   }
 
   // Soft delete
   async delete(
-    where: Pick<ICourseProductSnapshot, 'id'>,
+    where: Pick<IProductSnapshot, 'id'>,
     db: TransactionClient,
-  ): Promise<ICourseProductSnapshot> {
+  ): Promise<IProductSnapshot> {
     const [deleted] = await db
       .update(dbSchema.courseProductSnapshots)
       .set({ deletedAt: now('date') })

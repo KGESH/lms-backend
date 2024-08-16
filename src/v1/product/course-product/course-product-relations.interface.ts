@@ -1,19 +1,19 @@
 import { ICourseProduct } from './course-product.interface';
-import { ICourseProductSnapshot } from './snapshot/conrse-product-snapshot.interface';
-import { ICourseProductSnapshotPricing } from './snapshot/pricing/course-product-snapshot-pricing.interface';
-import { ICourseProductSnapshotDiscount } from './snapshot/discount/course-product-snapshot-discount.interface';
-import { ICourseProductSnapshotContent } from './snapshot/content/course-product-snapshot-content.interface';
+import { IProductSnapshot } from '../common/snapshot/conrse-product-snapshot.interface';
+import { IProductSnapshotPricing } from '../common/snapshot/pricing/product-snapshot-pricing.interface';
+import { IProductSnapshotDiscount } from '../common/snapshot/discount/product-snapshot-discount.interface';
+import { IProductSnapshotContent } from '../common/snapshot/content/product-snapshot-content.interface';
 
 export type ICourseProductWithLastSnapshot = ICourseProduct & {
-  lastSnapshot: ICourseProductSnapshot | null;
+  lastSnapshot: IProductSnapshot | null;
 };
 
 export type ICourseProductWithRelations = ICourseProduct & {
   lastSnapshot:
-    | (ICourseProductSnapshot & {
-        pricing: ICourseProductSnapshotPricing;
-        discount: ICourseProductSnapshotDiscount | null;
-        content: ICourseProductSnapshotContent;
+    | (IProductSnapshot & {
+        pricing: IProductSnapshotPricing;
+        discounts: IProductSnapshotDiscount | null;
+        content: IProductSnapshotContent;
       })
     | null;
 };

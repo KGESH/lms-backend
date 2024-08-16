@@ -22,6 +22,27 @@
       "when": 1723782379066,
       "tag": "0002_stale_skullbuster",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1723800989979,
+      "tag": "0003_confused_tinkerer",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1723802292859,
+      "tag": "0004_reflective_microchip",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1723809855608,
+      "tag": "0005_gigantic_alex_wilder",
+      "breakpoints": true
     }
   ]
 }

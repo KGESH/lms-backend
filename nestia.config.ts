@@ -37,8 +37,7 @@ const NESTIA_CONFIG: INestiaConfig = {
     },
     servers: [
       {
-        url: `http://localhost:4444`,
-        // url: `http://localhost:${env.get('APP_PORT')}`,
+        url: `http://localhost:${env.get('APP_PORT')}`,
         description: 'Local Server',
       },
     ],

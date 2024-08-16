@@ -1,7 +1,7 @@
 import { Price, Uuid } from '../../../../../shared/types/primitive';
 
-export type CourseProductSnapshotPricingDto = {
+export type ProductSnapshotPricingDto = {
   id: Uuid;
-  courseProductSnapshotId: Uuid;
+  productSnapshotId: Uuid;
   amount: Price;
 };

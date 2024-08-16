@@ -6,17 +6,17 @@ import {
   ICourseProductCreate,
 } from '../../../../../src/v1/product/course-product/course-product.interface';
 import {
-  ICourseProductSnapshot,
-  ICourseProductSnapshotCreate,
-} from '../../../../../src/v1/product/course-product/snapshot/conrse-product-snapshot.interface';
+  IProductSnapshot,
+  IProductSnapshotCreate,
+} from '../../../../../src/v1/product/common/snapshot/conrse-product-snapshot.interface';
 import {
-  ICourseProductSnapshotPricing,
-  ICourseProductSnapshotPricingCreate,
-} from '../../../../../src/v1/product/course-product/snapshot/pricing/course-product-snapshot-pricing.interface';
+  IProductSnapshotPricing,
+  IProductSnapshotPricingCreate,
+} from '../../../../../src/v1/product/common/snapshot/pricing/product-snapshot-pricing.interface';
 import {
-  ICourseProductSnapshotDiscount,
-  ICourseProductSnapshotDiscountCreate,
-} from '../../../../../src/v1/product/course-product/snapshot/discount/course-product-snapshot-discount.interface';
+  IProductSnapshotDiscount,
+  IProductSnapshotDiscountCreate,
+} from '../../../../../src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
 import { ICourseProductWithRelations } from '../../../../../src/v1/product/course-product/course-product-relations.interface';
 import {
   DiscountValue,
@@ -24,9 +24,9 @@ import {
 } from '../../../../../src/shared/types/primitive';
 import { TransactionClient } from '../../../../../src/infra/db/drizzle.types';
 import {
-  ICourseProductSnapshotContent,
-  ICourseProductSnapshotContentCreate,
-} from '../../../../../src/v1/product/course-product/snapshot/content/course-product-snapshot-content.interface';
+  IProductSnapshotContent,
+  IProductSnapshotContentCreate,
+} from '../../../../../src/v1/product/common/snapshot/content/product-snapshot-content.interface';
 
 export const createCourseProduct = async (
   params: ICourseProductCreate,
@@ -41,9 +41,9 @@ export const createCourseProduct = async (
 };
 
 export const createCourseProductSnapshot = async (
-  params: ICourseProductSnapshotCreate,
+  params: IProductSnapshotCreate,
   db: TransactionClient,
-): Promise<ICourseProductSnapshot> => {
+): Promise<IProductSnapshot> => {
   const [snapshot] = await db
     .insert(dbSchema.courseProductSnapshots)
     .values(params)
@@ -53,9 +53,9 @@ export const createCourseProductSnapshot = async (
 };
 
 export const createCourseProductSnapshotContent = async (
-  params: ICourseProductSnapshotContentCreate,
+  params: IProductSnapshotContentCreate,
   db: TransactionClient,
-): Promise<ICourseProductSnapshotContent> => {
+): Promise<IProductSnapshotContent> => {
   const [content] = await db
     .insert(dbSchema.courseProductSnapshotContents)
     .values(params)
@@ -65,24 +65,26 @@ export const createCourseProductSnapshotContent = async (
 };
 
 export const createCourseProductSnapshotPricing = async (
-  params: ICourseProductSnapshotPricingCreate,
+  params: IProductSnapshotPricingCreate,
   db: TransactionClient,
-): Promise<ICourseProductSnapshotPricing> => {
+): Promise<IProductSnapshotPricing> => {
   const [pricing] = await db
     .insert(dbSchema.courseProductSnapshotPricing)
     .values(params)
     .returning();
 
-  return {
-    ...pricing,
-    amount: typia.assert<Price>(`${pricing.amount}`),
-  };
+  return typia.assert<IProductSnapshotPricing>(pricing);
+  // {
+  //   ...pricing,
+  //   amount: typia.assert<Price>(pricing.amount),
+  //   // amount: typia.assert<Price>(pricing.amount),
+  // };
 };
 
 export const createCourseProductSnapshotDiscount = async (
-  params: ICourseProductSnapshotDiscountCreate,
+  params: IProductSnapshotDiscountCreate,
   db: TransactionClient,
-): Promise<ICourseProductSnapshotDiscount> => {
+): Promise<IProductSnapshotDiscount> => {
   const [discount] = await db
     .insert(dbSchema.courseProductSnapshotDiscounts)
     .values(params)
@@ -107,29 +109,29 @@ export const createRandomCourseProduct = async (
   );
   const snapshot = await createCourseProductSnapshot(
     {
-      ...typia.random<ICourseProductSnapshotCreate>(),
-      courseProductId: product.id,
+      ...typia.random<IProductSnapshotCreate>(),
+      productId: product.id,
     },
     db,
   );
   const content = await createCourseProductSnapshotContent(
     {
-      ...typia.random<ICourseProductSnapshotContentCreate>(),
-      courseProductSnapshotId: snapshot.id,
+      ...typia.random<IProductSnapshotContentCreate>(),
+      productSnapshotId: snapshot.id,
     },
     db,
   );
   const pricing = await createCourseProductSnapshotPricing(
     {
-      ...typia.random<ICourseProductSnapshotPricingCreate>(),
-      courseProductSnapshotId: snapshot.id,
+      ...typia.random<IProductSnapshotPricingCreate>(),
+      productSnapshotId: snapshot.id,
     },
     db,
   );
-  const discount = await createCourseProductSnapshotDiscount(
+  const discounts = await createCourseProductSnapshotDiscount(
     {
-      ...typia.random<ICourseProductSnapshotDiscountCreate>(),
-      courseProductSnapshotId: snapshot.id,
+      ...typia.random<IProductSnapshotDiscountCreate>(),
+      productSnapshotId: snapshot.id,
     },
     db,
   );
@@ -140,7 +142,7 @@ export const createRandomCourseProduct = async (
       ...snapshot,
       content,
       pricing,
-      discount,
+      discounts,
     },
   };
 };

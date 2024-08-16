@@ -1,9 +1,9 @@
 import { Uuid } from '../../../../shared/types/primitive';
 import { Optional } from '../../../../shared/types/optional';
 
-export type ICourseProductSnapshot = {
+export type IProductSnapshot = {
   id: Uuid;
-  courseProductId: Uuid;
+  productId: Uuid;
   title: string;
   description: string | null;
   createdAt: Date;
@@ -11,7 +11,7 @@ export type ICourseProductSnapshot = {
   deletedAt: Date | null;
 };
 
-export type ICourseProductSnapshotCreate = Pick<
-  Optional<ICourseProductSnapshot, 'id'>,
-  'id' | 'courseProductId' | 'title' | 'description'
+export type IProductSnapshotCreate = Pick<
+  Optional<IProductSnapshot, 'id'>,
+  'id' | 'productId' | 'title' | 'description'
 >;
