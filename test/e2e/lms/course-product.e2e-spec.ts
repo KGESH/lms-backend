@@ -5,7 +5,7 @@ import { createTestingServer } from '../helpers/app.helper';
 import { Uri } from '../../../src/shared/types/primitive';
 import { DrizzleService } from '../../../src/infra/db/drizzle.service';
 import { createRandomCourseProduct } from '../helpers/db/lms/course-product.helper';
-import { CourseProductCreateDto } from '../../../src/v1/product/course-product/course-product.dto';
+import { CreateCourseProductDto } from '../../../src/v1/product/course-product/course-product.dto';
 import { createRandomCourse } from '../helpers/db/lms/course.helper';
 
 describe('CourseProductController (e2e)', () => {
@@ -44,8 +44,8 @@ describe('CourseProductController (e2e)', () => {
   describe('[Create course product]', () => {
     it('should be create course product success', async () => {
       const { course } = await createRandomCourse(drizzle.db);
-      const createDto: CourseProductCreateDto = {
-        ...typia.random<CourseProductCreateDto>(),
+      const createDto: CreateCourseProductDto = {
+        ...typia.random<CreateCourseProductDto>(),
         title: 'mock-product',
       };
 

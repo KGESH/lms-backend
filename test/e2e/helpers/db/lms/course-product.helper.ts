@@ -18,15 +18,14 @@ import {
   IProductSnapshotDiscountCreate,
 } from '../../../../../src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
 import { ICourseProductWithRelations } from '../../../../../src/v1/product/course-product/course-product-relations.interface';
-import {
-  DiscountValue,
-  Price,
-} from '../../../../../src/shared/types/primitive';
+import { DiscountValue } from '../../../../../src/shared/types/primitive';
 import { TransactionClient } from '../../../../../src/infra/db/drizzle.types';
 import {
   IProductSnapshotContent,
   IProductSnapshotContentCreate,
 } from '../../../../../src/v1/product/common/snapshot/content/product-snapshot-content.interface';
+import { IProductSnapshotAnnouncementCreate } from '../../../../../src/v1/product/common/snapshot/announcement/product-snapshot-announcement.interface';
+import { IProductSnapshotRefundPolicyCreate } from '../../../../../src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
 
 export const createCourseProduct = async (
   params: ICourseProductCreate,
@@ -52,6 +51,30 @@ export const createCourseProductSnapshot = async (
   return snapshot;
 };
 
+export const createCourseProductAnnouncement = async (
+  params: IProductSnapshotAnnouncementCreate,
+  db: TransactionClient,
+): Promise<IProductSnapshotContent> => {
+  const [announcement] = await db
+    .insert(dbSchema.courseProductSnapshotAnnouncements)
+    .values(params)
+    .returning();
+
+  return announcement;
+};
+
+export const createCourseProductSnapshotRefundPolicy = async (
+  params: IProductSnapshotRefundPolicyCreate,
+  db: TransactionClient,
+) => {
+  const [refundPolicy] = await db
+    .insert(dbSchema.courseProductSnapshotRefundPolicies)
+    .values(params)
+    .returning();
+
+  return refundPolicy;
+};
+
 export const createCourseProductSnapshotContent = async (
   params: IProductSnapshotContentCreate,
   db: TransactionClient,
@@ -74,11 +97,6 @@ export const createCourseProductSnapshotPricing = async (
     .returning();
 
   return typia.assert<IProductSnapshotPricing>(pricing);
-  // {
-  //   ...pricing,
-  //   amount: typia.assert<Price>(pricing.amount),
-  //   // amount: typia.assert<Price>(pricing.amount),
-  // };
 };
 
 export const createCourseProductSnapshotDiscount = async (
@@ -114,6 +132,20 @@ export const createRandomCourseProduct = async (
     },
     db,
   );
+  const announcement = await createCourseProductAnnouncement(
+    {
+      ...typia.random<IProductSnapshotContentCreate>(),
+      productSnapshotId: snapshot.id,
+    },
+    db,
+  );
+  const refundPolicy = await createCourseProductSnapshotRefundPolicy(
+    {
+      ...typia.random<IProductSnapshotRefundPolicyCreate>(),
+      productSnapshotId: snapshot.id,
+    },
+    db,
+  );
   const content = await createCourseProductSnapshotContent(
     {
       ...typia.random<IProductSnapshotContentCreate>(),
@@ -140,6 +172,8 @@ export const createRandomCourseProduct = async (
     ...product,
     lastSnapshot: {
       ...snapshot,
+      announcement,
+      refundPolicy,
       content,
       pricing,
       discounts,
