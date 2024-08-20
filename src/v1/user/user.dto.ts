@@ -1,4 +1,10 @@
-import { BirthDate, EMail, UserRole, Uuid } from '../../shared/types/primitive';
+import {
+  BirthDate,
+  EMail,
+  ISO8601,
+  UserRole,
+  Uuid,
+} from '../../shared/types/primitive';
 import { OmitPassword } from '../../shared/types/omit-password';
 import { IUser } from './user.interface';
 
@@ -10,6 +16,9 @@ export type UserDto = {
   password: string | null;
   role: UserRole;
   image: string | null;
+  createdAt: ISO8601;
+  updatedAt: ISO8601;
+  deletedAt: ISO8601 | null;
 };
 
 export type UserWithoutPasswordDto = OmitPassword<UserDto>;

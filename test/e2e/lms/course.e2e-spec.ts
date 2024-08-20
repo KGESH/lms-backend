@@ -33,7 +33,10 @@ describe('CourseController (e2e)', () => {
   describe('[Get course]', () => {
     it('should be get a course', async () => {
       const category = await createCategory(
-        typia.random<ICategoryCreate>(),
+        {
+          ...typia.random<ICategoryCreate>(),
+          parentId: null,
+        },
         drizzle.db,
       );
       const teacher = await createTeacher(
@@ -64,7 +67,10 @@ describe('CourseController (e2e)', () => {
   describe('[Get courses]', () => {
     it('should be get all courses', async () => {
       const category = await createCategory(
-        typia.random<ICategoryCreate>(),
+        {
+          ...typia.random<ICategoryCreate>(),
+          parentId: null,
+        },
         drizzle.db,
       );
       const teacher = await createTeacher(
@@ -109,7 +115,10 @@ describe('CourseController (e2e)', () => {
   describe('[Create course]', () => {
     it('should be create course success', async () => {
       const category = await createCategory(
-        typia.random<ICategoryCreate>(),
+        {
+          ...typia.random<ICategoryCreate>(),
+          parentId: null,
+        },
         drizzle.db,
       );
       const teacher = await createTeacher(
@@ -135,7 +144,10 @@ describe('CourseController (e2e)', () => {
     describe('[Update course]', () => {
       it('should be update course success', async () => {
         const category = await createCategory(
-          typia.random<ICategoryCreate>(),
+          {
+            ...typia.random<ICategoryCreate>(),
+            parentId: null,
+          },
           drizzle.db,
         );
         const teacher = await createTeacher(
@@ -171,7 +183,10 @@ describe('CourseController (e2e)', () => {
     describe('[Delete course]', () => {
       it('should be delete course success', async () => {
         const category = await createCategory(
-          typia.random<ICategoryCreate>(),
+          {
+            ...typia.random<ICategoryCreate>(),
+            parentId: null,
+          },
           drizzle.db,
         );
         const teacher = await createTeacher(

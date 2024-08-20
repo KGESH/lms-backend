@@ -1,1 +1,0 @@
-ALTER TABLE "course_orders" RENAME COLUMN "course_product_snapshot_id" TO "product_snapshot_id";

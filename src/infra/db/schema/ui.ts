@@ -1,6 +1,6 @@
 import { integer, pgTable, real, text, uuid } from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
 import { uiCarouselType, uiCategory } from './enum';
+import { relations } from 'drizzle-orm';
 
 export const uiComponents = pgTable('ui_components', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -80,6 +80,7 @@ export const uiDbSchemas = {
   uiRepeatTimers,
   uiCarousels,
   uiCarouselReviews,
+
   // Relations
   uiComponentsRelations,
   uiRepeatTimersRelations,

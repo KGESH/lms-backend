@@ -34,7 +34,8 @@ describe('AuthController (e2e)', () => {
 
       const response = await AuthAPI.kakao.login.kakaoLogin({ host }, loginDto);
       if (!response.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(response.data, null, 4);
+        throw new Error(`[assert] ${message}`);
       }
 
       const user = response.data;
@@ -60,7 +61,8 @@ describe('AuthController (e2e)', () => {
 
       const response = await AuthAPI.signup({ host }, signupDto);
       if (!response.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(response.data, null, 4);
+        throw new Error(`[assert] ${message}`);
       }
 
       const user = response.data;
@@ -88,7 +90,8 @@ describe('AuthController (e2e)', () => {
 
       const loginResponse = await AuthAPI.login({ host }, loginDto);
       if (!loginResponse.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(loginResponse.data, null, 4);
+        throw new Error(`[assert] ${message}`);
       }
 
       const user = loginResponse.data;
@@ -109,7 +112,8 @@ describe('AuthController (e2e)', () => {
         },
       );
       if (!response.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(response.data, null, 4);
+        throw new Error(`[assert] ${message}`);
       }
 
       const updatedUser = response.data;

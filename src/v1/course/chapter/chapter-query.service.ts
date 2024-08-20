@@ -6,8 +6,8 @@ import { IChapter } from './chapter.interface';
 export class ChapterQueryService {
   constructor(private readonly chapterRepository: ChapterRepository) {}
 
-  async findChapters(): Promise<IChapter[]> {
-    return await this.chapterRepository.findMany();
+  async findChapters(where: Pick<IChapter, 'courseId'>): Promise<IChapter[]> {
+    return await this.chapterRepository.findManyByCourseId(where);
   }
 
   async findChapterById(where: Pick<IChapter, 'id'>): Promise<IChapter | null> {

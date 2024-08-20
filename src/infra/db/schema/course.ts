@@ -1,18 +1,25 @@
 import {
-  timestamp,
+  AnyPgColumn,
   decimal,
   integer,
   pgTable,
   text,
+  timestamp,
   uuid,
 } from 'drizzle-orm/pg-core';
+import { discountType, lessonContentType } from './enum';
 import { relations } from 'drizzle-orm';
-import { discountType } from './enum';
-import { teachers } from './user';
+import { courseOrders } from './order';
+import { teachers } from './teacher';
 
 export const courseCategories = pgTable('course_categories', {
   id: uuid('id').primaryKey().defaultRandom(),
-  parentId: uuid('parent_id'),
+  parentId: uuid('parent_id').references(
+    (): AnyPgColumn => courseCategories.id,
+    {
+      onDelete: 'cascade',
+    },
+  ),
   name: text('name').notNull(),
   description: text('description'),
 });
@@ -53,9 +60,10 @@ export const lessonContents = pgTable('lesson_contents', {
   lessonId: uuid('lesson_id').notNull(),
   title: text('title').notNull(),
   description: text('description'),
-  contentType: text('content_type').notNull(),
-  url: text('url').notNull(),
+  contentType: lessonContentType('content_type').notNull(),
+  url: text('url'),
   metadata: text('metadata'),
+  sequence: integer('sequence'),
 });
 
 export const courseProducts = pgTable('course_products', {
@@ -66,7 +74,6 @@ export const courseProducts = pgTable('course_products', {
 export const courseProductSnapshots = pgTable('course_product_snapshots', {
   id: uuid('id').primaryKey().defaultRandom(),
   productId: uuid('product_id').notNull(),
-  // courseProductId: uuid('course_product_id').notNull(),
   title: text('title').notNull(),
   description: text('description'),
   createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
@@ -158,6 +165,7 @@ export const courseProductSnapshotsRelations = relations(
     content: one(courseProductSnapshotContents),
     pricing: one(courseProductSnapshotPricing),
     discounts: one(courseProductSnapshotDiscounts),
+    courseOrder: one(courseOrders),
   }),
 );
 
@@ -170,7 +178,6 @@ export const courseProductSnapshotContentsRelations = relations(
     }),
   }),
 );
-
 export const courseProductSnapshotPricingRelations = relations(
   courseProductSnapshotPricing,
   ({ one }) => ({
@@ -227,7 +234,7 @@ export const courseDbSchemas = {
   courseProductSnapshotDiscounts,
   courseProductSnapshotContents,
 
-  // Relations
+  // // Relations
   courseCategoriesRelations,
   coursesRelations,
   chaptersRelations,
@@ -235,7 +242,7 @@ export const courseDbSchemas = {
   lessonContentsRelations,
   courseProductsRelations,
   courseProductSnapshotsRelations,
+  courseProductSnapshotContentsRelations,
   courseProductSnapshotPricingRelations,
   courseProductSnapshotDiscountsRelations,
-  courseProductSnapshotContentsRelations,
 };

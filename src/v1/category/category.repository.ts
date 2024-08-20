@@ -1,18 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DrizzleService } from '../../infra/db/drizzle.service';
-import { asc, desc, eq, isNull } from 'drizzle-orm';
+import { eq, isNull } from 'drizzle-orm';
 import { dbSchema } from '../../infra/db/schema';
 import {
   ICategory,
   ICategoryCreate,
-  ICategoryWithChildren,
+  ICategoryWithRelations,
 } from './category.interface';
 import { ICourse } from '../course/course.interface';
-import { IRepository } from '../../core/base.repository';
-import { IPagination } from 'src/shared/types/pagination';
+import { Pagination } from 'src/shared/types/pagination';
+import { getRootCategoriesRawSql } from '../../../test/e2e/helpers/db/lms/category.helper';
 
 @Injectable()
-export class CategoryRepository implements IRepository<ICategory> {
+export class CategoryRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
   async findOne(where: Pick<ICategory, 'id'>): Promise<ICategory | null> {
@@ -37,26 +37,19 @@ export class CategoryRepository implements IRepository<ICategory> {
     return category;
   }
 
-  async findMany(pagination: IPagination): Promise<ICategory[]> {
-    const categories = await this.drizzle.db
-      .select()
-      .from(dbSchema.courseCategories)
-      .where(
-        pagination.cursor
-          ? eq(dbSchema.courseCategories.id, pagination.cursor)
-          : undefined,
-      )
-      .limit(pagination.pageSize)
-      .orderBy(
-        pagination.orderBy === 'asc'
-          ? asc(dbSchema.courseCategories.id)
-          : desc(dbSchema.courseCategories.id),
-      );
-    return categories;
+  async findRootCategories(pagination: Pagination): Promise<ICategory[]> {
+    const roots = await this.drizzle.db.query.courseCategories.findMany({
+      where: isNull(dbSchema.courseCategories.parentId),
+      orderBy: (category, { asc }) => asc(category.name),
+      offset: (pagination.page - 1) * pagination.pageSize,
+      limit: pagination.pageSize,
+    });
+
+    return roots;
   }
 
   // Todo: extract
-  async findOneWithCourses(
+  async findCategoryWithCourses(
     where: Pick<ICategory, 'id'>,
   ): Promise<(ICategory & { courses: ICourse[] }) | null> {
     const category = await this.drizzle.db.query.courseCategories.findFirst({
@@ -73,22 +66,13 @@ export class CategoryRepository implements IRepository<ICategory> {
     return category;
   }
 
-  async findManyRootCategoriesWithChildren(): Promise<ICategoryWithChildren[]> {
-    const rootCategories =
-      await this.drizzle.db.query.courseCategories.findMany({
-        where: isNull(dbSchema.courseCategories.parentId),
-        with: {
-          children: {
-            with: {
-              children: {
-                with: {
-                  children: true,
-                },
-              },
-            },
-          },
-        },
-      });
+  async findRootCategoriesWithChildren(
+    pagination: Pagination,
+  ): Promise<ICategoryWithRelations[]> {
+    const rootCategories = await getRootCategoriesRawSql(
+      pagination,
+      this.drizzle.db,
+    );
 
     return rootCategories;
   }

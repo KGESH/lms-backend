@@ -2,13 +2,9 @@ import { Controller, Logger } from '@nestjs/common';
 import { UserService } from './user.service';
 import { TypedParam, TypedQuery, TypedRoute } from '@nestia/core';
 import { Uuid } from '../../shared/types/primitive';
-import {
-  DEFAULT_CURSOR,
-  DEFAULT_ORDER_BY,
-  DEFAULT_PAGE_SIZE,
-} from '../../core/pagination.constant';
 import { PaginationDto } from '../../core/pagination.dto';
 import { UserWithoutPasswordDto } from './user.dto';
+import { userToDto } from '../../shared/helpers/transofrm/user';
 
 @Controller('v1/user')
 export class UserController {
@@ -19,12 +15,8 @@ export class UserController {
   async getUsers(
     @TypedQuery() query: PaginationDto,
   ): Promise<UserWithoutPasswordDto[]> {
-    const users = await this.userService.findUsers({
-      cursor: query.cursor ?? DEFAULT_CURSOR,
-      pageSize: query.pageSize ?? DEFAULT_PAGE_SIZE,
-      orderBy: query.orderBy ?? DEFAULT_ORDER_BY,
-    });
-    return users;
+    const users = await this.userService.findUsers(query);
+    return users.map(userToDto);
   }
 
   @TypedRoute.Get('/:id')
@@ -32,6 +24,6 @@ export class UserController {
     @TypedParam('id') id: Uuid,
   ): Promise<UserWithoutPasswordDto | null> {
     const user = await this.userService.findUserById({ id });
-    return user;
+    return user ? userToDto(user) : null;
   }
 }

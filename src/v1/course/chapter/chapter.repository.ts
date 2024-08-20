@@ -1,18 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DrizzleService } from '../../../infra/db/drizzle.service';
 import { IChapter, IChapterCreate, IChapterUpdate } from './chapter.interface';
-import { asc, desc, eq, gt } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { dbSchema } from '../../../infra/db/schema';
-import { IRepository } from '../../../core/base.repository';
-import { IPagination } from '../../../shared/types/pagination';
-import {
-  DEFAULT_CURSOR,
-  DEFAULT_ORDER_BY,
-  DEFAULT_PAGE_SIZE,
-} from '../../../core/pagination.constant';
 
 @Injectable()
-export class ChapterRepository implements IRepository<IChapter> {
+export class ChapterRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
   async findOne(where: Pick<IChapter, 'id'>): Promise<IChapter | null> {
@@ -37,27 +30,12 @@ export class ChapterRepository implements IRepository<IChapter> {
     return chapter;
   }
 
-  async findMany(
-    pagination: IPagination = {
-      cursor: DEFAULT_CURSOR,
-      pageSize: DEFAULT_PAGE_SIZE,
-      orderBy: DEFAULT_ORDER_BY,
-    },
+  async findManyByCourseId(
+    where: Pick<IChapter, 'courseId'>,
   ): Promise<IChapter[]> {
-    return await this.drizzle.db
-      .select()
-      .from(dbSchema.chapters)
-      .where(
-        pagination.cursor
-          ? gt(dbSchema.chapters.id, pagination.cursor)
-          : undefined,
-      )
-      .limit(pagination.pageSize)
-      .orderBy(
-        pagination.orderBy === 'asc'
-          ? asc(dbSchema.chapters.id)
-          : desc(dbSchema.chapters.id),
-      );
+    return await this.drizzle.db.query.chapters.findMany({
+      where: eq(dbSchema.chapters.courseId, where.courseId),
+    });
   }
 
   async create(

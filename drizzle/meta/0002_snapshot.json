@@ -1,6 +1,6 @@
 {
-  "id": "e655dc83-c765-49ce-908b-adabab49afb3",
-  "prevId": "30cbc315-bae6-4a46-a508-0edc194ca862",
+  "id": "1b6a9559-e245-47bb-9ed7-f08767ec0ebd",
+  "prevId": "8b45f26e-b489-4952-8560-9aebf86d0e6b",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -76,7 +76,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "course_categories_parent_id_course_categories_id_fk": {
+          "name": "course_categories_parent_id_course_categories_id_fk",
+          "tableFrom": "course_categories",
+          "tableTo": "course_categories",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -91,8 +105,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "course_product_snapshot_id": {
-          "name": "course_product_snapshot_id",
+        "product_snapshot_id": {
+          "name": "product_snapshot_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -120,8 +134,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "course_product_snapshot_id": {
-          "name": "course_product_snapshot_id",
+        "product_snapshot_id": {
+          "name": "product_snapshot_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -168,8 +182,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "course_product_snapshot_id": {
-          "name": "course_product_snapshot_id",
+        "product_snapshot_id": {
+          "name": "product_snapshot_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -197,8 +211,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "course_product_id": {
-          "name": "course_product_id",
+        "product_id": {
+          "name": "product_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -350,7 +364,8 @@
         },
         "content_type": {
           "name": "content_type",
-          "type": "text",
+          "type": "lesson_content_type",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         },
@@ -358,11 +373,17 @@
           "name": "url",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "metadata": {
           "name": "metadata",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sequence": {
+          "name": "sequence",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         }
@@ -413,6 +434,35 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "public.course_orders": {
+      "name": "course_orders",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "order_id": {
+          "name": "order_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "product_snapshot_id": {
+          "name": "product_snapshot_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.course_order_refunds": {
       "name": "course_order_refunds",
       "schema": "",
@@ -424,8 +474,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "course_order_id": {
-          "name": "course_order_id",
+        "order_id": {
+          "name": "order_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -448,8 +498,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.course_orders": {
-      "name": "course_orders",
+    "public.orders": {
+      "name": "orders",
       "schema": "",
       "columns": {
         "id": {
@@ -465,9 +515,10 @@
           "primaryKey": false,
           "notNull": true
         },
-        "course_product_snapshot_id": {
-          "name": "course_product_snapshot_id",
-          "type": "uuid",
+        "product_type": {
+          "name": "product_type",
+          "type": "product_type",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         },
@@ -494,6 +545,393 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
+    },
+    "public.course_reviews": {
+      "name": "course_reviews",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "review_id": {
+          "name": "review_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "course_id": {
+          "name": "course_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "course_reviews_review_id_reviews_id_fk": {
+          "name": "course_reviews_review_id_reviews_id_fk",
+          "tableFrom": "course_reviews",
+          "tableTo": "reviews",
+          "columnsFrom": [
+            "review_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "course_reviews_course_id_courses_id_fk": {
+          "name": "course_reviews_course_id_courses_id_fk",
+          "tableFrom": "course_reviews",
+          "tableTo": "courses",
+          "columnsFrom": [
+            "course_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.ebook_reviews": {
+      "name": "ebook_reviews",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "review_id": {
+          "name": "review_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ebook_id": {
+          "name": "ebook_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.review_replies": {
+      "name": "review_replies",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "review_id": {
+          "name": "review_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "review_replies_review_id_reviews_id_fk": {
+          "name": "review_replies_review_id_reviews_id_fk",
+          "tableFrom": "review_replies",
+          "tableTo": "reviews",
+          "columnsFrom": [
+            "review_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "review_replies_user_id_users_id_fk": {
+          "name": "review_replies_user_id_users_id_fk",
+          "tableFrom": "review_replies",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "review_replies_parent_id_review_replies_id_fk": {
+          "name": "review_replies_parent_id_review_replies_id_fk",
+          "tableFrom": "review_replies",
+          "tableTo": "review_replies",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.review_reply_snapshots": {
+      "name": "review_reply_snapshots",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "review_reply_id": {
+          "name": "review_reply_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "comment": {
+          "name": "comment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "review_reply_snapshots_review_reply_id_review_replies_id_fk": {
+          "name": "review_reply_snapshots_review_reply_id_review_replies_id_fk",
+          "tableFrom": "review_reply_snapshots",
+          "tableTo": "review_replies",
+          "columnsFrom": [
+            "review_reply_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.review_snapshots": {
+      "name": "review_snapshots",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "review_id": {
+          "name": "review_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "comment": {
+          "name": "comment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rating": {
+          "name": "rating",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "review_snapshots_review_id_reviews_id_fk": {
+          "name": "review_snapshots_review_id_reviews_id_fk",
+          "tableFrom": "review_snapshots",
+          "tableTo": "reviews",
+          "columnsFrom": [
+            "review_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.reviews": {
+      "name": "reviews",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "order_id": {
+          "name": "order_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "product_type": {
+          "name": "product_type",
+          "type": "product_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "reviews_user_id_users_id_fk": {
+          "name": "reviews_user_id_users_id_fk",
+          "tableFrom": "reviews",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.teachers": {
+      "name": "teachers",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "teachers_user_id_users_id_fk": {
+          "name": "teachers_user_id_users_id_fk",
+          "tableFrom": "teachers",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "teachers_user_id_unique": {
+          "name": "teachers_user_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id"
+          ]
+        }
+      }
     },
     "public.ui_carousel_reviews": {
       "name": "ui_carousel_reviews",
@@ -734,51 +1172,6 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
-    },
-    "public.teachers": {
-      "name": "teachers",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "teachers_user_id_users_id_fk": {
-          "name": "teachers_user_id_users_id_fk",
-          "tableFrom": "teachers",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "teachers_user_id_unique": {
-          "name": "teachers_user_id_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "user_id"
-          ]
-        }
-      }
     },
     "public.user_accounts": {
       "name": "user_accounts",
@@ -1041,14 +1434,21 @@
         "percent"
       ]
     },
-    "public.user_role": {
-      "name": "user_role",
+    "public.lesson_content_type": {
+      "name": "lesson_content_type",
       "schema": "public",
       "values": [
-        "user",
-        "teacher",
-        "manager",
-        "admin"
+        "video",
+        "text",
+        "file"
+      ]
+    },
+    "public.product_type": {
+      "name": "product_type",
+      "schema": "public",
+      "values": [
+        "course",
+        "ebook"
       ]
     },
     "public.ui_carousel_type": {
@@ -1068,6 +1468,16 @@
         "repeat-timer",
         "banner",
         "marketing-banner"
+      ]
+    },
+    "public.user_role": {
+      "name": "user_role",
+      "schema": "public",
+      "values": [
+        "user",
+        "teacher",
+        "manager",
+        "admin"
       ]
     }
   },

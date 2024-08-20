@@ -4,10 +4,12 @@ import {
   TypedBody,
   TypedException,
   TypedParam,
+  TypedQuery,
   TypedRoute,
 } from '@nestia/core';
 import {
   CategoryDto,
+  CategoryQuery,
   CategoryWithChildrenDto,
   CreateCategoryDto,
   UpdateCategoryDto,
@@ -15,15 +17,34 @@ import {
 import { Uuid } from '../../shared/types/primitive';
 import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '../../shared/types/response';
+import { DEFAULT_PAGINATION } from '../../core/pagination.constant';
 
 @Controller('v1/category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
   @TypedRoute.Get('/')
-  async getAllCategories(): Promise<CategoryWithChildrenDto[]> {
-    const rootCategories = await this.categoryService.findRootCategories();
-    return rootCategories;
+  async getRootCategories(
+    @TypedQuery() query: CategoryQuery,
+  ): Promise<CategoryWithChildrenDto[]> {
+    if (query.withChildren) {
+      const rootsWithChildren =
+        await this.categoryService.getRootCategoriesWithChildren({
+          ...DEFAULT_PAGINATION,
+          ...query,
+        });
+      return rootsWithChildren;
+    }
+
+    const roots = await this.categoryService.getRootCategories({
+      ...DEFAULT_PAGINATION,
+      ...query,
+    });
+    return roots;
   }
 
   @TypedException<TypeGuardError>({

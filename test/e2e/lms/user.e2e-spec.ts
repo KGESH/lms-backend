@@ -36,7 +36,7 @@ describe('UserController (e2e)', () => {
       const response = await UserAPI.getUsers(
         { host },
         {
-          cursor: null,
+          page: 1,
           orderBy: 'asc',
           pageSize: 10,
         },

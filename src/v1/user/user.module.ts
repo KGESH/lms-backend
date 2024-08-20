@@ -4,10 +4,12 @@ import { UserService } from './user.service';
 import { UserRepository } from './user.repository';
 import { UserInfoRepository } from './user-info.repository';
 import { UserAccountRepository } from './user-account.repository';
+import { UserQueryRepository } from './user-query.repository';
 
 const providers = [
   UserService,
   UserRepository,
+  UserQueryRepository,
   UserInfoRepository,
   UserAccountRepository,
 ];

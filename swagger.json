@@ -37,18 +37,10 @@
         "tags": [],
         "parameters": [
           {
-            "name": "cursor",
+            "name": "page",
             "in": "query",
             "schema": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "type": "string",
-                  "format": "uuid"
-                }
-              ]
+              "type": "integer"
             },
             "required": true
           },
@@ -297,7 +289,47 @@
     "/v1/category": {
       "get": {
         "tags": [],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "withChildren",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "required": true
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "required": false
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            },
+            "required": false
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "schema": {
+              "oneOf": [
+                {
+                  "const": "asc"
+                },
+                {
+                  "const": "desc"
+                }
+              ]
+            },
+            "required": false
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -307,6 +339,16 @@
                   "items": {
                     "$ref": "#/components/schemas/CategoryWithChildrenDto"
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeGuardErrorany"
                 }
               }
             }
@@ -544,6 +586,16 @@
                   "items": {
                     "$ref": "#/components/schemas/LessonContentDto"
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeGuardErrorany"
                 }
               }
             }
@@ -1550,18 +1602,10 @@
         "tags": [],
         "parameters": [
           {
-            "name": "cursor",
+            "name": "page",
             "in": "query",
             "schema": {
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "type": "string",
-                  "format": "uuid"
-                }
-              ]
+              "type": "integer"
             },
             "required": true
           },
@@ -2154,6 +2198,171 @@
           }
         }
       }
+    },
+    "/v1/order/{id}/refund": {
+      "post": {
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderRefundDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderRefundDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/review": {
+      "get": {
+        "tags": [],
+        "parameters": [
+          {
+            "name": "productType",
+            "in": "query",
+            "schema": {
+              "oneOf": [
+                {
+                  "const": "course"
+                },
+                {
+                  "const": "ebook"
+                }
+              ]
+            },
+            "required": true
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "required": false
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            },
+            "required": false
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "schema": {
+              "oneOf": [
+                {
+                  "const": "asc"
+                },
+                {
+                  "const": "desc"
+                }
+              ]
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewWithRelationsDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/review/{id}": {
+      "get": {
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ReviewWithRelationsDto"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/review/course": {
+      "post": {
+        "tags": [],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCourseReviewDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewWithRelationsDto"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2207,6 +2416,25 @@
                 "type": "string"
               }
             ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deletedAt": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "format": "date-time"
+              }
+            ]
           }
         },
         "required": [
@@ -2215,22 +2443,17 @@
           "email",
           "emailVerified",
           "role",
-          "image"
+          "image",
+          "createdAt",
+          "updatedAt",
+          "deletedAt"
         ]
       },
-      "PaginationDto": {
+      "Pagination": {
         "type": "object",
         "properties": {
-          "cursor": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "string",
-                "format": "uuid"
-              }
-            ]
+          "page": {
+            "type": "integer"
           },
           "pageSize": {
             "type": "number"
@@ -2247,7 +2470,7 @@
           }
         },
         "required": [
-          "cursor",
+          "page",
           "pageSize",
           "orderBy"
         ]
@@ -2656,6 +2879,33 @@
           "children"
         ]
       },
+      "CategoryQuery": {
+        "type": "object",
+        "properties": {
+          "withChildren": {
+            "type": "boolean"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "orderBy": {
+            "oneOf": [
+              {
+                "const": "asc"
+              },
+              {
+                "const": "desc"
+              }
+            ]
+          }
+        },
+        "required": [
+          "withChildren"
+        ]
+      },
       "CategoryDto": {
         "type": "object",
         "properties": {
@@ -2806,11 +3056,31 @@
             ]
           },
           "contentType": {
-            "type": "string"
+            "oneOf": [
+              {
+                "const": "image"
+              },
+              {
+                "const": "video"
+              },
+              {
+                "const": "text"
+              },
+              {
+                "const": "file"
+              }
+            ]
           },
           "url": {
-            "type": "string",
-            "format": "uri"
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "format": "uri"
+              }
+            ]
           },
           "metadata": {
             "oneOf": [
@@ -2819,6 +3089,16 @@
               },
               {
                 "type": "string"
+              }
+            ]
+          },
+          "sequence": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "integer"
               }
             ]
           }
@@ -2830,7 +3110,8 @@
           "description",
           "contentType",
           "url",
-          "metadata"
+          "metadata",
+          "sequence"
         ]
       },
       "LessonContentCreateDto": {
@@ -2850,11 +3131,31 @@
             "type": "string"
           },
           "contentType": {
-            "type": "string"
+            "oneOf": [
+              {
+                "const": "image"
+              },
+              {
+                "const": "video"
+              },
+              {
+                "const": "text"
+              },
+              {
+                "const": "file"
+              }
+            ]
           },
           "url": {
-            "type": "string",
-            "format": "uri"
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "format": "uri"
+              }
+            ]
           },
           "metadata": {
             "oneOf": [
@@ -2900,11 +3201,31 @@
             ]
           },
           "contentType": {
-            "type": "string"
+            "oneOf": [
+              {
+                "const": "image"
+              },
+              {
+                "const": "video"
+              },
+              {
+                "const": "text"
+              },
+              {
+                "const": "file"
+              }
+            ]
           },
           "url": {
-            "type": "string",
-            "format": "uri"
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "format": "uri"
+              }
+            ]
           },
           "metadata": {
             "oneOf": [
@@ -2913,6 +3234,16 @@
               },
               {
                 "type": "string"
+              }
+            ]
+          },
+          "sequence": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "integer"
               }
             ]
           }
@@ -3902,20 +4233,20 @@
           "content": {
             "type": "string"
           },
+          "rating": {
+            "type": "number"
+          },
           "uiCarouselId": {
             "type": "string",
             "format": "uuid"
-          },
-          "rating": {
-            "type": "number"
           }
         },
         "required": [
           "title",
           "sequence",
           "content",
-          "uiCarouselId",
-          "rating"
+          "rating",
+          "uiCarouselId"
         ]
       },
       "DeleteUiCarouselReviewItemsQuery": {
@@ -4162,19 +4493,6 @@
       "CourseProductCreateDto": {
         "type": "object",
         "properties": {
-          "description": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "string"
-              }
-            ]
-          },
-          "title": {
-            "type": "string"
-          },
           "createdAt": {
             "type": "string",
             "format": "date-time"
@@ -4193,6 +4511,19 @@
                 "format": "date-time"
               }
             ]
+          },
+          "description": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "title": {
+            "type": "string"
           },
           "content": {
             "$ref": "#/components/schemas/ProductSnapshotContentDto"
@@ -4222,11 +4553,11 @@
           }
         },
         "required": [
-          "description",
-          "title",
           "createdAt",
           "updatedAt",
           "deletedAt",
+          "description",
+          "title",
           "content",
           "pricing",
           "discounts"
@@ -4346,6 +4677,297 @@
           "userId",
           "paymentMethod",
           "amount"
+        ]
+      },
+      "OrderRefundDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "orderId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^([+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)$"
+          },
+          "refundedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "orderId",
+          "amount",
+          "refundedAt"
+        ]
+      },
+      "CreateOrderRefundDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "string",
+            "pattern": "^([+-]?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)$"
+          }
+        },
+        "required": [
+          "amount"
+        ]
+      },
+      "ReviewWithRelationsDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "orderId": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "format": "uuid"
+              }
+            ]
+          },
+          "productType": {
+            "oneOf": [
+              {
+                "const": "course"
+              },
+              {
+                "const": "ebook"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deletedAt": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "format": "date-time"
+              }
+            ]
+          },
+          "snapshot": {
+            "$ref": "#/components/schemas/ReviewSnapshotDtorepliesReviewReplyWithSnapshotDto"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "orderId",
+          "productType",
+          "createdAt",
+          "deletedAt",
+          "snapshot"
+        ]
+      },
+      "ReviewSnapshotDtorepliesReviewReplyWithSnapshotDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reviewId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "comment": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "replies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReviewReplyWithSnapshotDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "reviewId",
+          "comment",
+          "rating",
+          "createdAt",
+          "replies"
+        ]
+      },
+      "ReviewReplyWithSnapshotDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reviewId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "parentId": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "format": "uuid"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deletedAt": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "format": "date-time"
+              }
+            ]
+          },
+          "snapshot": {
+            "$ref": "#/components/schemas/ReviewReplySnapshotDto"
+          }
+        },
+        "required": [
+          "id",
+          "reviewId",
+          "userId",
+          "parentId",
+          "createdAt",
+          "deletedAt",
+          "snapshot"
+        ]
+      },
+      "ReviewReplySnapshotDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reviewReplyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "comment": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "reviewReplyId",
+          "comment",
+          "createdAt"
+        ]
+      },
+      "ReviewQuery": {
+        "type": "object",
+        "properties": {
+          "productType": {
+            "oneOf": [
+              {
+                "const": "course"
+              },
+              {
+                "const": "ebook"
+              }
+            ]
+          },
+          "page": {
+            "type": "integer"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "orderBy": {
+            "oneOf": [
+              {
+                "const": "asc"
+              },
+              {
+                "const": "desc"
+              }
+            ]
+          }
+        },
+        "required": [
+          "productType"
+        ]
+      },
+      "CreateCourseReviewDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "orderId": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "format": "uuid"
+              }
+            ]
+          },
+          "comment": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 0
+          },
+          "courseId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "userId",
+          "orderId",
+          "comment",
+          "rating",
+          "courseId"
         ]
       }
     },

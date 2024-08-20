@@ -10,6 +10,8 @@ import {
   ICategoryWithChildren,
 } from './category.interface';
 import { TransactionClient } from '../../infra/db/drizzle.types';
+import { Pagination } from '../../shared/types/pagination';
+import { DEFAULT_PAGINATION } from '../../core/pagination.constant';
 
 @Injectable()
 export class CategoryService {
@@ -19,8 +21,22 @@ export class CategoryService {
     return await this.categoryRepository.findOne(where);
   }
 
-  async findRootCategories(): Promise<ICategoryWithChildren[]> {
-    return await this.categoryRepository.findManyRootCategoriesWithChildren();
+  async getRootCategories(
+    pagination: Pagination,
+  ): Promise<ICategoryWithChildren[]> {
+    const roots = await this.categoryRepository.findRootCategories(pagination);
+    return roots.map((root) => ({
+      ...root,
+      children: [],
+    }));
+  }
+
+  async getRootCategoriesWithChildren(
+    pagination: Pagination = DEFAULT_PAGINATION,
+  ): Promise<ICategoryWithChildren[]> {
+    return await this.categoryRepository.findRootCategoriesWithChildren(
+      pagination,
+    );
   }
 
   async createCategory(params: ICategoryCreate): Promise<ICategory> {
@@ -42,7 +58,7 @@ export class CategoryService {
   }
 
   async deleteCategory(where: Pick<ICategory, 'id'>): Promise<ICategory> {
-    const exist = await this.categoryRepository.findOneWithCourses({
+    const exist = await this.categoryRepository.findCategoryWithCourses({
       id: where.id,
     });
 

@@ -1,8 +1,5 @@
 import { ICourse } from './course.interface';
-import {
-  ITeacher,
-  ITeacherWithoutPassword,
-} from '../teacher/teacher.interface';
+import { ITeacherWithoutPassword } from '../teacher/teacher.interface';
 import { ICategory } from '../category/category.interface';
 import { IChapter } from './chapter/chapter.interface';
 import { ILesson } from './chapter/lesson/lesson.interface';

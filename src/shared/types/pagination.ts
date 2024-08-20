@@ -1,7 +1,7 @@
-import { Uuid } from './primitive';
+import { UInt } from './primitive';
 
-export type IPagination = {
-  cursor: Uuid | null;
+export type Pagination = {
+  page: UInt;
   pageSize: number;
   orderBy: 'asc' | 'desc';
 };

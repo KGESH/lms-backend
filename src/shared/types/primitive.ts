@@ -10,6 +10,8 @@ export type BirthDate = string & typia.tags.Format<'date'>;
 
 export type UInt = number & typia.tags.Type<'uint32'>;
 
+export type UFloat = number & typia.tags.Type<'float'> & typia.tags.Minimum<0>;
+
 export type PhoneNumber = string; // Todo: typing
 
 export type Gender = 'male' | 'female';
@@ -22,9 +24,11 @@ export type Percent = 'percent';
 
 export type DiscountType = Percent | FixedAmount;
 
-export type Price = `${number & typia.tags.Minimum<0>}`;
+export type Price = `${number}`;
+// export type Price = `${number & typia.tags.Minimum<0>}`;
 
-export type Percentage = `${number & typia.tags.Minimum<0>}`;
+export type Percentage = `${number}`;
+// export type Percentage = `${number & typia.tags.Minimum<0>}`;
 
 export type DiscountValue = Price | Percentage;
 
@@ -39,3 +43,5 @@ export type Course = 'course';
 export type Ebook = 'ebook';
 
 export type ProductType = Course | Ebook;
+
+export type LessonContentType = 'video' | 'image' | 'text' | 'file';

@@ -1,79 +1,75 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { IRepository } from '../../../../../core/base.repository';
+import { Injectable } from '@nestjs/common';
 import {
   IUiCarouselReview,
   IUiCarouselReviewCreate,
   IUiCarouselReviewUpdate,
 } from './ui-carousel-review.interface';
-import { IPagination } from 'src/shared/types/pagination';
 import { DrizzleService } from '../../../../../infra/db/drizzle.service';
-import { asc, desc, eq, inArray } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import { dbSchema } from '../../../../../infra/db/schema';
 import { createUuid } from '../../../../../shared/utils/uuid';
 
 @Injectable()
-export class UiCarouselReviewComponentRepository
-  implements IRepository<IUiCarouselReview>
-{
+export class UiCarouselReviewComponentRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async findOne(
-    where: Pick<IUiCarouselReview, 'id'>,
-  ): Promise<IUiCarouselReview | null> {
-    const uiCarouselReview =
-      await this.drizzle.db.query.uiCarouselReviews.findFirst({
-        where: eq(dbSchema.uiCarouselReviews.id, where.id),
-        with: {},
-      });
+  // async findOne(
+  //   where: Pick<IUiCarouselReview, 'id'>,
+  // ): Promise<IUiCarouselReview | null> {
+  //   const uiCarouselReview =
+  //     await this.drizzle.db.query.uiCarouselReviews.findFirst({
+  //       where: eq(dbSchema.uiCarouselReviews.id, where.id),
+  //       with: {},
+  //     });
+  //
+  //   if (!uiCarouselReview) {
+  //     return null;
+  //   }
+  //
+  //   return {
+  //     id: uiCarouselReview.id,
+  //     uiCarouselId: uiCarouselReview.uiCarouselId,
+  //     sequence: uiCarouselReview.sequence,
+  //     title: uiCarouselReview.title,
+  //     content: uiCarouselReview.content,
+  //     rating: uiCarouselReview.rating,
+  //   };
+  // }
+  //
+  // async findOneOrThrow(
+  //   where: Pick<IUiCarouselReview, 'id'>,
+  // ): Promise<IUiCarouselReview> {
+  //   const uiCarouselReview = await this.findOne(where);
+  //
+  //   if (!uiCarouselReview) {
+  //     throw new NotFoundException('UiCarouselReview not found');
+  //   }
+  //
+  //   return uiCarouselReview;
+  // }
 
-    if (!uiCarouselReview) {
-      return null;
-    }
-
-    return {
-      id: uiCarouselReview.id,
-      uiCarouselId: uiCarouselReview.uiCarouselId,
-      sequence: uiCarouselReview.sequence,
-      title: uiCarouselReview.title,
-      content: uiCarouselReview.content,
-      rating: uiCarouselReview.rating,
-    };
-  }
-
-  async findOneOrThrow(
-    where: Pick<IUiCarouselReview, 'id'>,
-  ): Promise<IUiCarouselReview> {
-    const uiCarouselReview = await this.findOne(where);
-
-    if (!uiCarouselReview) {
-      throw new NotFoundException('UiCarouselReview not found');
-    }
-
-    return uiCarouselReview;
-  }
-
-  async findMany(pagination: IPagination): Promise<IUiCarouselReview[]> {
-    const uiCarouselReviews =
-      await this.drizzle.db.query.uiCarouselReviews.findMany({
-        where: pagination.cursor
-          ? eq(dbSchema.uiCarouselReviews.id, pagination.cursor)
-          : undefined,
-        orderBy:
-          pagination.orderBy === 'asc'
-            ? asc(dbSchema.uiCarouselReviews.id)
-            : desc(dbSchema.uiCarouselReviews.id),
-        limit: pagination.pageSize,
-      });
-
-    return uiCarouselReviews.map((uiCarouselReview) => ({
-      id: uiCarouselReview.id,
-      uiCarouselId: uiCarouselReview.uiCarouselId,
-      sequence: uiCarouselReview.sequence,
-      title: uiCarouselReview.title,
-      content: uiCarouselReview.content,
-      rating: uiCarouselReview.rating,
-    }));
-  }
+  // async findMany(pagination: Pagination): Promise<IUiCarouselReview[]> {
+  //   const uiCarouselReviews =
+  //     await this.drizzle.db.query.uiCarouselReviews.findMany({
+  //       where: pagination.page
+  //         ? gt(dbSchema.uiCarouselReviews.id, pagination.page)
+  //         : undefined,
+  //       orderBy:
+  //         pagination.orderBy === 'asc'
+  //           ? asc(dbSchema.uiCarouselReviews.id)
+  //           : desc(dbSchema.uiCarouselReviews.id),
+  //       limit: pagination.pageSize,
+  //     });
+  //
+  //   return uiCarouselReviews.map((uiCarouselReview) => ({
+  //     id: uiCarouselReview.id,
+  //     uiCarouselId: uiCarouselReview.uiCarouselId,
+  //     sequence: uiCarouselReview.sequence,
+  //     title: uiCarouselReview.title,
+  //     content: uiCarouselReview.content,
+  //     rating: uiCarouselReview.rating,
+  //   }));
+  // }
 
   async create(
     params: IUiCarouselReviewCreate,

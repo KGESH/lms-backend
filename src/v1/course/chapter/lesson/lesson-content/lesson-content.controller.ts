@@ -25,6 +25,10 @@ export class LessonContentController {
     private readonly lessonContentQueryService: LessonContentQueryService,
   ) {}
 
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
   @TypedRoute.Get('/')
   async getLessonContents(
     @TypedParam('courseId') courseId: Uuid,
@@ -32,7 +36,8 @@ export class LessonContentController {
     @TypedParam('lessonId') lessonId: Uuid,
   ): Promise<LessonContentDto[]> {
     console.log(courseId, lessonId);
-    const lessonContents = await this.lessonContentQueryService.findLessons();
+    const lessonContents =
+      await this.lessonContentQueryService.findLessonContents({ lessonId });
     return lessonContents;
   }
 

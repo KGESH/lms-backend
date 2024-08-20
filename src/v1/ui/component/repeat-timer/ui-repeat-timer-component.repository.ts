@@ -5,9 +5,9 @@ import {
   IUiRepeatTimerComponentCreate,
   IUiRepeatTimerComponentUpdate,
 } from './ui-repeat-timer.interface';
-import { IPagination } from 'src/shared/types/pagination';
+import { Pagination } from 'src/shared/types/pagination';
 import { DrizzleService } from '../../../../infra/db/drizzle.service';
-import { asc, desc, eq } from 'drizzle-orm';
+import { asc, desc, eq, gt } from 'drizzle-orm';
 import { dbSchema } from '../../../../infra/db/schema';
 import { UI_CATEGORY } from '../../category/ui-category.interface';
 import { createUuid } from '../../../../shared/utils/uuid';
@@ -53,19 +53,11 @@ export class UiRepeatTimerComponentRepository
     return uiRepeatTimer;
   }
 
-  async findMany(pagination: IPagination): Promise<IUiRepeatTimerComponent[]> {
+  async findMany(): Promise<IUiRepeatTimerComponent[]> {
     const uiRepeatTimers = await this.drizzle.db.query.uiRepeatTimers.findMany({
       with: {
         uiComponent: true,
       },
-      where: pagination.cursor
-        ? eq(dbSchema.uiRepeatTimers.id, pagination.cursor)
-        : undefined,
-      orderBy:
-        pagination.orderBy === 'asc'
-          ? asc(dbSchema.uiRepeatTimers.id)
-          : desc(dbSchema.uiRepeatTimers.id),
-      limit: pagination.pageSize,
     });
 
     return uiRepeatTimers.map(({ uiComponent, ...uiRepeatTimer }) => {

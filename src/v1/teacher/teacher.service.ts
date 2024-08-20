@@ -6,11 +6,10 @@ import {
   ITeacherWithAccount,
   ITeacherWithoutPassword,
 } from './teacher.interface';
-import { IPagination } from '../../shared/types/pagination';
+import { Pagination } from '../../shared/types/pagination';
 import * as typia from 'typia';
 import { IUser } from '../user/user.interface';
 import { DrizzleService } from '../../infra/db/drizzle.service';
-import { UserRepository } from '../user/user.repository';
 import { createUuid } from '../../shared/utils/uuid';
 import { UserService } from '../user/user.service';
 
@@ -18,12 +17,11 @@ import { UserService } from '../user/user.service';
 export class TeacherService {
   constructor(
     private readonly userService: UserService,
-    private readonly userRepository: UserRepository,
     private readonly teacherRepository: TeacherRepository,
     private readonly drizzle: DrizzleService,
   ) {}
 
-  async findTeachers(pagination?: IPagination): Promise<ITeacherWithAccount[]> {
+  async findTeachers(pagination: Pagination): Promise<ITeacherWithAccount[]> {
     const teachers = await this.teacherRepository.findMany(pagination);
     return teachers.map((teacher) =>
       typia.misc.clone<ITeacherWithAccount>(teacher),

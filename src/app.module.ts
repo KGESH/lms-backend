@@ -13,6 +13,7 @@ import { LessonContentModule } from './v1/course/chapter/lesson/lesson-content/l
 import { ProductModule } from './v1/product/product.module';
 import { OrderModule } from './v1/order/order.module';
 import { FileModule } from './v1/file/file.module';
+import { ReviewModule } from './v1/review/review.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { FileModule } from './v1/file/file.module';
     UiModule,
     ProductModule,
     OrderModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [AppService],

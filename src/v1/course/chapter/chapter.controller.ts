@@ -23,7 +23,7 @@ export class ChapterController {
   async getChapters(
     @TypedParam('courseId') courseId: Uuid,
   ): Promise<ChapterDto[]> {
-    const chapters = await this.chapterQueryService.findChapters();
+    const chapters = await this.chapterQueryService.findChapters({ courseId });
     return chapters;
   }
 

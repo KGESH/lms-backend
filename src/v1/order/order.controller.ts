@@ -7,6 +7,8 @@ import { OrderDto } from './order.dto';
 import { toISOString } from '../../shared/utils/date';
 import { Uuid } from '../../shared/types/primitive';
 import { OrderService } from './order.service';
+import { CreateOrderRefundDto, OrderRefundDto } from './order-refund.dto';
+import { orderRefundToDto } from '../../shared/helpers/transofrm/order';
 
 @Controller('v1/order')
 export class OrderController {
@@ -117,5 +119,21 @@ export class OrderController {
           : null,
       },
     };
+  }
+
+  @TypedRoute.Post('/:id/refund')
+  async refundOrder(
+    @TypedParam('id') id: Uuid,
+    @TypedBody() body: CreateOrderRefundDto,
+  ): Promise<OrderRefundDto> {
+    const orderRefund = await this.orderService.refundOrder(
+      { id },
+      {
+        orderId: id,
+        refundedAmount: body.amount,
+      },
+    );
+
+    return orderRefundToDto(orderRefund);
   }
 }

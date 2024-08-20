@@ -1,7 +1,3 @@
-import { Uuid } from '../shared/types/primitive';
+import { Pagination } from '../shared/types/pagination';
 
-export type PaginationDto = {
-  cursor: Uuid | null;
-  pageSize: number;
-  orderBy: 'asc' | 'desc';
-};
+export type PaginationDto = Pagination;

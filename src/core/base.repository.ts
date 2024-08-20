@@ -1,4 +1,4 @@
-import { IPagination } from '../shared/types/pagination';
+import { Pagination } from '../shared/types/pagination';
 import { TransactionClient } from '../infra/db/drizzle.types';
 
 export type IRepository<T> = {
@@ -6,7 +6,7 @@ export type IRepository<T> = {
 
   findOneOrThrow(where: Partial<T>): Promise<T>;
 
-  findMany(pagination: IPagination): Promise<T[]>;
+  findMany(pagination: Pagination): Promise<T[]>;
 
   create(params: unknown, db: TransactionClient): Promise<T>;
 

@@ -1,62 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { IRepository } from '../../../core/base.repository';
+import { Injectable } from '@nestjs/common';
 import {
   IUiComponentBase,
   IUiComponentBaseCreate,
   IUiComponentBaseUpdate,
 } from './ui-component.interface';
-import { IPagination } from 'src/shared/types/pagination';
 import { DrizzleService } from '../../../infra/db/drizzle.service';
-import { asc, desc, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { dbSchema } from '../../../infra/db/schema';
 
 @Injectable()
-export class UiComponentRepository implements IRepository<IUiComponentBase> {
+export class UiComponentRepository {
   constructor(private readonly drizzle: DrizzleService) {}
-
-  async findOne(
-    where: Pick<IUiComponentBase, 'id'>,
-  ): Promise<IUiComponentBase | null> {
-    const uiComponent = await this.drizzle.db.query.uiComponents.findFirst({
-      where: eq(dbSchema.uiComponents.id, where.id),
-    });
-
-    if (!uiComponent) {
-      return null;
-    }
-
-    return uiComponent;
-  }
-
-  async findOneOrThrow(
-    where: Pick<IUiComponentBase, 'id'>,
-  ): Promise<IUiComponentBase> {
-    const uiComponent = await this.findOne(where);
-
-    if (!uiComponent) {
-      throw new NotFoundException('UI component not found');
-    }
-
-    return uiComponent;
-  }
-
-  findMany(pagination: IPagination): Promise<IUiComponentBase[]> {
-    const uiComponents = this.drizzle.db
-      .select()
-      .from(dbSchema.uiComponents)
-      .where(
-        pagination.cursor
-          ? eq(dbSchema.uiComponents.id, pagination.cursor)
-          : undefined,
-      )
-      .limit(pagination.pageSize)
-      .orderBy(
-        pagination.orderBy === 'asc'
-          ? asc(dbSchema.uiComponents.id)
-          : desc(dbSchema.uiComponents.id),
-      );
-    return uiComponents;
-  }
 
   async create(
     params: IUiComponentBaseCreate,

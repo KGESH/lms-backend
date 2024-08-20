@@ -24,7 +24,9 @@ export class LessonController {
     @TypedParam('courseId') courseId: Uuid,
     @TypedParam('chapterId') chapterId: Uuid,
   ): Promise<LessonDto[]> {
-    const lessons = await this.lessonQueryService.findLessons();
+    const lessons = await this.lessonQueryService.findLessonsByChapterId({
+      chapterId,
+    });
     return lessons;
   }
 

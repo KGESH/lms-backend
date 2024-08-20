@@ -13,3 +13,9 @@ export type ICategoryWithChildren = ICategory & {
 };
 
 export type ICategoryCreate = Optional<ICategory, 'id'>;
+
+export type ICategoryWithRelations = ICategory & {
+  depth: number;
+  parent: ICategory | null;
+  children: Array<ICategoryWithRelations>;
+};

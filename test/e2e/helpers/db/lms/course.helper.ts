@@ -37,7 +37,13 @@ export const createCourse = async (
 };
 
 export const createRandomCourse = async (db: TransactionClient) => {
-  const category = await createCategory(typia.random<ICategoryCreate>(), db);
+  const category = await createCategory(
+    {
+      ...typia.random<ICategoryCreate>(),
+      parentId: null,
+    },
+    db,
+  );
   const teacher = await createTeacher(typia.random<ITeacherSignUp>(), db);
   const course = await createCourse(
     {

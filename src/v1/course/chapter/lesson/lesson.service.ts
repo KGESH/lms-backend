@@ -3,12 +3,14 @@ import { LessonRepository } from './lesson.repository';
 import { ILesson, ILessonCreate, ILessonUpdate } from './lesson.interface';
 import { TransactionClient } from '../../../../infra/db/drizzle.types';
 import { ChapterQueryService } from '../chapter-query.service';
+import { LessonQueryRepository } from './lesson-query.repository';
 
 @Injectable()
 export class LessonService {
   constructor(
     private readonly chapterQueryService: ChapterQueryService,
     private readonly lessonRepository: LessonRepository,
+    private readonly lessonQueryRepository: LessonQueryRepository,
   ) {}
 
   async createLesson(
@@ -31,7 +33,7 @@ export class LessonService {
     params: ILessonUpdate,
     tx?: TransactionClient,
   ): Promise<ILesson> {
-    await this.lessonRepository.findOneOrThrow({ id: where.id });
+    await this.lessonQueryRepository.findOneOrThrow({ id: where.id });
     return await this.lessonRepository.update(where, params, tx);
   }
 
@@ -39,7 +41,7 @@ export class LessonService {
     where: Pick<ILesson, 'id'>,
     tx?: TransactionClient,
   ): Promise<ILesson> {
-    await this.lessonRepository.findOneOrThrow({ id: where.id });
+    await this.lessonQueryRepository.findOneOrThrow({ id: where.id });
     return await this.lessonRepository.delete(where, tx);
   }
 }

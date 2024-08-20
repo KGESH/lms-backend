@@ -9,12 +9,31 @@ import { ICourseOrderRelations } from './course/course-order.interface';
 import { IProductSnapshotPricing } from '../product/common/snapshot/pricing/product-snapshot-pricing.interface';
 import { IProductSnapshotDiscount } from '../product/common/snapshot/discount/product-snapshot-discount.interface';
 import { IProductSnapshotContent } from '../product/common/snapshot/content/product-snapshot-content.interface';
+import { IReview } from '../review/review.interface';
 
 @Injectable()
 export class OrderQueryRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async findOne(
+  async findOrder(where: Pick<IOrder, 'id'>): Promise<IOrder | null> {
+    const order = await this.drizzle.db.query.orders.findFirst({
+      where: eq(dbSchema.orders.id, where.id),
+    });
+
+    return order ? typia.assert<IOrder>(order) : null;
+  }
+
+  async findOrderOrThrow(where: Pick<IOrder, 'id'>): Promise<IOrder> {
+    const order = await this.findOrder(where);
+
+    if (!order) {
+      throw new NotFoundException(`Order not found`);
+    }
+
+    return order;
+  }
+
+  async findOrderWithCourseRelations(
     where: Pick<IOrder, 'id'>,
   ): Promise<ICourseOrderRelations | null> {
     const order = await this.drizzle.db.query.orders.findFirst({
@@ -74,13 +93,41 @@ export class OrderQueryRepository {
     };
   }
 
-  async findOneOrThrow(where: Pick<IOrder, 'id'>): Promise<IOrder> {
-    const order = await this.findOne(where);
+  async findOrderWithCourseRelationsOrThrow(
+    where: Pick<IOrder, 'id'>,
+  ): Promise<ICourseOrderRelations> {
+    const order = await this.findOrderWithCourseRelations(where);
 
     if (!order) {
       throw new NotFoundException(`Order not found`);
     }
 
     return order;
+  }
+
+  async findOrderWithReview(
+    where: Pick<IOrder, 'id' | 'productType'>,
+  ): Promise<{
+    order: IOrder | null;
+    review: IReview | null;
+  }> {
+    const orderWithReview = await this.drizzle.db.query.orders.findFirst({
+      where: eq(dbSchema.orders.id, where.id),
+      with: {
+        review: true,
+        courseOrder: where.productType === 'course' ? true : undefined,
+        // ebookOrder: // Todo: Impl
+        //   where.productType === 'ebook' ? true : undefined,
+      },
+    });
+
+    const order = orderWithReview
+      ? typia.assert<IOrder>(orderWithReview)
+      : null;
+
+    return {
+      order,
+      review: orderWithReview?.review ?? null,
+    };
   }
 }

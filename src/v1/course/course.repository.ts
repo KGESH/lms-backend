@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { DrizzleService } from '../../infra/db/drizzle.service';
 import { ICourse, ICourseCreate, ICourseUpdate } from './course.interface';
-import { asc, desc, eq, gt } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { dbSchema } from '../../infra/db/schema';
 import { IRepository } from '../../core/base.repository';
-import { IPagination } from '../../shared/types/pagination';
+import { Pagination } from '../../shared/types/pagination';
 import {
-  DEFAULT_CURSOR,
+  DEFAULT_PAGE,
   DEFAULT_ORDER_BY,
   DEFAULT_PAGE_SIZE,
 } from '../../core/pagination.constant';
@@ -38,26 +38,17 @@ export class CourseRepository implements IRepository<ICourse> {
   }
 
   async findMany(
-    pagination: IPagination = {
-      cursor: DEFAULT_CURSOR,
+    pagination: Pagination = {
+      page: DEFAULT_PAGE,
       pageSize: DEFAULT_PAGE_SIZE,
       orderBy: DEFAULT_ORDER_BY,
     },
   ): Promise<ICourse[]> {
-    return await this.drizzle.db
-      .select()
-      .from(dbSchema.courses)
-      .where(
-        pagination.cursor
-          ? gt(dbSchema.courses.id, pagination.cursor)
-          : undefined,
-      )
-      .limit(pagination.pageSize)
-      .orderBy(
-        pagination.orderBy === 'asc'
-          ? asc(dbSchema.courses.id)
-          : desc(dbSchema.courses.id),
-      );
+    return await this.drizzle.db.query.courses.findMany({
+      orderBy: (course, { desc }) => desc(course.createdAt),
+      limit: pagination.pageSize,
+      offset: (pagination.page - 1) * pagination.pageSize,
+    });
   }
 
   async create(params: ICourseCreate, db = this.drizzle.db): Promise<ICourse> {

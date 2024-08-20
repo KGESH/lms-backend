@@ -16,6 +16,9 @@ export type IUser = {
   password: string | null;
   role: UserRole;
   image: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
 };
 
 export type IUserWithoutPassword = OmitPassword<IUser>;

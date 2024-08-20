@@ -1,20 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { LessonContentRepository } from './lesson-content.repository';
 import { ILessonContent } from './lesson-content.interface';
+import { LessonContentQueryRepository } from './lesson-content-query.repository';
 
 @Injectable()
 export class LessonContentQueryService {
   constructor(
-    private readonly lessonContentRepository: LessonContentRepository,
+    private readonly lessonContentQueryRepository: LessonContentQueryRepository,
   ) {}
 
-  async findLessons(): Promise<ILessonContent[]> {
-    return await this.lessonContentRepository.findMany();
+  async findLessonContents(
+    where: Pick<ILessonContent, 'lessonId'>,
+  ): Promise<ILessonContent[]> {
+    return await this.lessonContentQueryRepository.findManyByLessonId(where);
   }
 
   async findLessonContentById(
     where: Pick<ILessonContent, 'id'>,
   ): Promise<ILessonContent | null> {
-    return await this.lessonContentRepository.findOne(where);
+    return await this.lessonContentQueryRepository.findOne(where);
   }
 }

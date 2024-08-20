@@ -1,6 +1,9 @@
 import { date, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
 import { authProvider, userRole } from './enum';
+import { teachers } from './teacher';
+import { relations } from 'drizzle-orm';
+import { reviewReplies, reviews } from './review';
+import { orders } from './order';
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -10,6 +13,13 @@ export const users = pgTable('users', {
   emailVerified: date('emailVerified'),
   role: userRole('role').notNull().default('user'),
   image: text('image'),
+  createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp('updated_at', { mode: 'date', withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  deletedAt: timestamp('deleted_at', { mode: 'date', withTimezone: true }),
 });
 
 export const userSessions = pgTable('user_sessions', {
@@ -46,25 +56,13 @@ export const userInfos = pgTable('user_infos', {
   duplicationInformation: text('duplication_information'),
 });
 
-export const teachers = pgTable('teachers', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id')
-    .unique()
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-});
-
-export const teachersRelations = relations(teachers, ({ one }) => ({
-  account: one(users, {
-    fields: [teachers.userId],
-    references: [users.id],
-  }),
-}));
-
-export const usersRelations = relations(users, ({ one }) => ({
+export const usersRelations = relations(users, ({ one, many }) => ({
   session: one(userSessions),
   info: one(userInfos),
   accounts: one(userAccounts),
+  reviews: many(reviews),
+  reviewComments: many(reviewReplies),
+  orders: many(orders),
 }));
 
 export const userInfosRelations = relations(userInfos, ({ one }) => ({
@@ -88,9 +86,9 @@ export const userDbSchemas = {
   userAccounts,
   userInfos,
   teachers,
+
   // Relations
   usersRelations,
   userInfosRelations,
   userAccountsRelations,
-  teachersRelations,
 };

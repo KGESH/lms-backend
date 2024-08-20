@@ -7,6 +7,8 @@ import { KakaoAuthService } from './kakao-auth.service';
 import { UserWithoutPasswordDto } from '../user/user.dto';
 import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '../../shared/types/response';
+import * as date from '../../shared/utils/date';
+import { IUserWithoutPassword } from '../user/user.interface';
 
 @Controller('v1/auth')
 export class AuthController {
@@ -17,14 +19,21 @@ export class AuthController {
     private readonly kakaoAuthService: KakaoAuthService,
   ) {}
 
+  private _transform(user: IUserWithoutPassword): UserWithoutPasswordDto {
+    return {
+      ...user,
+      createdAt: date.toISOString(user.createdAt),
+      updatedAt: date.toISOString(user.updatedAt),
+      deletedAt: user.deletedAt ? date.toISOString(user.deletedAt) : null,
+    };
+  }
+
   @TypedRoute.Post('/kakao/login')
   async kakaoLogin(
     @TypedBody() body: KakaoLoginDto,
   ): Promise<UserWithoutPasswordDto> {
-    this.logger.log('Kakao login request received', body);
-
     const user = await this.kakaoAuthService.login(body);
-    return user;
+    return this._transform(user);
   }
 
   @TypedException<TypeGuardError>({
@@ -42,7 +51,7 @@ export class AuthController {
     this.logger.log('Login request received', body);
 
     const user = await this.authService.login(body);
-    return user;
+    return this._transform(user);
   }
 
   @TypedException<TypeGuardError>({
@@ -59,7 +68,7 @@ export class AuthController {
   ): Promise<UserWithoutPasswordDto> {
     this.logger.log('Signup request received', body);
     const user = await this.authService.signUpUser(body);
-    return user;
+    return this._transform(user);
   }
 
   @TypedException<TypeGuardError>({
@@ -75,6 +84,6 @@ export class AuthController {
     @TypedBody() body: UpdateUserRoleDto,
   ): Promise<UserWithoutPasswordDto> {
     const updated = await this.authService.updateUserRole(body);
-    return updated;
+    return this._transform(updated);
   }
 }

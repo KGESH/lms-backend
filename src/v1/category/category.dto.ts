@@ -1,4 +1,5 @@
 import { Uuid } from '../../shared/types/primitive';
+import { Pagination } from '../../shared/types/pagination';
 
 export type CategoryDto = {
   id: Uuid;
@@ -17,3 +18,7 @@ export type CreateCategoryDto = Pick<
 >;
 
 export type UpdateCategoryDto = Omit<Partial<CategoryDto>, 'id'>;
+
+export type CategoryQuery = {
+  withChildren: boolean;
+} & Partial<Pagination>;

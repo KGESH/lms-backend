@@ -5,7 +5,10 @@ import { CourseQueryService } from './course-query.service';
 import { Uuid } from '../../shared/types/primitive';
 import { CourseCreateDto, CourseDto, CourseUpdateDto } from './course.dto';
 import { CourseWithRelationsDto } from './course-with-relations.dto';
-import * as date from '../../shared/utils/date';
+import {
+  courseRelationsToDto,
+  courseToDto,
+} from '../../shared/helpers/transofrm/course';
 
 @Controller('v1/course')
 export class CourseController {
@@ -17,11 +20,7 @@ export class CourseController {
   @TypedRoute.Get('/')
   async getCourses(): Promise<CourseDto[]> {
     const courses = await this.courseQueryService.findCourses();
-    return courses.map((course) => ({
-      ...course,
-      createdAt: date.toISOString(course.createdAt),
-      updatedAt: date.toISOString(course.updatedAt),
-    }));
+    return courses.map(courseToDto);
   }
 
   @TypedRoute.Get('/:id')
@@ -36,21 +35,13 @@ export class CourseController {
       return null;
     }
 
-    return {
-      ...course,
-      createdAt: date.toISOString(course.createdAt),
-      updatedAt: date.toISOString(course.updatedAt),
-    };
+    return courseRelationsToDto(course);
   }
 
   @TypedRoute.Post('/')
   async createCourse(@TypedBody() body: CourseCreateDto): Promise<CourseDto> {
     const course = await this.courseService.createCourse(body);
-    return {
-      ...course,
-      createdAt: date.toISOString(course.createdAt),
-      updatedAt: date.toISOString(course.updatedAt),
-    };
+    return courseToDto(course);
   }
 
   @TypedRoute.Patch('/:id')
@@ -59,20 +50,12 @@ export class CourseController {
     @TypedBody() body: Partial<CourseUpdateDto>,
   ): Promise<CourseDto> {
     const course = await this.courseService.updateCourse({ id }, body);
-    return {
-      ...course,
-      createdAt: date.toISOString(course.createdAt),
-      updatedAt: date.toISOString(course.updatedAt),
-    };
+    return courseToDto(course);
   }
 
   @TypedRoute.Delete('/:id')
   async deleteCourse(@TypedParam('id') id: Uuid): Promise<CourseDto> {
     const course = await this.courseService.deleteCourse({ id });
-    return {
-      ...course,
-      createdAt: date.toISOString(course.createdAt),
-      updatedAt: date.toISOString(course.updatedAt),
-    };
+    return courseToDto(course);
   }
 }

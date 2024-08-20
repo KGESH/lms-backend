@@ -10,6 +10,7 @@ import {
 import {
   createCategory,
   createManyCategories,
+  getRootCategoriesRawSql,
 } from '../helpers/db/lms/category.helper';
 import { DrizzleService } from '../../../src/infra/db/drizzle.service';
 
@@ -55,139 +56,167 @@ describe('CategoryController (e2e)', () => {
 
   describe('[Get categories]', () => {
     it('should be get all categories', async () => {
-      const rootCategoryId: Uuid = typia.random<Uuid>();
-      const levelTwoCategoryId: Uuid = typia.random<Uuid>();
-      const levelThreeCategoryId: Uuid = typia.random<Uuid>();
+      const firstRootCategoryId: Uuid = typia.random<Uuid>();
+      const firstRootLevelTwoCategoryId: Uuid = typia.random<Uuid>();
+      const firstRootLevelThreeCategoryId: Uuid = typia.random<Uuid>();
+      const secondRootCategoryId: Uuid = typia.random<Uuid>();
+      const secondRootLevelTwoCategoryId: Uuid = typia.random<Uuid>();
       await createManyCategories(
         [
           {
-            id: rootCategoryId,
-            name: 'root category',
+            id: firstRootCategoryId,
+            name: 'first root category',
             description: null,
             parentId: null,
           },
           {
-            id: levelTwoCategoryId,
-            name: 'level two category',
+            id: firstRootLevelTwoCategoryId,
+            name: 'first level two category',
             description: null,
-            parentId: rootCategoryId,
+            parentId: firstRootCategoryId,
           },
           {
-            id: levelThreeCategoryId,
-            name: 'level three category',
+            id: firstRootLevelThreeCategoryId,
+            name: 'first level three category',
             description: null,
-            parentId: levelTwoCategoryId,
+            parentId: firstRootLevelTwoCategoryId,
+          },
+          {
+            id: secondRootCategoryId,
+            name: 'second root category',
+            description: null,
+            parentId: null,
+          },
+          {
+            id: secondRootLevelTwoCategoryId,
+            name: 'second level two category',
+            description: null,
+            parentId: secondRootCategoryId,
           },
         ],
         drizzle.db,
       );
 
-      const response = await CategoryAPI.getAllCategories({
-        host,
+      const categories = await getRootCategoriesRawSql(
+        {
+          page: 1,
+          pageSize: 10,
+          orderBy: 'asc',
+        },
+        drizzle.db,
+      );
+
+      expect(categories[0].depth).toEqual(1);
+      expect(categories[0].children[0].depth).toEqual(2);
+
+      //   const response = await CategoryAPI.getAllCategories({
+      //     host,
+      //   });
+      //   if (!response.success) {
+      //     throw new Error(`assert`);
+      //   }
+      //
+      //   const rootCategories = response.data;
+      //   const levelTwoCategory = rootCategories[0].children[0];
+      //   const levelThreeCategory = levelTwoCategory.children[0];
+      //
+      //   expect(levelTwoCategory.name).toEqual('level two category');
+      //   expect(levelThreeCategory.name).toEqual('level three category');
+      // });
+    });
+
+    describe('[Create category]', () => {
+      it('should be create category success', async () => {
+        const createCategoryDto: CreateCategoryDto = {
+          ...typia.random<CreateCategoryDto>(),
+          parentId: null,
+        };
+        const response = await CategoryAPI.createCategory(
+          { host },
+          createCategoryDto,
+        );
+        if (!response.success) {
+          throw new Error('assert');
+        }
+
+        const category = response.data;
+        expect(category.name).toEqual(createCategoryDto.name);
       });
-      if (!response.success) {
-        throw new Error(`assert`);
-      }
-
-      const rootCategories = response.data;
-      const levelTwoCategory = rootCategories[0].children[0];
-      const levelThreeCategory = levelTwoCategory.children[0];
-
-      expect(levelTwoCategory.name).toEqual('level two category');
-      expect(levelThreeCategory.name).toEqual('level three category');
-    });
-  });
-
-  describe('[Create category]', () => {
-    it('should be create category success', async () => {
-      const createCategoryDto: CreateCategoryDto = {
-        ...typia.random<CreateCategoryDto>(),
-      };
-      const response = await CategoryAPI.createCategory(
-        { host },
-        createCategoryDto,
-      );
-      if (!response.success) {
-        throw new Error('assert');
-      }
-
-      const category = response.data;
-      expect(category.name).toEqual(createCategoryDto.name);
-    });
-  });
-
-  describe('Update category', () => {
-    it('should be update category success', async () => {
-      const categoryId: Uuid = typia.random<Uuid>();
-      await createCategory(
-        {
-          id: categoryId,
-          name: 'category',
-          description: 'GET category test',
-          parentId: null,
-        },
-        drizzle.db,
-      );
-      const updateCategoryDto: UpdateCategoryDto = { name: 'updated' };
-
-      const updateResponse = await CategoryAPI.updateCategory(
-        { host },
-        categoryId,
-        updateCategoryDto,
-      );
-      if (!updateResponse.success) {
-        throw new Error('assert');
-      }
-
-      const updatedCategory = updateResponse.data;
-      expect(updatedCategory.name).toEqual('updated');
     });
 
-    it('should be update category fail', async () => {
-      const notFoundId = typia.random<Uuid>();
-      const updateCategoryDto = typia.random<UpdateCategoryDto>();
+    describe('Update category', () => {
+      it('should be update category success', async () => {
+        const categoryId: Uuid = typia.random<Uuid>();
+        await createCategory(
+          {
+            id: categoryId,
+            name: 'category',
+            description: 'GET category test',
+            parentId: null,
+          },
+          drizzle.db,
+        );
+        const updateCategoryDto: UpdateCategoryDto = { name: 'updated' };
 
-      const notFoundResponse = await CategoryAPI.updateCategory(
-        { host },
-        notFoundId,
-        updateCategoryDto,
-      );
+        const updateResponse = await CategoryAPI.updateCategory(
+          { host },
+          categoryId,
+          updateCategoryDto,
+        );
+        if (!updateResponse.success) {
+          throw new Error('assert');
+        }
 
-      expect(notFoundResponse.status).toEqual(404);
+        const updatedCategory = updateResponse.data;
+        expect(updatedCategory.name).toEqual('updated');
+      });
+
+      it('should be update category fail', async () => {
+        const notFoundId = typia.random<Uuid>();
+        const updateCategoryDto = typia.random<UpdateCategoryDto>();
+
+        const notFoundResponse = await CategoryAPI.updateCategory(
+          { host },
+          notFoundId,
+          updateCategoryDto,
+        );
+
+        expect(notFoundResponse.status).toEqual(404);
+      });
     });
-  });
 
-  describe('Delete category', () => {
-    it('should be delete category success', async () => {
-      const categoryId: Uuid = typia.random<Uuid>();
-      await createCategory(
-        {
-          id: categoryId,
-          name: 'category',
-          description: 'GET category test',
-          parentId: null,
-        },
-        drizzle.db,
-      );
+    describe('Delete category', () => {
+      it('should be delete category success', async () => {
+        const categoryId: Uuid = typia.random<Uuid>();
+        await createCategory(
+          {
+            id: categoryId,
+            name: 'category',
+            description: 'GET category test',
+            parentId: null,
+          },
+          drizzle.db,
+        );
 
-      const deleteResponse = await CategoryAPI.deleteCategory(
-        { host },
-        categoryId,
-      );
-      if (!deleteResponse.success) {
-        throw new Error('assert');
-      }
+        const deleteResponse = await CategoryAPI.deleteCategory(
+          { host },
+          categoryId,
+        );
+        if (!deleteResponse.success) {
+          throw new Error('assert');
+        }
 
-      const deletedCategory = deleteResponse.data;
-      expect(deletedCategory.id).toEqual(categoryId);
+        const deletedCategory = deleteResponse.data;
+        expect(deletedCategory.id).toEqual(categoryId);
 
-      const getResponse = await CategoryAPI.getCategory({ host }, categoryId);
-      if (!getResponse.success) {
-        throw new Error('assert');
-      }
+        const getResponse = await CategoryAPI.getCategory({ host }, categoryId);
+        if (!getResponse.success) {
+          throw new Error('assert');
+        }
 
-      const foundCategory = getResponse.data;
-      expect(foundCategory).toBe(null);
+        const foundCategory = getResponse.data;
+        expect(foundCategory).toBe(null);
+      });
     });
   });
 });

@@ -1,11 +1,17 @@
 import { dbSchema } from '../../../../../src/infra/db/schema';
-import { eq, isNull } from 'drizzle-orm';
+import { and, asc, desc, eq, isNull, sql } from 'drizzle-orm';
 import {
   ICategory,
-  ICategoryWithChildren,
   ICategoryCreate,
+  ICategoryWithChildren,
+  ICategoryWithRelations,
 } from '../../../../../src/v1/category/category.interface';
 import { TransactionClient } from '../../../../../src/infra/db/drizzle.types';
+import { Pagination } from '../../../../../src/shared/types/pagination';
+import { courseCategories } from '../../../../../src/infra/db/schema/course';
+import { Uuid } from '../../../../../src/shared/types/primitive';
+import * as typia from 'typia';
+import { DEFAULT_PAGINATION } from '../../../../../src/core/pagination.constant';
 
 export const findCategory = async (
   where: Pick<ICategory, 'id'>,
@@ -20,22 +26,11 @@ export const findCategory = async (
 export const findRootCategories = async (
   db: TransactionClient,
 ): Promise<ICategoryWithChildren[]> => {
-  const categories = await db.query.courseCategories.findMany({
-    where: isNull(dbSchema.courseCategories.parentId),
-    with: {
-      children: {
-        with: {
-          children: {
-            with: {
-              children: true,
-            },
-          },
-        },
-      },
-    },
-  });
+  const roots: ICategoryWithChildren[] = await getRootCategoriesRawSql(
+    DEFAULT_PAGINATION,
+    db,
+  );
 
-  const roots: ICategoryWithChildren[] = categories;
   return roots;
 };
 
@@ -68,4 +63,84 @@ export const createManyCategories = async (
     .values(createManyParams)
     .returning();
   return categories;
+};
+
+export const getRootCategoriesRawSql = async (
+  pagination: Pagination,
+  db: TransactionClient,
+): Promise<ICategoryWithRelations[]> => {
+  const rootCategorySQL = db
+    .select({
+      id: courseCategories.id,
+      name: courseCategories.name,
+      parentId: courseCategories.parentId,
+      description: courseCategories.description,
+      depth: sql<number>`1`.as('depth'),
+    })
+    .from(courseCategories)
+    .where(isNull(courseCategories.parentId))
+    .orderBy(
+      courseCategories.name,
+      pagination.orderBy === 'desc'
+        ? desc(courseCategories.name)
+        : asc(courseCategories.name),
+    )
+    .offset((pagination.page - 1) * pagination.pageSize)
+    .limit(pagination.pageSize);
+
+  const rawSql = sql`
+      WITH RECURSIVE category_hierarchy AS (
+        (${rootCategorySQL})
+        UNION ALL
+        (SELECT c.id,
+                c.name,
+                c.parent_id,
+                c.description,
+                ch.depth + 1
+         FROM ${courseCategories} AS c
+                  INNER JOIN
+              category_hierarchy AS ch ON c.parent_id = ch.id)
+      )
+      SELECT *
+      FROM category_hierarchy
+      ORDER BY depth ASC;
+  `;
+
+  const result = await db.execute<{
+    id: Uuid;
+    name: string;
+    parent_id: Uuid;
+    description: string;
+    depth: number;
+  }>(rawSql);
+
+  const map = new Map<string, ICategoryWithRelations>();
+  result.rows.forEach((row) => {
+    const category: ICategoryWithRelations =
+      typia.assert<ICategoryWithRelations>({
+        id: row.id,
+        name: row.name,
+        parentId: row.parent_id,
+        description: row.description,
+        depth: row.depth,
+        parent: null,
+        children: [],
+      });
+    map.set(category.id, category);
+  });
+
+  const rootCategories: ICategoryWithRelations[] = [];
+  map.forEach((category) => {
+    if (category.parentId) {
+      const parent = map.get(category.parentId);
+
+      if (parent) {
+        parent.children.push(category);
+      }
+    } else {
+      rootCategories.push(category);
+    }
+  });
+
+  return rootCategories;
 };

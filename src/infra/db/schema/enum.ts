@@ -28,3 +28,10 @@ export const uiCarouselType = pgEnum('ui_carousel_type', [
   'carousel.review',
   'carousel.product',
 ]);
+
+export const lessonContentType = pgEnum('lesson_content_type', [
+  'video',
+  'image',
+  'text',
+  'file',
+]);
