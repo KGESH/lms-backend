@@ -35,6 +35,12 @@ export class OrderController {
           snapshotId: order.productOrder.productSnapshot.id,
           title: order.productOrder.productSnapshot.title,
           description: order.productOrder.productSnapshot.description,
+          announcement: {
+            ...order.productOrder.productSnapshot.announcement,
+          },
+          refundPolicy: {
+            ...order.productOrder.productSnapshot.refundPolicy,
+          },
           content: {
             ...order.productOrder.productSnapshot.content,
           },
@@ -93,6 +99,12 @@ export class OrderController {
         snapshotId: courseProduct.lastSnapshot.id,
         title: courseProduct.lastSnapshot.title,
         description: courseProduct.lastSnapshot.description,
+        announcement: {
+          ...courseProduct.lastSnapshot.announcement,
+        },
+        refundPolicy: {
+          ...courseProduct.lastSnapshot.refundPolicy,
+        },
         content: {
           ...courseProduct.lastSnapshot.content,
         },

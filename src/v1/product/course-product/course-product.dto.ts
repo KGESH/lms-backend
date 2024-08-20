@@ -2,14 +2,17 @@ import { ISO8601, Uuid } from '../../../shared/types/primitive';
 import { ProductSnapshotDiscountDto } from '../common/snapshot/discount/product-snapshot-discount.dto';
 import { ProductSnapshotPricingDto } from '../common/snapshot/pricing/product-snapshot-pricing.dto';
 import { ProductSnapshotContentDto } from '../common/snapshot/content/product-snapshot-content.dto';
+import { ProductSnapshotAnnouncementDto } from '../common/snapshot/announcement/product-snapshot-announcement.dto';
+import { ProductSnapshotRefundPolicyDto } from '../common/snapshot/refund-policy/product-snapshot-refund-policy.dto';
 
 export type CourseProductDto = {
-  // id: Uuid;
   courseId: Uuid;
   snapshotId: Uuid;
   title: string;
   description: string | null;
   content: ProductSnapshotContentDto;
+  announcement: ProductSnapshotAnnouncementDto;
+  refundPolicy: ProductSnapshotRefundPolicyDto;
   pricing: ProductSnapshotPricingDto;
   discounts: ProductSnapshotDiscountDto | null;
   createdAt: ISO8601;
@@ -17,7 +20,16 @@ export type CourseProductDto = {
   deletedAt: ISO8601 | null;
 };
 
-export type CourseProductCreateDto = Omit<
+export type CreateCourseProductDto = Pick<
   CourseProductDto,
-  'id' | 'courseId' | 'snapshotId'
->;
+  'title' | 'description'
+> & {
+  content: Pick<ProductSnapshotContentDto, 'richTextContent'>;
+  announcement: Pick<ProductSnapshotAnnouncementDto, 'richTextContent'>;
+  refundPolicy: Pick<ProductSnapshotRefundPolicyDto, 'richTextContent'>;
+  pricing: Pick<ProductSnapshotPricingDto, 'amount'>;
+  discounts: Omit<
+    ProductSnapshotDiscountDto,
+    'id' | 'productSnapshotId'
+  > | null;
+};

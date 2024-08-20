@@ -10,6 +10,8 @@ import { IProductSnapshotPricing } from '../product/common/snapshot/pricing/prod
 import { IProductSnapshotDiscount } from '../product/common/snapshot/discount/product-snapshot-discount.interface';
 import { IProductSnapshotContent } from '../product/common/snapshot/content/product-snapshot-content.interface';
 import { IReview } from '../review/review.interface';
+import { IProductSnapshotRefundPolicy } from '../product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
+import { IProductSnapshotAnnouncement } from '../product/common/snapshot/announcement/product-snapshot-announcement.interface';
 
 @Injectable()
 export class OrderQueryRepository {
@@ -45,6 +47,8 @@ export class OrderQueryRepository {
             productSnapshot: {
               with: {
                 product: true,
+                announcement: true,
+                refundPolicy: true,
                 content: true,
                 pricing: true,
                 discounts: true,
@@ -67,6 +71,12 @@ export class OrderQueryRepository {
         productSnapshot: {
           ...order.courseOrder.productSnapshot,
           courseId: order.courseOrder.productSnapshot.product.courseId,
+          announcement: typia.assert<IProductSnapshotAnnouncement>(
+            order.courseOrder.productSnapshot.announcement,
+          ),
+          refundPolicy: typia.assert<IProductSnapshotRefundPolicy>(
+            order.courseOrder.productSnapshot.refundPolicy,
+          ),
           content: typia.assert<IProductSnapshotContent>(
             order.courseOrder.productSnapshot.content,
           ),

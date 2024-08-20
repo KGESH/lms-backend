@@ -19,6 +19,8 @@ export type ICourseOrderRelations = IOrder & {
     productSnapshot: IProductSnapshot & {
       courseId: Uuid;
       content: IProductSnapshotContent;
+      announcement: IProductSnapshotContent;
+      refundPolicy: IProductSnapshotContent;
       pricing: IProductSnapshotPricing;
       discounts: IProductSnapshotDiscount | null;
     };

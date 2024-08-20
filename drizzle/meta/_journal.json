@@ -36,6 +36,13 @@
       "when": 1724149999191,
       "tag": "0004_large_bloodaxe",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1724172738592,
+      "tag": "0005_naive_christian_walker",
+      "breakpoints": true
     }
   ]
 }

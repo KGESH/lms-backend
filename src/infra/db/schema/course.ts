@@ -107,6 +107,24 @@ export const courseProductSnapshotDiscounts = pgTable(
   },
 );
 
+export const courseProductSnapshotAnnouncements = pgTable(
+  'course_product_snapshot_announcements',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    productSnapshotId: uuid('product_snapshot_id').notNull(),
+    richTextContent: text('rich_text_content').notNull(),
+  },
+);
+
+export const courseProductSnapshotRefundPolicies = pgTable(
+  'course_product_snapshot_refund_policies',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    productSnapshotId: uuid('product_snapshot_id').notNull(),
+    richTextContent: text('rich_text_content').notNull(),
+  },
+);
+
 export const courseProductSnapshotContents = pgTable(
   'course_product_snapshot_contents',
   {
@@ -162,10 +180,32 @@ export const courseProductSnapshotsRelations = relations(
       fields: [courseProductSnapshots.productId],
       references: [courseProducts.id],
     }),
+    announcement: one(courseProductSnapshotAnnouncements),
+    refundPolicy: one(courseProductSnapshotRefundPolicies),
     content: one(courseProductSnapshotContents),
     pricing: one(courseProductSnapshotPricing),
     discounts: one(courseProductSnapshotDiscounts),
     courseOrder: one(courseOrders),
+  }),
+);
+
+export const courseProductSnapshotAnnouncementsRelations = relations(
+  courseProductSnapshotAnnouncements,
+  ({ one }) => ({
+    productSnapshot: one(courseProductSnapshots, {
+      fields: [courseProductSnapshotAnnouncements.productSnapshotId],
+      references: [courseProductSnapshots.id],
+    }),
+  }),
+);
+
+export const courseProductSnapshotRefundPoliciesRelations = relations(
+  courseProductSnapshotRefundPolicies,
+  ({ one }) => ({
+    productSnapshot: one(courseProductSnapshots, {
+      fields: [courseProductSnapshotRefundPolicies.productSnapshotId],
+      references: [courseProductSnapshots.id],
+    }),
   }),
 );
 
@@ -178,6 +218,7 @@ export const courseProductSnapshotContentsRelations = relations(
     }),
   }),
 );
+
 export const courseProductSnapshotPricingRelations = relations(
   courseProductSnapshotPricing,
   ({ one }) => ({
@@ -230,9 +271,11 @@ export const courseDbSchemas = {
   lessonContents,
   courseProducts,
   courseProductSnapshots,
+  courseProductSnapshotContents,
+  courseProductSnapshotAnnouncements,
+  courseProductSnapshotRefundPolicies,
   courseProductSnapshotPricing,
   courseProductSnapshotDiscounts,
-  courseProductSnapshotContents,
 
   // // Relations
   courseCategoriesRelations,
@@ -243,6 +286,8 @@ export const courseDbSchemas = {
   courseProductsRelations,
   courseProductSnapshotsRelations,
   courseProductSnapshotContentsRelations,
+  courseProductSnapshotAnnouncementsRelations,
+  courseProductSnapshotRefundPoliciesRelations,
   courseProductSnapshotPricingRelations,
   courseProductSnapshotDiscountsRelations,
 };

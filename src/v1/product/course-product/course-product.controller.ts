@@ -7,9 +7,10 @@ import {
 } from '@nestia/core';
 import { CourseProductService } from './course-product.service';
 import { Uuid } from '../../../shared/types/primitive';
-import { CourseProductCreateDto, CourseProductDto } from './course-product.dto';
+import { CreateCourseProductDto, CourseProductDto } from './course-product.dto';
 import * as date from '../../../shared/utils/date';
 import { TypeGuardError } from 'typia';
+import { courseProductToDto } from '../../../shared/helpers/transofrm/product';
 
 @Controller('v1/product/course')
 export class CourseProductController {
@@ -27,35 +28,14 @@ export class CourseProductController {
       courseId,
     });
 
-    if (!product?.lastSnapshot) {
+    if (!product || !product.lastSnapshot) {
       return null;
     }
 
-    return {
-      // id: product.id,
-      courseId: product.courseId,
-      snapshotId: product.lastSnapshot.id,
-      title: product.lastSnapshot.title,
-      description: product.lastSnapshot.description,
-      createdAt: date.toISOString(product.lastSnapshot.createdAt),
-      updatedAt: date.toISOString(product.lastSnapshot.updatedAt),
-      deletedAt: product.lastSnapshot.deletedAt
-        ? date.toISOString(product.lastSnapshot.deletedAt)
-        : null,
-      content: product.lastSnapshot.content,
-      pricing: product.lastSnapshot.pricing,
-      discounts: product.lastSnapshot.discounts
-        ? {
-            ...product.lastSnapshot.discounts,
-            validFrom: product.lastSnapshot.discounts?.validFrom
-              ? date.toISOString(product.lastSnapshot.discounts.validFrom)
-              : null,
-            validTo: product.lastSnapshot.discounts?.validTo
-              ? date.toISOString(product.lastSnapshot.discounts.validTo)
-              : null,
-          }
-        : null,
-    };
+    return courseProductToDto({
+      ...product,
+      lastSnapshot: product.lastSnapshot,
+    });
   }
 
   @TypedException<TypeGuardError>({
@@ -65,7 +45,7 @@ export class CourseProductController {
   @TypedRoute.Post('/:courseId')
   async createProductCourse(
     @TypedParam('courseId') courseId: Uuid,
-    @TypedBody() body: CourseProductCreateDto,
+    @TypedBody() body: CreateCourseProductDto,
   ): Promise<CourseProductDto> {
     const product = await this.courseProductService.createCourseProduct({
       courseProductCreateParams: {
@@ -77,6 +57,12 @@ export class CourseProductController {
       },
       courseProductSnapshotContentCreateParams: {
         richTextContent: body.content.richTextContent,
+      },
+      courseProductSnapshotAnnouncementCreateParams: {
+        richTextContent: body.announcement.richTextContent,
+      },
+      courseProductSnapshotRefundPolicyCreateParams: {
+        richTextContent: body.refundPolicy.richTextContent,
       },
       courseProductSnapshotPricingCreateParams: {
         amount: body.pricing.amount,
@@ -95,30 +81,6 @@ export class CourseProductController {
         : null,
     });
 
-    return {
-      // id: product.id,
-      courseId: product.courseId,
-      snapshotId: product.lastSnapshot.id,
-      title: product.lastSnapshot.title,
-      description: product.lastSnapshot.description,
-      createdAt: date.toISOString(product.lastSnapshot.createdAt),
-      updatedAt: date.toISOString(product.lastSnapshot.updatedAt),
-      deletedAt: product.lastSnapshot.deletedAt
-        ? date.toISOString(product.lastSnapshot.deletedAt)
-        : null,
-      content: product.lastSnapshot.content,
-      pricing: product.lastSnapshot.pricing,
-      discounts: product.lastSnapshot.discounts
-        ? {
-            ...product.lastSnapshot.discounts,
-            validFrom: product.lastSnapshot.discounts?.validFrom
-              ? date.toISOString(product.lastSnapshot.discounts.validFrom)
-              : null,
-            validTo: product.lastSnapshot.discounts?.validTo
-              ? date.toISOString(product.lastSnapshot.discounts.validTo)
-              : null,
-          }
-        : null,
-    };
+    return courseProductToDto(product);
   }
 }

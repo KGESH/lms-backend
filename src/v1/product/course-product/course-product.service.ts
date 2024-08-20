@@ -17,6 +17,10 @@ import { NonNullableInfer } from '../../../shared/types/non-nullable-infer';
 import { Optional } from '../../../shared/types/optional';
 import { CourseProductSnapshotContentRepository } from './course-product-snapshot-content.repository';
 import { IProductSnapshotContentCreate } from '../common/snapshot/content/product-snapshot-content.interface';
+import { CourseProductSnapshotAnnouncementRepository } from './course-product-snapshot-announcement.repository';
+import { CourseProductSnapshotRefundPolicyRepository } from './course-product-snapshot-refund-policy.repository';
+import { IProductSnapshotAnnouncementCreate } from '../common/snapshot/announcement/product-snapshot-announcement.interface';
+import { IProductSnapshotRefundPolicyCreate } from '../common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
 
 @Injectable()
 export class CourseProductService {
@@ -27,6 +31,8 @@ export class CourseProductService {
     private readonly courseProductSnapshotPricingRepository: CourseProductSnapshotPricingRepository,
     private readonly courseProductSnapshotDiscountRepository: CourseProductSnapshotDiscountRepository,
     private readonly courseProductSnapshotContentRepository: CourseProductSnapshotContentRepository,
+    private readonly courseProductSnapshotAnnouncementRepository: CourseProductSnapshotAnnouncementRepository,
+    private readonly courseProductSnapshotRefundPolicyRepository: CourseProductSnapshotRefundPolicyRepository,
     private readonly drizzle: DrizzleService,
   ) {}
 
@@ -55,6 +61,8 @@ export class CourseProductService {
     courseProductCreateParams,
     courseProductSnapshotCreateParams,
     courseProductSnapshotContentCreateParams,
+    courseProductSnapshotAnnouncementCreateParams,
+    courseProductSnapshotRefundPolicyCreateParams,
     courseProductSnapshotPricingCreateParams,
     courseProductSnapshotDiscountCreateParams,
   }: {
@@ -65,6 +73,14 @@ export class CourseProductService {
     >;
     courseProductSnapshotContentCreateParams: Optional<
       IProductSnapshotContentCreate,
+      'productSnapshotId'
+    >;
+    courseProductSnapshotAnnouncementCreateParams: Optional<
+      IProductSnapshotAnnouncementCreate,
+      'productSnapshotId'
+    >;
+    courseProductSnapshotRefundPolicyCreateParams: Optional<
+      IProductSnapshotRefundPolicyCreate,
       'productSnapshotId'
     >;
     courseProductSnapshotPricingCreateParams: Optional<
@@ -101,6 +117,16 @@ export class CourseProductService {
             ...courseProductSnapshotContentCreateParams,
             productSnapshotId: snapshot.id,
           });
+        const announcement =
+          await this.courseProductSnapshotAnnouncementRepository.create({
+            ...courseProductSnapshotAnnouncementCreateParams,
+            productSnapshotId: snapshot.id,
+          });
+        const refundPolicy =
+          await this.courseProductSnapshotRefundPolicyRepository.create({
+            ...courseProductSnapshotRefundPolicyCreateParams,
+            productSnapshotId: snapshot.id,
+          });
         const pricing =
           await this.courseProductSnapshotPricingRepository.create({
             ...courseProductSnapshotPricingCreateParams,
@@ -117,6 +143,8 @@ export class CourseProductService {
           ...courseProduct,
           lastSnapshot: {
             ...snapshot,
+            announcement,
+            refundPolicy,
             pricing,
             discounts: discount,
             content,
