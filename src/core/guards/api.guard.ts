@@ -39,8 +39,6 @@ export class ApiGuard implements CanActivate {
   }
 
   private _getApiSecret(request: Request): string | null {
-    this.logger.verbose('Getting api secret from header');
-    this.logger.verbose(request.headers);
     return request.headers[LMS_API_HEADER];
   }
 }
