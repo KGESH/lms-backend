@@ -5,8 +5,10 @@ import { Uri } from '../../../src/shared/types/primitive';
 import { DrizzleService } from '../../../src/infra/db/drizzle.service';
 import { createChapter, findChapter } from '../helpers/db/lms/chapter.helper';
 import { createRandomCourse } from '../helpers/db/lms/course.helper';
-import { ChapterCreateDto } from '../../../src/v1/course/chapter/chapter.dto';
-import { IChapterUpdate } from '../../../src/v1/course/chapter/chapter.interface';
+import {
+  ChapterCreateDto,
+  ChapterUpdateDto,
+} from '../../../src/v1/course/chapter/chapter.dto';
 import { ConfigsService } from '../../../src/configs/configs.service';
 import { seedUsers } from '../helpers/db/lms/user.helper';
 
@@ -50,7 +52,8 @@ describe('ChapterController (e2e)', () => {
         chapter.id,
       );
       if (!response.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(response.data, null, 4);
+        throw new Error(`assert - ${message}`);
       }
 
       const foundChapter = response.data;
@@ -89,7 +92,8 @@ describe('ChapterController (e2e)', () => {
         course.id,
       );
       if (!response.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(response.data, null, 4);
+        throw new Error(`assert - ${message}`);
       }
 
       const chapters = response.data;
@@ -127,7 +131,8 @@ describe('ChapterController (e2e)', () => {
         createDto,
       );
       if (!response.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(response.data, null, 4);
+        throw new Error(`assert - ${message}`);
       }
 
       const chapter = response.data;
@@ -150,7 +155,7 @@ describe('ChapterController (e2e)', () => {
           },
           drizzle.db,
         );
-        const updateDto: IChapterUpdate = {
+        const updateDto: ChapterUpdateDto = {
           title: 'updated-chapter',
         };
 
@@ -167,7 +172,8 @@ describe('ChapterController (e2e)', () => {
           updateDto,
         );
         if (!response.success) {
-          throw new Error('assert');
+          const message = JSON.stringify(response.data, null, 4);
+          throw new Error(`assert - ${message}`);
         }
 
         const updatedChapter = response.data;
@@ -204,7 +210,8 @@ describe('ChapterController (e2e)', () => {
           chapter.id,
         );
         if (!response.success) {
-          throw new Error('assert');
+          const message = JSON.stringify(response.data, null, 4);
+          throw new Error(`assert - ${message}`);
         }
 
         const deletedChapter = response.data;
