@@ -4,7 +4,7 @@ export type IAppConfigs = {
 };
 
 export type IAuthConfigs = {
-  JWT_SECRET: string;
+  LMS_SECRET: string;
 };
 
 export type IDatabaseConfigs = {

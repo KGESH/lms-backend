@@ -1,8 +1,9 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { ChapterService } from './chapter.service';
 import {
   TypedBody,
   TypedException,
+  TypedHeaders,
   TypedParam,
   TypedRoute,
 } from '@nestia/core';
@@ -11,6 +12,10 @@ import { Uuid } from '../../../shared/types/primitive';
 import { ChapterDto, ChapterCreateDto, ChapterUpdateDto } from './chapter.dto';
 import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '../../../shared/types/response';
+import { SkipAuth } from '../../../core/decorators/skip-auth.decorator';
+import { ApiAuthHeaders, AuthHeaders } from '../../auth/auth.headers';
+import { Roles } from '../../../core/decorators/roles.decorator';
+import { RolesGuard } from '../../../core/guards/roles.guard';
 
 @Controller('v1/course/:courseId/chapter')
 export class ChapterController {
@@ -20,19 +25,27 @@ export class ChapterController {
   ) {}
 
   @TypedRoute.Get('/')
+  @SkipAuth()
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
   async getChapters(
+    @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
   ): Promise<ChapterDto[]> {
     const chapters = await this.chapterQueryService.findChapters({ courseId });
     return chapters;
   }
 
+  @TypedRoute.Get('/:id')
+  @SkipAuth()
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
   })
-  @TypedRoute.Get('/:id')
   async getChapter(
+    @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
     @TypedParam('id') id: Uuid,
   ): Promise<ChapterDto | null> {
@@ -40,6 +53,9 @@ export class ChapterController {
     return chapter;
   }
 
+  @TypedRoute.Post('/')
+  @Roles('admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -48,8 +64,8 @@ export class ChapterController {
     status: 404,
     description: 'course not found',
   })
-  @TypedRoute.Post('/')
   async createChapter(
+    @TypedHeaders() headers: AuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
     @TypedBody() body: ChapterCreateDto,
   ): Promise<ChapterDto> {
@@ -60,6 +76,9 @@ export class ChapterController {
     return chapter;
   }
 
+  @TypedRoute.Patch('/:id')
+  @Roles('admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -68,8 +87,8 @@ export class ChapterController {
     status: 404,
     description: 'chapter not found',
   })
-  @TypedRoute.Patch('/:id')
   async updateChapter(
+    @TypedHeaders() headers: AuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
     @TypedParam('id') id: Uuid,
     @TypedBody() body: ChapterUpdateDto,
@@ -78,6 +97,7 @@ export class ChapterController {
     return chapter;
   }
 
+  @TypedRoute.Delete('/:id')
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -86,8 +106,8 @@ export class ChapterController {
     status: 404,
     description: 'chapter not found',
   })
-  @TypedRoute.Delete('/:id')
   async deleteChapter(
+    @TypedHeaders() headers: AuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
     @TypedParam('id') id: Uuid,
   ): Promise<ChapterDto> {

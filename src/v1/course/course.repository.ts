@@ -3,19 +3,13 @@ import { DrizzleService } from '../../infra/db/drizzle.service';
 import { ICourse, ICourseCreate, ICourseUpdate } from './course.interface';
 import { eq } from 'drizzle-orm';
 import { dbSchema } from '../../infra/db/schema';
-import { IRepository } from '../../core/base.repository';
 import { Pagination } from '../../shared/types/pagination';
-import {
-  DEFAULT_PAGE,
-  DEFAULT_ORDER_BY,
-  DEFAULT_PAGE_SIZE,
-} from '../../core/pagination.constant';
 
 @Injectable()
-export class CourseRepository implements IRepository<ICourse> {
+export class CourseRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async findOne(where: Pick<ICourse, 'id'>): Promise<ICourse | null> {
+  async findCourse(where: Pick<ICourse, 'id'>): Promise<ICourse | null> {
     const course = await this.drizzle.db.query.courses.findFirst({
       where: eq(dbSchema.courses.id, where.id),
     });
@@ -28,7 +22,7 @@ export class CourseRepository implements IRepository<ICourse> {
   }
 
   async findOneOrThrow(where: Pick<ICourse, 'id'>): Promise<ICourse> {
-    const course = await this.findOne(where);
+    const course = await this.findCourse(where);
 
     if (!course) {
       throw new Error('Course not found');
@@ -37,13 +31,7 @@ export class CourseRepository implements IRepository<ICourse> {
     return course;
   }
 
-  async findMany(
-    pagination: Pagination = {
-      page: DEFAULT_PAGE,
-      pageSize: DEFAULT_PAGE_SIZE,
-      orderBy: DEFAULT_ORDER_BY,
-    },
-  ): Promise<ICourse[]> {
+  async findManyCourses(pagination: Pagination): Promise<ICourse[]> {
     return await this.drizzle.db.query.courses.findMany({
       orderBy: (course, { desc }) => desc(course.createdAt),
       limit: pagination.pageSize,

@@ -1,7 +1,8 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import {
   TypedBody,
   TypedException,
+  TypedHeaders,
   TypedParam,
   TypedRoute,
 } from '@nestia/core';
@@ -11,17 +12,23 @@ import { CreateCourseProductDto, CourseProductDto } from './course-product.dto';
 import * as date from '../../../shared/utils/date';
 import { TypeGuardError } from 'typia';
 import { courseProductToDto } from '../../../shared/helpers/transofrm/product';
+import { SkipAuth } from '../../../core/decorators/skip-auth.decorator';
+import { ApiAuthHeaders, AuthHeaders } from '../../auth/auth.headers';
+import { Roles } from '../../../core/decorators/roles.decorator';
+import { RolesGuard } from '../../../core/guards/roles.guard';
 
 @Controller('v1/product/course')
 export class CourseProductController {
   constructor(private readonly courseProductService: CourseProductService) {}
 
+  @TypedRoute.Get('/:courseId')
+  @SkipAuth()
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
   })
-  @TypedRoute.Get('/:courseId')
   async getCourseProduct(
+    @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
   ): Promise<CourseProductDto | null> {
     const product = await this.courseProductService.findCourseProduct({
@@ -38,12 +45,15 @@ export class CourseProductController {
     });
   }
 
+  @TypedRoute.Post('/:courseId')
+  @Roles('admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
   })
-  @TypedRoute.Post('/:courseId')
   async createProductCourse(
+    @TypedHeaders() headers: AuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
     @TypedBody() body: CreateCourseProductDto,
   ): Promise<CourseProductDto> {

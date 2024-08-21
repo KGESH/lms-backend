@@ -46,3 +46,7 @@ export function toDate(date: string): Date {
 export function toISOString(date: Date): ISO8601 {
   return dayjs(date).toISOString();
 }
+
+export function isBefore(date: Date, compare: Date): boolean {
+  return dayjs(date).isBefore(compare);
+}

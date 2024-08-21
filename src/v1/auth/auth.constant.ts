@@ -1,3 +1,3 @@
-export const ACCESS_TOKEN_EXP_TIME = '5m';
+export const LMS_API_HEADER = 'LmsSecret'.toLowerCase();
 
-export const REFRESH_TOKEN_EXP_TIME = '7d';
+export const USER_SESSION_ID_HEADER = 'UserSessionId'.toLowerCase();

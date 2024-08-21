@@ -1,6 +1,6 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { CourseOrderPurchaseService } from './course/course-order-purchase.service';
-import { TypedBody, TypedParam, TypedRoute } from '@nestia/core';
+import { TypedBody, TypedHeaders, TypedParam, TypedRoute } from '@nestia/core';
 import { CourseOrderPurchaseDto } from './course/course-order-purchase.dto';
 import * as date from '../../shared/utils/date';
 import { OrderDto } from './order.dto';
@@ -9,6 +9,9 @@ import { Uuid } from '../../shared/types/primitive';
 import { OrderService } from './order.service';
 import { CreateOrderRefundDto, OrderRefundDto } from './order-refund.dto';
 import { orderRefundToDto } from '../../shared/helpers/transofrm/order';
+import { AuthHeaders } from '../auth/auth.headers';
+import { Roles } from '../../core/decorators/roles.decorator';
+import { RolesGuard } from '../../core/guards/roles.guard';
 
 @Controller('v1/order')
 export class OrderController {
@@ -18,7 +21,10 @@ export class OrderController {
   ) {}
 
   @TypedRoute.Get('/:id')
-  async getOrder(@TypedParam('id') id: Uuid): Promise<OrderDto | null> {
+  async getOrder(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedParam('id') id: Uuid,
+  ): Promise<OrderDto | null> {
     const order = await this.orderService.findOrderById({ id });
 
     if (!order) {
@@ -79,11 +85,15 @@ export class OrderController {
     }
   }
 
-  @TypedRoute.Post('/ebook')
-  async purchaseEbookProduct() {}
+  // Todo: Impl
+  // @TypedRoute.Post('/ebook')
+  // async purchaseEbookProduct() {}
 
   @TypedRoute.Post('/course')
+  @Roles('user')
+  @UseGuards(RolesGuard)
   async purchaseCourseProduct(
+    @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: CourseOrderPurchaseDto,
   ): Promise<OrderDto> {
     const { order, courseProduct } =
@@ -134,7 +144,10 @@ export class OrderController {
   }
 
   @TypedRoute.Post('/:id/refund')
+  @Roles('admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
   async refundOrder(
+    @TypedHeaders() headers: AuthHeaders,
     @TypedParam('id') id: Uuid,
     @TypedBody() body: CreateOrderRefundDto,
   ): Promise<OrderRefundDto> {

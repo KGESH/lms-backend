@@ -24,13 +24,7 @@ export class UserService {
     private readonly userAccountRepository: UserAccountRepository,
   ) {}
 
-  async findUsers(
-    pagination: Pagination = {
-      page: DEFAULT_PAGE,
-      pageSize: DEFAULT_PAGE_SIZE,
-      orderBy: DEFAULT_ORDER_BY,
-    },
-  ): Promise<IUserWithoutPassword[]> {
+  async findUsers(pagination: Pagination): Promise<IUserWithoutPassword[]> {
     const users = await this.userQueryRepository.findMany(pagination);
     return users.map((user) => typia.misc.clone<IUserWithoutPassword>(user));
   }

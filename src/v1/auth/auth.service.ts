@@ -7,10 +7,12 @@ import {
 import { UserService } from '../user/user.service';
 import { IUserLogin, IUserSignUp } from './auth.interface';
 import * as typia from 'typia';
+import * as date from '../../shared/utils/date';
 import { IUser, IUserWithoutPassword } from '../user/user.interface';
 import { compareHash } from '../../shared/helpers/hash';
 import { DrizzleService } from '../../infra/db/drizzle.service';
-import { UserRole } from '../../shared/types/primitive';
+import { SessionRepository } from './session.repository';
+import { ISessionWithUser } from './session.interface';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +20,7 @@ export class AuthService {
 
   constructor(
     private readonly userService: UserService,
+    private readonly sessionRepository: SessionRepository,
     private readonly drizzle: DrizzleService,
   ) {}
 
@@ -61,5 +64,28 @@ export class AuthService {
     role,
   }: Pick<IUser, 'id' | 'role'>): Promise<IUserWithoutPassword> {
     return await this.userService.updateUser({ id }, { role }, this.drizzle.db);
+  }
+
+  async validateSession({
+    sessionId,
+  }: {
+    sessionId: string;
+  }): Promise<ISessionWithUser | null> {
+    const sessionWithUser =
+      await this.sessionRepository.findSessionWithUserById({
+        id: sessionId,
+      });
+
+    if (!sessionWithUser) {
+      return null;
+    }
+
+    const expired = date.isBefore(sessionWithUser.expiresAt, date.now('date'));
+
+    if (expired) {
+      return null;
+    }
+
+    return sessionWithUser;
   }
 }

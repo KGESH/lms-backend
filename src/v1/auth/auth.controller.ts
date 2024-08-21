@@ -1,14 +1,22 @@
-import { Controller, Logger } from '@nestjs/common';
+import { Controller, Logger, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { TypedBody, TypedException, TypedRoute } from '@nestia/core';
+import {
+  TypedBody,
+  TypedException,
+  TypedHeaders,
+  TypedRoute,
+} from '@nestia/core';
 import { LoginUserDto, SignUpUserDto, UpdateUserRoleDto } from './auth.dto';
 import { KakaoLoginDto } from './kakao-auth.dto';
 import { KakaoAuthService } from './kakao-auth.service';
 import { UserWithoutPasswordDto } from '../user/user.dto';
 import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '../../shared/types/response';
-import * as date from '../../shared/utils/date';
-import { IUserWithoutPassword } from '../user/user.interface';
+import { userToDto } from '../../shared/helpers/transofrm/user';
+import { SkipAuth } from '../../core/decorators/skip-auth.decorator';
+import { RolesGuard } from '../../core/guards/roles.guard';
+import { Roles } from '../../core/decorators/roles.decorator';
+import { ApiAuthHeaders, AuthHeaders } from './auth.headers';
 
 @Controller('v1/auth')
 export class AuthController {
@@ -19,23 +27,18 @@ export class AuthController {
     private readonly kakaoAuthService: KakaoAuthService,
   ) {}
 
-  private _transform(user: IUserWithoutPassword): UserWithoutPasswordDto {
-    return {
-      ...user,
-      createdAt: date.toISOString(user.createdAt),
-      updatedAt: date.toISOString(user.updatedAt),
-      deletedAt: user.deletedAt ? date.toISOString(user.deletedAt) : null,
-    };
-  }
-
   @TypedRoute.Post('/kakao/login')
+  @SkipAuth()
   async kakaoLogin(
+    @TypedHeaders() headers: ApiAuthHeaders,
     @TypedBody() body: KakaoLoginDto,
   ): Promise<UserWithoutPasswordDto> {
     const user = await this.kakaoAuthService.login(body);
-    return this._transform(user);
+    return userToDto(user);
   }
 
+  @TypedRoute.Post('/login')
+  @SkipAuth()
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -44,16 +47,18 @@ export class AuthController {
     status: 404,
     description: 'user not found',
   })
-  @TypedRoute.Post('/login')
   async login(
+    @TypedHeaders() headers: ApiAuthHeaders,
     @TypedBody() body: LoginUserDto,
   ): Promise<UserWithoutPasswordDto> {
     this.logger.log('Login request received', body);
 
     const user = await this.authService.login(body);
-    return this._transform(user);
+    return userToDto(user);
   }
 
+  @TypedRoute.Post('/signup')
+  @SkipAuth()
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -62,15 +67,18 @@ export class AuthController {
     status: 409,
     description: 'user already exists',
   })
-  @TypedRoute.Post('/signup')
   async signup(
+    @TypedHeaders() headers: ApiAuthHeaders,
     @TypedBody() body: SignUpUserDto,
   ): Promise<UserWithoutPasswordDto> {
     this.logger.log('Signup request received', body);
     const user = await this.authService.signUpUser(body);
-    return this._transform(user);
+    return userToDto(user);
   }
 
+  @TypedRoute.Patch('/role')
+  @Roles('admin', 'manager')
+  @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -79,11 +87,11 @@ export class AuthController {
     status: 404,
     description: 'user not found',
   })
-  @TypedRoute.Patch('/role')
   async updateUserRole(
+    @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: UpdateUserRoleDto,
   ): Promise<UserWithoutPasswordDto> {
     const updated = await this.authService.updateUserRole(body);
-    return this._transform(updated);
+    return userToDto(updated);
   }
 }

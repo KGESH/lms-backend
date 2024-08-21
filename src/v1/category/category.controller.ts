@@ -1,8 +1,9 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import {
   TypedBody,
   TypedException,
+  TypedHeaders,
   TypedParam,
   TypedQuery,
   TypedRoute,
@@ -18,17 +19,23 @@ import { Uuid } from '../../shared/types/primitive';
 import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '../../shared/types/response';
 import { DEFAULT_PAGINATION } from '../../core/pagination.constant';
+import { SkipAuth } from '../../core/decorators/skip-auth.decorator';
+import { RolesGuard } from '../../core/guards/roles.guard';
+import { Roles } from '../../core/decorators/roles.decorator';
+import { ApiAuthHeaders, AuthHeaders } from '../auth/auth.headers';
 
 @Controller('v1/category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
+  @TypedRoute.Get('/')
+  @SkipAuth()
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
   })
-  @TypedRoute.Get('/')
   async getRootCategories(
+    @TypedHeaders() headers: ApiAuthHeaders,
     @TypedQuery() query: CategoryQuery,
   ): Promise<CategoryWithChildrenDto[]> {
     if (query.withChildren) {
@@ -47,28 +54,38 @@ export class CategoryController {
     return roots;
   }
 
+  @TypedRoute.Get('/:id')
+  @SkipAuth()
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
   })
-  @TypedRoute.Get('/:id')
-  async getCategory(@TypedParam('id') id: Uuid): Promise<CategoryDto | null> {
+  async getCategory(
+    @TypedHeaders() headers: ApiAuthHeaders,
+    @TypedParam('id') id: Uuid,
+  ): Promise<CategoryDto | null> {
     const category = await this.categoryService.findCategory({ id });
     return category;
   }
 
+  @TypedRoute.Post('/')
+  @Roles('admin', 'manager')
+  @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
   })
-  @TypedRoute.Post('/')
   async createCategory(
+    @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: CreateCategoryDto,
   ): Promise<CategoryDto> {
     const category = await this.categoryService.createCategory(body);
     return category;
   }
 
+  @TypedRoute.Patch('/:id')
+  @Roles('admin', 'manager')
+  @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -77,8 +94,8 @@ export class CategoryController {
     status: 404,
     description: 'category not found',
   })
-  @TypedRoute.Patch('/:id')
   async updateCategory(
+    @TypedHeaders() headers: AuthHeaders,
     @TypedParam('id') id: Uuid,
     @TypedBody() body: UpdateCategoryDto,
   ): Promise<CategoryDto> {
@@ -86,6 +103,9 @@ export class CategoryController {
     return category;
   }
 
+  @TypedRoute.Delete('/:id')
+  @Roles('admin', 'manager')
+  @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -98,8 +118,10 @@ export class CategoryController {
     status: 404,
     description: 'category not found',
   })
-  @TypedRoute.Delete('/:id')
-  async deleteCategory(@TypedParam('id') id: Uuid): Promise<CategoryDto> {
+  async deleteCategory(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedParam('id') id: Uuid,
+  ): Promise<CategoryDto> {
     const category = await this.categoryService.deleteCategory({ id });
     return category;
   }

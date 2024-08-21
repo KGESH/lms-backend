@@ -28,7 +28,7 @@ export class TeacherService {
     );
   }
 
-  async findTeacherById(
+  async findTeacher(
     query: Pick<ITeacher, 'id'>,
   ): Promise<ITeacherWithAccount | null> {
     const teacher = await this.teacherRepository.findOne(query);

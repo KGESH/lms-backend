@@ -29,7 +29,7 @@ export class ConfigsService {
     const fromExternal = {
       NODE_ENV: process.env.NODE_ENV,
       DATABASE_URL: process.env.DATABASE_URL,
-      JWT_SECRET: process.env.JWT_SECRET,
+      LMS_SECRET: process.env.LMS_SECRET,
       APP_PORT: +`${process.env.APP_PORT}`,
       AWS_S3_REGION: process.env.AWS_S3_REGION,
       AWS_S3_ACCESS_KEY: process.env.AWS_S3_ACCESS_KEY,
@@ -57,7 +57,7 @@ export class ConfigsService {
       NODE_ENV: process.env.NODE_ENV,
       APP_PORT: +this.dotEnv.get('APP_PORT'),
       DATABASE_URL: this.dotEnv.get('DATABASE_URL'),
-      JWT_SECRET: this.dotEnv.get('JWT_SECRET'),
+      LMS_SECRET: this.dotEnv.get('LMS_SECRET'),
       AWS_S3_REGION: this.dotEnv.get('AWS_S3_REGION'),
       AWS_S3_ACCESS_KEY: this.dotEnv.get('AWS_S3_ACCESS_KEY'),
       AWS_S3_SECRET: this.dotEnv.get('AWS_S3_SECRET'),

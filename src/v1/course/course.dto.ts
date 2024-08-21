@@ -1,4 +1,5 @@
 import { ISO8601, Uuid } from '../../shared/types/primitive';
+import { Pagination } from '../../shared/types/pagination';
 
 export type CourseDto = {
   id: Uuid;
@@ -16,3 +17,5 @@ export type CourseCreateDto = Pick<
 >;
 
 export type CourseUpdateDto = Partial<CourseCreateDto>;
+
+export type CourseQuery = Partial<Pagination>;

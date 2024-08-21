@@ -1,8 +1,9 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { LessonService } from './lesson.service';
 import {
   TypedBody,
   TypedException,
+  TypedHeaders,
   TypedParam,
   TypedRoute,
 } from '@nestia/core';
@@ -11,6 +12,10 @@ import { Uuid } from '../../../../shared/types/primitive';
 import { LessonCreateDto, LessonDto, LessonUpdateDto } from './lesson.dto';
 import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '../../../../shared/types/response';
+import { SkipAuth } from '../../../../core/decorators/skip-auth.decorator';
+import { ApiAuthHeaders, AuthHeaders } from '../../../auth/auth.headers';
+import { RolesGuard } from '../../../../core/guards/roles.guard';
+import { Roles } from '../../../../core/decorators/roles.decorator';
 
 @Controller('v1/course/:courseId/chapter/:chapterId/lesson')
 export class LessonController {
@@ -20,7 +25,13 @@ export class LessonController {
   ) {}
 
   @TypedRoute.Get('/')
+  @SkipAuth()
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
   async getLessons(
+    @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
     @TypedParam('chapterId') chapterId: Uuid,
   ): Promise<LessonDto[]> {
@@ -30,12 +41,14 @@ export class LessonController {
     return lessons;
   }
 
+  @TypedRoute.Get('/:id')
+  @SkipAuth()
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
   })
-  @TypedRoute.Get('/:id')
   async getLesson(
+    @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
     @TypedParam('chapterId') chapterId: Uuid,
     @TypedParam('id') lessonId: Uuid,
@@ -46,6 +59,9 @@ export class LessonController {
     return lesson;
   }
 
+  @TypedRoute.Post('/')
+  @Roles('admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -54,8 +70,8 @@ export class LessonController {
     status: 404,
     description: 'chapter not found',
   })
-  @TypedRoute.Post('/')
   async createLesson(
+    @TypedHeaders() headers: AuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
     @TypedParam('chapterId') chapterId: Uuid,
     @TypedBody() body: LessonCreateDto,
@@ -67,6 +83,9 @@ export class LessonController {
     return lesson;
   }
 
+  @TypedRoute.Patch('/:id')
+  @Roles('admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -75,8 +94,8 @@ export class LessonController {
     status: 404,
     description: 'lesson not found',
   })
-  @TypedRoute.Patch('/:id')
   async updateLesson(
+    @TypedHeaders() headers: AuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
     @TypedParam('chapterId') chapterId: Uuid,
     @TypedParam('id') id: Uuid,
@@ -92,6 +111,9 @@ export class LessonController {
     return lesson;
   }
 
+  @TypedRoute.Delete('/:id')
+  @Roles('admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -100,8 +122,8 @@ export class LessonController {
     status: 404,
     description: 'lesson not found',
   })
-  @TypedRoute.Delete('/:id')
   async deleteLesson(
+    @TypedHeaders() headers: AuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
     @TypedParam('chapterId') chapterId: Uuid,
     @TypedParam('id') id: Uuid,

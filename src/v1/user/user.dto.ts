@@ -7,6 +7,7 @@ import {
 } from '../../shared/types/primitive';
 import { OmitPassword } from '../../shared/types/omit-password';
 import { IUser } from './user.interface';
+import { Pagination } from '../../shared/types/pagination';
 
 export type UserDto = {
   id: Uuid;
@@ -33,3 +34,5 @@ export type UserInfoDto = {
   connectingInformation: string | null;
   duplicationInformation: string | null;
 };
+
+export type UserQuery = Partial<Pagination>;

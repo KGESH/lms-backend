@@ -65,6 +65,13 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   orders: many(orders),
 }));
 
+export const userSessionsRelations = relations(userSessions, ({ one }) => ({
+  user: one(users, {
+    fields: [userSessions.userId],
+    references: [users.id],
+  }),
+}));
+
 export const userInfosRelations = relations(userInfos, ({ one }) => ({
   user: one(users, {
     fields: [userInfos.userId],
@@ -89,6 +96,7 @@ export const userDbSchemas = {
 
   // Relations
   usersRelations,
+  userSessionsRelations,
   userInfosRelations,
   userAccountsRelations,
 };
