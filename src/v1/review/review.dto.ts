@@ -49,9 +49,8 @@ export type ReviewReplyWithSnapshotDto = ReviewReplyDto & {
 };
 
 export type ReviewWithRelationsDto = ReviewDto & {
-  snapshot: ReviewSnapshotDto & {
-    replies: ReviewReplyWithSnapshotDto[];
-  };
+  snapshot: ReviewSnapshotDto;
+  replies: ReviewReplyWithSnapshotDto[];
 };
 
 export type ReviewQuery = Pick<ReviewDto, 'productType'> & Partial<Pagination>;

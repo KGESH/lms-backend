@@ -1,22 +1,26 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { IReviewWithRelations } from './review.interface';
 import { ReviewRepository } from './review.repository';
 import { ReviewSnapshotRepository } from './review-snapshot.repository';
-import { OrderQueryRepository } from '../order/order-query.repository';
 import { OrderRepository } from '../order/order.repository';
 import { createUuid } from '../../shared/utils/uuid';
 import * as date from '../../shared/utils/date';
 import { CourseProductService } from '../product/course-product/course-product.service';
 import { DrizzleService } from '../../infra/db/drizzle.service';
 import { ICourseReviewCreate } from './course-review/course-review.interface';
+import { ReviewQueryRepository } from './review-query.repository';
 
 @Injectable()
 export class ReviewAdminService {
   constructor(
     private readonly courseProductService: CourseProductService,
     private readonly orderRepository: OrderRepository,
-    private readonly orderQueryRepository: OrderQueryRepository,
     private readonly reviewRepository: ReviewRepository,
+    private readonly reviewQueryRepository: ReviewQueryRepository,
     private readonly reviewSnapshotRepository: ReviewSnapshotRepository,
     private readonly drizzle: DrizzleService,
   ) {}
@@ -65,12 +69,16 @@ export class ReviewAdminService {
         return { mockOrder, mockReview, mockReviewSnapshot };
       });
 
-    return {
-      ...mockReview,
-      snapshot: {
-        ...mockReviewSnapshot,
-        replies: [],
-      },
-    };
+    const mockReviewWithReplies =
+      await this.reviewQueryRepository.findOneWithReplies({
+        id: mockReview.id,
+        productType: mockReview.productType,
+      });
+
+    if (!mockReviewWithReplies) {
+      throw new InternalServerErrorException('Failed to create review');
+    }
+
+    return mockReviewWithReplies;
   }
 }

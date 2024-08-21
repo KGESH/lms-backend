@@ -38,13 +38,11 @@ export class ReviewQueryRepository {
 
     return {
       ...review,
-      snapshot: {
-        ...review.snapshots[0],
-        replies: review.replies.map((reply) => ({
-          ...reply,
-          snapshot: reply.snapshots[0],
-        })),
-      },
+      snapshot: review.snapshots[0],
+      replies: review.replies.map((reply) => ({
+        ...reply,
+        snapshot: reply.snapshots[0],
+      })),
     };
   }
 
@@ -92,13 +90,11 @@ export class ReviewQueryRepository {
 
     return reviews.map((review) => ({
       ...review,
-      snapshot: {
-        ...review.snapshots[0],
-        replies: review.replies.map((reply) => ({
-          ...reply,
-          snapshot: reply.snapshots[0],
-        })),
-      },
+      snapshot: review.snapshots[0],
+      replies: review.replies.map((reply) => ({
+        ...reply,
+        snapshot: reply.snapshots[0],
+      })),
     }));
   }
 
@@ -136,13 +132,11 @@ export class ReviewQueryRepository {
 
     return reviews.map((review) => ({
       ...review,
-      snapshot: {
-        ...review.snapshots[0],
-        replies: review.replies.map((reply) => ({
-          ...reply,
-          snapshot: reply.snapshots[0],
-        })),
-      },
+      snapshot: review.snapshots[0],
+      replies: review.replies.map((reply) => ({
+        ...reply,
+        snapshot: reply.snapshots[0],
+      })),
     }));
   }
 }

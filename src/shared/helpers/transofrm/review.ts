@@ -12,15 +12,15 @@ export const reviewToDto = (
     snapshot: {
       ...review.snapshot,
       createdAt: date.toISOString(review.snapshot.createdAt),
-      replies: review.snapshot.replies.map((reply) => ({
-        ...reply,
-        createdAt: date.toISOString(reply.createdAt),
-        deletedAt: reply.deletedAt ? date.toISOString(reply.deletedAt) : null,
-        snapshot: {
-          ...reply.snapshot,
-          createdAt: date.toISOString(reply.snapshot.createdAt),
-        },
-      })),
     },
+    replies: review.replies.map((reply) => ({
+      ...reply,
+      createdAt: date.toISOString(reply.createdAt),
+      deletedAt: reply.deletedAt ? date.toISOString(reply.deletedAt) : null,
+      snapshot: {
+        ...reply.snapshot,
+        createdAt: date.toISOString(reply.snapshot.createdAt),
+      },
+    })),
   };
 };

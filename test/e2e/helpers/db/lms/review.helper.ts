@@ -56,17 +56,17 @@ export const createReview = async (
     ...review,
     snapshot: {
       ...reviewSnapshot,
-      replies: [
-        {
-          ...parentReviewReply,
-          snapshot: parentReviewReplySnapshot,
-        },
-        {
-          ...childReviewReply,
-          snapshot: childReviewReplySnapshot,
-        },
-      ],
     },
+    replies: [
+      {
+        ...parentReviewReply,
+        snapshot: parentReviewReplySnapshot,
+      },
+      {
+        ...childReviewReply,
+        snapshot: childReviewReplySnapshot,
+      },
+    ],
   };
 };
 

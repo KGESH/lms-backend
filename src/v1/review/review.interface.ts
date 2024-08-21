@@ -49,7 +49,6 @@ export type IReviewReplyWithSnapshot = IReviewReply & {
 };
 
 export type IReviewWithRelations = IReview & {
-  snapshot: IReviewSnapshot & {
-    replies: IReviewReplyWithSnapshot[];
-  };
+  snapshot: IReviewSnapshot;
+  replies: IReviewReplyWithSnapshot[];
 };

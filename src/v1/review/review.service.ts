@@ -1,11 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { ReviewRepository } from './review.repository';
 import {
-  IReview,
-  IReviewCreate,
-  IReviewSnapshotCreate,
-  IReviewWithRelations,
-} from './review.interface';
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import { ReviewRepository } from './review.repository';
+import { IReview, IReviewWithRelations } from './review.interface';
 import { ReviewSnapshotRepository } from './review-snapshot.repository';
 import { ReviewQueryRepository } from './review-query.repository';
 import { DrizzleService } from '../../infra/db/drizzle.service';
@@ -14,7 +13,6 @@ import { UserService } from '../user/user.service';
 import { Pagination } from '../../shared/types/pagination';
 import { DEFAULT_PAGINATION } from '../../core/pagination.constant';
 import { ReviewAdminService } from './review-admin.service';
-import { Uuid } from '../../shared/types/primitive';
 import { ICourseReviewCreate } from './course-review/course-review.interface';
 
 @Injectable()
@@ -78,13 +76,17 @@ export class ReviewService {
       return { review, snapshot };
     });
 
-    return {
-      ...reviewWithSnapshot.review,
-      snapshot: {
-        ...reviewWithSnapshot.snapshot,
-        replies: [],
-      },
-    };
+    const reviewWithReplies =
+      await this.reviewQueryRepository.findOneWithReplies({
+        id: reviewWithSnapshot.review.id,
+        productType: reviewWithSnapshot.review.productType,
+      });
+
+    if (!reviewWithReplies) {
+      throw new InternalServerErrorException('Failed to create review');
+    }
+
+    return reviewWithReplies;
   }
 
   async createCourseReview(
