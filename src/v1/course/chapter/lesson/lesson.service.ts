@@ -25,7 +25,7 @@ export class LessonService {
       throw new NotFoundException('Chapter not found');
     }
 
-    return await this.lessonRepository.create(params, tx);
+    return await this.lessonRepository.createLesson(params, tx);
   }
 
   async updateLesson(
@@ -34,7 +34,7 @@ export class LessonService {
     tx?: TransactionClient,
   ): Promise<ILesson> {
     await this.lessonQueryRepository.findOneOrThrow({ id: where.id });
-    return await this.lessonRepository.update(where, params, tx);
+    return await this.lessonRepository.updateLesson(where, params, tx);
   }
 
   async deleteLesson(
@@ -42,6 +42,6 @@ export class LessonService {
     tx?: TransactionClient,
   ): Promise<ILesson> {
     await this.lessonQueryRepository.findOneOrThrow({ id: where.id });
-    return await this.lessonRepository.delete(where, tx);
+    return await this.lessonRepository.deleteLesson(where, tx);
   }
 }

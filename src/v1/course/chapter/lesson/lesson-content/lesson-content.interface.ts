@@ -22,4 +22,7 @@ export type ILessonContentCreate = Pick<
   'lessonId' | 'title' | 'description' | 'contentType' | 'url' | 'metadata'
 >;
 
-export type ILessonContentUpdate = Partial<ILessonContentCreate>;
+export type ILessonContentUpdate = Omit<
+  Partial<ILessonContentCreate>,
+  'lessonId'
+>;

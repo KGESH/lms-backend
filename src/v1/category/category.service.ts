@@ -7,6 +7,7 @@ import { CategoryRepository } from './category.repository';
 import {
   ICategory,
   ICategoryCreate,
+  ICategoryUpdate,
   ICategoryWithChildren,
 } from './category.interface';
 import { TransactionClient } from '../../infra/db/drizzle.types';
@@ -40,12 +41,12 @@ export class CategoryService {
   }
 
   async createCategory(params: ICategoryCreate): Promise<ICategory> {
-    return await this.categoryRepository.create(params);
+    return await this.categoryRepository.createCategory(params);
   }
 
   async updateCategory(
     where: Pick<ICategory, 'id'>,
-    params: Partial<ICategory>,
+    params: ICategoryUpdate,
     tx?: TransactionClient,
   ): Promise<ICategory> {
     const exist = await this.categoryRepository.findOne({ id: where.id });
@@ -54,7 +55,7 @@ export class CategoryService {
       throw new NotFoundException('Category not found');
     }
 
-    return await this.categoryRepository.update(where, params, tx);
+    return await this.categoryRepository.updateCategory(where, params, tx);
   }
 
   async deleteCategory(where: Pick<ICategory, 'id'>): Promise<ICategory> {
@@ -72,6 +73,6 @@ export class CategoryService {
       );
     }
 
-    return await this.categoryRepository.delete(where);
+    return await this.categoryRepository.deleteCategory(where);
   }
 }

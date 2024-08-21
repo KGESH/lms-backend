@@ -14,4 +14,4 @@ export type IChapterCreate = Pick<
   'id' | 'courseId' | 'title' | 'description' | 'sequence'
 >;
 
-export type IChapterUpdate = Omit<Partial<IChapterCreate>, 'id'>;
+export type IChapterUpdate = Omit<Partial<IChapterCreate>, 'id' | 'courseId'>;

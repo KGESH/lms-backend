@@ -16,4 +16,4 @@ export type ICourseCreate = Pick<
   'id' | 'teacherId' | 'title' | 'description' | 'categoryId'
 >;
 
-export type ICourseUpdate = Omit<Partial<ICourseCreate>, 'id'>;
+export type ICourseUpdate = Omit<Partial<ICourseCreate>, 'id' | 'teacherId'>;

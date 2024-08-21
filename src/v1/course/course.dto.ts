@@ -16,6 +16,6 @@ export type CourseCreateDto = Pick<
   'teacherId' | 'categoryId' | 'title' | 'description'
 >;
 
-export type CourseUpdateDto = Partial<CourseCreateDto>;
+export type CourseUpdateDto = Omit<Partial<CourseCreateDto>, 'teacherId'>;
 
 export type CourseQuery = Partial<Pagination>;

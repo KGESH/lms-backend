@@ -5,6 +5,7 @@ import { dbSchema } from '../../infra/db/schema';
 import {
   ICategory,
   ICategoryCreate,
+  ICategoryUpdate,
   ICategoryWithRelations,
 } from './category.interface';
 import { ICourse } from '../course/course.interface';
@@ -77,7 +78,7 @@ export class CategoryRepository {
     return rootCategories;
   }
 
-  async create(
+  async createCategory(
     params: ICategoryCreate,
     db = this.drizzle.db,
   ): Promise<ICategory> {
@@ -88,9 +89,9 @@ export class CategoryRepository {
     return category;
   }
 
-  async update(
+  async updateCategory(
     where: Pick<ICategory, 'id'>,
-    params: Partial<ICategory>,
+    params: ICategoryUpdate,
     db = this.drizzle.db,
   ): Promise<ICategory> {
     const [category] = await db
@@ -101,7 +102,7 @@ export class CategoryRepository {
     return category;
   }
 
-  async delete(
+  async deleteCategory(
     where: Pick<ICategory, 'id'>,
     db = this.drizzle.db,
   ): Promise<ICategory> {

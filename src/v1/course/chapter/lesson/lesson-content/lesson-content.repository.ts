@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   ILessonContent,
   ILessonContentCreate,
+  ILessonContentUpdate,
 } from './lesson-content.interface';
 import { eq } from 'drizzle-orm';
 import { DrizzleService } from '../../../../../infra/db/drizzle.service';
@@ -11,7 +12,7 @@ import { dbSchema } from '../../../../../infra/db/schema';
 export class LessonContentRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async create(
+  async createLessonContent(
     params: ILessonContentCreate,
     db = this.drizzle.db,
   ): Promise<ILessonContent> {
@@ -22,9 +23,9 @@ export class LessonContentRepository {
     return lessonContent;
   }
 
-  async update(
+  async updateLessonContent(
     where: Pick<ILessonContent, 'id'>,
-    params: Partial<ILessonContent>,
+    params: ILessonContentUpdate,
     db = this.drizzle.db,
   ): Promise<ILessonContent> {
     const [updated] = await db
@@ -35,7 +36,7 @@ export class LessonContentRepository {
     return updated;
   }
 
-  async delete(
+  async deleteLessonContent(
     where: Pick<ILessonContent, 'id'>,
     db = this.drizzle.db,
   ): Promise<ILessonContent> {

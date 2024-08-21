@@ -8,7 +8,10 @@ import { dbSchema } from '../../../../infra/db/schema';
 export class LessonRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async create(params: ILessonCreate, db = this.drizzle.db): Promise<ILesson> {
+  async createLesson(
+    params: ILessonCreate,
+    db = this.drizzle.db,
+  ): Promise<ILesson> {
     const [lesson] = await db
       .insert(dbSchema.lessons)
       .values(params)
@@ -16,7 +19,7 @@ export class LessonRepository {
     return lesson;
   }
 
-  async update(
+  async updateLesson(
     where: Pick<ILesson, 'id'>,
     params: ILessonUpdate,
     db = this.drizzle.db,
@@ -29,7 +32,7 @@ export class LessonRepository {
     return updated;
   }
 
-  async delete(
+  async deleteLesson(
     where: Pick<ILesson, 'id'>,
     db = this.drizzle.db,
   ): Promise<ILesson> {

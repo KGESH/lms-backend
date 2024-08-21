@@ -3,6 +3,7 @@ import { LessonContentRepository } from './lesson-content.repository';
 import {
   ILessonContent,
   ILessonContentCreate,
+  ILessonContentUpdate,
 } from './lesson-content.interface';
 import { TransactionClient } from '../../../../../infra/db/drizzle.types';
 import { LessonContentQueryRepository } from './lesson-content-query.repository';
@@ -18,16 +19,20 @@ export class LessonContentService {
     params: ILessonContentCreate,
     tx?: TransactionClient,
   ): Promise<ILessonContent> {
-    return await this.lessonContentRepository.create(params, tx);
+    return await this.lessonContentRepository.createLessonContent(params, tx);
   }
 
   async updateLessonContent(
     where: Pick<ILessonContent, 'id'>,
-    params: Partial<ILessonContent>,
+    params: ILessonContentUpdate,
     tx?: TransactionClient,
   ): Promise<ILessonContent> {
     await this.lessonContentQueryRepository.findOneOrThrow({ id: where.id });
-    return await this.lessonContentRepository.update(where, params, tx);
+    return await this.lessonContentRepository.updateLessonContent(
+      where,
+      params,
+      tx,
+    );
   }
 
   async deleteLessonContent(
@@ -35,6 +40,6 @@ export class LessonContentService {
     tx?: TransactionClient,
   ): Promise<ILessonContent> {
     await this.lessonContentQueryRepository.findOneOrThrow({ id: where.id });
-    return await this.lessonContentRepository.delete(where, tx);
+    return await this.lessonContentRepository.deleteLessonContent(where, tx);
   }
 }

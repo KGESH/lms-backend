@@ -1,4 +1,5 @@
 import { UInt, Uuid } from '../../../shared/types/primitive';
+import { CourseCreateDto } from '../course.dto';
 
 export type ChapterDto = {
   id: Uuid;
@@ -13,4 +14,4 @@ export type ChapterCreateDto = Pick<
   'title' | 'description' | 'sequence'
 >;
 
-export type ChapterUpdateDto = Partial<ChapterDto>;
+export type ChapterUpdateDto = Omit<Partial<CourseCreateDto>, 'teacherId'>;
