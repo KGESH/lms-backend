@@ -81,7 +81,13 @@ describe('ChapterController (e2e)', () => {
         drizzle.db,
       );
 
-      const response = await ChapterAPI.getChapters({ host }, course.id);
+      const response = await ChapterAPI.getChapters(
+        {
+          host,
+          headers: { LmsSecret },
+        },
+        course.id,
+      );
       if (!response.success) {
         throw new Error('assert');
       }

@@ -52,7 +52,7 @@ describe('UserController (e2e)', () => {
   });
 
   describe('[Get Users]', () => {
-    it('should be get empty array', async () => {
+    it('should be get one user', async () => {
       const admin = (
         await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
       )[0];
@@ -75,7 +75,9 @@ describe('UserController (e2e)', () => {
         throw new Error('assert');
       }
 
-      expect(typia.is<OmitPassword<IUser>[]>(response.data)).toEqual(true);
+      const users = response.data;
+
+      expect(users.length).toEqual(1);
     });
   });
 });
