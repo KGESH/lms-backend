@@ -1,11 +1,20 @@
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import {
+  createParamDecorator,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
 import * as typia from 'typia';
 import { ISessionWithUser } from '../../v1/auth/session.interface';
 
 export const SessionUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
-    const request = ctx.switchToHttp().getRequest();
-    const sessionWithUser = typia.assert<ISessionWithUser>(request['user']);
+    const req = ctx.switchToHttp().getRequest();
+
+    if (!req['user']) {
+      throw new UnauthorizedException('User not found in session');
+    }
+
+    const sessionWithUser = typia.assert<ISessionWithUser>(req['user']);
     return sessionWithUser;
   },
 );

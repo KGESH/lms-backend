@@ -3,8 +3,6 @@ import * as UserAPI from '../../../src/api/functional/v1/user';
 import * as typia from 'typia';
 import { Uri, Uuid } from '../../../src/shared/types/primitive';
 import { createTestingServer } from '../helpers/app.helper';
-import { OmitPassword } from '../../../src/shared/types/omit-password';
-import { IUser } from '../../../src/v1/user/user.interface';
 import { ConfigsService } from '../../../src/configs/configs.service';
 import { seedUsers } from '../helpers/db/lms/user.helper';
 import { DrizzleService } from '../../../src/infra/db/drizzle.service';
@@ -30,7 +28,9 @@ describe('UserController (e2e)', () => {
 
   describe('[GET User]', () => {
     it('should be get null', async () => {
-      const { userSession } = (await seedUsers({ count: 1 }, drizzle.db))[0];
+      const { userSession } = (
+        await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+      )[0];
       const randomId = typia.random<Uuid>();
 
       const response = await UserAPI.getUser(
@@ -44,10 +44,34 @@ describe('UserController (e2e)', () => {
         randomId,
       );
       if (!response.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(response.data, null, 4);
+        throw new Error(`assert - ${message}`);
       }
 
       expect(response.data).toBe(null);
+    });
+  });
+
+  describe('[GET Me]', () => {
+    it('should be get current user', async () => {
+      const { user, userSession } = (
+        await seedUsers({ count: 1, role: 'user' }, drizzle.db)
+      )[0];
+
+      const response = await UserAPI.me.getCurrentUser({
+        host,
+        headers: {
+          LmsSecret,
+          UserSessionId: userSession.id,
+        },
+      });
+      if (!response.success) {
+        const message = JSON.stringify(response.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      const currentUser = response.data;
+      expect(currentUser.email).toBe(user.email);
     });
   });
 
@@ -72,7 +96,8 @@ describe('UserController (e2e)', () => {
         },
       );
       if (!response.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(response.data, null, 4);
+        throw new Error(`assert - ${message}`);
       }
 
       const users = response.data;

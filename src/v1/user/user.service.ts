@@ -8,11 +8,6 @@ import { IUserSignUp } from '../auth/auth.interface';
 import { createUuid } from '../../shared/utils/uuid';
 import { UserAccountRepository } from './user-account.repository';
 import { TransactionClient } from '../../infra/db/drizzle.types';
-import {
-  DEFAULT_ORDER_BY,
-  DEFAULT_PAGE,
-  DEFAULT_PAGE_SIZE,
-} from '../../core/pagination.constant';
 import { UserQueryRepository } from './user-query.repository';
 
 @Injectable()

@@ -1,11 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DrizzleService } from '../../infra/db/drizzle.service';
-import { asc, desc, eq, gt } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { dbSchema } from '../../infra/db/schema';
 import { IUser, IUserCreate, IUserUpdate } from './user.interface';
-import { Pagination } from '../../shared/types/pagination';
 import { hash } from '../../shared/helpers/hash';
-import { IRepository } from '../../core/base.repository';
 import { TransactionClient } from 'src/infra/db/drizzle.types';
 
 @Injectable()
