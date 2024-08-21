@@ -64,6 +64,7 @@ packages/api/.npmrc
 packages/api/node_modules
 packages/api/lib
 src/api
+swagger.json
 
 # npm package
 .npmrc
