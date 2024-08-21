@@ -11,6 +11,8 @@ import { seedUsers } from './test/e2e/helpers/db/lms/user.helper';
 import { seedTeachers } from './test/e2e/helpers/db/lms/teacher.helper';
 import { seedCourseProducts } from './test/e2e/helpers/db/lms/course-product.helper';
 import { clearDatabase } from './src/shared/helpers/db';
+import { seedCourseReviews } from './test/e2e/helpers/db/lms/review.helper';
+import { seedCourseOrders } from './test/e2e/helpers/db/lms/order.helper';
 
 const env = new ConfigService();
 
@@ -40,8 +42,13 @@ async function seed() {
     await seedUiRepeatTimer({ count: 2 }, db);
     await seedCarouselReview({ count: 4 }, db);
     await seedTeachers({ count: 2 }, db);
-    await seedUsers({ count: 3 }, db);
+    await seedUsers({ count: 3, role: 'user' }, db);
+    await seedUsers({ count: 1, role: 'manager' }, db);
+    await seedUsers({ count: 1, role: 'admin' }, db);
+    await seedUsers({ count: 1, role: 'teacher' }, db);
     await seedCourseProducts({ count: 10 }, db);
+    await seedCourseReviews({ count: 10 }, db);
+    await seedCourseOrders({ count: 5 }, db);
   } catch (e) {
     console.error(e);
     await clearDatabase(db);
