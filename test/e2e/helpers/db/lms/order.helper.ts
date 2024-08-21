@@ -6,7 +6,7 @@ import { IOrderCreate } from '../../../../../src/v1/order/order.interface';
 import * as typia from 'typia';
 
 export const createRandomCourseOrder = async (db: TransactionClient) => {
-  const { user } = (await seedUsers({ count: 1 }, db))[0];
+  const { user, userSession } = (await seedUsers({ count: 1 }, db))[0];
 
   const product = await createRandomCourseProduct(db);
   const orderCreateParams: IOrderCreate = {
@@ -28,6 +28,8 @@ export const createRandomCourseOrder = async (db: TransactionClient) => {
     .returning();
 
   return {
+    user,
+    userSession,
     order,
     courseOrder,
     product,

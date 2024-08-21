@@ -8,6 +8,12 @@ import { TransactionClient } from '../../../../../src/infra/db/drizzle.types';
 import { createUuid } from '../../../../../src/shared/utils/uuid';
 import * as typia from 'typia';
 import { createUser } from './user.helper';
+import {
+  IUser,
+  IUserAccount,
+  IUserInfo,
+} from '../../../../../src/v1/user/user.interface';
+import { ISession } from '../../../../../src/v1/auth/session.interface';
 
 export const findTeacher = async (
   where: Pick<ITeacher, 'id'>,
@@ -22,9 +28,15 @@ export const findTeacher = async (
 export const createTeacher = async (
   params: ITeacherSignUp,
   db: TransactionClient,
-): Promise<ITeacher> => {
+): Promise<{
+  user: IUser;
+  teacher: ITeacher;
+  userSession: ISession;
+  userInfo: IUserInfo;
+  userAccount: IUserAccount;
+}> => {
   return await db.transaction(async (tx) => {
-    const { user } = await createUser(
+    const { user, userSession, userInfo, userAccount } = await createUser(
       {
         userCreateParams: { ...params.userCreateParams, role: 'teacher' },
         accountCreateParams: params.accountCreateParams,
@@ -37,7 +49,7 @@ export const createTeacher = async (
       .values({ userId: user.id })
       .returning();
 
-    return teacher;
+    return { user, teacher, userSession, userInfo, userAccount };
   });
 };
 
@@ -53,7 +65,15 @@ export const createManyTeachers = async (
 export const seedTeachers = async (
   { count }: { count: number },
   db: TransactionClient,
-): Promise<ITeacher[]> => {
+): Promise<
+  {
+    user: IUser;
+    teacher: ITeacher;
+    userSession: ISession;
+    userInfo: IUserInfo;
+    userAccount: IUserAccount;
+  }[]
+> => {
   const teacherCreateDtos: ITeacherSignUp[] = Array.from({ length: count }).map(
     () => {
       const userId = createUuid();

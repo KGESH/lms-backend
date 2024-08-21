@@ -7,16 +7,22 @@ import { createChapter, findChapter } from '../helpers/db/lms/chapter.helper';
 import { createRandomCourse } from '../helpers/db/lms/course.helper';
 import { ChapterCreateDto } from '../../../src/v1/course/chapter/chapter.dto';
 import { IChapterUpdate } from '../../../src/v1/course/chapter/chapter.interface';
+import { ConfigsService } from '../../../src/configs/configs.service';
+import { seedUsers } from '../helpers/db/lms/user.helper';
 
 describe('ChapterController (e2e)', () => {
   let host: Uri;
   let app: INestApplication;
   let drizzle: DrizzleService;
+  let configs: ConfigsService;
+  let LmsSecret: string;
 
   beforeEach(async () => {
     app = await createTestingServer();
     host = await app.getUrl();
     drizzle = await app.get(DrizzleService);
+    configs = await app.get(ConfigsService);
+    LmsSecret = configs.env.LMS_SECRET;
   });
 
   afterEach(async () => {
@@ -36,7 +42,10 @@ describe('ChapterController (e2e)', () => {
         drizzle.db,
       );
       const response = await ChapterAPI.getChapter(
-        { host },
+        {
+          host,
+          headers: { LmsSecret },
+        },
         course.id,
         chapter.id,
       );
@@ -89,6 +98,10 @@ describe('ChapterController (e2e)', () => {
 
   describe('[Create chapter]', () => {
     it('should be create chapter success', async () => {
+      const admin = (
+        await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+      )[0];
+
       const { course } = await createRandomCourse(drizzle.db);
       const createDto: ChapterCreateDto = {
         title: 'mock-chapter',
@@ -97,7 +110,13 @@ describe('ChapterController (e2e)', () => {
       };
 
       const response = await ChapterAPI.createChapter(
-        { host },
+        {
+          host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
+          },
+        },
         course.id,
         createDto,
       );
@@ -111,6 +130,10 @@ describe('ChapterController (e2e)', () => {
 
     describe('[Update chapter]', () => {
       it('should be update chapter success', async () => {
+        const admin = (
+          await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+        )[0];
+
         const { course } = await createRandomCourse(drizzle.db);
         const chapter = await createChapter(
           {
@@ -126,7 +149,13 @@ describe('ChapterController (e2e)', () => {
         };
 
         const response = await ChapterAPI.updateChapter(
-          { host },
+          {
+            host,
+            headers: {
+              LmsSecret,
+              UserSessionId: admin.userSession.id,
+            },
+          },
           course.id,
           chapter.id,
           updateDto,
@@ -142,6 +171,10 @@ describe('ChapterController (e2e)', () => {
 
     describe('[Delete chapter]', () => {
       it('should be delete chapter success', async () => {
+        const admin = (
+          await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+        )[0];
+
         const { course } = await createRandomCourse(drizzle.db);
         const chapter = await createChapter(
           {
@@ -154,7 +187,13 @@ describe('ChapterController (e2e)', () => {
         );
 
         const response = await ChapterAPI.deleteChapter(
-          { host },
+          {
+            host,
+            headers: {
+              LmsSecret,
+              UserSessionId: admin.userSession.id,
+            },
+          },
           course.id,
           chapter.id,
         );

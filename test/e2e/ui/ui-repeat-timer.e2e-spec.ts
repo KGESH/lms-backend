@@ -8,14 +8,23 @@ import {
 } from '../../../src/v1/ui/component/repeat-timer/ui-repeat-timer.dto';
 import * as RepeatTimerAPI from '../../../src/api/functional/v1/ui/component/repeat_timer';
 import * as UiComponentAPI from '../../../src/api/functional/v1/ui/component';
+import { DrizzleService } from '../../../src/infra/db/drizzle.service';
+import { ConfigsService } from '../../../src/configs/configs.service';
+import { seedUsers } from '../helpers/db/lms/user.helper';
 
 describe('UiRepeatTimerController (e2e)', () => {
   let host: Uri;
   let app: INestApplication;
+  let drizzle: DrizzleService;
+  let configs: ConfigsService;
+  let LmsSecret: string;
 
   beforeEach(async () => {
     app = await createTestingServer();
     host = await app.getUrl();
+    drizzle = await app.get(DrizzleService);
+    configs = await app.get(ConfigsService);
+    LmsSecret = configs.env.LMS_SECRET;
   });
 
   afterEach(async () => {
@@ -24,12 +33,20 @@ describe('UiRepeatTimerController (e2e)', () => {
 
   describe('Create UI repeat timer', () => {
     it('should be create UI repeat timer success', async () => {
+      const admin = (
+        await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+      )[0];
+
       const createDto: CreateUiRepeatTimerDto =
         typia.random<CreateUiRepeatTimerDto>();
 
       const response = await RepeatTimerAPI.createUiRepeatTimer(
         {
           host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
+          },
         },
         createDto,
       );
@@ -44,12 +61,20 @@ describe('UiRepeatTimerController (e2e)', () => {
 
   describe('Get UI repeat timer', () => {
     it('should be get UI repeat timer success', async () => {
+      const admin = (
+        await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+      )[0];
+
       const createDto: CreateUiRepeatTimerDto =
         typia.random<CreateUiRepeatTimerDto>();
 
       const createResponse = await RepeatTimerAPI.createUiRepeatTimer(
         {
           host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
+          },
         },
         createDto,
       );
@@ -62,6 +87,7 @@ describe('UiRepeatTimerController (e2e)', () => {
       const getResponse = await RepeatTimerAPI.getUiRepeatTimer(
         {
           host,
+          headers: { LmsSecret },
         },
         uiRepeatTimer.ui.id,
       );
@@ -80,6 +106,10 @@ describe('UiRepeatTimerController (e2e)', () => {
 
   describe('Update UI repeat timer', () => {
     it('should be update UI repeat timer success', async () => {
+      const admin = (
+        await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+      )[0];
+
       const randomCreateDto = typia.random<CreateUiRepeatTimerDto>();
       const createDto: CreateUiRepeatTimerDto = {
         ...randomCreateDto,
@@ -91,6 +121,10 @@ describe('UiRepeatTimerController (e2e)', () => {
       const createResponse = await RepeatTimerAPI.createUiRepeatTimer(
         {
           host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
+          },
         },
         createDto,
       );
@@ -111,6 +145,10 @@ describe('UiRepeatTimerController (e2e)', () => {
       const updateResponse = await RepeatTimerAPI.updateUiRepeatTimer(
         {
           host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
+          },
         },
         uiRepeatTimer.ui.id,
         updateDto,
@@ -128,12 +166,20 @@ describe('UiRepeatTimerController (e2e)', () => {
 
   describe('Delete UI repeat timer', () => {
     it('should be delete UI repeat timer success', async () => {
+      const admin = (
+        await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+      )[0];
+
       const createDto: CreateUiRepeatTimerDto =
         typia.random<CreateUiRepeatTimerDto>();
 
       const createResponse = await RepeatTimerAPI.createUiRepeatTimer(
         {
           host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
+          },
         },
         createDto,
       );
@@ -146,6 +192,10 @@ describe('UiRepeatTimerController (e2e)', () => {
       const deleteResponse = await UiComponentAPI.deleteUiComponent(
         {
           host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
+          },
         },
         uiRepeatTimer.ui.uiComponentId,
       );
@@ -158,7 +208,10 @@ describe('UiRepeatTimerController (e2e)', () => {
 
       // GET result after delete
       const afterDeleteResponse = await RepeatTimerAPI.getUiRepeatTimer(
-        { host },
+        {
+          host,
+          headers: { LmsSecret },
+        },
         uiRepeatTimer.ui.id,
       );
       if (!afterDeleteResponse.success) {

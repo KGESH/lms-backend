@@ -8,16 +8,21 @@ import { DrizzleService } from '../../../src/infra/db/drizzle.service';
 import { KakaoLoginDto } from '../../../src/v1/auth/kakao-auth.dto';
 import * as UserHelper from '../helpers/db/lms/user.helper';
 import { seedUsers } from '../helpers/db/lms/user.helper';
+import { ConfigsService } from '../../../src/configs/configs.service';
 
 describe('AuthController (e2e)', () => {
-  let app: INestApplication;
   let host: Uri;
+  let app: INestApplication;
   let drizzle: DrizzleService;
+  let configs: ConfigsService;
+  let LmsSecret: string;
 
   beforeEach(async () => {
     app = await createTestingServer();
     host = await app.getUrl();
     drizzle = await app.get(DrizzleService);
+    configs = await app.get(ConfigsService);
+    LmsSecret = configs.env.LMS_SECRET;
   });
 
   afterEach(async () => {
@@ -32,7 +37,13 @@ describe('AuthController (e2e)', () => {
         email: 'sample@gmail.com',
       };
 
-      const response = await AuthAPI.kakao.login.kakaoLogin({ host }, loginDto);
+      const response = await AuthAPI.kakao.login.kakaoLogin(
+        {
+          host,
+          headers: { LmsSecret },
+        },
+        loginDto,
+      );
       if (!response.success) {
         const message = JSON.stringify(response.data, null, 4);
         throw new Error(`[assert] ${message}`);
@@ -59,7 +70,13 @@ describe('AuthController (e2e)', () => {
         accountCreateParams,
       };
 
-      const response = await AuthAPI.signup({ host }, signupDto);
+      const response = await AuthAPI.signup(
+        {
+          host,
+          headers: { LmsSecret },
+        },
+        signupDto,
+      );
       if (!response.success) {
         const message = JSON.stringify(response.data, null, 4);
         throw new Error(`[assert] ${message}`);
@@ -88,7 +105,13 @@ describe('AuthController (e2e)', () => {
       const loginDto: LoginUserDto = { ...userCreateParams };
       await UserHelper.createUser(signupDto, drizzle.db);
 
-      const loginResponse = await AuthAPI.login({ host }, loginDto);
+      const loginResponse = await AuthAPI.login(
+        {
+          host,
+          headers: { LmsSecret },
+        },
+        loginDto,
+      );
       if (!loginResponse.success) {
         const message = JSON.stringify(loginResponse.data, null, 4);
         throw new Error(`[assert] ${message}`);
@@ -101,11 +124,14 @@ describe('AuthController (e2e)', () => {
 
   describe('[UpdateUserRole]', () => {
     it("should be update role 'user' -> 'teacher' success", async () => {
-      const users = await seedUsers({ count: 1 }, drizzle.db);
-      const { user } = users[0];
+      const users = await seedUsers({ count: 1, role: 'admin' }, drizzle.db);
+      const { user, userSession } = users[0];
 
       const response = await AuthAPI.role.updateUserRole(
-        { host },
+        {
+          host,
+          headers: { LmsSecret, UserSessionId: userSession.id },
+        },
         {
           id: user.id,
           role: 'teacher',

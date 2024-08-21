@@ -14,16 +14,21 @@ import {
   ICourseCreate,
   ICourseUpdate,
 } from '../../../src/v1/course/course.interface';
+import { ConfigsService } from '../../../src/configs/configs.service';
 
 describe('CourseController (e2e)', () => {
   let host: Uri;
   let app: INestApplication;
   let drizzle: DrizzleService;
+  let configs: ConfigsService;
+  let LmsSecret: string;
 
   beforeEach(async () => {
     app = await createTestingServer();
     host = await app.getUrl();
     drizzle = await app.get(DrizzleService);
+    configs = await app.get(ConfigsService);
+    LmsSecret = configs.env.LMS_SECRET;
   });
 
   afterEach(async () => {
@@ -39,7 +44,7 @@ describe('CourseController (e2e)', () => {
         },
         drizzle.db,
       );
-      const teacher = await createTeacher(
+      const { teacher } = await createTeacher(
         typia.random<ITeacherSignUp>(),
         drizzle.db,
       );
@@ -52,7 +57,13 @@ describe('CourseController (e2e)', () => {
         },
         drizzle.db,
       );
-      const response = await CourseAPI.getCourse({ host }, course.id);
+      const response = await CourseAPI.getCourse(
+        {
+          host,
+          headers: { LmsSecret },
+        },
+        course.id,
+      );
       if (!response.success) {
         console.error(response.data);
         throw new Error(`assert - ${JSON.stringify(response.data, null, 4)}`);
@@ -73,7 +84,7 @@ describe('CourseController (e2e)', () => {
         },
         drizzle.db,
       );
-      const teacher = await createTeacher(
+      const { teacher } = await createTeacher(
         typia.random<ITeacherSignUp>(),
         drizzle.db,
       );
@@ -96,7 +107,13 @@ describe('CourseController (e2e)', () => {
         drizzle.db,
       );
 
-      const response = await CourseAPI.getCourses({ host });
+      const response = await CourseAPI.getCourses(
+        {
+          host,
+          headers: { LmsSecret },
+        },
+        {},
+      );
 
       if (!response.success) {
         throw new Error('assert');
@@ -121,7 +138,7 @@ describe('CourseController (e2e)', () => {
         },
         drizzle.db,
       );
-      const teacher = await createTeacher(
+      const { teacher, userSession } = await createTeacher(
         typia.random<ITeacherSignUp>(),
         drizzle.db,
       );
@@ -132,7 +149,10 @@ describe('CourseController (e2e)', () => {
         description: '',
       };
 
-      const response = await CourseAPI.createCourse({ host }, createDto);
+      const response = await CourseAPI.createCourse(
+        { host, headers: { LmsSecret, UserSessionId: userSession.id } },
+        createDto,
+      );
       if (!response.success) {
         throw new Error('assert');
       }
@@ -150,7 +170,7 @@ describe('CourseController (e2e)', () => {
           },
           drizzle.db,
         );
-        const teacher = await createTeacher(
+        const { teacher, userSession } = await createTeacher(
           typia.random<ITeacherSignUp>(),
           drizzle.db,
         );
@@ -167,7 +187,13 @@ describe('CourseController (e2e)', () => {
         };
 
         const response = await CourseAPI.updateCourse(
-          { host },
+          {
+            host,
+            headers: {
+              LmsSecret,
+              UserSessionId: userSession.id,
+            },
+          },
           course.id,
           updateDto,
         );
@@ -189,7 +215,7 @@ describe('CourseController (e2e)', () => {
           },
           drizzle.db,
         );
-        const teacher = await createTeacher(
+        const { teacher, userSession } = await createTeacher(
           typia.random<ITeacherSignUp>(),
           drizzle.db,
         );
@@ -202,7 +228,16 @@ describe('CourseController (e2e)', () => {
           drizzle.db,
         );
 
-        const response = await CourseAPI.deleteCourse({ host }, course.id);
+        const response = await CourseAPI.deleteCourse(
+          {
+            host,
+            headers: {
+              LmsSecret,
+              UserSessionId: userSession.id,
+            },
+          },
+          course.id,
+        );
         if (!response.success) {
           throw new Error('assert');
         }

@@ -9,14 +9,23 @@ import {
   UiCarouselReview,
 } from '../../../src/v1/ui/category/ui-category.interface';
 import { CreateUiCarouselReviewItemDto } from '../../../src/v1/ui/component/carousel/carousel-review/ui-carousel-review.dto';
+import { DrizzleService } from '../../../src/infra/db/drizzle.service';
+import { ConfigsService } from '../../../src/configs/configs.service';
+import { seedUsers } from '../helpers/db/lms/user.helper';
 
 describe('UiCarouselReviewController (e2e)', () => {
   let host: Uri;
   let app: INestApplication;
+  let drizzle: DrizzleService;
+  let configs: ConfigsService;
+  let LmsSecret: string;
 
   beforeEach(async () => {
     app = await createTestingServer();
     host = await app.getUrl();
+    drizzle = await app.get(DrizzleService);
+    configs = await app.get(ConfigsService);
+    LmsSecret = configs.env.LMS_SECRET;
   });
 
   afterEach(async () => {
@@ -25,6 +34,10 @@ describe('UiCarouselReviewController (e2e)', () => {
 
   describe('Create UI review carousel with items', () => {
     it('should be create UI review carousel success', async () => {
+      const admin = (
+        await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+      )[0];
+
       const createCarouselDto: CreateUiCarouselDto<UiCarouselReview> =
         typia.random<CreateUiCarouselDto<UiCarouselReview>>();
 
@@ -32,6 +45,10 @@ describe('UiCarouselReviewController (e2e)', () => {
         await CarouselReviewAPI.createUiCarouselReview(
           {
             host,
+            headers: {
+              LmsSecret,
+              UserSessionId: admin.userSession.id,
+            },
           },
           createCarouselDto,
         );
@@ -58,6 +75,10 @@ describe('UiCarouselReviewController (e2e)', () => {
         await CarouselReviewAPI.item.createUiCarouselReviewItems(
           {
             host,
+            headers: {
+              LmsSecret,
+              UserSessionId: admin.userSession.id,
+            },
           },
           createCarouselReviewItemDtos,
         );
@@ -74,6 +95,10 @@ describe('UiCarouselReviewController (e2e)', () => {
 
   describe('Get UI review carousel with items', () => {
     it('should be get UI review carousel success', async () => {
+      const manager = (
+        await seedUsers({ count: 1, role: 'manager' }, drizzle.db)
+      )[0];
+
       const createCarouselDto: CreateUiCarouselDto<UiCarouselReview> =
         typia.random<CreateUiCarouselDto<UiCarouselReview>>();
 
@@ -81,6 +106,10 @@ describe('UiCarouselReviewController (e2e)', () => {
         await CarouselReviewAPI.createUiCarouselReview(
           {
             host,
+            headers: {
+              LmsSecret,
+              UserSessionId: manager.userSession.id,
+            },
           },
           createCarouselDto,
         );
@@ -107,6 +136,10 @@ describe('UiCarouselReviewController (e2e)', () => {
         await CarouselReviewAPI.item.createUiCarouselReviewItems(
           {
             host,
+            headers: {
+              LmsSecret,
+              UserSessionId: manager.userSession.id,
+            },
           },
           createCarouselReviewItemDtos,
         );
@@ -122,6 +155,7 @@ describe('UiCarouselReviewController (e2e)', () => {
       const carouselGetResponse = await CarouselReviewAPI.getUiCarouselReview(
         {
           host,
+          headers: { LmsSecret },
         },
         uiCarousel.ui.id,
       );
@@ -147,6 +181,10 @@ describe('UiCarouselReviewController (e2e)', () => {
 
   describe('Delete UI review carousel items', () => {
     it('should be delete UI review carousel items success', async () => {
+      const manager = (
+        await seedUsers({ count: 1, role: 'manager' }, drizzle.db)
+      )[0];
+
       const createCarouselDto: CreateUiCarouselDto<UiCarouselReview> =
         typia.random<CreateUiCarouselDto<UiCarouselReview>>();
 
@@ -154,6 +192,10 @@ describe('UiCarouselReviewController (e2e)', () => {
         await CarouselReviewAPI.createUiCarouselReview(
           {
             host,
+            headers: {
+              LmsSecret,
+              UserSessionId: manager.userSession.id,
+            },
           },
           createCarouselDto,
         );
@@ -180,6 +222,10 @@ describe('UiCarouselReviewController (e2e)', () => {
         await CarouselReviewAPI.item.createUiCarouselReviewItems(
           {
             host,
+            headers: {
+              LmsSecret,
+              UserSessionId: manager.userSession.id,
+            },
           },
           createCarouselReviewItemDtos,
         );
@@ -196,6 +242,10 @@ describe('UiCarouselReviewController (e2e)', () => {
         await CarouselReviewAPI.item.deleteUiCarouselReviewItems(
           {
             host,
+            headers: {
+              LmsSecret,
+              UserSessionId: manager.userSession.id,
+            },
           },
           {
             ids: items.map((item) => item.id),

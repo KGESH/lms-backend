@@ -44,7 +44,10 @@ export const createRandomCourse = async (db: TransactionClient) => {
     },
     db,
   );
-  const teacher = await createTeacher(typia.random<ITeacherSignUp>(), db);
+  const { teacher, userSession, user } = await createTeacher(
+    typia.random<ITeacherSignUp>(),
+    db,
+  );
   const course = await createCourse(
     {
       title: 'mock-course',
@@ -88,5 +91,14 @@ export const createRandomCourse = async (db: TransactionClient) => {
     )
   ).flat();
 
-  return { category, teacher, course, chapters, lessons, lessonContents };
+  return {
+    category,
+    teacher,
+    userSession,
+    user,
+    course,
+    chapters,
+    lessons,
+    lessonContents,
+  };
 };

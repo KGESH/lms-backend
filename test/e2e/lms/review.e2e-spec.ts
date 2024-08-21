@@ -11,16 +11,21 @@ import * as ReviewAPI from '../../../src/api/functional/v1/review';
 import * as CourseReviewAPI from '../../../src/api/functional/v1/review/course';
 import * as typia from 'typia';
 import { CreateCourseReviewDto } from '../../../src/v1/review/course-review/course-review.dto';
+import { ConfigsService } from '../../../src/configs/configs.service';
 
 describe('ReviewController (e2e)', () => {
   let host: Uri;
   let app: INestApplication;
   let drizzle: DrizzleService;
+  let configs: ConfigsService;
+  let LmsSecret: string;
 
   beforeEach(async () => {
     app = await createTestingServer();
     host = await app.getUrl();
     drizzle = await app.get(DrizzleService);
+    configs = await app.get(ConfigsService);
+    LmsSecret = configs.env.LMS_SECRET;
   });
 
   afterEach(async () => {
@@ -40,7 +45,10 @@ describe('ReviewController (e2e)', () => {
       );
 
       const response = await ReviewAPI.getReview(
-        { host },
+        {
+          host,
+          headers: { LmsSecret },
+        },
         reviewWithSnapshot.id,
       );
       if (!response.success) {
@@ -58,7 +66,10 @@ describe('ReviewController (e2e)', () => {
       const reviews = await seedCourseReviews({ count: 3 }, drizzle.db);
 
       const response = await ReviewAPI.getReviews(
-        { host },
+        {
+          host,
+          headers: { LmsSecret },
+        },
         {
           productType: 'course',
         },
@@ -77,7 +88,7 @@ describe('ReviewController (e2e)', () => {
 
   describe('[Create review]', () => {
     it('should be create course review success', async () => {
-      const { order, product } = (
+      const { order, product, userSession } = (
         await seedCourseOrders({ count: 1 }, drizzle.db)
       )[0];
       const reviewCreateParams: CreateCourseReviewDto = {
@@ -89,7 +100,13 @@ describe('ReviewController (e2e)', () => {
       };
 
       const response = await CourseReviewAPI.createCourseReview(
-        { host },
+        {
+          host,
+          headers: {
+            LmsSecret,
+            UserSessionId: userSession.id,
+          },
+        },
         reviewCreateParams,
       );
       if (!response.success) {

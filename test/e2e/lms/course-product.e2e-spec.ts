@@ -7,16 +7,21 @@ import { DrizzleService } from '../../../src/infra/db/drizzle.service';
 import { createRandomCourseProduct } from '../helpers/db/lms/course-product.helper';
 import { CreateCourseProductDto } from '../../../src/v1/product/course-product/course-product.dto';
 import { createRandomCourse } from '../helpers/db/lms/course.helper';
+import { ConfigsService } from '../../../src/configs/configs.service';
 
 describe('CourseProductController (e2e)', () => {
   let host: Uri;
   let app: INestApplication;
   let drizzle: DrizzleService;
+  let configs: ConfigsService;
+  let LmsSecret: string;
 
   beforeEach(async () => {
     app = await createTestingServer();
     host = await app.getUrl();
     drizzle = await app.get(DrizzleService);
+    configs = await app.get(ConfigsService);
+    LmsSecret = configs.env.LMS_SECRET;
   });
 
   afterEach(async () => {
@@ -28,7 +33,10 @@ describe('CourseProductController (e2e)', () => {
       const product = await createRandomCourseProduct(drizzle.db);
 
       const response = await CourseProductAPI.getCourseProduct(
-        { host },
+        {
+          host,
+          headers: { LmsSecret },
+        },
         product.courseId,
       );
       if (!response.success) {
@@ -43,14 +51,20 @@ describe('CourseProductController (e2e)', () => {
 
   describe('[Create course product]', () => {
     it('should be create course product success', async () => {
-      const { course } = await createRandomCourse(drizzle.db);
+      const { course, userSession } = await createRandomCourse(drizzle.db);
       const createDto: CreateCourseProductDto = {
         ...typia.random<CreateCourseProductDto>(),
         title: 'mock-product',
       };
 
       const response = await CourseProductAPI.createProductCourse(
-        { host },
+        {
+          host,
+          headers: {
+            LmsSecret,
+            UserSessionId: userSession.id,
+          },
+        },
         course.id,
         createDto,
       );

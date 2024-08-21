@@ -13,16 +13,22 @@ import {
   getRootCategoriesRawSql,
 } from '../helpers/db/lms/category.helper';
 import { DrizzleService } from '../../../src/infra/db/drizzle.service';
+import { ConfigsService } from '../../../src/configs/configs.service';
+import { seedUsers } from '../helpers/db/lms/user.helper';
 
 describe('CategoryController (e2e)', () => {
   let host: Uri;
   let app: INestApplication;
   let drizzle: DrizzleService;
+  let configs: ConfigsService;
+  let LmsSecret: string;
 
   beforeEach(async () => {
     app = await createTestingServer();
     host = await app.getUrl();
     drizzle = await app.get(DrizzleService);
+    configs = await app.get(ConfigsService);
+    LmsSecret = configs.env.LMS_SECRET;
   });
 
   afterEach(async () => {
@@ -42,7 +48,13 @@ describe('CategoryController (e2e)', () => {
         drizzle.db,
       );
 
-      const response = await CategoryAPI.getCategory({ host }, categoryId);
+      const response = await CategoryAPI.getCategory(
+        {
+          host,
+          headers: { LmsSecret },
+        },
+        categoryId,
+      );
       if (!response.success) {
         throw new Error('assert');
       }
@@ -127,12 +139,23 @@ describe('CategoryController (e2e)', () => {
 
     describe('[Create category]', () => {
       it('should be create category success', async () => {
+        const admin = (
+          await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+        )[0];
+
         const createCategoryDto: CreateCategoryDto = {
           ...typia.random<CreateCategoryDto>(),
           parentId: null,
         };
+
         const response = await CategoryAPI.createCategory(
-          { host },
+          {
+            host,
+            headers: {
+              LmsSecret,
+              UserSessionId: admin.userSession.id,
+            },
+          },
           createCategoryDto,
         );
         if (!response.success) {
@@ -146,6 +169,10 @@ describe('CategoryController (e2e)', () => {
 
     describe('Update category', () => {
       it('should be update category success', async () => {
+        const admin = (
+          await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+        )[0];
+
         const categoryId: Uuid = typia.random<Uuid>();
         await createCategory(
           {
@@ -159,7 +186,13 @@ describe('CategoryController (e2e)', () => {
         const updateCategoryDto: UpdateCategoryDto = { name: 'updated' };
 
         const updateResponse = await CategoryAPI.updateCategory(
-          { host },
+          {
+            host,
+            headers: {
+              LmsSecret,
+              UserSessionId: admin.userSession.id,
+            },
+          },
           categoryId,
           updateCategoryDto,
         );
@@ -172,11 +205,21 @@ describe('CategoryController (e2e)', () => {
       });
 
       it('should be update category fail', async () => {
+        const admin = (
+          await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+        )[0];
+
         const notFoundId = typia.random<Uuid>();
         const updateCategoryDto = typia.random<UpdateCategoryDto>();
 
         const notFoundResponse = await CategoryAPI.updateCategory(
-          { host },
+          {
+            host,
+            headers: {
+              LmsSecret,
+              UserSessionId: admin.userSession.id,
+            },
+          },
           notFoundId,
           updateCategoryDto,
         );
@@ -187,6 +230,10 @@ describe('CategoryController (e2e)', () => {
 
     describe('Delete category', () => {
       it('should be delete category success', async () => {
+        const admin = (
+          await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+        )[0];
+
         const categoryId: Uuid = typia.random<Uuid>();
         await createCategory(
           {
@@ -199,7 +246,13 @@ describe('CategoryController (e2e)', () => {
         );
 
         const deleteResponse = await CategoryAPI.deleteCategory(
-          { host },
+          {
+            host,
+            headers: {
+              LmsSecret,
+              UserSessionId: admin.userSession.id,
+            },
+          },
           categoryId,
         );
         if (!deleteResponse.success) {
@@ -209,7 +262,13 @@ describe('CategoryController (e2e)', () => {
         const deletedCategory = deleteResponse.data;
         expect(deletedCategory.id).toEqual(categoryId);
 
-        const getResponse = await CategoryAPI.getCategory({ host }, categoryId);
+        const getResponse = await CategoryAPI.getCategory(
+          {
+            host,
+            headers: { LmsSecret },
+          },
+          categoryId,
+        );
         if (!getResponse.success) {
           throw new Error('assert');
         }
