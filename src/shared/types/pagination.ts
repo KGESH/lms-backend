@@ -2,6 +2,6 @@ import { UInt } from './primitive';
 
 export type Pagination = {
   page: UInt;
-  pageSize: number;
+  pageSize: UInt;
   orderBy: 'asc' | 'desc';
 };
