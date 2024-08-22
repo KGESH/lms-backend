@@ -21,7 +21,9 @@ export class ReviewController {
 
   /**
    * 리뷰 목록을 조회합니다.
+   *
    * Query 파라미터에 'productType'을 포함합니다.
+   *
    * 'productType'을 기준으로 '강의 리뷰' 또는 'ebook 리뷰'를 조회합니다.
    *
    * @tag review

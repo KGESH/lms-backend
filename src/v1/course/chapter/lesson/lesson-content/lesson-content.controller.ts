@@ -34,7 +34,9 @@ export class LessonContentController {
 
   /**
    * 레슨 컨텐츠 목록을 조회합니다.
+   *
    * 세션 사용자 role이 'user'라면 해당 'course'를 구매한 사용자만 조회할 수 있습니다.
+   *
    * 제목, 설명, 컨텐츠 타입, 컨텐츠 URL, 메타데이터, 표기 순서 정보를 제공합니다.
    *
    * @tag lesson-content
@@ -48,6 +50,10 @@ export class LessonContentController {
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'User is not enrolled in the course',
   })
   async getLessonContents(
     @TypedHeaders() headers: AuthHeaders,
@@ -63,7 +69,9 @@ export class LessonContentController {
 
   /**
    * 특정 레슨 컨텐츠를 조회합니다.
+   *
    * 세션 사용자 role이 'user'라면 해당 'course'를 구매한 사용자만 조회할 수 있습니다.
+   *
    * 제목, 설명, 컨텐츠 타입, 컨텐츠 URL, 메타데이터, 표기 순서 정보를 제공합니다.
    *
    * @tag lesson-content
@@ -78,6 +86,10 @@ export class LessonContentController {
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'User is not enrolled in the course',
   })
   async getLessonContent(
     @TypedHeaders() headers: AuthHeaders,
@@ -96,6 +108,7 @@ export class LessonContentController {
 
   /**
    * 레슨 컨텐츠를 생성합니다.
+   *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
    *
    * @tag lesson-content
@@ -131,6 +144,7 @@ export class LessonContentController {
 
   /**
    * 레슨 컨텐츠를 수정합니다.
+   *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
    *
    * @tag lesson-content
@@ -168,7 +182,9 @@ export class LessonContentController {
 
   /**
    * 레슨 컨텐츠를 삭제합니다.
+   *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
    * Hard delete로 구현되어 있습니다.
    *
    * @tag lesson-content

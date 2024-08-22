@@ -30,7 +30,9 @@ export class ChapterController {
 
   /**
    * 챕터 목록을 조회합니다.
+   *
    * 로그인 없이 조회할 수 있습니다.
+   *
    * 챕터 제목, 설명, 표기 순서 정보를 제공합니다.
    *
    * @tag chapter
@@ -53,7 +55,9 @@ export class ChapterController {
 
   /**
    * 특정 챕터를 조회합니다.
+   *
    * 로그인 없이 조회할 수 있습니다.
+   *
    * 챕터 제목, 설명, 표기 순서 정보를 제공합니다.
    *
    * @tag chapter
@@ -78,7 +82,9 @@ export class ChapterController {
 
   /**
    * 강의 챕터를 생성합니다.
+   *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
    * 강의 챕터 생성 이후 'lesson', 'lesson content' 순서로 생성해야 합니다.
    *
    * @tag chapter
@@ -110,6 +116,7 @@ export class ChapterController {
 
   /**
    * 강의 챕터를 수정합니다.
+   *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
    *
    * @tag chapter
@@ -140,8 +147,11 @@ export class ChapterController {
 
   /**
    * 강의 챕터를 삭제합니다.
+   *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
    * Hard delete로 구현되어 있습니다.
+   *
    * 챕터를 삭제하면 챕터에 속한 모든 'lesson'과 'lesson content'도 함께 삭제됩니다.
    *
    * @tag chapter

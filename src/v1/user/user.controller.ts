@@ -25,6 +25,7 @@ export class UserController {
 
   /**
    * 사용자 목록을 조회합니다.
+   *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
    *
    * @tag user
@@ -50,6 +51,7 @@ export class UserController {
 
   /**
    * 현재 세션 사용자를 조회합니다.
+   *
    * 조회할 대상의 세션 id를 헤더에 담아서 요청합니다.
    *
    * @tag user
@@ -69,6 +71,7 @@ export class UserController {
 
   /**
    * 특정 사용자를 조회합니다.
+   *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
    *
    * @tag user

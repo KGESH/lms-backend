@@ -11,7 +11,7 @@ import { discountType, lessonContentType } from './enum';
 import { relations } from 'drizzle-orm';
 import { courseOrders } from './order';
 import { teachers } from './teacher';
-import { users } from '@src/infra/db/schema/user';
+import { users } from './user';
 
 export const courseCategories = pgTable('course_categories', {
   id: uuid('id').primaryKey().defaultRandom(),

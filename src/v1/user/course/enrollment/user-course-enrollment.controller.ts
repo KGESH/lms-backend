@@ -19,6 +19,7 @@ export class UserCourseEnrollmentController {
 
   /**
    * 현재 사용자의 수강 내역 목록을 조회합니다.
+   *
    * 현재 사용자의 세션 id를 헤더에 담아서 요청합니다.
    *
    * @tag user

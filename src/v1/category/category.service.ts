@@ -12,14 +12,31 @@ import {
 } from './category.interface';
 import { TransactionClient } from '@src/infra/db/drizzle.types';
 import { Pagination } from '@src/shared/types/pagination';
-import { DEFAULT_PAGINATION } from '@src/core/pagination.constant';
 
 @Injectable()
 export class CategoryService {
   constructor(private readonly categoryRepository: CategoryRepository) {}
 
-  async findCategory(where: Pick<ICategory, 'id'>): Promise<ICategory | null> {
-    return await this.categoryRepository.findOne(where);
+  async findCategory(
+    where: Pick<ICategory, 'id'>,
+  ): Promise<ICategoryWithChildren | null> {
+    const category =
+      await this.categoryRepository.findCategoryWithChildren(where);
+
+    if (!category) {
+      return null;
+    }
+
+    return {
+      ...category,
+      children: [],
+    };
+  }
+
+  async findCategoryWithChildren(
+    where: Pick<ICategory, 'id'>,
+  ): Promise<ICategoryWithChildren | null> {
+    return await this.categoryRepository.findCategoryWithChildren(where);
   }
 
   async getRootCategories(
@@ -33,7 +50,7 @@ export class CategoryService {
   }
 
   async getRootCategoriesWithChildren(
-    pagination: Pagination = DEFAULT_PAGINATION,
+    pagination: Pagination,
   ): Promise<ICategoryWithChildren[]> {
     return await this.categoryRepository.findRootCategoriesWithChildren(
       pagination,
@@ -49,7 +66,7 @@ export class CategoryService {
     params: ICategoryUpdate,
     tx?: TransactionClient,
   ): Promise<ICategory> {
-    const exist = await this.categoryRepository.findOne({ id: where.id });
+    const exist = await this.categoryRepository.findCategory({ id: where.id });
 
     if (!exist) {
       throw new NotFoundException('Category not found');

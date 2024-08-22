@@ -19,6 +19,8 @@ export type CreateCategoryDto = Pick<
 
 export type UpdateCategoryDto = Omit<Partial<CategoryDto>, 'id'>;
 
-export type CategoryQuery = {
-  withChildren: boolean;
-} & Partial<Pagination>;
+export type CategoryWithChildrenQuery = {
+  withChildren?: boolean;
+};
+
+export type CategoryQuery = CategoryWithChildrenQuery & Partial<Pagination>;

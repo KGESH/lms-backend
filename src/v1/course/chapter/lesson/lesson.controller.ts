@@ -30,7 +30,9 @@ export class LessonController {
 
   /**
    * 레슨 목록을 조회합니다.
+   *
    * 로그인 없이 조회할 수 있습니다.
+   *
    * 레슨 제목, 설명, 표기 순서 정보를 제공합니다.
    *
    * @tag lesson
@@ -57,7 +59,9 @@ export class LessonController {
 
   /**
    * 특정 레슨을 조회합니다.
+   *
    * 로그인 없이 조회할 수 있습니다.
+   *
    * 레슨 제목, 설명, 표기 순서 정보를 제공합니다.
    *
    * @tag lesson
@@ -86,7 +90,9 @@ export class LessonController {
 
   /**
    * 레슨을 생성합니다.
+   *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
    * 레슨 생성 이후 'lesson content'를 생성해야 합니다.
    *
    * @tag lesson
@@ -120,6 +126,7 @@ export class LessonController {
 
   /**
    * 레슨을 수정합니다.
+   *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
    *
    * @tag lesson
@@ -157,8 +164,11 @@ export class LessonController {
 
   /**
    * 레슨을 삭제합니다.
+   *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
    * Hard delete로 구현되어 있습니다.
+   *
    * 레슨을 삭제하면 레슨에 속한 모든 'lesson content'도 함께 삭제됩니다.
    *
    * @tag lesson

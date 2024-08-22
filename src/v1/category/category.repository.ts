@@ -10,13 +10,16 @@ import {
 } from '@src/v1/category/category.interface';
 import { ICourse } from '../course/course.interface';
 import { Pagination } from '@src/shared/types/pagination';
-import { getRootCategoriesRawSql } from '../../../test/e2e/helpers/db/lms/category.helper';
+import {
+  getCategoryWithChildrenRawSql,
+  getRootCategoriesRawSql,
+} from '../../../test/e2e/helpers/db/lms/category.helper';
 
 @Injectable()
 export class CategoryRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async findOne(where: Pick<ICategory, 'id'>): Promise<ICategory | null> {
+  async findCategory(where: Pick<ICategory, 'id'>): Promise<ICategory | null> {
     const category = await this.drizzle.db.query.courseCategories.findFirst({
       where: eq(dbSchema.courseCategories.id, where.id),
     });
@@ -28,8 +31,31 @@ export class CategoryRepository {
     return category;
   }
 
-  async findOneOrThrow(where: Pick<ICategory, 'id'>): Promise<ICategory> {
-    const category = await this.findOne(where);
+  async findCategoryOrThrow(where: Pick<ICategory, 'id'>): Promise<ICategory> {
+    const category = await this.findCategory(where);
+
+    if (!category) {
+      throw new NotFoundException('Category not found');
+    }
+
+    return category;
+  }
+
+  async findCategoryWithChildren(
+    where: Pick<ICategory, 'id'>,
+  ): Promise<ICategoryWithRelations | null> {
+    const category = await getCategoryWithChildrenRawSql(
+      where,
+      this.drizzle.db,
+    );
+
+    return category;
+  }
+
+  async findCategoryWithChildrenOrThrow(
+    where: Pick<ICategory, 'id'>,
+  ): Promise<ICategoryWithRelations> {
+    const category = await this.findCategoryWithChildren(where);
 
     if (!category) {
       throw new NotFoundException('Category not found');

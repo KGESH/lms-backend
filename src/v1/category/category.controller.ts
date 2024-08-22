@@ -13,6 +13,7 @@ import {
   CategoryDto,
   CategoryQuery,
   CategoryWithChildrenDto,
+  CategoryWithChildrenQuery,
   CreateCategoryDto,
   UpdateCategoryDto,
 } from '@src/v1/category/category.dto';
@@ -28,6 +29,20 @@ import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
+  /**
+   * 강의 카테고리 목록을 조회합니다.
+   *
+   * 로그인 없이 조회할 수 있습니다.
+   *
+   * Query parameter 'withChildren' 속성을 설정해 하위 카테고리 목록을 조회할 수 있습니다.
+   *
+   * Query parameter 'withChildren' 속성을 명시하지 않으면 기본값은 false 입니다.
+   *
+   * Query parameter 'withChildren' 속성이 false 일때, 하위 카테고리 목록은 빈 배열로 반환됩니다.
+   *
+   * @tag category
+   * @summary 강의 카테고리 목록 조회 (public)
+   */
   @TypedRoute.Get('/')
   @SkipAuth()
   @TypedException<TypeGuardError>({
@@ -36,9 +51,9 @@ export class CategoryController {
   })
   async getRootCategories(
     @TypedHeaders() headers: ApiAuthHeaders,
-    @TypedQuery() query: CategoryQuery,
+    @TypedQuery() query?: CategoryQuery,
   ): Promise<CategoryWithChildrenDto[]> {
-    if (query.withChildren) {
+    if (query?.withChildren) {
       const rootsWithChildren =
         await this.categoryService.getRootCategoriesWithChildren({
           ...DEFAULT_PAGINATION,
@@ -54,6 +69,20 @@ export class CategoryController {
     return roots;
   }
 
+  /**
+   * 특정 강의 카테고리를 조회합니다.
+   *
+   * 로그인 없이 조회할 수 있습니다.
+   *
+   * Query parameter 'withChildren' 속성을 설정해 하위 카테고리 목록을 조회할 수 있습니다.
+   *
+   * Query parameter 'withChildren' 속성을 명시하지 않으면 기본값은 false 입니다.
+   *
+   * Query parameter 'withChildren' 속성이 false 일때, 하위 카테고리 목록은 빈 배열로 반환됩니다.
+   *
+   * @tag category
+   * @summary 강의 카테고리 목록 조회 (public)
+   */
   @TypedRoute.Get('/:id')
   @SkipAuth()
   @TypedException<TypeGuardError>({
@@ -63,7 +92,14 @@ export class CategoryController {
   async getCategory(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('id') id: Uuid,
-  ): Promise<CategoryDto | null> {
+    @TypedQuery() query?: CategoryWithChildrenQuery,
+  ): Promise<CategoryWithChildrenDto | null> {
+    if (query?.withChildren) {
+      const categoryWithChildren =
+        await this.categoryService.findCategoryWithChildren({ id });
+      return categoryWithChildren;
+    }
+
     const category = await this.categoryService.findCategory({ id });
     return category;
   }
