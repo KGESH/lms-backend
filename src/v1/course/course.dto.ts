@@ -1,5 +1,5 @@
-import { ISO8601, Uuid } from '../../shared/types/primitive';
-import { Pagination } from '../../shared/types/pagination';
+import { ISO8601, Uuid } from '@src/shared/types/primitive';
+import { Pagination } from '@src/shared/types/pagination';
 
 export type CourseDto = {
   id: Uuid;

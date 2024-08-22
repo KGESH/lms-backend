@@ -1,10 +1,10 @@
-import { Uuid } from '../../../../shared/types/primitive';
-import { IUiComponent } from '../ui-component.interface';
+import { Uuid } from '@src/shared/types/primitive';
+import { IUiComponent } from '@src/v1/ui/component/ui-component.interface';
 import {
   UiCarousel,
   UiCarouselType,
-} from '../../category/ui-category.interface';
-import { Optional } from '../../../../shared/types/optional';
+} from '@src/v1/ui/category/ui-category.interface';
+import { Optional } from '@src/shared/types/optional';
 
 export type IUiCarousel<T extends UiCarouselType> = {
   id: Uuid;

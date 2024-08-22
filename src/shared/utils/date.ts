@@ -1,7 +1,7 @@
 import * as dayjs from 'dayjs';
 import * as utc from 'dayjs/plugin/utc';
 import * as timezone from 'dayjs/plugin/timezone';
-import { ISO8601 } from '../types/primitive';
+import { ISO8601 } from '@src/shared/types/primitive';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);

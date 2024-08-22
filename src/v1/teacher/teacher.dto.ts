@@ -1,6 +1,6 @@
-import { Uuid } from '../../shared/types/primitive';
-import { UserWithoutPasswordDto } from '../user/user.dto';
-import { Pagination } from '../../shared/types/pagination';
+import { UserWithoutPasswordDto } from '@src/v1/user/user.dto';
+import { Uuid } from '@src/shared/types/primitive';
+import { Pagination } from '@src/shared/types/pagination';
 
 export type TeacherDto = {
   id: Uuid;

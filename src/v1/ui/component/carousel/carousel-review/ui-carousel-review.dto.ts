@@ -1,6 +1,9 @@
-import { UInt, Uuid } from '../../../../../shared/types/primitive';
-import { CreateUiCarouselDto, UiCarouselDto } from '../ui-carousel.dto';
-import { UiCarouselReview } from '../../../category/ui-category.interface';
+import { UInt, Uuid } from '@src/shared/types/primitive';
+import {
+  CreateUiCarouselDto,
+  UiCarouselDto,
+} from '@src/v1/ui/component/carousel/ui-carousel.dto';
+import { UiCarouselReview } from '@src/v1/ui/category/ui-category.interface';
 
 export type UiCarouselReviewItemDto = {
   id: Uuid;

@@ -1,4 +1,4 @@
-import { Pagination } from '../shared/types/pagination';
+import { Pagination } from '@src/shared/types/pagination';
 
 export const DEFAULT_PAGE: Pagination['page'] = 1;
 

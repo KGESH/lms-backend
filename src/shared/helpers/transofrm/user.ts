@@ -1,6 +1,6 @@
-import { IUserWithoutPassword } from '../../../v1/user/user.interface';
-import { UserWithoutPasswordDto } from '../../../v1/user/user.dto';
-import * as date from '../../utils/date';
+import { IUserWithoutPassword } from '@src/v1/user/user.interface';
+import { UserWithoutPasswordDto } from '@src/v1/user/user.dto';
+import * as date from '@src/shared/utils/date';
 
 export const userToDto = (
   user: IUserWithoutPassword,

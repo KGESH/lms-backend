@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { DrizzleService } from '../../infra/db/drizzle.service';
 import { eq } from 'drizzle-orm';
-import { dbSchema } from '../../infra/db/schema';
-import { ISession, ISessionWithUser } from './session.interface';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { dbSchema } from '@src/infra/db/schema';
+import { ISession, ISessionWithUser } from '@src/v1/auth/session.interface';
 
 @Injectable()
 export class SessionRepository {

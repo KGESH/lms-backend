@@ -3,8 +3,8 @@ import {
   UInt,
   Uri,
   Uuid,
-} from '../../../../../shared/types/primitive';
-import { Optional } from '../../../../../shared/types/optional';
+} from '@src/shared/types/primitive';
+import { Optional } from '@src/shared/types/optional';
 
 export type ILessonContent = {
   id: Uuid;

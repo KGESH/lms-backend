@@ -1,6 +1,6 @@
-import * as date from '../../utils/date';
-import { IReviewWithRelations } from '../../../v1/review/review.interface';
-import { ReviewWithRelationsDto } from '../../../v1/review/review.dto';
+import * as date from '@src/shared/utils/date';
+import { IReviewWithRelations } from '@src/v1/review/review.interface';
+import { ReviewWithRelationsDto } from '@src/v1/review/review.dto';
 
 export const reviewToDto = (
   review: IReviewWithRelations,

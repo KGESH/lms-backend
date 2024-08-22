@@ -1,8 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ICourseOrder, ICourseOrderCreate } from './course-order.interface';
-import { dbSchema } from '../../../infra/db/schema';
-import { DrizzleService } from '../../../infra/db/drizzle.service';
 import { eq } from 'drizzle-orm';
+import { dbSchema } from '@src/infra/db/schema';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import {
+  ICourseOrder,
+  ICourseOrderCreate,
+} from '@src/v1/order/course/course-order.interface';
 
 @Injectable()
 export class CourseOrderRepository {

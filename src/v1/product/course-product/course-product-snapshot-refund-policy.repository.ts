@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { DrizzleService } from '../../../infra/db/drizzle.service';
-import { dbSchema } from '../../../infra/db/schema';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { dbSchema } from '@src/infra/db/schema';
 import {
   IProductSnapshotRefundPolicy,
   IProductSnapshotRefundPolicyCreate,
-} from '../common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
+} from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
 
 @Injectable()
 export class CourseProductSnapshotRefundPolicyRepository {

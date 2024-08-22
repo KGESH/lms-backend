@@ -1,5 +1,5 @@
-import { Uuid } from '../../shared/types/primitive';
-import { Pagination } from '../../shared/types/pagination';
+import { Uuid } from '@src/shared/types/primitive';
+import { Pagination } from '@src/shared/types/pagination';
 
 export type CategoryDto = {
   id: Uuid;

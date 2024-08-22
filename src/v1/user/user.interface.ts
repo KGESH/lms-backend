@@ -4,9 +4,9 @@ import {
   EMail,
   UserRole,
   Uuid,
-} from '../../shared/types/primitive';
-import { OmitPassword } from '../../shared/types/omit-password';
-import { Optional } from '../../shared/types/optional';
+} from '@src/shared/types/primitive';
+import { OmitPassword } from '@src/shared/types/omit-password';
+import { Optional } from '@src/shared/types/optional';
 
 export type IUser = {
   id: Uuid;

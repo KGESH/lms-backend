@@ -1,4 +1,4 @@
-import { Price, Uuid } from '../../../../../shared/types/primitive';
+import { Price, Uuid } from '@src/shared/types/primitive';
 
 export type ProductSnapshotPricingDto = {
   id: Uuid;

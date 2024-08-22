@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { eq } from 'drizzle-orm';
+import { dbSchema } from '@src/infra/db/schema';
 import {
   IUiComponentBase,
   IUiComponentBaseCreate,
   IUiComponentBaseUpdate,
-} from './ui-component.interface';
-import { DrizzleService } from '../../../infra/db/drizzle.service';
-import { eq } from 'drizzle-orm';
-import { dbSchema } from '../../../infra/db/schema';
+} from '@src/v1/ui/component/ui-component.interface';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
 
 @Injectable()
 export class UiComponentRepository {

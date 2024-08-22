@@ -3,8 +3,8 @@ import {
   IUserAccountCreate,
   IUserCreate,
   IUserInfoCreate,
-} from '../user/user.interface';
-import { Optional } from '../../shared/types/optional';
+} from '@src/v1/user/user.interface';
+import { Optional } from '@src/shared/types/optional';
 
 export type IUserLogin = Pick<IUser, 'email' | 'password'>;
 

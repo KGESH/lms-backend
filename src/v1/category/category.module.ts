@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { CategoryService } from './category.service';
-import { CategoryRepository } from './category.repository';
-import { CategoryController } from './category.controller';
+import { CategoryService } from '@src/v1/category/category.service';
+import { CategoryRepository } from '@src/v1/category/category.repository';
+import { CategoryController } from '@src/v1/category/category.controller';
 
 const providers = [CategoryService, CategoryRepository];
 

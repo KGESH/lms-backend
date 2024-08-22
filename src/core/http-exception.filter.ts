@@ -6,8 +6,8 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import * as date from '../shared/utils/date';
-import { IErrorResponse } from '../shared/types/response';
+import * as date from '@src/shared/utils/date';
+import { IErrorResponse } from '@src/shared/types/response';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {

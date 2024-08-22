@@ -1,9 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { LessonRepository } from './lesson.repository';
-import { ILesson, ILessonCreate, ILessonUpdate } from './lesson.interface';
-import { TransactionClient } from '../../../../infra/db/drizzle.types';
-import { ChapterQueryService } from '../chapter-query.service';
-import { LessonQueryRepository } from './lesson-query.repository';
+import { TransactionClient } from '@src/infra/db/drizzle.types';
+import { ChapterQueryService } from '@src/v1/course/chapter/chapter-query.service';
+import { LessonRepository } from '@src/v1/course/chapter/lesson/lesson.repository';
+import {
+  ILesson,
+  ILessonCreate,
+  ILessonUpdate,
+} from '@src/v1/course/chapter/lesson/lesson.interface';
+import { LessonQueryRepository } from '@src/v1/course/chapter/lesson/lesson-query.repository';
 
 @Injectable()
 export class LessonService {

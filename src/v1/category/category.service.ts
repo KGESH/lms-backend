@@ -3,16 +3,16 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CategoryRepository } from './category.repository';
+import { CategoryRepository } from '@src/v1/category/category.repository';
 import {
   ICategory,
   ICategoryCreate,
   ICategoryUpdate,
   ICategoryWithChildren,
 } from './category.interface';
-import { TransactionClient } from '../../infra/db/drizzle.types';
-import { Pagination } from '../../shared/types/pagination';
-import { DEFAULT_PAGINATION } from '../../core/pagination.constant';
+import { TransactionClient } from '@src/infra/db/drizzle.types';
+import { Pagination } from '@src/shared/types/pagination';
+import { DEFAULT_PAGINATION } from '@src/core/pagination.constant';
 
 @Injectable()
 export class CategoryService {

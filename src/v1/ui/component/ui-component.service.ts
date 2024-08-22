@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { UiComponentRepository } from './ui-component.repository';
-import { IUiComponentBase } from './ui-component.interface';
-import { TransactionClient } from '../../../infra/db/drizzle.types';
-import { UiComponentQueryRepository } from './ui-component-query.repository';
+import { TransactionClient } from '@src/infra/db/drizzle.types';
+import { UiComponentRepository } from '@src/v1/ui/component/ui-component.repository';
+import { IUiComponentBase } from '@src/v1/ui/component/ui-component.interface';
+import { UiComponentQueryRepository } from '@src/v1/ui/component/ui-component-query.repository';
 
 @Injectable()
 export class UiComponentService {

@@ -1,5 +1,5 @@
-import { IOrderRefund } from '../../../v1/order/order-refund.interface';
-import { OrderRefundDto } from '../../../v1/order/order-refund.dto';
+import { IOrderRefund } from '@src/v1/order/order-refund.interface';
+import { OrderRefundDto } from '@src/v1/order/order-refund.dto';
 
 export const orderRefundToDto = (orderRefund: IOrderRefund): OrderRefundDto => {
   return {

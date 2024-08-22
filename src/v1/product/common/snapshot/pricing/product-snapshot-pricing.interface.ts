@@ -1,5 +1,5 @@
-import { Price, Uuid } from '../../../../../shared/types/primitive';
-import { Optional } from '../../../../../shared/types/optional';
+import { Price, Uuid } from '@src/shared/types/primitive';
+import { Optional } from '@src/shared/types/optional';
 
 export type IProductSnapshotPricing = {
   id: Uuid;

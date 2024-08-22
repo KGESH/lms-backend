@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { DrizzleService } from '../../../infra/db/drizzle.service';
-import { dbSchema } from '../../../infra/db/schema';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { dbSchema } from '@src/infra/db/schema';
 import {
   IProductSnapshotContent,
   IProductSnapshotContentCreate,
-} from '../common/snapshot/content/product-snapshot-content.interface';
+} from '@src/v1/product/common/snapshot/content/product-snapshot-content.interface';
 
 @Injectable()
 export class CourseProductSnapshotContentRepository {

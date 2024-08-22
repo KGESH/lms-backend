@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import * as typia from 'typia';
-import { dbSchema } from '../../../infra/db/schema';
-import { ICourseProduct } from './course-product.interface';
-import { DrizzleService } from '../../../infra/db/drizzle.service';
+import { dbSchema } from '@src/infra/db/schema';
 import { desc, eq, isNull } from 'drizzle-orm';
+import { DiscountValue, Price } from '@src/shared/types/primitive';
+import { ICourseProduct } from '@src/v1/product/course-product/course-product.interface';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
 import {
   ICourseProductWithLastSnapshot,
   ICourseProductWithRelations,
-} from './course-product-relations.interface';
-import { IProductSnapshotPricing } from '../common/snapshot/pricing/product-snapshot-pricing.interface';
-import { DiscountValue, Price } from '../../../shared/types/primitive';
-import { IProductSnapshotContent } from '../common/snapshot/content/product-snapshot-content.interface';
-import { IProductSnapshotAnnouncement } from '../common/snapshot/announcement/product-snapshot-announcement.interface';
-import { IProductSnapshotRefundPolicy } from '../common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
+} from '@src/v1/product/course-product/course-product-relations.interface';
+import { IProductSnapshotPricing } from '@src/v1/product/common/snapshot/pricing/product-snapshot-pricing.interface';
+import { IProductSnapshotContent } from '@src/v1/product/common/snapshot/content/product-snapshot-content.interface';
+import { IProductSnapshotAnnouncement } from '@src/v1/product/common/snapshot/announcement/product-snapshot-announcement.interface';
+import { IProductSnapshotRefundPolicy } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
 
 @Injectable()
 export class CourseProductQueryRepository {

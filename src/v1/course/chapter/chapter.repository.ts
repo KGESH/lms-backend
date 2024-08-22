@@ -1,8 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DrizzleService } from '../../../infra/db/drizzle.service';
-import { IChapter, IChapterCreate, IChapterUpdate } from './chapter.interface';
 import { eq } from 'drizzle-orm';
-import { dbSchema } from '../../../infra/db/schema';
+import { dbSchema } from '@src/infra/db/schema';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import {
+  IChapter,
+  IChapterCreate,
+  IChapterUpdate,
+} from '@src/v1/course/chapter/chapter.interface';
 
 @Injectable()
 export class ChapterRepository {

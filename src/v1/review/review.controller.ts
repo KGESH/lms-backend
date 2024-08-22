@@ -1,5 +1,4 @@
 import { Controller } from '@nestjs/common';
-import { ReviewService } from './review.service';
 import {
   TypedBody,
   TypedHeaders,
@@ -7,13 +6,14 @@ import {
   TypedQuery,
   TypedRoute,
 } from '@nestia/core';
-import { Uuid } from '../../shared/types/primitive';
-import { ReviewQuery, ReviewWithRelationsDto } from './review.dto';
-import { DEFAULT_PAGINATION } from '../../core/pagination.constant';
-import { reviewToDto } from '../../shared/helpers/transofrm/review';
-import { CreateCourseReviewDto } from './course-review/course-review.dto';
-import { SkipAuth } from '../../core/decorators/skip-auth.decorator';
-import { ApiAuthHeaders, AuthHeaders } from '../auth/auth.headers';
+import { Uuid } from '@src/shared/types/primitive';
+import { ReviewQuery, ReviewWithRelationsDto } from '@src/v1/review/review.dto';
+import { DEFAULT_PAGINATION } from '@src/core/pagination.constant';
+import { ReviewService } from '@src/v1/review/review.service';
+import { reviewToDto } from '@src/shared/helpers/transofrm/review';
+import { CreateCourseReviewDto } from '@src/v1/review/course-review/course-review.dto';
+import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
+import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
 
 @Controller('v1/review')
 export class ReviewController {

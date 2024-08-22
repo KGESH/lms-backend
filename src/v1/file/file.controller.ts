@@ -1,10 +1,10 @@
 import { Controller, Logger, UseGuards } from '@nestjs/common';
-import { S3Service } from '../../infra/s3/s3.service';
 import { TypedHeaders, TypedParam, TypedRoute } from '@nestia/core';
-import { PreSignedUrlDto } from './file.dto';
-import { AuthHeaders } from '../auth/auth.headers';
-import { Roles } from '../../core/decorators/roles.decorator';
-import { RolesGuard } from '../../core/guards/roles.guard';
+import { S3Service } from '@src/infra/s3/s3.service';
+import { PreSignedUrlDto } from '@src/v1/file/file.dto';
+import { AuthHeaders } from '@src/v1/auth/auth.headers';
+import { Roles } from '@src/core/decorators/roles.decorator';
+import { RolesGuard } from '@src/core/guards/roles.guard';
 
 @Controller('v1/file')
 export class FileController {

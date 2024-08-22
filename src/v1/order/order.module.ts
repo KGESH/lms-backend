@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { CourseOrderModule } from './course/course-order.module';
-import { OrderController } from './order.controller';
-import { OrderService } from './order.service';
-import { OrderQueryRepository } from './order-query.repository';
-import { OrderRefundRepository } from './order-refund.repository';
+import { CourseOrderModule } from '@src/v1/order/course/course-order.module';
+import { OrderController } from '@src/v1/order/order.controller';
+import { OrderService } from '@src/v1/order/order.service';
+import { OrderQueryRepository } from '@src/v1/order/order-query.repository';
+import { OrderRefundRepository } from '@src/v1/order/order-refund.repository';
 
 const modules = [CourseOrderModule];
 

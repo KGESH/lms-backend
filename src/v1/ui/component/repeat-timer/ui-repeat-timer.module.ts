@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { UiRepeatTimerQueryRepository } from './ui-repeat-timer-query.repository';
-import { UiRepeatTimerController } from './ui-repeat.controller';
-import { UiRepeatTimerService } from './ui-repeat-timer.service';
-import { UiComponentModule } from '../ui-component.module';
-import { UiRepeatTimerComponentRepository } from './ui-repeat-timer-component.repository';
+import { UiComponentModule } from '@src/v1/ui/component/ui-component.module';
+import { UiRepeatTimerQueryRepository } from '@src/v1/ui/component/repeat-timer/ui-repeat-timer-query.repository';
+import { UiRepeatTimerController } from '@src/v1/ui/component/repeat-timer/ui-repeat.controller';
+import { UiRepeatTimerService } from '@src/v1/ui/component/repeat-timer/ui-repeat-timer.service';
+import { UiRepeatTimerComponentRepository } from '@src/v1/ui/component/repeat-timer/ui-repeat-timer-component.repository';
 
 const providers = [
   UiRepeatTimerService,

@@ -1,7 +1,7 @@
-import { Uuid } from '../../shared/types/primitive';
-import { Optional } from '../../shared/types/optional';
-import { IUser, IUserWithoutPassword } from '../user/user.interface';
-import { IUserSignUp } from '../auth/auth.interface';
+import { Uuid } from '@src/shared/types/primitive';
+import { Optional } from '@src/shared/types/optional';
+import { IUser, IUserWithoutPassword } from '@src/v1/user/user.interface';
+import { IUserSignUp } from '@src/v1/auth/auth.interface';
 
 export type ITeacher = {
   id: Uuid;

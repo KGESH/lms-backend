@@ -1,17 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DrizzleService } from '../../infra/db/drizzle.service';
-import { IOrder } from './order.interface';
 import { eq } from 'drizzle-orm';
-import { dbSchema } from '../../infra/db/schema';
+import { dbSchema } from '@src/infra/db/schema';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
 import * as typia from 'typia';
-import { DiscountValue, Price } from '../../shared/types/primitive';
-import { ICourseOrderRelations } from './course/course-order.interface';
-import { IProductSnapshotPricing } from '../product/common/snapshot/pricing/product-snapshot-pricing.interface';
-import { IProductSnapshotDiscount } from '../product/common/snapshot/discount/product-snapshot-discount.interface';
-import { IProductSnapshotContent } from '../product/common/snapshot/content/product-snapshot-content.interface';
-import { IReview } from '../review/review.interface';
-import { IProductSnapshotRefundPolicy } from '../product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
-import { IProductSnapshotAnnouncement } from '../product/common/snapshot/announcement/product-snapshot-announcement.interface';
+import { IOrder } from '@src/v1/order/order.interface';
+import { DiscountValue, Price } from '@src/shared/types/primitive';
+import { ICourseOrderRelations } from '@src/v1/order/course/course-order.interface';
+import { IProductSnapshotPricing } from '@src/v1/product/common/snapshot/pricing/product-snapshot-pricing.interface';
+import { IProductSnapshotDiscount } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
+import { IProductSnapshotContent } from '@src/v1/product/common/snapshot/content/product-snapshot-content.interface';
+import { IReview } from '@src/v1/review/review.interface';
+import { IProductSnapshotRefundPolicy } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
+import { IProductSnapshotAnnouncement } from '@src/v1/product/common/snapshot/announcement/product-snapshot-announcement.interface';
 
 @Injectable()
 export class OrderQueryRepository {

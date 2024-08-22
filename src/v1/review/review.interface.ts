@@ -1,5 +1,5 @@
-import { ProductType, UFloat, Uuid } from '../../shared/types/primitive';
-import { Optional } from '../../shared/types/optional';
+import { ProductType, UFloat, Uuid } from '@src/shared/types/primitive';
+import { Optional } from '@src/shared/types/optional';
 
 export type IReview = {
   id: Uuid;

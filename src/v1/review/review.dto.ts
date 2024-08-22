@@ -3,8 +3,8 @@ import {
   ProductType,
   UFloat,
   Uuid,
-} from '../../shared/types/primitive';
-import { Pagination } from '../../shared/types/pagination';
+} from '@src/shared/types/primitive';
+import { Pagination } from '@src/shared/types/pagination';
 
 export type ReviewDto = {
   id: Uuid;

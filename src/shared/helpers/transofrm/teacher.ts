@@ -1,6 +1,6 @@
-import { ITeacherWithoutPassword } from '../../../v1/teacher/teacher.interface';
-import { TeacherDto } from '../../../v1/teacher/teacher.dto';
-import * as date from '../../utils/date';
+import { ITeacherWithoutPassword } from '@src/v1/teacher/teacher.interface';
+import { TeacherDto } from '@src/v1/teacher/teacher.dto';
+import * as date from '@src/shared/utils/date';
 
 export const teacherToDto = (teacher: ITeacherWithoutPassword): TeacherDto => {
   return {

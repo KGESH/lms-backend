@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { UiCarouselReviewComponentRepository } from './ui-carousel-review-component.repository';
+import { TransactionClient } from '@src/infra/db/drizzle.types';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { UiCarouselReviewComponentRepository } from '@src/v1/ui/component/carousel/carousel-review/ui-carousel-review-component.repository';
 import {
   IUiCarouselReview,
   IUiCarouselReviewCreate,
   IUiCarouselReviewWithItems,
-} from './ui-carousel-review.interface';
-import { UiCarouselComponentRepository } from '../ui-carousel-component.repository';
-import { TransactionClient } from '../../../../../infra/db/drizzle.types';
+} from '@src/v1/ui/component/carousel/carousel-review/ui-carousel-review.interface';
+import { UiCarouselComponentRepository } from '@src/v1/ui/component/carousel/ui-carousel-component.repository';
 import {
   IUiCarouselComponent,
   IUiCarouselComponentCreate,
-} from '../ui-carousel.interface';
-import { DrizzleService } from '../../../../../infra/db/drizzle.service';
-import { UiCarouselReview } from '../../../category/ui-category.interface';
-import { UiCarouselReviewQueryRepository } from './ui-carousel-review-query.repository';
+} from '@src/v1/ui/component/carousel/ui-carousel.interface';
+import { UiCarouselReviewQueryRepository } from '@src/v1/ui/component/carousel/carousel-review/ui-carousel-review-query.repository';
+import { UiCarouselReview } from '@src/v1/ui/category/ui-category.interface';
 
 @Injectable()
 export class UiCarouselReviewService {

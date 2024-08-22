@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import * as typia from 'typia';
-import { ISessionWithUser } from '../../v1/auth/session.interface';
+import { ISessionWithUser } from '@src/v1/auth/session.interface';
 
 export const SessionUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {

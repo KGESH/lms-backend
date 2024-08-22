@@ -1,7 +1,7 @@
 import { Pool } from 'pg';
-import { ConfigsService } from '../../configs/configs.service';
-import { CONNECTION_POOL } from './connection-pool.token';
-import { NODE_ENV_TEST } from '../../configs/configs.constant';
+import { ConfigsService } from '@src/configs/configs.service';
+import { CONNECTION_POOL } from '@src/infra/db/connection-pool.token';
+import { NODE_ENV_TEST } from '@src/configs/configs.constant';
 import { createTestDbContainer } from '../../../test/e2e/helpers/db/db.helper';
 
 export const ConnectionPoolProvider = {

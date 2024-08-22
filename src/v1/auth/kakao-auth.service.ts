@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { UserService } from '../user/user.service';
-import { IKakaoLogin } from './kakao-auth.interface';
-import { IUserWithoutPassword } from '../user/user.interface';
+import { AuthService } from '@src/v1/auth/auth.service';
+import { IKakaoLogin } from '@src/v1/auth/kakao-auth.interface';
+import { UserService } from '@src/v1/user/user.service';
+import { IUserWithoutPassword } from '@src/v1/user/user.interface';
 
 @Injectable()
 export class KakaoAuthService {

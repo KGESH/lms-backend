@@ -3,7 +3,7 @@ import {
   UInt,
   Uri,
   Uuid,
-} from '../../../../../shared/types/primitive';
+} from '@src/shared/types/primitive';
 
 export type LessonContentDto = {
   id: Uuid;

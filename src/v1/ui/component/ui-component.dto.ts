@@ -1,5 +1,5 @@
-import { UiCategory } from '../category/ui-category.interface';
-import { UInt, Uuid } from '../../../shared/types/primitive';
+import { UiCategory } from '@src/v1/ui/category/ui-category.interface';
+import { UInt, Uuid } from '@src/shared/types/primitive';
 
 export type UiComponentBaseDto = {
   id: Uuid;

@@ -4,7 +4,7 @@ import {
   EMail,
   Gender,
   PhoneNumber,
-} from '../../shared/types/primitive';
+} from '@src/shared/types/primitive';
 
 export type IKakaoLogin = {
   name: string;

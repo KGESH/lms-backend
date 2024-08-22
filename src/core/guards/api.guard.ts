@@ -5,10 +5,10 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigsService } from '../../configs/configs.service';
-import { LMS_API_HEADER } from '../../v1/auth/auth.constant';
+import { ConfigsService } from '@src/configs/configs.service';
+import { LMS_API_HEADER } from '@src/v1/auth/auth.constant';
 import { Reflector } from '@nestjs/core';
-import { SKIP_API_GUARD_KEY } from '../decorators/skip-api-guard';
+import { SKIP_API_GUARD_KEY } from '@src/core/decorators/skip-api-guard';
 
 @Injectable()
 export class ApiGuard implements CanActivate {

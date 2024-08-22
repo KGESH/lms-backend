@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { S3_CLIENT } from './s3.client';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { ConfigsService } from '../../configs/configs.service';
+import { ConfigsService } from "@src/configs/configs.service";
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { HttpClientService } from '../http/http-client.service';
 

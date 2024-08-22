@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { DrizzleService } from '../../infra/db/drizzle.service';
 import { eq } from 'drizzle-orm';
-import { dbSchema } from '../../infra/db/schema';
-import { IUser, IUserCreate, IUserUpdate } from './user.interface';
-import { hash } from '../../shared/helpers/hash';
-import { TransactionClient } from 'src/infra/db/drizzle.types';
+import { dbSchema } from '@src/infra/db/schema';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { IUser, IUserCreate, IUserUpdate } from '@src/v1/user/user.interface';
+import { hash } from '@src/shared/helpers/hash';
+import { TransactionClient } from '@src/infra/db/drizzle.types';
 
 @Injectable()
 export class UserRepository {

@@ -1,10 +1,10 @@
-import { Uuid } from '../../../shared/types/primitive';
-import { Optional } from '../../../shared/types/optional';
-import { IProductSnapshot } from '../../product/common/snapshot/conrse-product-snapshot.interface';
-import { IProductSnapshotContent } from '../../product/common/snapshot/content/product-snapshot-content.interface';
-import { IProductSnapshotDiscount } from '../../product/common/snapshot/discount/product-snapshot-discount.interface';
-import { IProductSnapshotPricing } from '../../product/common/snapshot/pricing/product-snapshot-pricing.interface';
-import { IOrder } from '../order.interface';
+import { Uuid } from '@src/shared/types/primitive';
+import { Optional } from '@src/shared/types/optional';
+import { IProductSnapshot } from '@src/v1/product/common/snapshot/conrse-product-snapshot.interface';
+import { IProductSnapshotContent } from '@src/v1/product/common/snapshot/content/product-snapshot-content.interface';
+import { IProductSnapshotDiscount } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
+import { IProductSnapshotPricing } from '@src/v1/product/common/snapshot/pricing/product-snapshot-pricing.interface';
+import { IOrder } from '@src/v1/order/order.interface';
 
 export type ICourseOrder = {
   id: Uuid;

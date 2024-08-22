@@ -4,10 +4,10 @@ import {
   ISO8601,
   UserRole,
   Uuid,
-} from '../../shared/types/primitive';
-import { OmitPassword } from '../../shared/types/omit-password';
-import { IUser } from './user.interface';
-import { Pagination } from '../../shared/types/pagination';
+} from '@src/shared/types/primitive';
+import { OmitPassword } from '@src/shared/types/omit-password';
+import { IUser } from '@src/v1/user/user.interface';
+import { Pagination } from '@src/shared/types/pagination';
 
 export type UserDto = {
   id: Uuid;

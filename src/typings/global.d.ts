@@ -1,4 +1,4 @@
-import { IEnvironment } from '../configs/configs.types';
+import { IEnvironment } from '@src/configs/configs.types';
 
 export declare global {
   namespace NodeJS {

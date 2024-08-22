@@ -5,12 +5,12 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthService } from '../../v1/auth/auth.service';
-import { USER_SESSION_ID_HEADER } from '../../v1/auth/auth.constant';
-import { SKIP_AUTH_KEY } from '../decorators/skip-auth.decorator';
+import { AuthService } from '@src/v1/auth/auth.service';
+import { USER_SESSION_ID_HEADER } from '@src/v1/auth/auth.constant';
+import { SKIP_AUTH_KEY } from '@src/core/decorators/skip-auth.decorator';
 import { Reflector } from '@nestjs/core';
 import * as typia from 'typia';
-import { ISessionWithUser } from '../../v1/auth/session.interface';
+import { ISessionWithUser } from '@src/v1/auth/session.interface';
 
 @Injectable()
 export class SessionGuard implements CanActivate {

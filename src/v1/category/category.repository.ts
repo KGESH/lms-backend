@@ -1,15 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DrizzleService } from '../../infra/db/drizzle.service';
 import { eq, isNull } from 'drizzle-orm';
-import { dbSchema } from '../../infra/db/schema';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { dbSchema } from '@src/infra/db/schema';
 import {
   ICategory,
   ICategoryCreate,
   ICategoryUpdate,
   ICategoryWithRelations,
-} from './category.interface';
+} from '@src/v1/category/category.interface';
 import { ICourse } from '../course/course.interface';
-import { Pagination } from 'src/shared/types/pagination';
+import { Pagination } from '@src/shared/types/pagination';
 import { getRootCategoriesRawSql } from '../../../test/e2e/helpers/db/lms/category.helper';
 
 @Injectable()

@@ -1,4 +1,4 @@
-import { Uuid } from '../../../../../shared/types/primitive';
+import { Uuid } from '@src/shared/types/primitive';
 
 export type IUiCarouselProduct = {
   id: Uuid;

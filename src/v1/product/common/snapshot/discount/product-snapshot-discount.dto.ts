@@ -6,7 +6,7 @@ import {
   Percentage,
   Price,
   Uuid,
-} from '../../../../../shared/types/primitive';
+} from '@src/shared/types/primitive';
 
 export type ProductSnapshotFixedAmountDiscount = {
   discountType: Extract<DiscountType, FixedAmount>;

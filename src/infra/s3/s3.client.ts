@@ -1,6 +1,6 @@
 import { Provider } from '@nestjs/common';
-import { ConfigsService } from '../../configs/configs.service';
 import { S3Client } from '@aws-sdk/client-s3';
+import { ConfigsService } from '@src/configs/configs.service';
 
 export const S3_CLIENT = 'S3_CLIENT';
 

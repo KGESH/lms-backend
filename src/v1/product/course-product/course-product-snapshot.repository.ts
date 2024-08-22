@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { DrizzleService } from '../../../infra/db/drizzle.service';
+import { eq } from 'drizzle-orm';
+import { dbSchema } from '@src/infra/db/schema';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { TransactionClient } from '@src/infra/db/drizzle.types';
 import {
   IProductSnapshot,
   IProductSnapshotCreate,
-} from '../common/snapshot/conrse-product-snapshot.interface';
-import { TransactionClient } from 'src/infra/db/drizzle.types';
-import { eq } from 'drizzle-orm';
-import { dbSchema } from '../../../infra/db/schema';
-import { now } from '../../../shared/utils/date';
+} from '@src/v1/product/common/snapshot/conrse-product-snapshot.interface';
+import * as date from '@src/shared/utils/date';
 
 @Injectable()
 export class CourseProductSnapshotRepository {
@@ -31,7 +31,7 @@ export class CourseProductSnapshotRepository {
   ): Promise<IProductSnapshot> {
     const [deleted] = await db
       .update(dbSchema.courseProductSnapshots)
-      .set({ deletedAt: now('date') })
+      .set({ deletedAt: date.now('date') })
       .where(eq(dbSchema.courseProductSnapshots.id, where.id))
       .returning();
     return deleted;

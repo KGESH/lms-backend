@@ -1,4 +1,4 @@
-import { Uri } from '../../shared/types/primitive';
+import { Uri } from '@src/shared/types/primitive';
 
 export type PreSignedUrlDto = {
   url: Uri;

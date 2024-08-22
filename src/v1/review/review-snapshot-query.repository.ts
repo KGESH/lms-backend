@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DrizzleService } from '../../infra/db/drizzle.service';
-import { IReview } from './review.interface';
 import { eq } from 'drizzle-orm';
-import { dbSchema } from '../../infra/db/schema';
+import { dbSchema } from '@src/infra/db/schema';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { IReview } from '@src/v1/review/review.interface';
 
 @Injectable()
 export class ReviewSnapshotQueryRepository {

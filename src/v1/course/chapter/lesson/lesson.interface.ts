@@ -1,5 +1,5 @@
-import { UInt, Uuid } from '../../../../shared/types/primitive';
-import { Optional } from '../../../../shared/types/optional';
+import { UInt, Uuid } from '@src/shared/types/primitive';
+import { Optional } from '@src/shared/types/optional';
 
 export type ILesson = {
   id: Uuid;

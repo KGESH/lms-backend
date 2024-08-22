@@ -1,5 +1,5 @@
-import { Uuid } from '../../../shared/types/primitive';
-import { IOrderCreate } from '../order.interface';
+import { Uuid } from '@src/shared/types/primitive';
+import { IOrderCreate } from '@src/v1/order/order.interface';
 
 export type ICourseOrderPurchase = Pick<
   IOrderCreate,

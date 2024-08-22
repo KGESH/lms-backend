@@ -1,4 +1,4 @@
-import { ISO8601, Price, Uuid } from '../../../shared/types/primitive';
+import { ISO8601, Price, Uuid } from '@src/shared/types/primitive';
 
 export type CourseOrderDto = {
   id: Uuid;

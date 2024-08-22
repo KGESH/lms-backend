@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { LessonController } from './lesson.controller';
-import { LessonService } from './lesson.service';
-import { LessonQueryRepository } from './lesson-query.repository';
-import { LessonQueryService } from './lesson-query.service';
-import { LessonRepository } from './lesson.repository';
-import { ChapterModule } from '../chapter.module';
+import { ChapterModule } from '@src/v1/course/chapter/chapter.module';
+import { LessonController } from '@src/v1/course/chapter/lesson/lesson.controller';
+import { LessonService } from '@src/v1/course/chapter/lesson/lesson.service';
+import { LessonQueryRepository } from '@src/v1/course/chapter/lesson/lesson-query.repository';
+import { LessonQueryService } from '@src/v1/course/chapter/lesson/lesson-query.service';
+import { LessonRepository } from '@src/v1/course/chapter/lesson/lesson.repository';
 
 const providers = [
   LessonService,

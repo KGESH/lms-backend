@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { DrizzleService } from '../../infra/db/drizzle.service';
-import { IReview, IReviewWithRelations } from './review.interface';
 import { asc, desc, eq, isNull } from 'drizzle-orm';
-import { dbSchema } from '../../infra/db/schema';
-import { Pagination } from '../../shared/types/pagination';
+import { dbSchema } from '@src/infra/db/schema';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { IReview, IReviewWithRelations } from '@src/v1/review/review.interface';
+import { Pagination } from '@src/shared/types/pagination';
 
 @Injectable()
 export class ReviewQueryRepository {

@@ -1,7 +1,7 @@
-import { UInt, Uuid } from '../../../../../shared/types/primitive';
-import { Optional } from '../../../../../shared/types/optional';
-import { IUiCarouselComponent } from '../ui-carousel.interface';
-import { UiCarouselReview } from '../../../category/ui-category.interface';
+import { UInt, Uuid } from '@src/shared/types/primitive';
+import { Optional } from '@src/shared/types/optional';
+import { IUiCarouselComponent } from '@src/v1/ui/component/carousel/ui-carousel.interface';
+import { UiCarouselReview } from '@src/v1/ui/category/ui-category.interface';
 
 export type IUiCarouselReview = {
   id: Uuid;

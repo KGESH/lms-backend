@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { DrizzleService } from '../../../../../infra/db/drizzle.service';
 import { eq } from 'drizzle-orm';
+import { dbSchema } from '@src/infra/db/schema';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
 import {
   IUiCarouselReview,
   IUiCarouselReviewWithItems,
 } from './ui-carousel-review.interface';
-import { dbSchema } from '../../../../../infra/db/schema';
 import {
   UiCarousel,
   UiCarouselReview,
-} from '../../../category/ui-category.interface';
+} from '@src/v1/ui/category/ui-category.interface';
 
 @Injectable()
 export class UiCarouselReviewQueryRepository {

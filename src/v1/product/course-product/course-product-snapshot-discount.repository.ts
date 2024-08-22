@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { DrizzleService } from '../../../infra/db/drizzle.service';
-import { dbSchema } from '../../../infra/db/schema';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { dbSchema } from '@src/infra/db/schema';
+import { DiscountValue } from '@src/shared/types/primitive';
 import * as typia from 'typia';
 import {
   IProductSnapshotDiscount,
   IProductSnapshotDiscountCreate,
-} from '../common/snapshot/discount/product-snapshot-discount.interface';
-import { DiscountValue } from '../../../shared/types/primitive';
+} from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
 
 @Injectable()
 export class CourseProductSnapshotDiscountRepository {

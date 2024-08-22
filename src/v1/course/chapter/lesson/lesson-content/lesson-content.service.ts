@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { LessonContentRepository } from './lesson-content.repository';
+import { TransactionClient } from '@src/infra/db/drizzle.types';
 import {
   ILessonContent,
   ILessonContentCreate,
   ILessonContentUpdate,
-} from './lesson-content.interface';
-import { TransactionClient } from '../../../../../infra/db/drizzle.types';
-import { LessonContentQueryRepository } from './lesson-content-query.repository';
+} from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.interface';
+import { LessonContentQueryRepository } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content-query.repository';
+import { LessonContentRepository } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.repository';
 
 @Injectable()
 export class LessonContentService {

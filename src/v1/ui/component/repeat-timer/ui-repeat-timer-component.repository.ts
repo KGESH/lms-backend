@@ -1,16 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { IRepository } from '../../../../core/base.repository';
+import { eq } from 'drizzle-orm';
+import { dbSchema } from '@src/infra/db/schema';
+import { IRepository } from '@src/core/base.repository';
 import {
   IUiRepeatTimerComponent,
   IUiRepeatTimerComponentCreate,
   IUiRepeatTimerComponentUpdate,
-} from './ui-repeat-timer.interface';
-import { Pagination } from 'src/shared/types/pagination';
-import { DrizzleService } from '../../../../infra/db/drizzle.service';
-import { asc, desc, eq, gt } from 'drizzle-orm';
-import { dbSchema } from '../../../../infra/db/schema';
-import { UI_CATEGORY } from '../../category/ui-category.interface';
-import { createUuid } from '../../../../shared/utils/uuid';
+} from '@src/v1/ui/component/repeat-timer/ui-repeat-timer.interface';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { UI_CATEGORY } from '@src/v1/ui/category/ui-category.interface';
+import { createUuid } from '@src/shared/utils/uuid';
 
 @Injectable()
 export class UiRepeatTimerComponentRepository

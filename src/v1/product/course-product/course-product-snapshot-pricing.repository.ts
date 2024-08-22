@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { DrizzleService } from '../../../infra/db/drizzle.service';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { Price } from '@src/shared/types/primitive';
+import { dbSchema } from '@src/infra/db/schema';
+import * as typia from 'typia';
 import {
   IProductSnapshotPricing,
   IProductSnapshotPricingCreate,
-} from '../common/snapshot/pricing/product-snapshot-pricing.interface';
-import { dbSchema } from '../../../infra/db/schema';
-import * as typia from 'typia';
-import { Price } from '../../../shared/types/primitive';
+} from '@src/v1/product/common/snapshot/pricing/product-snapshot-pricing.interface';
 
 @Injectable()
 export class CourseProductSnapshotPricingRepository {

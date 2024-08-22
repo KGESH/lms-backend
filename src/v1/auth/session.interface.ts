@@ -1,5 +1,5 @@
-import { Uuid } from '../../shared/types/primitive';
-import { IUserWithoutPassword } from '../user/user.interface';
+import { Uuid } from '@src/shared/types/primitive';
+import { IUserWithoutPassword } from '@src/v1/user/user.interface';
 
 export type ISession = {
   id: string;

@@ -1,9 +1,9 @@
-import { ICourse } from './course.interface';
-import { ITeacherWithoutPassword } from '../teacher/teacher.interface';
-import { ICategory } from '../category/category.interface';
-import { IChapter } from './chapter/chapter.interface';
-import { ILesson } from './chapter/lesson/lesson.interface';
-import { ILessonContent } from './chapter/lesson/lesson-content/lesson-content.interface';
+import { ITeacherWithoutPassword } from '@src/v1/teacher/teacher.interface';
+import { ICategory } from '@src/v1/category/category.interface';
+import { ICourse } from '@src/v1/course/course.interface';
+import { IChapter } from '@src/v1/course/chapter/chapter.interface';
+import { ILesson } from '@src/v1/course/chapter/lesson/lesson.interface';
+import { ILessonContent } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.interface';
 
 export type ILessonWithRelations = ILesson & {
   lessonContents: ILessonContent[];

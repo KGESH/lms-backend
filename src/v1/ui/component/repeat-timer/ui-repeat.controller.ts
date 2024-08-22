@@ -1,5 +1,4 @@
 import { Controller, Logger, UseGuards } from '@nestjs/common';
-import { UiRepeatTimerService } from './ui-repeat-timer.service';
 import {
   TypedBody,
   TypedException,
@@ -7,19 +6,20 @@ import {
   TypedParam,
   TypedRoute,
 } from '@nestia/core';
-import { Uuid } from '../../../../shared/types/primitive';
+import { TypeGuardError } from 'typia';
+import { UiRepeatTimerService } from '@src/v1/ui/component/repeat-timer/ui-repeat-timer.service';
+import { Uuid } from '@src/shared/types/primitive';
 import {
   CreateUiRepeatTimerDto,
   DeletedUiRepeatTimerDto,
   UiRepeatTimerDto,
   UpdateUiRepeatTimerDto,
-} from './ui-repeat-timer.dto';
-import { SkipAuth } from '../../../../core/decorators/skip-auth.decorator';
-import { ApiAuthHeaders, AuthHeaders } from '../../../auth/auth.headers';
-import { Roles } from '../../../../core/decorators/roles.decorator';
-import { RolesGuard } from '../../../../core/guards/roles.guard';
-import { TypeGuardError } from 'typia';
-import { IErrorResponse } from '../../../../shared/types/response';
+} from '@src/v1/ui/component/repeat-timer/ui-repeat-timer.dto';
+import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
+import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
+import { Roles } from '@src/core/decorators/roles.decorator';
+import { RolesGuard } from '@src/core/guards/roles.guard';
+import { IErrorResponse } from '@src/shared/types/response';
 
 @Controller('v1/ui/component/repeat-timer')
 export class UiRepeatTimerController {

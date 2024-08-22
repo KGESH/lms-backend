@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { DrizzleService } from '../../../infra/db/drizzle.service';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
 import {
   IUiComponentBase,
   IUiComponentGroup,
   IUiSectionGroupBase,
-} from './ui-component.interface';
+} from '@src/v1/ui/component/ui-component.interface';
 import { eq, inArray } from 'drizzle-orm';
-import { dbSchema } from '../../../infra/db/schema';
-import { IUiRepeatTimerComponent } from './repeat-timer/ui-repeat-timer.interface';
+import { dbSchema } from '@src/infra/db/schema';
+import { IUiRepeatTimerComponent } from '@src/v1/ui/component/repeat-timer/ui-repeat-timer.interface';
 import {
   UI_CATEGORY,
   UiCarouselType,
   UiCategory,
-} from '../category/ui-category.interface';
-import { IUiCarouselComponent } from './carousel/ui-carousel.interface';
+} from '@src/v1/ui/category/ui-category.interface';
+import { IUiCarouselComponent } from '@src/v1/ui/component/carousel/ui-carousel.interface';
 
 @Injectable()
 export class UiComponentQueryRepository {

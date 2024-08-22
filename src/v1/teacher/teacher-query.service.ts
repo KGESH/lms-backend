@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { TeacherRepository } from './teacher.repository';
-import { ITeacher } from './teacher.interface';
-import { Pagination } from '../../shared/types/pagination';
+import { TeacherRepository } from '@src/v1/teacher/teacher.repository';
+import { ITeacher } from '@src/v1/teacher/teacher.interface';
+import { Pagination } from '@src/shared/types/pagination';
 
 @Injectable()
 export class TeacherQueryService {

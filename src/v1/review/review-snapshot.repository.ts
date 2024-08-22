@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { DrizzleService } from '../../infra/db/drizzle.service';
-import { IReviewSnapshot, IReviewSnapshotCreate } from './review.interface';
-import { dbSchema } from '../../infra/db/schema';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { dbSchema } from '@src/infra/db/schema';
+import {
+  IReviewSnapshot,
+  IReviewSnapshotCreate,
+} from '@src/v1/review/review.interface';
 
 @Injectable()
 export class ReviewSnapshotRepository {

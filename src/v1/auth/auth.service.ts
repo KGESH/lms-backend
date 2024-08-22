@@ -4,15 +4,15 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { UserService } from '../user/user.service';
-import { IUserLogin, IUserSignUp } from './auth.interface';
+import { UserService } from '@src/v1/user/user.service';
+import { IUserLogin, IUserSignUp } from '@src/v1/auth/auth.interface';
 import * as typia from 'typia';
-import * as date from '../../shared/utils/date';
-import { IUser, IUserWithoutPassword } from '../user/user.interface';
-import { compareHash } from '../../shared/helpers/hash';
-import { DrizzleService } from '../../infra/db/drizzle.service';
-import { SessionRepository } from './session.repository';
-import { ISessionWithUser } from './session.interface';
+import * as date from '@src/shared/utils/date';
+import { IUser, IUserWithoutPassword } from '@src/v1/user/user.interface';
+import { compareHash } from '@src/shared/helpers/hash';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { SessionRepository } from '@src/v1/auth/session.repository';
+import { ISessionWithUser } from '@src/v1/auth/session.interface';
 
 @Injectable()
 export class AuthService {

@@ -1,16 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DrizzleService } from '../../infra/db/drizzle.service';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { eq } from 'drizzle-orm';
-import { dbSchema } from '../../infra/db/schema';
+import { dbSchema } from '@src/infra/db/schema';
+import { Pagination } from '@src/shared/types/pagination';
+import { IRepository } from '@src/core/base.repository';
+import * as typia from 'typia';
 import {
   ITeacher,
   ITeacherCreate,
   ITeacherWithAccount,
-} from './teacher.interface';
-import { Pagination } from '../../shared/types/pagination';
-import { IRepository } from '../../core/base.repository';
-import * as typia from 'typia';
-import { IUser } from '../user/user.interface';
+} from '@src/v1/teacher/teacher.interface';
+import { IUser } from '@src/v1/user/user.interface';
 
 @Injectable()
 export class TeacherRepository implements IRepository<ITeacher> {

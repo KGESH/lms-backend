@@ -1,6 +1,6 @@
-import { UserDto, UserInfoDto } from '../user/user.dto';
-import { AuthProvider, Uuid } from '../../shared/types/primitive';
-import { IUser } from '../user/user.interface';
+import { UserDto, UserInfoDto } from '@src/v1/user/user.dto';
+import { AuthProvider, Uuid } from '@src/shared/types/primitive';
+import { IUser } from '@src/v1/user/user.interface';
 
 export type LoginUserDto = Pick<UserDto, 'email' | 'password'>;
 

@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IEnvironment } from './configs.types';
+import { IEnvironment } from '@src/configs/configs.types';
 import * as typia from 'typia';
-import { IS_PRODUCTION } from '../shared/utils/is-production';
-import { ConfigError } from './configs.error';
+import { IS_PRODUCTION } from '@src/shared/utils/is-production';
+import { ConfigError } from '@src/configs/configs.error';
 
 @Injectable()
 export class ConfigsService {

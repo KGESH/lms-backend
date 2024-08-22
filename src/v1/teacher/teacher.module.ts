@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { TeacherController } from './teacher.controller';
-import { TeacherService } from './teacher.service';
-import { TeacherRepository } from './teacher.repository';
-import { TeacherQueryService } from './teacher-query.service';
-import { UserModule } from '../user/user.module';
+import { UserModule } from '@src/v1/user/user.module';
+import { TeacherController } from '@src/v1/teacher/teacher.controller';
+import { TeacherService } from '@src/v1/teacher/teacher.service';
+import { TeacherRepository } from '@src/v1/teacher/teacher.repository';
+import { TeacherQueryService } from '@src/v1/teacher/teacher-query.service';
 
 const providers = [TeacherService, TeacherQueryService, TeacherRepository];
 

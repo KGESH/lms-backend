@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { DrizzleService } from '../../infra/db/drizzle.service';
-import { ICourse, ICourseCreate, ICourseUpdate } from './course.interface';
 import { eq } from 'drizzle-orm';
-import { dbSchema } from '../../infra/db/schema';
-import { Pagination } from '../../shared/types/pagination';
+import { dbSchema } from '@src/infra/db/schema';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import {
+  ICourse,
+  ICourseCreate,
+  ICourseUpdate,
+} from '@src/v1/course/course.interface';
+import { Pagination } from '@src/shared/types/pagination';
 
 @Injectable()
 export class CourseRepository {

@@ -1,9 +1,5 @@
 import * as typia from 'typia';
-import {
-  IUser,
-  IUserAccount,
-  IUserInfo,
-} from '../../../v1/user/user.interface';
+import { IUser, IUserAccount, IUserInfo } from '@src/v1/user/user.interface';
 
 export const createMockUser = (): {
   user: IUser;

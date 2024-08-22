@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { DrizzleService } from '../../infra/db/drizzle.service';
-import { IUserAccount, IUserAccountCreate } from './user.interface';
-import { dbSchema } from '../../infra/db/schema';
+import { dbSchema } from '@src/infra/db/schema';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { IUserAccount, IUserAccountCreate } from '@src/v1/user/user.interface';
 
 @Injectable()
 export class UserAccountRepository {

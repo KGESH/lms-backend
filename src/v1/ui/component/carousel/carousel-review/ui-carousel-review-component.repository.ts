@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
+import { eq, inArray } from 'drizzle-orm';
+import { dbSchema } from '@src/infra/db/schema';
+import { createUuid } from '@src/shared/utils/uuid';
 import {
   IUiCarouselReview,
   IUiCarouselReviewCreate,
   IUiCarouselReviewUpdate,
-} from './ui-carousel-review.interface';
-import { DrizzleService } from '../../../../../infra/db/drizzle.service';
-import { eq, inArray } from 'drizzle-orm';
-import { dbSchema } from '../../../../../infra/db/schema';
-import { createUuid } from '../../../../../shared/utils/uuid';
+} from '@src/v1/ui/component/carousel/carousel-review/ui-carousel-review.interface';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
 
 @Injectable()
 export class UiCarouselReviewComponentRepository {

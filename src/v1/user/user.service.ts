@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from './user.repository';
+import { UserRepository } from '@src/v1/user/user.repository';
 import { IUser, IUserUpdate, IUserWithoutPassword } from './user.interface';
-import { Pagination } from '../../shared/types/pagination';
+import { Pagination } from '@src/shared/types/pagination';
 import * as typia from 'typia';
-import { UserInfoRepository } from './user-info.repository';
-import { IUserSignUp } from '../auth/auth.interface';
-import { createUuid } from '../../shared/utils/uuid';
-import { UserAccountRepository } from './user-account.repository';
-import { TransactionClient } from '../../infra/db/drizzle.types';
-import { UserQueryRepository } from './user-query.repository';
+import { IUserSignUp } from '@src/v1/auth/auth.interface';
+import { UserInfoRepository } from '@src/v1/user/user-info.repository';
+import { UserAccountRepository } from '@src/v1/user/user-account.repository';
+import { UserQueryRepository } from '@src/v1/user/user-query.repository';
+import { createUuid } from '@src/shared/utils/uuid';
+import { TransactionClient } from '@src/infra/db/drizzle.types';
 
 @Injectable()
 export class UserService {

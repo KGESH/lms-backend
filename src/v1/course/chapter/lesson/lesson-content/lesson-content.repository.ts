@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { eq } from 'drizzle-orm';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { dbSchema } from '@src/infra/db/schema';
 import {
   ILessonContent,
   ILessonContentCreate,
   ILessonContentUpdate,
-} from './lesson-content.interface';
-import { eq } from 'drizzle-orm';
-import { DrizzleService } from '../../../../../infra/db/drizzle.service';
-import { dbSchema } from '../../../../../infra/db/schema';
+} from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.interface';
 
 @Injectable()
 export class LessonContentRepository {

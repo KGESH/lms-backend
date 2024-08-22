@@ -1,10 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CourseRepository } from './course.repository';
-import { ICourse, ICourseCreate, ICourseUpdate } from './course.interface';
-import { TransactionClient } from '../../infra/db/drizzle.types';
-import { TeacherRepository } from '../teacher/teacher.repository';
-import { CategoryService } from '../category/category.service';
-import { TeacherService } from '../teacher/teacher.service';
+import { TransactionClient } from '@src/infra/db/drizzle.types';
+import { CategoryService } from '@src/v1/category/category.service';
+import { TeacherService } from '@src/v1/teacher/teacher.service';
+import { CourseRepository } from '@src/v1/course/course.repository';
+import {
+  ICourse,
+  ICourseCreate,
+  ICourseUpdate,
+} from '@src/v1/course/course.interface';
 
 @Injectable()
 export class CourseService {

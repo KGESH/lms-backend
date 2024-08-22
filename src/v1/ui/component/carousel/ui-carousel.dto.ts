@@ -1,9 +1,9 @@
-import { UiComponentDto } from '../ui-component.dto';
-import { Uuid } from '../../../../shared/types/primitive';
+import { UiComponentDto } from '@src/v1/ui/component/ui-component.dto';
+import { Uuid } from '@src/shared/types/primitive';
 import {
   UiCarousel,
   UiCarouselType,
-} from '../../category/ui-category.interface';
+} from '@src/v1/ui/category/ui-category.interface';
 
 export type UiCarouselDto<T extends UiCarouselType> = UiComponentDto<
   UiCarousel,

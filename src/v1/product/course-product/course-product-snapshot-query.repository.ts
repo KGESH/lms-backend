@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DrizzleService } from '../../../infra/db/drizzle.service';
-import { IProductSnapshot } from '../common/snapshot/conrse-product-snapshot.interface';
-import { Pagination } from 'src/shared/types/pagination';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { Pagination } from '@src/shared/types/pagination';
 import { eq } from 'drizzle-orm';
-import { dbSchema } from '../../../infra/db/schema';
+import { dbSchema } from '@src/infra/db/schema';
+import { IProductSnapshot } from '@src/v1/product/common/snapshot/conrse-product-snapshot.interface';
 
 @Injectable()
 export class CourseProductSnapshotQueryRepository {

@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { CourseOrderService } from './course-order.service';
-import { DrizzleService } from '../../../infra/db/drizzle.service';
-import { ICourseOrderPurchase } from './course-order-purchase.interface';
-import { CourseProductService } from '../../product/course-product/course-product.service';
-import { UserService } from '../../user/user.service';
-import * as date from '../../../shared/utils/date';
-import { ICourseOrder } from './course-order.interface';
-import { ICourseProductWithRelations } from '../../product/course-product/course-product-relations.interface';
-import { NonNullableInfer } from '../../../shared/types/non-nullable-infer';
-import { IOrder } from '../order.interface';
-import { createUuid } from '../../../shared/utils/uuid';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { CourseOrderService } from '@src/v1/order/course/course-order.service';
+import { ICourseOrderPurchase } from '@src/v1/order/course/course-order-purchase.interface';
+import { CourseProductService } from '@src/v1/product/course-product/course-product.service';
+import { UserService } from '@src/v1/user/user.service';
+import { ICourseOrder } from '@src/v1/order/course/course-order.interface';
+import { ICourseProductWithRelations } from '@src/v1/product/course-product/course-product-relations.interface';
+import { NonNullableInfer } from '@src/shared/types/non-nullable-infer';
+import { IOrder } from '@src/v1/order/order.interface';
+import { createUuid } from '@src/shared/utils/uuid';
+import * as date from '@src/shared/utils/date';
 
 @Injectable()
 export class CourseOrderPurchaseService {

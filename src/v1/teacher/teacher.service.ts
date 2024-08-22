@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { TeacherRepository } from './teacher.repository';
+import * as typia from 'typia';
+import { TeacherRepository } from '@src/v1/teacher/teacher.repository';
 import {
   ITeacher,
   ITeacherSignUp,
   ITeacherWithAccount,
   ITeacherWithoutPassword,
-} from './teacher.interface';
-import { Pagination } from '../../shared/types/pagination';
-import * as typia from 'typia';
-import { IUser } from '../user/user.interface';
-import { DrizzleService } from '../../infra/db/drizzle.service';
-import { createUuid } from '../../shared/utils/uuid';
-import { UserService } from '../user/user.service';
+} from '@src/v1/teacher/teacher.interface';
+import { Pagination } from '@src/shared/types/pagination';
+import { IUser } from '@src/v1/user/user.interface';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { createUuid } from '@src/shared/utils/uuid';
+import { UserService } from '@src/v1/user/user.service';
 
 @Injectable()
 export class TeacherService {

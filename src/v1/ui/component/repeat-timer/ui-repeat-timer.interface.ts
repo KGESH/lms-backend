@@ -1,7 +1,7 @@
-import { UInt, Uuid } from '../../../../shared/types/primitive';
-import { IUiComponent } from '../ui-component.interface';
-import { UiRepeatTimer } from '../../category/ui-category.interface';
-import { Optional } from '../../../../shared/types/optional';
+import { UInt, Uuid } from '@src/shared/types/primitive';
+import { IUiComponent } from '@src/v1/ui/component/ui-component.interface';
+import { UiRepeatTimer } from '@src/v1/ui/category/ui-category.interface';
+import { Optional } from '@src/shared/types/optional';
 
 export type IUiRepeatTimer = {
   id: Uuid;

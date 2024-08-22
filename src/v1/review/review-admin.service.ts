@@ -3,16 +3,16 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { IReviewWithRelations } from './review.interface';
-import { ReviewRepository } from './review.repository';
-import { ReviewSnapshotRepository } from './review-snapshot.repository';
-import { OrderRepository } from '../order/order.repository';
-import { createUuid } from '../../shared/utils/uuid';
-import * as date from '../../shared/utils/date';
-import { CourseProductService } from '../product/course-product/course-product.service';
-import { DrizzleService } from '../../infra/db/drizzle.service';
-import { ICourseReviewCreate } from './course-review/course-review.interface';
-import { ReviewQueryRepository } from './review-query.repository';
+import { CourseProductService } from '@src/v1/product/course-product/course-product.service';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { OrderRepository } from '@src/v1/order/order.repository';
+import { IReviewWithRelations } from '@src/v1/review/review.interface';
+import { ReviewRepository } from '@src/v1/review/review.repository';
+import { ReviewSnapshotRepository } from '@src/v1/review/review-snapshot.repository';
+import { ICourseReviewCreate } from '@src/v1/review/course-review/course-review.interface';
+import { ReviewQueryRepository } from '@src/v1/review/review-query.repository';
+import { createUuid } from '@src/shared/utils/uuid';
+import * as date from '@src/shared/utils/date';
 
 @Injectable()
 export class ReviewAdminService {

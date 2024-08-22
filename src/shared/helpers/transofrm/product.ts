@@ -1,7 +1,7 @@
-import { NonNullableInfer } from '../../types/non-nullable-infer';
-import { ICourseProductWithRelations } from '../../../v1/product/course-product/course-product-relations.interface';
-import { CourseProductDto } from '../../../v1/product/course-product/course-product.dto';
-import * as date from '../../utils/date';
+import { NonNullableInfer } from '@src/shared/types/non-nullable-infer';
+import { ICourseProductWithRelations } from '@src/v1/product/course-product/course-product-relations.interface';
+import { CourseProductDto } from '@src/v1/product/course-product/course-product.dto';
+import * as date from '@src/shared/utils/date';
 
 export const courseProductToDto = (
   product: NonNullableInfer<ICourseProductWithRelations>,

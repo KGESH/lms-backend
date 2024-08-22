@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { CourseOrderRepository } from './course-order.repository';
-import { TransactionClient } from '../../../infra/db/drizzle.types';
-import { ICourseOrder, ICourseOrderCreate } from './course-order.interface';
-import { OrderRepository } from '../order.repository';
-import { IOrder, IOrderCreate } from '../order.interface';
+import { TransactionClient } from '@src/infra/db/drizzle.types';
+import { OrderRepository } from '@src/v1/order/order.repository';
+import { IOrder, IOrderCreate } from '@src/v1/order/order.interface';
+import { CourseOrderRepository } from '@src/v1/order/course/course-order.repository';
+import {
+  ICourseOrder,
+  ICourseOrderCreate,
+} from '@src/v1/order/course/course-order.interface';
 
 @Injectable()
 export class CourseOrderService {

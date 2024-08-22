@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { CourseRepository } from './course.repository';
-import { ICourse } from './course.interface';
-import { CourseQueryRepository } from './course-query.repository';
-import { ICourseWithRelations } from './course-with-relations.interface';
-import { Pagination } from '../../shared/types/pagination';
+import { CourseRepository } from '@src/v1/course/course.repository';
+import { ICourse } from '@src/v1/course/course.interface';
+import { CourseQueryRepository } from '@src/v1/course/course-query.repository';
+import { ICourseWithRelations } from '@src/v1/course/course-with-relations.interface';
+import { Pagination } from '@src/shared/types/pagination';
 import {
   DEFAULT_ORDER_BY,
   DEFAULT_PAGE,
   DEFAULT_PAGE_SIZE,
-} from '../../core/pagination.constant';
+} from '@src/core/pagination.constant';
 
 @Injectable()
 export class CourseQueryService {

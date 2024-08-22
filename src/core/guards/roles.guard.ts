@@ -8,9 +8,9 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import * as typia from 'typia';
-import { ISessionWithUser } from '../../v1/auth/session.interface';
-import { UserRole } from '../../shared/types/primitive';
-import { ROLES_KEY } from '../decorators/roles.decorator';
+import { ISessionWithUser } from '@src/v1/auth/session.interface';
+import { UserRole } from '@src/shared/types/primitive';
+import { ROLES_KEY } from '@src/core/decorators/roles.decorator';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -39,7 +39,7 @@ export class RolesGuard implements CanActivate {
 
     if (!hasRequiredRole) {
       throw new ForbiddenException(
-        `You do not have the required role. Accessible roles: [${requiredRoles.join(', ')}] Your role: [${sessionWithUser.user.role}]`,
+        `You don't have the required role. Accessible roles: [${requiredRoles.join(', ')}] Your role: [${sessionWithUser.user.role}]`,
       );
     }
 

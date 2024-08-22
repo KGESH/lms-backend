@@ -1,5 +1,5 @@
-import { Pagination } from '../shared/types/pagination';
-import { TransactionClient } from '../infra/db/drizzle.types';
+import { Pagination } from '@src/shared/types/pagination';
+import { TransactionClient } from '@src/infra/db/drizzle.types';
 
 export type IRepository<T> = {
   findOne(where: Partial<T>): Promise<T | null>;

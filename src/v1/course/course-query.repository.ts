@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { DrizzleService } from '../../infra/db/drizzle.service';
-import { eq } from 'drizzle-orm';
-import { dbSchema } from '../../infra/db/schema';
-import { ICourse } from './course.interface';
-import { ICourseWithRelations } from './course-with-relations.interface';
 import * as typia from 'typia';
+import { eq } from 'drizzle-orm';
+import { dbSchema } from '@src/infra/db/schema';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { ICourse } from '@src/v1/course/course.interface';
+import { ICourseWithRelations } from '@src/v1/course/course-with-relations.interface';
 
 @Injectable()
 export class CourseQueryRepository {

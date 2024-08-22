@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { OrderQueryRepository } from './order-query.repository';
-import { IOrder } from './order.interface';
-import { ICourseOrderRelations } from './course/course-order.interface';
-import { IOrderRefund, IOrderRefundCreate } from './order-refund.interface';
-import { OrderRefundRepository } from './order-refund.repository';
-import * as date from '../../shared/utils/date';
+import { OrderQueryRepository } from '@src/v1/order/order-query.repository';
+import { IOrder } from '@src/v1/order/order.interface';
+import { ICourseOrderRelations } from '@src/v1/order/course/course-order.interface';
+import {
+  IOrderRefund,
+  IOrderRefundCreate,
+} from '@src/v1/order/order-refund.interface';
+import { OrderRefundRepository } from '@src/v1/order/order-refund.repository';
+import * as date from '@src/shared/utils/date';
 
 @Injectable()
 export class OrderService {

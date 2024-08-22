@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { UiCarouselComponentRepository } from './ui-carousel-component.repository';
+import { UiCarouselComponentRepository } from '@src/v1/ui/component/carousel/ui-carousel-component.repository';
 
 const providers = [UiCarouselComponentRepository];
 

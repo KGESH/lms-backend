@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { CourseOrderRepository } from './course-order.repository';
-import { CourseOrderService } from './course-order.service';
-import { CourseProductModule } from '../../product/course-product/course-product.module';
-import { CourseOrderPurchaseService } from './course-order-purchase.service';
-import { OrderRepository } from '../order.repository';
-import { OrderQueryRepository } from '../order-query.repository';
+import { CourseProductModule } from '@src/v1/product/course-product/course-product.module';
+import { CourseOrderRepository } from '@src/v1/order/course/course-order.repository';
+import { CourseOrderService } from '@src/v1/order/course/course-order.service';
+import { CourseOrderPurchaseService } from '@src/v1/order/course/course-order-purchase.service';
+import { OrderRepository } from '@src/v1/order/order.repository';
+import { OrderQueryRepository } from '@src/v1/order/order-query.repository';
 
 const providers = [
   CourseOrderService,

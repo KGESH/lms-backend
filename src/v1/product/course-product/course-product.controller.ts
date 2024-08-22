@@ -6,16 +6,19 @@ import {
   TypedParam,
   TypedRoute,
 } from '@nestia/core';
-import { CourseProductService } from './course-product.service';
-import { Uuid } from '../../../shared/types/primitive';
-import { CreateCourseProductDto, CourseProductDto } from './course-product.dto';
-import * as date from '../../../shared/utils/date';
+import { CourseProductService } from '@src/v1/product/course-product/course-product.service';
+import { Uuid } from '@src/shared/types/primitive';
+import {
+  CreateCourseProductDto,
+  CourseProductDto,
+} from '@src/v1/product/course-product/course-product.dto';
+import * as date from '@src/shared/utils/date';
 import { TypeGuardError } from 'typia';
-import { courseProductToDto } from '../../../shared/helpers/transofrm/product';
-import { SkipAuth } from '../../../core/decorators/skip-auth.decorator';
-import { ApiAuthHeaders, AuthHeaders } from '../../auth/auth.headers';
-import { Roles } from '../../../core/decorators/roles.decorator';
-import { RolesGuard } from '../../../core/guards/roles.guard';
+import { courseProductToDto } from '@src/shared/helpers/transofrm/product';
+import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
+import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
+import { Roles } from '@src/core/decorators/roles.decorator';
+import { RolesGuard } from '@src/core/guards/roles.guard';
 
 @Controller('v1/product/course')
 export class CourseProductController {

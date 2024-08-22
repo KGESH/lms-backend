@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
+import { eq } from 'drizzle-orm';
+import { dbSchema } from '@src/infra/db/schema';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
 import {
   IUiCarouselComponent,
   IUiCarouselComponentCreate,
   IUiCarouselComponentUpdate,
-} from './ui-carousel.interface';
-import { DrizzleService } from '../../../../infra/db/drizzle.service';
-import { eq } from 'drizzle-orm';
-import { dbSchema } from '../../../../infra/db/schema';
+} from '@src/v1/ui/component/carousel/ui-carousel.interface';
 import {
   UI_CATEGORY,
   UiCarouselType,
-} from '../../category/ui-category.interface';
-import { createUuid } from '../../../../shared/utils/uuid';
+} from '@src/v1/ui/category/ui-category.interface';
+import { createUuid } from '@src/shared/utils/uuid';
 
 @Injectable()
 // implements IRepository<IUiCarouselComponent<T>>

@@ -1,5 +1,6 @@
 import { Controller, Logger, UseGuards } from '@nestjs/common';
-import { UiCarouselReviewService } from './ui-carousel-review.service';
+import { TypeGuardError } from 'typia';
+import { UiCarouselReviewService } from '@src/v1/ui/component/carousel/carousel-review/ui-carousel-review.service';
 import {
   TypedBody,
   TypedException,
@@ -14,15 +15,14 @@ import {
   DeleteUiCarouselReviewItemsQuery,
   UiCarouselReviewItemDto,
   UiCarouselReviewWithItemsDto,
-} from './ui-carousel-review.dto';
-import { Uuid } from '../../../../../shared/types/primitive';
-import { UiCarouselDto } from '../ui-carousel.dto';
-import { UiCarouselReview } from '../../../category/ui-category.interface';
-import { SkipAuth } from '../../../../../core/decorators/skip-auth.decorator';
-import { ApiAuthHeaders, AuthHeaders } from '../../../../auth/auth.headers';
-import { Roles } from '../../../../../core/decorators/roles.decorator';
-import { RolesGuard } from '../../../../../core/guards/roles.guard';
-import { TypeGuardError } from 'typia';
+} from '@src/v1/ui/component/carousel/carousel-review/ui-carousel-review.dto';
+import { Uuid } from '@src/shared/types/primitive';
+import { UiCarouselDto } from '@src/v1/ui/component/carousel/ui-carousel.dto';
+import { UiCarouselReview } from '@src/v1/ui/category/ui-category.interface';
+import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
+import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
+import { Roles } from '@src/core/decorators/roles.decorator';
+import { RolesGuard } from '@src/core/guards/roles.guard';
 
 @Controller('v1/ui/component/carousel-review')
 export class UiCarouselReviewController {

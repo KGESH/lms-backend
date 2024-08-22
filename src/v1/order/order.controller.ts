@@ -1,17 +1,17 @@
 import { Controller, UseGuards } from '@nestjs/common';
-import { CourseOrderPurchaseService } from './course/course-order-purchase.service';
 import { TypedBody, TypedHeaders, TypedParam, TypedRoute } from '@nestia/core';
-import { CourseOrderPurchaseDto } from './course/course-order-purchase.dto';
-import * as date from '../../shared/utils/date';
-import { OrderDto } from './order.dto';
-import { toISOString } from '../../shared/utils/date';
-import { Uuid } from '../../shared/types/primitive';
-import { OrderService } from './order.service';
+import { CourseOrderPurchaseService } from '@src/v1/order/course/course-order-purchase.service';
+import { CourseOrderPurchaseDto } from '@src/v1/order/course/course-order-purchase.dto';
+import * as date from '@src/shared/utils/date';
+import { OrderDto } from '@src/v1/order/order.dto';
+import { toISOString } from '@src/shared/utils/date';
+import { Uuid } from '@src/shared/types/primitive';
+import { OrderService } from '@src/v1/order/order.service';
 import { CreateOrderRefundDto, OrderRefundDto } from './order-refund.dto';
-import { orderRefundToDto } from '../../shared/helpers/transofrm/order';
-import { AuthHeaders } from '../auth/auth.headers';
-import { Roles } from '../../core/decorators/roles.decorator';
-import { RolesGuard } from '../../core/guards/roles.guard';
+import { orderRefundToDto } from '@src/shared/helpers/transofrm/order';
+import { AuthHeaders } from '@src/v1/auth/auth.headers';
+import { Roles } from '@src/core/decorators/roles.decorator';
+import { RolesGuard } from '@src/core/guards/roles.guard';
 
 @Controller('v1/order')
 export class OrderController {

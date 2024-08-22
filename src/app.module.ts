@@ -1,19 +1,19 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { DatabaseModule } from './infra/db/db.module';
-import { ConfigsModule } from './configs/configs.module';
-import { UserModule } from './v1/user/user.module';
-import { AuthModule } from './v1/auth/auth.module';
-import { CategoryModule } from './v1/category/category.module';
-import { TeacherModule } from './v1/teacher/teacher.module';
-import { HttpClientModule } from './infra/http/http-client.module';
-import { UiModule } from './v1/ui/ui.module';
-import { LessonContentModule } from './v1/course/chapter/lesson/lesson-content/lesson-content.module';
-import { ProductModule } from './v1/product/product.module';
-import { OrderModule } from './v1/order/order.module';
-import { FileModule } from './v1/file/file.module';
-import { ReviewModule } from './v1/review/review.module';
+import { AppController } from '@src/app.controller';
+import { AppService } from '@src/app.service';
+import { DatabaseModule } from '@src/infra/db/db.module';
+import { ConfigsModule } from '@src/configs/configs.module';
+import { UserModule } from '@src/v1/user/user.module';
+import { AuthModule } from '@src/v1/auth/auth.module';
+import { CategoryModule } from '@src/v1/category/category.module';
+import { TeacherModule } from '@src/v1/teacher/teacher.module';
+import { HttpClientModule } from '@src/infra/http/http-client.module';
+import { UiModule } from '@src/v1/ui/ui.module';
+import { LessonContentModule } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.module';
+import { ProductModule } from '@src/v1/product/product.module';
+import { OrderModule } from '@src/v1/order/order.module';
+import { FileModule } from '@src/v1/file/file.module';
+import { ReviewModule } from '@src/v1/review/review.module';
 
 @Module({
   imports: [

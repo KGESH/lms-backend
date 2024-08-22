@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
-import { CourseProductRepository } from './course-product-repository.service';
-import { CourseProductService } from './course-product.service';
-import { CourseProductController } from './course-product.controller';
-import { CourseProductQueryRepository } from './course-product-query.repository';
-import { CourseProductSnapshotRepository } from './course-product-snapshot.repository';
-import { CourseProductSnapshotPricingRepository } from './course-product-snapshot-pricing.repository';
-import { CourseProductSnapshotDiscountRepository } from './course-product-snapshot-discount.repository';
-import { CourseModule } from '../../course/course.module';
-import { UserModule } from '../../user/user.module';
-import { CourseProductSnapshotContentRepository } from './course-product-snapshot-content.repository';
-import { CourseProductSnapshotQueryRepository } from './course-product-snapshot-query.repository';
-import { CourseProductSnapshotAnnouncementRepository } from './course-product-snapshot-announcement.repository';
-import { CourseProductSnapshotRefundPolicyRepository } from './course-product-snapshot-refund-policy.repository';
+import { CourseProductRepository } from '@src/v1/product/course-product/course-product-repository.service';
+import { CourseProductService } from '@src/v1/product/course-product/course-product.service';
+import { CourseProductController } from '@src/v1/product/course-product/course-product.controller';
+import { CourseProductQueryRepository } from '@src/v1/product/course-product/course-product-query.repository';
+import { CourseProductSnapshotRepository } from '@src/v1/product/course-product/course-product-snapshot.repository';
+import { CourseProductSnapshotPricingRepository } from '@src/v1/product/course-product/course-product-snapshot-pricing.repository';
+import { CourseProductSnapshotDiscountRepository } from '@src/v1/product/course-product/course-product-snapshot-discount.repository';
+import { CourseModule } from '@src/v1/course/course.module';
+import { UserModule } from '@src/v1/user/user.module';
+import { CourseProductSnapshotContentRepository } from '@src/v1/product/course-product/course-product-snapshot-content.repository';
+import { CourseProductSnapshotQueryRepository } from '@src/v1/product/course-product/course-product-snapshot-query.repository';
+import { CourseProductSnapshotAnnouncementRepository } from '@src/v1/product/course-product/course-product-snapshot-announcement.repository';
+import { CourseProductSnapshotRefundPolicyRepository } from '@src/v1/product/course-product/course-product-snapshot-refund-policy.repository';
 
 const modules = [CourseModule, UserModule];
 

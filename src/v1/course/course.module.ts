@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { CourseController } from './course.controller';
-import { CourseService } from './course.service';
-import { CourseQueryRepository } from './course-query.repository';
-import { CourseQueryService } from './course-query.service';
-import { CourseRepository } from './course.repository';
-import { TeacherModule } from '../teacher/teacher.module';
-import { CategoryModule } from '../category/category.module';
+import { TeacherModule } from '@src/v1/teacher/teacher.module';
+import { CategoryModule } from '@src/v1/category/category.module';
+import { CourseController } from '@src/v1/course/course.controller';
+import { CourseService } from '@src/v1/course/course.service';
+import { CourseQueryRepository } from '@src/v1/course/course-query.repository';
+import { CourseQueryService } from '@src/v1/course/course-query.service';
+import { CourseRepository } from '@src/v1/course/course.repository';
 
 const modules = [CategoryModule, TeacherModule];
 

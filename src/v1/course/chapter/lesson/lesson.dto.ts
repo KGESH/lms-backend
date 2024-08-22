@@ -1,4 +1,4 @@
-import { UInt, Uuid } from '../../../../shared/types/primitive';
+import { UInt, Uuid } from '@src/shared/types/primitive';
 
 export type LessonDto = {
   id: Uuid;

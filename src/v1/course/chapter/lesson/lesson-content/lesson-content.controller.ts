@@ -1,5 +1,5 @@
 import { Controller, UseGuards } from '@nestjs/common';
-import { LessonContentService } from './lesson-content.service';
+import { LessonContentService } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.service';
 import {
   TypedBody,
   TypedException,
@@ -7,19 +7,19 @@ import {
   TypedParam,
   TypedRoute,
 } from '@nestia/core';
-import { LessonContentQueryService } from './lesson-content-query.service';
-import { Uuid } from '../../../../../shared/types/primitive';
+import { LessonContentQueryService } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content-query.service';
+import { Uuid } from '@src/shared/types/primitive';
 import {
   LessonContentCreateDto,
   LessonContentDto,
   LessonContentUpdateDto,
-} from './lesson-content.dto';
+} from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.dto';
 import { TypeGuardError } from 'typia';
-import { IErrorResponse } from '../../../../../shared/types/response';
-import { SkipAuth } from '../../../../../core/decorators/skip-auth.decorator';
-import { ApiAuthHeaders, AuthHeaders } from '../../../../auth/auth.headers';
-import { Roles } from '../../../../../core/decorators/roles.decorator';
-import { RolesGuard } from '../../../../../core/guards/roles.guard';
+import { IErrorResponse } from '@src/shared/types/response';
+import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
+import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
+import { Roles } from '@src/core/decorators/roles.decorator';
+import { RolesGuard } from '@src/core/guards/roles.guard';
 
 @Controller(
   'v1/course/:courseId/chapter/:chapterId/lesson/:lessonId/lesson-content',

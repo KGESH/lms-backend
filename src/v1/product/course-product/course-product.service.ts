@@ -1,26 +1,26 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CourseProductRepository } from './course-product-repository.service';
 import {
   ICourseProduct,
   ICourseProductCreate,
-} from './course-product.interface';
-import { CourseProductSnapshotPricingRepository } from './course-product-snapshot-pricing.repository';
-import { CourseProductSnapshotDiscountRepository } from './course-product-snapshot-discount.repository';
-import { CourseProductSnapshotRepository } from './course-product-snapshot.repository';
-import { DrizzleService } from '../../../infra/db/drizzle.service';
-import { CourseProductQueryRepository } from './course-product-query.repository';
-import { IProductSnapshotCreate } from '../common/snapshot/conrse-product-snapshot.interface';
-import { IProductSnapshotPricingCreate } from '../common/snapshot/pricing/product-snapshot-pricing.interface';
-import { IProductSnapshotDiscountCreate } from '../common/snapshot/discount/product-snapshot-discount.interface';
-import { ICourseProductWithRelations } from './course-product-relations.interface';
-import { NonNullableInfer } from '../../../shared/types/non-nullable-infer';
-import { Optional } from '../../../shared/types/optional';
-import { CourseProductSnapshotContentRepository } from './course-product-snapshot-content.repository';
-import { IProductSnapshotContentCreate } from '../common/snapshot/content/product-snapshot-content.interface';
-import { CourseProductSnapshotAnnouncementRepository } from './course-product-snapshot-announcement.repository';
-import { CourseProductSnapshotRefundPolicyRepository } from './course-product-snapshot-refund-policy.repository';
-import { IProductSnapshotAnnouncementCreate } from '../common/snapshot/announcement/product-snapshot-announcement.interface';
-import { IProductSnapshotRefundPolicyCreate } from '../common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
+} from '@src/v1/product/course-product/course-product.interface';
+import { CourseProductRepository } from '@src/v1/product/course-product/course-product-repository.service';
+import { CourseProductSnapshotPricingRepository } from '@src/v1/product/course-product/course-product-snapshot-pricing.repository';
+import { CourseProductSnapshotDiscountRepository } from '@src/v1/product/course-product/course-product-snapshot-discount.repository';
+import { CourseProductSnapshotRepository } from '@src/v1/product/course-product/course-product-snapshot.repository';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { CourseProductQueryRepository } from '@src/v1/product/course-product/course-product-query.repository';
+import { IProductSnapshotCreate } from '@src/v1/product/common/snapshot/conrse-product-snapshot.interface';
+import { IProductSnapshotPricingCreate } from '@src/v1/product/common/snapshot/pricing/product-snapshot-pricing.interface';
+import { IProductSnapshotDiscountCreate } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
+import { ICourseProductWithRelations } from '@src/v1/product/course-product/course-product-relations.interface';
+import { NonNullableInfer } from '@src/shared/types/non-nullable-infer';
+import { Optional } from '@src/shared/types/optional';
+import { CourseProductSnapshotContentRepository } from '@src/v1/product/course-product/course-product-snapshot-content.repository';
+import { IProductSnapshotContentCreate } from '@src/v1/product/common/snapshot/content/product-snapshot-content.interface';
+import { CourseProductSnapshotAnnouncementRepository } from '@src/v1/product/course-product/course-product-snapshot-announcement.repository';
+import { CourseProductSnapshotRefundPolicyRepository } from '@src/v1/product/course-product/course-product-snapshot-refund-policy.repository';
+import { IProductSnapshotAnnouncementCreate } from '@src/v1/product/common/snapshot/announcement/product-snapshot-announcement.interface';
+import { IProductSnapshotRefundPolicyCreate } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
 
 @Injectable()
 export class CourseProductService {

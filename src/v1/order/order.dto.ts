@@ -4,8 +4,8 @@ import {
   ISO8601,
   Price,
   Uuid,
-} from '../../shared/types/primitive';
-import { CourseProductDto } from '../product/course-product/course-product.dto';
+} from '@src/shared/types/primitive';
+import { CourseProductDto } from '@src/v1/product/course-product/course-product.dto';
 
 export type OrderCourseDto = {
   id: Uuid;

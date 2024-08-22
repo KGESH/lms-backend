@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ChapterRepository } from './chapter.repository';
-import { IChapter } from './chapter.interface';
+import { ChapterRepository } from '@src/v1/course/chapter/chapter.repository';
+import { IChapter } from '@src/v1/course/chapter/chapter.interface';
 
 @Injectable()
 export class ChapterQueryService {

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { CourseProductModule } from './course-product/course-product.module';
+import { CourseProductModule } from '@src/v1/product/course-product/course-product.module';
 
 @Module({
   imports: [CourseProductModule],

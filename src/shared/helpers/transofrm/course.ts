@@ -1,9 +1,9 @@
-import { CourseWithRelationsDto } from '../../../v1/course/course-with-relations.dto';
-import { ICourseWithRelations } from '../../../v1/course/course-with-relations.interface';
-import * as date from '../../utils/date';
+import { CourseWithRelationsDto } from '@src/v1/course/course-with-relations.dto';
+import { ICourseWithRelations } from '@src/v1/course/course-with-relations.interface';
+import * as date from '@src/shared/utils/date';
 import { teacherToDto } from './teacher';
-import { ICourse } from '../../../v1/course/course.interface';
-import { CourseDto } from '../../../v1/course/course.dto';
+import { ICourse } from '@src/v1/course/course.interface';
+import { CourseDto } from '@src/v1/course/course.dto';
 
 export const courseToDto = (course: ICourse): CourseDto => {
   return {

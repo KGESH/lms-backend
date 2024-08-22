@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { IUser } from './user.interface';
 import { eq } from 'drizzle-orm';
-import { dbSchema } from '../../infra/db/schema';
-import { Pagination } from '../../shared/types/pagination';
-import { DrizzleService } from '../../infra/db/drizzle.service';
+import { IUser } from '@src/v1/user/user.interface';
+import { dbSchema } from '@src/infra/db/schema';
+import { Pagination } from '@src/shared/types/pagination';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
 
 @Injectable()
 export class UserQueryRepository {

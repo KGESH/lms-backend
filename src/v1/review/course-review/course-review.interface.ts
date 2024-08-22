@@ -1,5 +1,8 @@
-import { Uuid } from '../../../shared/types/primitive';
-import { IReviewCreate, IReviewSnapshotCreate } from '../review.interface';
+import { Uuid } from '@src/shared/types/primitive';
+import {
+  IReviewCreate,
+  IReviewSnapshotCreate,
+} from '@src/v1/review/review.interface';
 
 export type ICourseReviewCreate = {
   courseId: Uuid;

@@ -8,21 +8,21 @@ import {
   TypedQuery,
   TypedRoute,
 } from '@nestia/core';
+import { TypeGuardError } from 'typia';
 import {
   CategoryDto,
   CategoryQuery,
   CategoryWithChildrenDto,
   CreateCategoryDto,
   UpdateCategoryDto,
-} from './category.dto';
-import { Uuid } from '../../shared/types/primitive';
-import { TypeGuardError } from 'typia';
-import { IErrorResponse } from '../../shared/types/response';
-import { DEFAULT_PAGINATION } from '../../core/pagination.constant';
-import { SkipAuth } from '../../core/decorators/skip-auth.decorator';
-import { RolesGuard } from '../../core/guards/roles.guard';
-import { Roles } from '../../core/decorators/roles.decorator';
-import { ApiAuthHeaders, AuthHeaders } from '../auth/auth.headers';
+} from '@src/v1/category/category.dto';
+import { Uuid } from '@src/shared/types/primitive';
+import { IErrorResponse } from '@src/shared/types/response';
+import { DEFAULT_PAGINATION } from '@src/core/pagination.constant';
+import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
+import { RolesGuard } from '@src/core/guards/roles.guard';
+import { Roles } from '@src/core/decorators/roles.decorator';
+import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
 
 @Controller('v1/category')
 export class CategoryController {

@@ -1,6 +1,6 @@
-import { UInt, Uuid } from '../../../../shared/types/primitive';
-import { UiComponentDto } from '../ui-component.dto';
-import { UiRepeatTimer } from '../../category/ui-category.interface';
+import { UInt, Uuid } from '@src/shared/types/primitive';
+import { UiComponentDto } from '@src/v1/ui/component/ui-component.dto';
+import { UiRepeatTimer } from '@src/v1/ui/category/ui-category.interface';
 
 export type UiRepeatTimerDto = UiComponentDto<
   UiRepeatTimer,

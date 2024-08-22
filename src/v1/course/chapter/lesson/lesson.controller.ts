@@ -1,5 +1,4 @@
 import { Controller, UseGuards } from '@nestjs/common';
-import { LessonService } from './lesson.service';
 import {
   TypedBody,
   TypedException,
@@ -7,15 +6,20 @@ import {
   TypedParam,
   TypedRoute,
 } from '@nestia/core';
-import { LessonQueryService } from './lesson-query.service';
-import { Uuid } from '../../../../shared/types/primitive';
-import { LessonCreateDto, LessonDto, LessonUpdateDto } from './lesson.dto';
 import { TypeGuardError } from 'typia';
-import { IErrorResponse } from '../../../../shared/types/response';
-import { SkipAuth } from '../../../../core/decorators/skip-auth.decorator';
-import { ApiAuthHeaders, AuthHeaders } from '../../../auth/auth.headers';
-import { RolesGuard } from '../../../../core/guards/roles.guard';
-import { Roles } from '../../../../core/decorators/roles.decorator';
+import { LessonService } from '@src/v1/course/chapter/lesson/lesson.service';
+import { LessonQueryService } from '@src/v1/course/chapter/lesson/lesson-query.service';
+import { Uuid } from '@src/shared/types/primitive';
+import {
+  LessonCreateDto,
+  LessonDto,
+  LessonUpdateDto,
+} from '@src/v1/course/chapter/lesson/lesson.dto';
+import { IErrorResponse } from '@src/shared/types/response';
+import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
+import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
+import { RolesGuard } from '@src/core/guards/roles.guard';
+import { Roles } from '@src/core/decorators/roles.decorator';
 
 @Controller('v1/course/:courseId/chapter/:chapterId/lesson')
 export class LessonController {

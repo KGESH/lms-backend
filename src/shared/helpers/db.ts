@@ -1,5 +1,5 @@
-import { TransactionClient } from '../../infra/db/drizzle.types';
-import { IS_PRODUCTION } from '../utils/is-production';
+import { TransactionClient } from '@src/infra/db/drizzle.types';
+import { IS_PRODUCTION } from '@src/shared/utils/is-production';
 import { sql } from 'drizzle-orm';
 
 type TableNameRow = {

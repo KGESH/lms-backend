@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ILesson } from './lesson.interface';
-import { LessonQueryRepository } from './lesson-query.repository';
+import { ILesson } from '@src/v1/course/chapter/lesson/lesson.interface';
+import { LessonQueryRepository } from '@src/v1/course/chapter/lesson/lesson-query.repository';
 
 @Injectable()
 export class LessonQueryService {

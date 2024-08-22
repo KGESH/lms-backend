@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { dbSchema } from '../../../infra/db/schema';
+import { eq } from 'drizzle-orm';
+import { dbSchema } from '@src/infra/db/schema';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
 import {
   ICourseProduct,
   ICourseProductCreate,
-} from './course-product.interface';
-import { DrizzleService } from '../../../infra/db/drizzle.service';
-import { eq } from 'drizzle-orm';
+} from '@src/v1/product/course-product/course-product.interface';
 
 @Injectable()
 export class CourseProductRepository {

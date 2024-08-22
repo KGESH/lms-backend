@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ConfigsService } from './configs.service';
+import { ConfigsService } from '@src/configs/configs.service';
 import {
   DOT_ENV_DEVELOPMENT,
   DOT_ENV_TEST,

@@ -3,17 +3,17 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { ReviewRepository } from './review.repository';
-import { IReview, IReviewWithRelations } from './review.interface';
-import { ReviewSnapshotRepository } from './review-snapshot.repository';
-import { ReviewQueryRepository } from './review-query.repository';
-import { DrizzleService } from '../../infra/db/drizzle.service';
-import { OrderQueryRepository } from '../order/order-query.repository';
-import { UserService } from '../user/user.service';
-import { Pagination } from '../../shared/types/pagination';
-import { DEFAULT_PAGINATION } from '../../core/pagination.constant';
-import { ReviewAdminService } from './review-admin.service';
-import { ICourseReviewCreate } from './course-review/course-review.interface';
+import { OrderQueryRepository } from '@src/v1/order/order-query.repository';
+import { UserService } from '@src/v1/user/user.service';
+import { ReviewRepository } from '@src/v1/review/review.repository';
+import { IReview, IReviewWithRelations } from '@src/v1/review/review.interface';
+import { ReviewSnapshotRepository } from '@src/v1/review/review-snapshot.repository';
+import { ReviewQueryRepository } from '@src/v1/review/review-query.repository';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { Pagination } from '@src/shared/types/pagination';
+import { DEFAULT_PAGINATION } from '@src/core/pagination.constant';
+import { ReviewAdminService } from '@src/v1/review/review-admin.service';
+import { ICourseReviewCreate } from '@src/v1/review/course-review/course-review.interface';
 
 @Injectable()
 export class ReviewService {

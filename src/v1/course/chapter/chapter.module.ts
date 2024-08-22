@@ -1,15 +1,11 @@
 import { Module } from '@nestjs/common';
-import { ChapterController } from './chapter.controller';
-import { ChapterService } from './chapter.service';
-import { ChapterQueryService } from './chapter-query.service';
-import { ChapterRepository } from './chapter.repository';
-import { CourseModule } from '../course.module';
+import { CourseModule } from '@src/v1/course/course.module';
+import { ChapterController } from '@src/v1/course/chapter/chapter.controller';
+import { ChapterService } from '@src/v1/course/chapter/chapter.service';
+import { ChapterQueryService } from '@src/v1/course/chapter/chapter-query.service';
+import { ChapterRepository } from '@src/v1/course/chapter/chapter.repository';
 
-const providers = [
-  ChapterService,
-  ChapterQueryService,
-  ChapterRepository,
-];
+const providers = [ChapterService, ChapterQueryService, ChapterRepository];
 
 @Module({
   imports: [CourseModule],

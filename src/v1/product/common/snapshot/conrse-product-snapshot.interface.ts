@@ -1,5 +1,5 @@
-import { Uuid } from '../../../../shared/types/primitive';
-import { Optional } from '../../../../shared/types/optional';
+import { Uuid } from '@src/shared/types/primitive';
+import { Optional } from '@src/shared/types/optional';
 
 export type IProductSnapshot = {
   id: Uuid;

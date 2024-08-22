@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { DrizzleService } from '../../infra/db/drizzle.service';
-import { dbSchema } from '../../infra/db/schema';
 import * as typia from 'typia';
-import { IOrderRefund, IOrderRefundCreate } from './order-refund.interface';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { dbSchema } from '@src/infra/db/schema';
+import {
+  IOrderRefund,
+  IOrderRefundCreate,
+} from '@src/v1/order/order-refund.interface';
 
 @Injectable()
 export class OrderRefundRepository {

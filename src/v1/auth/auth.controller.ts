@@ -7,16 +7,16 @@ import {
   TypedRoute,
 } from '@nestia/core';
 import { LoginUserDto, SignUpUserDto, UpdateUserRoleDto } from './auth.dto';
-import { KakaoLoginDto } from './kakao-auth.dto';
-import { KakaoAuthService } from './kakao-auth.service';
-import { UserWithoutPasswordDto } from '../user/user.dto';
+import { KakaoLoginDto } from '@src/v1/auth/kakao-auth.dto';
+import { KakaoAuthService } from '@src/v1/auth/kakao-auth.service';
+import { UserWithoutPasswordDto } from '@src/v1/user/user.dto';
 import { TypeGuardError } from 'typia';
-import { IErrorResponse } from '../../shared/types/response';
-import { userToDto } from '../../shared/helpers/transofrm/user';
-import { SkipAuth } from '../../core/decorators/skip-auth.decorator';
-import { RolesGuard } from '../../core/guards/roles.guard';
-import { Roles } from '../../core/decorators/roles.decorator';
-import { ApiAuthHeaders, AuthHeaders } from './auth.headers';
+import { IErrorResponse } from '@src/shared/types/response';
+import { userToDto } from '@src/shared/helpers/transofrm/user';
+import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
+import { RolesGuard } from '@src/core/guards/roles.guard';
+import { Roles } from '@src/core/decorators/roles.decorator';
+import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
 
 @Controller('v1/auth')
 export class AuthController {

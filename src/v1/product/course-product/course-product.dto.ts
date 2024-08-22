@@ -1,9 +1,9 @@
-import { ISO8601, Uuid } from '../../../shared/types/primitive';
-import { ProductSnapshotDiscountDto } from '../common/snapshot/discount/product-snapshot-discount.dto';
-import { ProductSnapshotPricingDto } from '../common/snapshot/pricing/product-snapshot-pricing.dto';
-import { ProductSnapshotContentDto } from '../common/snapshot/content/product-snapshot-content.dto';
-import { ProductSnapshotAnnouncementDto } from '../common/snapshot/announcement/product-snapshot-announcement.dto';
-import { ProductSnapshotRefundPolicyDto } from '../common/snapshot/refund-policy/product-snapshot-refund-policy.dto';
+import { ISO8601, Uuid } from '@src/shared/types/primitive';
+import { ProductSnapshotDiscountDto } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.dto';
+import { ProductSnapshotPricingDto } from '@src/v1/product/common/snapshot/pricing/product-snapshot-pricing.dto';
+import { ProductSnapshotContentDto } from '@src/v1/product/common/snapshot/content/product-snapshot-content.dto';
+import { ProductSnapshotAnnouncementDto } from '@src/v1/product/common/snapshot/announcement/product-snapshot-announcement.dto';
+import { ProductSnapshotRefundPolicyDto } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.dto';
 
 export type CourseProductDto = {
   courseId: Uuid;

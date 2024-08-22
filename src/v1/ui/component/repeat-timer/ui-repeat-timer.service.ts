@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
+import { UiComponentService } from '@src/v1/ui/component/ui-component.service';
 import {
   IUiRepeatTimer,
   IUiRepeatTimerComponent,
   IUiRepeatTimerComponentCreate,
   IUiRepeatTimerComponentUpdate,
-} from './ui-repeat-timer.interface';
-import { TransactionClient } from '../../../../infra/db/drizzle.types';
-import { UiComponentService } from '../ui-component.service';
-import { UiRepeatTimerComponentRepository } from './ui-repeat-timer-component.repository';
+} from '@src/v1/ui/component/repeat-timer/ui-repeat-timer.interface';
+import { TransactionClient } from '@src/infra/db/drizzle.types';
+import { UiRepeatTimerComponentRepository } from '@src/v1/ui/component/repeat-timer/ui-repeat-timer-component.repository';
 
 @Injectable()
 export class UiRepeatTimerService {
