@@ -1,20 +1,17 @@
 import { INestApplication } from '@nestjs/common';
-import * as CourseAPI from '../../../src/api/functional/v1/course';
+import * as CourseAPI from '@src/api/functional/v1/course';
 import * as typia from 'typia';
 import { createTestingServer } from '../helpers/app.helper';
-import { Uri } from '../../../src/shared/types/primitive';
+import { Uri } from '@src/shared/types/primitive';
 import { createCategory } from '../helpers/db/lms/category.helper';
-import { DrizzleService } from '../../../src/infra/db/drizzle.service';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { createCourse, findCourse } from '../helpers/db/lms/course.helper';
-import { ICategoryCreate } from '../../../src/v1/category/category.interface';
+import { ICategoryCreate } from '@src/v1/category/category.interface';
 import { createTeacher } from '../helpers/db/lms/teacher.helper';
-import { ITeacherSignUp } from '../../../src/v1/teacher/teacher.interface';
-import { CourseCreateDto } from '../../../src/v1/course/course.dto';
-import {
-  ICourseCreate,
-  ICourseUpdate,
-} from '../../../src/v1/course/course.interface';
-import { ConfigsService } from '../../../src/configs/configs.service';
+import { ITeacherSignUp } from '@src/v1/teacher/teacher.interface';
+import { CourseCreateDto } from '@src/v1/course/course.dto';
+import { ICourseCreate, ICourseUpdate } from '@src/v1/course/course.interface';
+import { ConfigsService } from '@src/configs/configs.service';
 
 describe('CourseController (e2e)', () => {
   let host: Uri;

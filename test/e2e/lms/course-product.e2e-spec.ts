@@ -2,12 +2,12 @@ import { INestApplication } from '@nestjs/common';
 import * as CourseProductAPI from '../../../src/api/functional/v1/product/course';
 import * as typia from 'typia';
 import { createTestingServer } from '../helpers/app.helper';
-import { Uri } from '../../../src/shared/types/primitive';
-import { DrizzleService } from '../../../src/infra/db/drizzle.service';
+import { Uri } from '@src/shared/types/primitive';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { createRandomCourseProduct } from '../helpers/db/lms/course-product.helper';
-import { CreateCourseProductDto } from '../../../src/v1/product/course-product/course-product.dto';
+import { CreateCourseProductDto } from '@src/v1/product/course-product/course-product.dto';
 import { createRandomCourse } from '../helpers/db/lms/course.helper';
-import { ConfigsService } from '../../../src/configs/configs.service';
+import { ConfigsService } from '@src/configs/configs.service';
 
 describe('CourseProductController (e2e)', () => {
   let host: Uri;

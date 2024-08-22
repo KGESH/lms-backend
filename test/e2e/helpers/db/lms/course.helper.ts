@@ -1,21 +1,18 @@
-import { dbSchema } from '../../../../../src/infra/db/schema';
+import { dbSchema } from '@src/infra/db/schema';
 import { eq } from 'drizzle-orm';
-import {
-  ICourse,
-  ICourseCreate,
-} from '../../../../../src/v1/course/course.interface';
+import { ICourse, ICourseCreate } from '@src/v1/course/course.interface';
 import { createCategory } from './category.helper';
 import * as typia from 'typia';
-import { ICategoryCreate } from '../../../../../src/v1/category/category.interface';
+import { ICategoryCreate } from '@src/v1/category/category.interface';
 import { createTeacher } from './teacher.helper';
-import { ITeacherSignUp } from '../../../../../src/v1/teacher/teacher.interface';
-import { TransactionClient } from '../../../../../src/infra/db/drizzle.types';
+import { ITeacherSignUp } from '@src/v1/teacher/teacher.interface';
+import { TransactionClient } from '@src/infra/db/drizzle.types';
 import { createManyChapter } from './chapter.helper';
-import { IChapterCreate } from '../../../../../src/v1/course/chapter/chapter.interface';
+import { IChapterCreate } from '@src/v1/course/chapter/chapter.interface';
 import { createManyLesson } from './lesson.helper';
 import { createManyLessonContent } from './lesson-content.helper';
-import { ILessonContentCreate } from '../../../../../src/v1/course/chapter/lesson/lesson-content/lesson-content.interface';
-import { ILessonCreate } from '../../../../../src/v1/course/chapter/lesson/lesson.interface';
+import { ILessonContentCreate } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.interface';
+import { ILessonCreate } from '@src/v1/course/chapter/lesson/lesson.interface';
 
 export const findCourse = async (
   where: Pick<ICourse, 'id'>,

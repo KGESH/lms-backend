@@ -1,15 +1,15 @@
 import { INestApplication } from '@nestjs/common';
-import * as ChapterAPI from '../../../src/api/functional/v1/course/chapter';
+import * as ChapterAPI from '@src/api/functional/v1/course/chapter';
 import { createTestingServer } from '../helpers/app.helper';
-import { Uri } from '../../../src/shared/types/primitive';
-import { DrizzleService } from '../../../src/infra/db/drizzle.service';
+import { Uri } from '@src/shared/types/primitive';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { createChapter, findChapter } from '../helpers/db/lms/chapter.helper';
 import { createRandomCourse } from '../helpers/db/lms/course.helper';
 import {
   ChapterCreateDto,
   ChapterUpdateDto,
-} from '../../../src/v1/course/chapter/chapter.dto';
-import { ConfigsService } from '../../../src/configs/configs.service';
+} from '@src/v1/course/chapter/chapter.dto';
+import { ConfigsService } from '@src/configs/configs.service';
 import { seedUsers } from '../helpers/db/lms/user.helper';
 
 describe('ChapterController (e2e)', () => {
