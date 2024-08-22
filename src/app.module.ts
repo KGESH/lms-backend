@@ -14,6 +14,7 @@ import { ProductModule } from '@src/v1/product/product.module';
 import { OrderModule } from '@src/v1/order/order.module';
 import { FileModule } from '@src/v1/file/file.module';
 import { ReviewModule } from '@src/v1/review/review.module';
+import { UserCourseEnrollmentModule } from '@src/v1/user/course/enrollment/user-course-enrollment.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ReviewModule } from '@src/v1/review/review.module';
     ProductModule,
     OrderModule,
     ReviewModule,
+    UserCourseEnrollmentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

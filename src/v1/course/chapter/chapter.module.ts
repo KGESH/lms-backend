@@ -5,12 +5,14 @@ import { ChapterService } from '@src/v1/course/chapter/chapter.service';
 import { ChapterQueryService } from '@src/v1/course/chapter/chapter-query.service';
 import { ChapterRepository } from '@src/v1/course/chapter/chapter.repository';
 
+const modules = [CourseModule];
+
 const providers = [ChapterService, ChapterQueryService, ChapterRepository];
 
 @Module({
-  imports: [CourseModule],
+  imports: [...modules],
   controllers: [ChapterController],
   providers: [...providers],
-  exports: [...providers],
+  exports: [...modules, ...providers],
 })
 export class ChapterModule {}

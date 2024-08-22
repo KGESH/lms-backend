@@ -43,6 +43,13 @@
       "when": 1724172738592,
       "tag": "0005_naive_christian_walker",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1724309123364,
+      "tag": "0006_huge_crusher_hogan",
+      "breakpoints": true
     }
   ]
 }

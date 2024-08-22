@@ -10,6 +10,7 @@ import { NonNullableInfer } from '@src/shared/types/non-nullable-infer';
 import { IOrder } from '@src/v1/order/order.interface';
 import { createUuid } from '@src/shared/utils/uuid';
 import * as date from '@src/shared/utils/date';
+import { ICourseEnrollment } from '@src/v1/course/enrollment/course-enrollment.interface';
 
 @Injectable()
 export class CourseOrderPurchaseService {
@@ -24,6 +25,7 @@ export class CourseOrderPurchaseService {
     order: IOrder;
     courseOrder: ICourseOrder;
     courseProduct: NonNullableInfer<ICourseProductWithRelations>;
+    enrollment: ICourseEnrollment;
   }> {
     const paidAt = date.now('date');
 
@@ -37,10 +39,11 @@ export class CourseOrderPurchaseService {
       });
 
     const orderId = createUuid();
-    const { order, courseOrder } = await this.drizzle.db.transaction(
-      async (tx) => {
+    const { order, courseOrder, enrollment } =
+      await this.drizzle.db.transaction(async (tx) => {
         return await this.courseOrderService.createCourseOrder(
           {
+            courseId: params.courseId,
             orderCreateParams: {
               id: orderId,
               productType: 'course',
@@ -56,9 +59,8 @@ export class CourseOrderPurchaseService {
           },
           tx,
         );
-      },
-    );
+      });
 
-    return { order, courseOrder, courseProduct };
+    return { order, courseOrder, courseProduct, enrollment };
   }
 }

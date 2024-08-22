@@ -11,6 +11,7 @@ import { discountType, lessonContentType } from './enum';
 import { relations } from 'drizzle-orm';
 import { courseOrders } from './order';
 import { teachers } from './teacher';
+import { users } from '@src/infra/db/schema/user';
 
 export const courseCategories = pgTable('course_categories', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -133,6 +134,29 @@ export const courseProductSnapshotContents = pgTable(
     richTextContent: text('rich_text_content').notNull(),
   },
 );
+
+export const courseEnrollments = pgTable('course_enrollments', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull(),
+  courseId: uuid('course_id').notNull(),
+  createdAt: timestamp('created_at', {
+    mode: 'date',
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+});
+
+export const courseCertificates = pgTable('course_certificates', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  enrollmentId: uuid('enrollment_id').notNull(),
+  createdAt: timestamp('created_at', {
+    mode: 'date',
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+});
 
 export const courseCategoriesRelations = relations(
   courseCategories,
@@ -262,6 +286,31 @@ export const lessonContentsRelations = relations(lessonContents, ({ one }) => ({
   }),
 }));
 
+export const courseEnrollmentsRelations = relations(
+  courseEnrollments,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [courseEnrollments.userId],
+      references: [users.id],
+    }),
+    course: one(courses, {
+      fields: [courseEnrollments.courseId],
+      references: [courses.id],
+    }),
+    certificate: one(courseCertificates),
+  }),
+);
+
+export const courseCertificatesRelations = relations(
+  courseCertificates,
+  ({ one }) => ({
+    enrollment: one(courseEnrollments, {
+      fields: [courseCertificates.enrollmentId],
+      references: [courseEnrollments.id],
+    }),
+  }),
+);
+
 export const courseDbSchemas = {
   // Entities
   courseCategories,
@@ -276,6 +325,8 @@ export const courseDbSchemas = {
   courseProductSnapshotRefundPolicies,
   courseProductSnapshotPricing,
   courseProductSnapshotDiscounts,
+  courseEnrollments,
+  courseCertificates,
 
   // // Relations
   courseCategoriesRelations,
@@ -290,4 +341,6 @@ export const courseDbSchemas = {
   courseProductSnapshotRefundPoliciesRelations,
   courseProductSnapshotPricingRelations,
   courseProductSnapshotDiscountsRelations,
+  courseEnrollmentsRelations,
+  courseCertificatesRelations,
 };

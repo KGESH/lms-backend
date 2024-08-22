@@ -19,6 +19,14 @@ import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
+  /**
+   * 리뷰 목록을 조회합니다.
+   * Query 파라미터에 'productType'을 포함합니다.
+   * 'productType'을 기준으로 '강의 리뷰' 또는 'ebook 리뷰'를 조회합니다.
+   *
+   * @tag review
+   * @summary 리뷰 목록 조회
+   */
   @TypedRoute.Get('/')
   @SkipAuth()
   async getReviews(
@@ -33,6 +41,13 @@ export class ReviewController {
     return reviews.map(reviewToDto);
   }
 
+  /**
+   * 특정 리뷰를 조회합니다.
+   *
+   * @tag review
+   * @summary 특정 리뷰 조회
+   * @param id - 조회할 리뷰의 id
+   */
   @TypedRoute.Get('/:id')
   @SkipAuth()
   async getReview(
@@ -48,6 +63,12 @@ export class ReviewController {
     return reviewToDto(review);
   }
 
+  /**
+   * 리뷰를 생성합니다.
+   *
+   * @tag review
+   * @summary 리뷰 생성
+   */
   @TypedRoute.Post('/course')
   async createCourseReview(
     @TypedHeaders() headers: AuthHeaders,

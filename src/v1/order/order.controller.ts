@@ -3,7 +3,7 @@ import { TypedBody, TypedHeaders, TypedParam, TypedRoute } from '@nestia/core';
 import { CourseOrderPurchaseService } from '@src/v1/order/course/course-order-purchase.service';
 import { CourseOrderPurchaseDto } from '@src/v1/order/course/course-order-purchase.dto';
 import * as date from '@src/shared/utils/date';
-import { OrderDto } from '@src/v1/order/order.dto';
+import { OrderCourseDto, OrderDto } from '@src/v1/order/order.dto';
 import { toISOString } from '@src/shared/utils/date';
 import { Uuid } from '@src/shared/types/primitive';
 import { OrderService } from '@src/v1/order/order.service';
@@ -20,6 +20,15 @@ export class OrderController {
     private readonly courseOrderPurchaseService: CourseOrderPurchaseService,
   ) {}
 
+  /**
+   * 구매한 상품 주문 내역을 조회합니다. (미완성)
+   * 'course' 또는 'ebook' 주문 내역을 반환합니다.
+   * 현재 'course'만 조회 가능합니다.
+   *
+   * @tag order
+   * @summary 상품 주문 내역 조회
+   * @param id - 조회할 주문 내역의 id
+   */
   @TypedRoute.Get('/:id')
   async getOrder(
     @TypedHeaders() headers: AuthHeaders,
@@ -89,13 +98,21 @@ export class OrderController {
   // @TypedRoute.Post('/ebook')
   // async purchaseEbookProduct() {}
 
+  /**
+   * 강의 상품을 구매합니다. (미완성)
+   * PG사 결제 성공시 주문 내역을 반환합니다.
+   * 현재 PG사 결제는 미구현 상태이며 주문 내역만 반환합니다.
+   *
+   * @tag order
+   * @summary 강의 상품 구매 - Role('user')
+   */
   @TypedRoute.Post('/course')
   @Roles('user')
   @UseGuards(RolesGuard)
   async purchaseCourseProduct(
     @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: CourseOrderPurchaseDto,
-  ): Promise<OrderDto> {
+  ): Promise<OrderCourseDto> {
     const { order, courseProduct } =
       await this.courseOrderPurchaseService.purchaseCourse(body);
 
@@ -104,7 +121,6 @@ export class OrderController {
       paidAt: order.paidAt ? date.toISOString(order.paidAt) : null,
       productType: 'course',
       product: {
-        // id: courseProduct.id,
         courseId: courseProduct.courseId,
         snapshotId: courseProduct.lastSnapshot.id,
         title: courseProduct.lastSnapshot.title,
@@ -143,6 +159,17 @@ export class OrderController {
     };
   }
 
+  /**
+   * 구매한 상품을 환불합니다. (미완성)
+   * 주문 내역 금액 전체 환불과 부분 환불을 지원합니다.
+   * 부분 환불의 누적 환불 금액이 주문 내역의 금액을 초과하면 환불이 불가능합니다.
+   * PG사 환불 성공시 환불 내역을 반환합니다.
+   * 현재 PG사 환불은 미구현 상태이며 환불 내역만 반환합니다.
+   *
+   * @tag order
+   * @summary 상품 환불 - Role('user')
+   * @param id - 환불할 주문 내역의 id
+   */
   @TypedRoute.Post('/:id/refund')
   @Roles('admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)

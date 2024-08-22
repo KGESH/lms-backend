@@ -16,10 +16,12 @@ import {
 } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.dto';
 import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '@src/shared/types/response';
-import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
-import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
+import { AuthHeaders } from '@src/v1/auth/auth.headers';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
+import { SessionUser } from '@src/core/decorators/session-user.decorator';
+import { ISessionWithUser } from '@src/v1/auth/session.interface';
+import { CourseEnrollmentGuard } from '@src/core/guards/course-enrollment.guard';
 
 @Controller(
   'v1/course/:courseId/chapter/:chapterId/lesson/:lessonId/lesson-content',
@@ -30,14 +32,25 @@ export class LessonContentController {
     private readonly lessonContentQueryService: LessonContentQueryService,
   ) {}
 
+  /**
+   * 레슨 컨텐츠 목록을 조회합니다.
+   * 세션 사용자 role이 'user'라면 해당 'course'를 구매한 사용자만 조회할 수 있습니다.
+   * 제목, 설명, 컨텐츠 타입, 컨텐츠 URL, 메타데이터, 표기 순서 정보를 제공합니다.
+   *
+   * @tag lesson-content
+   * @summary 레슨 컨텐츠 목록 조회
+   * @param courseId - 조회할 레슨 컨텐츠가 속한 강의의 id
+   * @param chapterId - 조회할 레슨 컨텐츠가 속한 챕터의 id
+   * @param lessonId - 조회할 레슨 컨텐츠가 속한 레슨의 id
+   */
   @TypedRoute.Get('/')
-  @SkipAuth()
+  @UseGuards(CourseEnrollmentGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
   })
   async getLessonContents(
-    @TypedHeaders() headers: ApiAuthHeaders,
+    @TypedHeaders() headers: AuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
     @TypedParam('chapterId') chapterId: Uuid,
     @TypedParam('lessonId') lessonId: Uuid,
@@ -48,14 +61,27 @@ export class LessonContentController {
     return lessonContents;
   }
 
+  /**
+   * 특정 레슨 컨텐츠를 조회합니다.
+   * 세션 사용자 role이 'user'라면 해당 'course'를 구매한 사용자만 조회할 수 있습니다.
+   * 제목, 설명, 컨텐츠 타입, 컨텐츠 URL, 메타데이터, 표기 순서 정보를 제공합니다.
+   *
+   * @tag lesson-content
+   * @summary 특정 레슨 컨텐츠 조회
+   * @param courseId - 조회할 레슨 컨텐츠가 속한 강의의 id
+   * @param chapterId - 조회할 레슨 컨텐츠가 속한 챕터의 id
+   * @param lessonId - 조회할 레슨 컨텐츠가 속한 레슨의 id
+   * @param id - 조회할 레슨 컨텐츠의 id
+   */
   @TypedRoute.Get('/:id')
-  @SkipAuth()
+  @UseGuards(CourseEnrollmentGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
   })
   async getLessonContent(
-    @TypedHeaders() headers: ApiAuthHeaders,
+    @TypedHeaders() headers: AuthHeaders,
+    @SessionUser() session: ISessionWithUser,
     @TypedParam('courseId') courseId: Uuid,
     @TypedParam('chapterId') chapterId: Uuid,
     @TypedParam('lessonId') lessonId: Uuid,
@@ -68,6 +94,16 @@ export class LessonContentController {
     return lessonContent;
   }
 
+  /**
+   * 레슨 컨텐츠를 생성합니다.
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag lesson-content
+   * @summary 레슨 생성 - Role('admin', 'manager', 'teacher')
+   * @param courseId - 생성할 레슨 컨텐츠가 속한 강의의 id
+   * @param chapterId - 생성할 레슨 컨텐츠가 속한 챕터의 id
+   * @param lessonId - 생성할 레슨 컨텐츠가 속한 레슨의 id
+   */
   @TypedRoute.Post('/')
   @Roles('admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)
@@ -93,6 +129,17 @@ export class LessonContentController {
     return lessonContent;
   }
 
+  /**
+   * 레슨 컨텐츠를 수정합니다.
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag lesson-content
+   * @summary 레슨 컨텐츠 수정 - Role('admin', 'manager', 'teacher')
+   * @param courseId - 수정할 레슨 컨텐츠가 속한 강의의 id
+   * @param chapterId - 수정할 레슨 컨텐츠가 속한 챕터의 id
+   * @param lessonId - 수정할 레슨 컨텐츠가 속한 레슨의 id
+   * @param id - 수정할 레슨 컨텐츠의 id
+   */
   @TypedRoute.Patch('/:id')
   @Roles('admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)
@@ -119,6 +166,18 @@ export class LessonContentController {
     return lessonContent;
   }
 
+  /**
+   * 레슨 컨텐츠를 삭제합니다.
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   * Hard delete로 구현되어 있습니다.
+   *
+   * @tag lesson-content
+   * @summary 레슨 컨텐츠 삭제 - Role('admin', 'manager', 'teacher')
+   * @param courseId - 삭제할 레슨 컨텐츠가 속한 강의의 id
+   * @param chapterId - 삭제할 레슨 컨텐츠가 속한 챕터의 id
+   * @param lessonId - 삭제할 레슨 컨텐츠가 속한 레슨의 id
+   * @param id - 삭제할 레슨 컨텐츠의 id
+   */
   @TypedRoute.Delete('/:id')
   @Roles('admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)

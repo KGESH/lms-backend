@@ -28,6 +28,16 @@ export class LessonController {
     private readonly lessonQueryService: LessonQueryService,
   ) {}
 
+  /**
+   * 레슨 목록을 조회합니다.
+   * 로그인 없이 조회할 수 있습니다.
+   * 레슨 제목, 설명, 표기 순서 정보를 제공합니다.
+   *
+   * @tag lesson
+   * @summary 레슨 목록 조회 (public)
+   * @param courseId - 조회할 레슨이 속한 강의의 id
+   * @param chapterId - 조회할 레슨이 속한 챕터의 id
+   */
   @TypedRoute.Get('/')
   @SkipAuth()
   @TypedException<TypeGuardError>({
@@ -45,6 +55,17 @@ export class LessonController {
     return lessons;
   }
 
+  /**
+   * 특정 레슨을 조회합니다.
+   * 로그인 없이 조회할 수 있습니다.
+   * 레슨 제목, 설명, 표기 순서 정보를 제공합니다.
+   *
+   * @tag lesson
+   * @summary 특정 레슨 조회 (public)
+   * @param courseId - 조회할 레슨이 속한 강의의 id
+   * @param chapterId - 조회할 레슨이 속한 챕터의 id
+   * @param id - 조회할 레슨의 id
+   */
   @TypedRoute.Get('/:id')
   @SkipAuth()
   @TypedException<TypeGuardError>({
@@ -63,6 +84,16 @@ export class LessonController {
     return lesson;
   }
 
+  /**
+   * 레슨을 생성합니다.
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   * 레슨 생성 이후 'lesson content'를 생성해야 합니다.
+   *
+   * @tag lesson
+   * @summary 레슨 생성 - Role('admin', 'manager', 'teacher')
+   * @param courseId - 생성할 레슨이 속한 강의의 id
+   * @param chapterId - 생성할 레슨이 속한 챕터의 id
+   */
   @TypedRoute.Post('/')
   @Roles('admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)
@@ -87,6 +118,15 @@ export class LessonController {
     return lesson;
   }
 
+  /**
+   * 레슨을 수정합니다.
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag lesson
+   * @summary 레슨 수정 - Role('admin', 'manager', 'teacher')
+   * @param courseId - 수정할 레슨이 속한 강의의 id
+   * @param chapterId - 수정할 레슨이 속한 챕터의 id
+   */
   @TypedRoute.Patch('/:id')
   @Roles('admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)
@@ -115,6 +155,18 @@ export class LessonController {
     return lesson;
   }
 
+  /**
+   * 레슨을 삭제합니다.
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   * Hard delete로 구현되어 있습니다.
+   * 레슨을 삭제하면 레슨에 속한 모든 'lesson content'도 함께 삭제됩니다.
+   *
+   * @tag lesson
+   * @summary 레슨 삭제 - Role('admin', 'manager', 'teacher')
+   * @param courseId - 삭제할 레슨이 속한 강의의 id
+   * @param chapterId - 삭제할 레슨이 속한 챕터의 id
+   * @param id - 삭제할 챕터의 id
+   */
   @TypedRoute.Delete('/:id')
   @Roles('admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)

@@ -43,7 +43,10 @@ export class CourseRepository {
     });
   }
 
-  async create(params: ICourseCreate, db = this.drizzle.db): Promise<ICourse> {
+  async createCourse(
+    params: ICourseCreate,
+    db = this.drizzle.db,
+  ): Promise<ICourse> {
     const [course] = await db
       .insert(dbSchema.courses)
       .values(params)
@@ -51,7 +54,7 @@ export class CourseRepository {
     return course;
   }
 
-  async update(
+  async updateCourse(
     where: Pick<ICourse, 'id'>,
     params: ICourseUpdate,
     db = this.drizzle.db,
@@ -64,7 +67,7 @@ export class CourseRepository {
     return updated;
   }
 
-  async delete(
+  async deleteCourse(
     where: Pick<ICourse, 'id'>,
     db = this.drizzle.db,
   ): Promise<ICourse> {

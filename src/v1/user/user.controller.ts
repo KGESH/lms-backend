@@ -23,6 +23,13 @@ export class UserController {
   private readonly logger = new Logger(UserController.name);
   constructor(private readonly userService: UserService) {}
 
+  /**
+   * 사용자 목록을 조회합니다.
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag user
+   * @summary 사용자 목록 조회 - Role('admin', 'manager', 'teacher')
+   */
   @TypedRoute.Get('/')
   @Roles('admin', 'manager', 'teacher')
   @TypedException<IErrorResponse<403>>({
@@ -41,6 +48,13 @@ export class UserController {
     return users.map(userToDto);
   }
 
+  /**
+   * 현재 세션 사용자를 조회합니다.
+   * 조회할 대상의 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag user
+   * @summary 현재 세션 사용자 조회
+   */
   @TypedRoute.Get('/me')
   @TypedException<IErrorResponse<401>>({
     status: 401,
@@ -53,6 +67,14 @@ export class UserController {
     return userToDto(session.user);
   }
 
+  /**
+   * 특정 사용자를 조회합니다.
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag user
+   * @summary 특정 사용자 조회 - Role('admin', 'manager', 'teacher')
+   * @param id - 조회할 사용자의 id
+   */
   @TypedRoute.Get('/:id')
   @Roles('admin', 'manager', 'teacher')
   @TypedException<IErrorResponse<403>>({

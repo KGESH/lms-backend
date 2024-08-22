@@ -36,6 +36,14 @@ export class CourseController {
     private readonly courseQueryService: CourseQueryService,
   ) {}
 
+  /**
+   * 강의 목록을 조회합니다.
+   * 로그인 없이 조회할 수 있습니다.
+   * 강의 제목과 설명 정도의 간단한 정보만을 제공합니다.
+   *
+   * @tag course
+   * @summary 강의 목록 조회 (public)
+   */
   @TypedRoute.Get('/')
   @SkipAuth()
   async getCourses(
@@ -49,6 +57,15 @@ export class CourseController {
     return courses.map(courseToDto);
   }
 
+  /**
+   * 특정 강의를 조회합니다.
+   * 로그인 없이 조회할 수 있습니다.
+   * 강의 제목과 설명 정도의 간단한 정보만을 제공합니다.
+   *
+   * @tag course
+   * @summary 특정 강의 조회 (public)
+   * @param id - 조회할 강의의 id
+   */
   @TypedRoute.Get('/:id')
   @SkipAuth()
   async getCourse(
@@ -66,6 +83,14 @@ export class CourseController {
     return courseRelationsToDto(course);
   }
 
+  /**
+   * 강의를 생성합니다.
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   * 강의 생성 이후 'chapter', 'lesson', 'lesson content' 순서로 생성해야 합니다.
+   *
+   * @tag course
+   * @summary 강의 생성 - Role('admin', 'manager', 'teacher')
+   */
   @TypedRoute.Post('/')
   @Roles('admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)
@@ -85,6 +110,14 @@ export class CourseController {
     return courseToDto(course);
   }
 
+  /**
+   * 강의를 수정합니다.
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   * 카테고리, 강의 제목, 강의 설명을 수정할 수 있습니다.
+   *
+   * @tag course
+   * @summary 강의 수정 - Role('admin', 'manager', 'teacher')
+   */
   @TypedRoute.Patch('/:id')
   @Roles('admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)
@@ -105,6 +138,17 @@ export class CourseController {
     return courseToDto(course);
   }
 
+  /**
+   * 강의를 삭제합니다. (미완성)
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   * 현재 Hard delete로 구현되어 있습니다.
+   * Soft delete 구현 예정입니다.
+   *
+   * @tag course
+   * @summary 강의 삭제 - Role('admin', 'manager', 'teacher')
+   * @deprecated
+   * @param id - 삭제할 강의의 id
+   */
   @TypedRoute.Delete('/:id')
   @Roles('admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)

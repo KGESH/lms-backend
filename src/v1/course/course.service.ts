@@ -35,7 +35,7 @@ export class CourseService {
       throw new NotFoundException('Teacher not found');
     }
 
-    return await this.courseRepository.create(params, tx);
+    return await this.courseRepository.createCourse(params, tx);
   }
 
   async updateCourse(
@@ -49,7 +49,7 @@ export class CourseService {
       throw new NotFoundException('Course not found');
     }
 
-    return await this.courseRepository.update(where, params, tx);
+    return await this.courseRepository.updateCourse(where, params, tx);
   }
 
   async deleteCourse(
@@ -62,6 +62,6 @@ export class CourseService {
       throw new NotFoundException('Course not found');
     }
 
-    return await this.courseRepository.delete(where, tx);
+    return await this.courseRepository.deleteCourse(where, tx);
   }
 }

@@ -6,6 +6,8 @@ import { LessonContentQueryService } from '@src/v1/course/chapter/lesson/lesson-
 import { LessonContentRepository } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.repository';
 import { LessonContentQueryRepository } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content-query.repository';
 
+const modules = [LessonModule];
+
 const providers = [
   LessonContentService,
   LessonContentQueryService,
@@ -14,9 +16,9 @@ const providers = [
 ];
 
 @Module({
-  imports: [LessonModule],
+  imports: [...modules],
   controllers: [LessonContentController],
   providers: [...providers],
-  exports: [...providers],
+  exports: [...modules, ...providers],
 })
 export class LessonContentModule {}
