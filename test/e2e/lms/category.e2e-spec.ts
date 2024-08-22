@@ -224,6 +224,7 @@ describe('CategoryController (e2e)', () => {
           headers: { LmsSecret },
         },
         categoryId,
+        { withChildren: false },
       );
       if (!getResponse.success) {
         throw new Error('assert');
