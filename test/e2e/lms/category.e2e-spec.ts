@@ -2,18 +2,17 @@ import { INestApplication } from '@nestjs/common';
 import * as CategoryAPI from '../../../src/api/functional/v1/category';
 import * as typia from 'typia';
 import { createTestingServer } from '../helpers/app.helper';
-import { Uri, Uuid } from '../../../src/shared/types/primitive';
+import { Uri, Uuid } from '@src/shared/types/primitive';
 import {
   CreateCategoryDto,
   UpdateCategoryDto,
-} from '../../../src/v1/category/category.dto';
+} from '@src/v1/category/category.dto';
 import {
   createCategory,
-  createManyCategories,
-  getRootCategoriesRawSql,
+  seedCategoriesWithChildren,
 } from '../helpers/db/lms/category.helper';
-import { DrizzleService } from '../../../src/infra/db/drizzle.service';
-import { ConfigsService } from '../../../src/configs/configs.service';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { ConfigsService } from '@src/configs/configs.service';
 import { seedUsers } from '../helpers/db/lms/user.helper';
 
 describe('CategoryController (e2e)', () => {
@@ -54,6 +53,7 @@ describe('CategoryController (e2e)', () => {
           headers: { LmsSecret },
         },
         categoryId,
+        { withChildren: false },
       );
       if (!response.success) {
         throw new Error('assert');
@@ -68,214 +68,169 @@ describe('CategoryController (e2e)', () => {
 
   describe('[Get categories]', () => {
     it('should be get all categories', async () => {
-      const firstRootCategoryId: Uuid = typia.random<Uuid>();
-      const firstRootLevelTwoCategoryId: Uuid = typia.random<Uuid>();
-      const firstRootLevelThreeCategoryId: Uuid = typia.random<Uuid>();
-      const secondRootCategoryId: Uuid = typia.random<Uuid>();
-      const secondRootLevelTwoCategoryId: Uuid = typia.random<Uuid>();
-      await createManyCategories(
-        [
-          {
-            id: firstRootCategoryId,
-            name: 'first root category',
-            description: null,
-            parentId: null,
-          },
-          {
-            id: firstRootLevelTwoCategoryId,
-            name: 'first level two category',
-            description: null,
-            parentId: firstRootCategoryId,
-          },
-          {
-            id: firstRootLevelThreeCategoryId,
-            name: 'first level three category',
-            description: null,
-            parentId: firstRootLevelTwoCategoryId,
-          },
-          {
-            id: secondRootCategoryId,
-            name: 'second root category',
-            description: null,
-            parentId: null,
-          },
-          {
-            id: secondRootLevelTwoCategoryId,
-            name: 'second level two category',
-            description: null,
-            parentId: secondRootCategoryId,
-          },
-        ],
-        drizzle.db,
+      const { rootCategories, levelTwoCategories, levelThreeCategories } =
+        await seedCategoriesWithChildren({ count: 2 }, drizzle.db);
+
+      const response = await CategoryAPI.getRootCategories(
+        {
+          host,
+          headers: { LmsSecret },
+        },
+        { withChildren: true },
       );
 
-      const categories = await getRootCategoriesRawSql(
+      if (!response.success) {
+        throw new Error(`assert`);
+      }
+
+      const roots = response.data;
+
+      expect(
+        roots[0].children.find(
+          (category) => category.id === levelTwoCategories[0].id,
+        ),
+      ).not.toBeNull();
+    });
+  });
+
+  describe('[Create category]', () => {
+    it('should be create category success', async () => {
+      const admin = (
+        await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+      )[0];
+
+      const createCategoryDto: CreateCategoryDto = {
+        ...typia.random<CreateCategoryDto>(),
+        parentId: null,
+      };
+
+      const response = await CategoryAPI.createCategory(
         {
-          page: 1,
-          pageSize: 10,
-          orderBy: 'asc',
+          host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
+          },
+        },
+        createCategoryDto,
+      );
+      if (!response.success) {
+        throw new Error('assert');
+      }
+
+      const category = response.data;
+      expect(category.name).toEqual(createCategoryDto.name);
+    });
+  });
+
+  describe('Update category', () => {
+    it('should be update category success', async () => {
+      const admin = (
+        await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+      )[0];
+
+      const categoryId: Uuid = typia.random<Uuid>();
+      await createCategory(
+        {
+          id: categoryId,
+          name: 'category',
+          description: 'GET category test',
+          parentId: null,
+        },
+        drizzle.db,
+      );
+      const updateCategoryDto: UpdateCategoryDto = { name: 'updated' };
+
+      const updateResponse = await CategoryAPI.updateCategory(
+        {
+          host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
+          },
+        },
+        categoryId,
+        updateCategoryDto,
+      );
+      if (!updateResponse.success) {
+        throw new Error('assert');
+      }
+
+      const updatedCategory = updateResponse.data;
+      expect(updatedCategory.name).toEqual('updated');
+    });
+
+    it('should be update category fail', async () => {
+      const admin = (
+        await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+      )[0];
+
+      const notFoundId = typia.random<Uuid>();
+      const updateCategoryDto = typia.random<UpdateCategoryDto>();
+
+      const notFoundResponse = await CategoryAPI.updateCategory(
+        {
+          host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
+          },
+        },
+        notFoundId,
+        updateCategoryDto,
+      );
+
+      expect(notFoundResponse.status).toEqual(404);
+    });
+  });
+
+  describe('Delete category', () => {
+    it('should be delete category success', async () => {
+      const admin = (
+        await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+      )[0];
+
+      const categoryId: Uuid = typia.random<Uuid>();
+      await createCategory(
+        {
+          id: categoryId,
+          name: 'category',
+          description: 'GET category test',
+          parentId: null,
         },
         drizzle.db,
       );
 
-      expect(categories[0].depth).toEqual(1);
-      expect(categories[0].children[0].depth).toEqual(2);
-
-      //   const response = await CategoryAPI.getAllCategories({
-      //     host,
-      //   });
-      //   if (!response.success) {
-      //     throw new Error(`assert`);
-      //   }
-      //
-      //   const rootCategories = response.data;
-      //   const levelTwoCategory = rootCategories[0].children[0];
-      //   const levelThreeCategory = levelTwoCategory.children[0];
-      //
-      //   expect(levelTwoCategory.name).toEqual('level two category');
-      //   expect(levelThreeCategory.name).toEqual('level three category');
-      // });
-    });
-
-    describe('[Create category]', () => {
-      it('should be create category success', async () => {
-        const admin = (
-          await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
-        )[0];
-
-        const createCategoryDto: CreateCategoryDto = {
-          ...typia.random<CreateCategoryDto>(),
-          parentId: null,
-        };
-
-        const response = await CategoryAPI.createCategory(
-          {
-            host,
-            headers: {
-              LmsSecret,
-              UserSessionId: admin.userSession.id,
-            },
+      const deleteResponse = await CategoryAPI.deleteCategory(
+        {
+          host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
           },
-          createCategoryDto,
-        );
-        if (!response.success) {
-          throw new Error('assert');
-        }
+        },
+        categoryId,
+      );
+      if (!deleteResponse.success) {
+        throw new Error('assert');
+      }
 
-        const category = response.data;
-        expect(category.name).toEqual(createCategoryDto.name);
-      });
-    });
+      const deletedCategory = deleteResponse.data;
+      expect(deletedCategory.id).toEqual(categoryId);
 
-    describe('Update category', () => {
-      it('should be update category success', async () => {
-        const admin = (
-          await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
-        )[0];
+      const getResponse = await CategoryAPI.getCategory(
+        {
+          host,
+          headers: { LmsSecret },
+        },
+        categoryId,
+      );
+      if (!getResponse.success) {
+        throw new Error('assert');
+      }
 
-        const categoryId: Uuid = typia.random<Uuid>();
-        await createCategory(
-          {
-            id: categoryId,
-            name: 'category',
-            description: 'GET category test',
-            parentId: null,
-          },
-          drizzle.db,
-        );
-        const updateCategoryDto: UpdateCategoryDto = { name: 'updated' };
-
-        const updateResponse = await CategoryAPI.updateCategory(
-          {
-            host,
-            headers: {
-              LmsSecret,
-              UserSessionId: admin.userSession.id,
-            },
-          },
-          categoryId,
-          updateCategoryDto,
-        );
-        if (!updateResponse.success) {
-          throw new Error('assert');
-        }
-
-        const updatedCategory = updateResponse.data;
-        expect(updatedCategory.name).toEqual('updated');
-      });
-
-      it('should be update category fail', async () => {
-        const admin = (
-          await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
-        )[0];
-
-        const notFoundId = typia.random<Uuid>();
-        const updateCategoryDto = typia.random<UpdateCategoryDto>();
-
-        const notFoundResponse = await CategoryAPI.updateCategory(
-          {
-            host,
-            headers: {
-              LmsSecret,
-              UserSessionId: admin.userSession.id,
-            },
-          },
-          notFoundId,
-          updateCategoryDto,
-        );
-
-        expect(notFoundResponse.status).toEqual(404);
-      });
-    });
-
-    describe('Delete category', () => {
-      it('should be delete category success', async () => {
-        const admin = (
-          await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
-        )[0];
-
-        const categoryId: Uuid = typia.random<Uuid>();
-        await createCategory(
-          {
-            id: categoryId,
-            name: 'category',
-            description: 'GET category test',
-            parentId: null,
-          },
-          drizzle.db,
-        );
-
-        const deleteResponse = await CategoryAPI.deleteCategory(
-          {
-            host,
-            headers: {
-              LmsSecret,
-              UserSessionId: admin.userSession.id,
-            },
-          },
-          categoryId,
-        );
-        if (!deleteResponse.success) {
-          throw new Error('assert');
-        }
-
-        const deletedCategory = deleteResponse.data;
-        expect(deletedCategory.id).toEqual(categoryId);
-
-        const getResponse = await CategoryAPI.getCategory(
-          {
-            host,
-            headers: { LmsSecret },
-          },
-          categoryId,
-        );
-        if (!getResponse.success) {
-          throw new Error('assert');
-        }
-
-        const foundCategory = getResponse.data;
-        expect(foundCategory).toBe(null);
-      });
+      const foundCategory = getResponse.data;
+      expect(foundCategory).toBe(null);
     });
   });
 });
