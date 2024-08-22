@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@nestia/fetcher':
-        specifier: ^3.9.0
-        version: 3.9.0(typescript@5.5.2)
+        specifier: ^3.11.1
+        version: 3.11.2(typescript@5.5.2)
       typia:
-        specifier: ^6.6.0
-        version: 6.6.0(typescript@5.5.2)
+        specifier: ^6.8.0
+        version: 6.9.0(typescript@5.5.2)
     devDependencies:
       rimraf:
         specifier: ^6.0.1
@@ -31,8 +31,8 @@ packages:
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
     engines: {node: '>=12'}
 
-  '@nestia/fetcher@3.9.0':
-    resolution: {integrity: sha512-T/4btGDhnWd1mfIAd7ZdVflE7hZ8RWeObPG+rJbf0esygpMMXt13mhGBe/MLFawUMlggzssCpdzgcZ1qVqGmEw==}
+  '@nestia/fetcher@3.11.2':
+    resolution: {integrity: sha512-vzz0gA98bn9qFmJ1A3PJOlwOgf0KzoS2hPby2pT3huvwqnj4ZizWYcce4OSbI0vpARPJEnNhBSLIvmm9Flo3jg==}
     peerDependencies:
       typescript: '>= 4.8.0'
 
@@ -40,8 +40,8 @@ packages:
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
 
-  '@samchon/openapi@0.4.3':
-    resolution: {integrity: sha512-FyXEYRD/y9YND1AkpshAzdGpp/zKAIHI7RNrH4rnjaJP2hi2Yqz8OXquTW3PUOnqlos3jSwR3b2nKLohyTjp6w==}
+  '@samchon/openapi@0.4.6':
+    resolution: {integrity: sha512-dfeE8Zdpv+FG+znq1883m1wtN2A6Cughjzm+QYZXJSw+g3ddEhkbCwgkH29o5M6jOGunKaN1R15PZjfrSdP5zw==}
 
   ansi-escapes@4.3.2:
     resolution: {integrity: sha512-gKXj5ALrKWQLsYG9jlTRmR/xKluxHV+Z9QEwNIgCfM1/uwPMCuzVVnh5mwTd+OuBZcwSIMbqssNWRm1lE51QaQ==}
@@ -398,8 +398,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  typia@6.6.0:
-    resolution: {integrity: sha512-IvPs6PTpa8uaMJEFye0DJ0WiNLAQJAsTXvFxbaMC+13aFNiPnAH1LD7W4sxmO6mRuSSBNsltcwu1O5f2m8FTkQ==}
+  typia@6.9.0:
+    resolution: {integrity: sha512-Vgo3CmE9XZhb/zsrW6Q4IQk7JeJk+ZVGxu/T4QZdI/PEokOpn00mGFMk9hhXNA27jrYC0NCgalO+YcZYsR5nGw==}
     hasBin: true
     peerDependencies:
       typescript: '>=4.8.0 <5.6.0'
@@ -442,15 +442,15 @@ snapshots:
       wrap-ansi: 8.1.0
       wrap-ansi-cjs: wrap-ansi@7.0.0
 
-  '@nestia/fetcher@3.9.0(typescript@5.5.2)':
+  '@nestia/fetcher@3.11.2(typescript@5.5.2)':
     dependencies:
-      '@samchon/openapi': 0.4.3
+      '@samchon/openapi': 0.4.6
       typescript: 5.5.2
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
-  '@samchon/openapi@0.4.3': {}
+  '@samchon/openapi@0.4.6': {}
 
   ansi-escapes@4.3.2:
     dependencies:
@@ -786,9 +786,9 @@ snapshots:
 
   typescript@5.5.2: {}
 
-  typia@6.6.0(typescript@5.5.2):
+  typia@6.9.0(typescript@5.5.2):
     dependencies:
-      '@samchon/openapi': 0.4.3
+      '@samchon/openapi': 0.4.6
       commander: 10.0.1
       comment-json: 4.2.4
       inquirer: 8.2.6

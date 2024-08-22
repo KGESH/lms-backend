@@ -89,7 +89,10 @@
         "transform": "typia/lib/transform"
       }
     ],
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "paths": {
+      "@src/*": ["../../src/*"]
+    }
   },
   "include": ["../../src/api", "../../src/shared/types/lucia-auth.ts"]
 }
