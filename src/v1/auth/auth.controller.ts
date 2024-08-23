@@ -27,7 +27,29 @@ export class AuthController {
     private readonly kakaoAuthService: KakaoAuthService,
   ) {}
 
+  /**
+   * 카카오 계정으로 로그인합니다.
+   *
+   * 프론트엔드에서 카카오 oauth 토큰 발급 (카카오 로그인 버튼 클릭) 성공 이후
+   *
+   * 카카오 사용자 조회하여 없으면 회원가입, 있으면 로그인 처리합니다.
+   *
+   * 이미 가입된 이메일 로그인 계정이 존재하면 409 예외를 반환합니다.
+   *
+   * @tag auth
+   * @summary 카카오 로그인
+   */
   @TypedRoute.Post('/kakao/login')
+  @TypedRoute.Post('/login')
+  @SkipAuth()
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<404>>({
+    status: 409,
+    description: 'User already exists',
+  })
   @SkipAuth()
   async kakaoLogin(
     @TypedHeaders() headers: ApiAuthHeaders,
@@ -37,6 +59,14 @@ export class AuthController {
     return userToDto(user);
   }
 
+  /**
+   * 이메일 계정으로 로그인합니다.
+   *
+   * 이메일 또는 패스워드가 일치하지 않으면 404 예외를 반환합니다.
+   *
+   * @tag auth
+   * @summary 이메일 계정 로그인
+   */
   @TypedRoute.Post('/login')
   @SkipAuth()
   @TypedException<TypeGuardError>({
@@ -51,12 +81,18 @@ export class AuthController {
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedBody() body: LoginUserDto,
   ): Promise<UserWithoutPasswordDto> {
-    this.logger.log('Login request received', body);
-
     const user = await this.authService.login(body);
     return userToDto(user);
   }
 
+  /**
+   * 이메일 계정으로 회원가입합니다.
+   *
+   * 이미 가입된 이메일이 존재하면 409 예외를 반환합니다.
+   *
+   * @tag auth
+   * @summary 이메일 계정 회원가입
+   */
   @TypedRoute.Post('/signup')
   @SkipAuth()
   @TypedException<TypeGuardError>({
@@ -76,6 +112,14 @@ export class AuthController {
     return userToDto(user);
   }
 
+  /**
+   * 특정 사용자의 권한을 변경합니다.
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag auth
+   * @summary 사용자 권한 변경 - Role('admin', 'manager')
+   */
   @TypedRoute.Patch('/role')
   @Roles('admin', 'manager')
   @UseGuards(RolesGuard)

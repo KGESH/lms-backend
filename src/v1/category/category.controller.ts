@@ -104,6 +104,14 @@ export class CategoryController {
     return category;
   }
 
+  /**
+   * 강의 카테고리를 생성합니다.
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag category
+   * @summary 강의 카테고리 생성 - Role('admin', 'manager')
+   */
   @TypedRoute.Post('/')
   @Roles('admin', 'manager')
   @UseGuards(RolesGuard)

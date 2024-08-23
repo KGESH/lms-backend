@@ -43,6 +43,8 @@ export class CourseController {
    *
    * 강의 제목과 설명 정도의 간단한 정보만을 제공합니다.
    *
+   * Query parameter 'categoryId' 속성을 설정해 해당 카테고리에 속하는 강의 목록만 조회할 수도 있습니다.
+   *
    * @tag course
    * @summary 강의 목록 조회 (public)
    */

@@ -35,9 +35,18 @@ export class CourseRepository {
     return course;
   }
 
-  async findManyCourses(pagination: Pagination): Promise<ICourse[]> {
+  async findManyCourses(
+    params: Pagination & Partial<Pick<ICourse, 'categoryId'>>,
+  ): Promise<ICourse[]> {
+    const { categoryId, ...pagination } = params;
     return await this.drizzle.db.query.courses.findMany({
-      orderBy: (course, { desc }) => desc(course.createdAt),
+      where: categoryId
+        ? eq(dbSchema.courses.categoryId, categoryId)
+        : undefined,
+      orderBy: (course, { asc, desc }) =>
+        pagination.orderBy === 'desc'
+          ? desc(course.createdAt)
+          : asc(course.createdAt),
       limit: pagination.pageSize,
       offset: (pagination.page - 1) * pagination.pageSize,
     });

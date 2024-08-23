@@ -12,8 +12,10 @@ export class CourseQueryService {
     private readonly courseQueryRepository: CourseQueryRepository,
   ) {}
 
-  async findCourses(pagination: Pagination): Promise<ICourse[]> {
-    return await this.courseRepository.findManyCourses(pagination);
+  async findCourses(
+    params: Pagination & Partial<Pick<ICourse, 'categoryId'>>,
+  ): Promise<ICourse[]> {
+    return await this.courseRepository.findManyCourses(params);
   }
 
   async findCourseById(where: Pick<ICourse, 'id'>): Promise<ICourse | null> {
