@@ -7,6 +7,12 @@ import { SkipApiGuard } from '@src/core/decorators/skip-api-guard';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  /**
+   * Ping
+   *
+   * @tag ping
+   * @summary Ping (public)
+   */
   @Get()
   @SkipAuth()
   @SkipApiGuard()

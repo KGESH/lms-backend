@@ -127,6 +127,15 @@ export class CategoryController {
     return category;
   }
 
+  /**
+   * 강의 카테고리를 수정합니다.
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag category
+   * @summary 강의 카테고리 수정 - Role('admin', 'manager')
+   * @param id - 수정할 강의 카테고리의 id
+   */
   @TypedRoute.Patch('/:id')
   @Roles('admin', 'manager')
   @UseGuards(RolesGuard)
@@ -147,6 +156,21 @@ export class CategoryController {
     return category;
   }
 
+  /**
+   * 강의 카테고리를 삭제합니다.
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * Hard delete로 구현되어 있습니다.
+   *
+   * 삭제 대상 카테고리와 연관된 강의가 존재하면 403 예외를 반환합니다.
+   *
+   * 삭제 대상 카테고리와 연관된 강의를 먼저 삭제해야 합니다.
+   *
+   * @tag category
+   * @summary 강의 카테고리 삭제 - Role('admin', 'manager')
+   * @param id - 삭제할 강의 카테고리의 id
+   */
   @TypedRoute.Delete('/:id')
   @Roles('admin', 'manager')
   @UseGuards(RolesGuard)
