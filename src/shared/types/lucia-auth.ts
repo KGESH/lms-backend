@@ -1,4 +1,4 @@
-import { users, userSessions } from '@src/infra/db/schema/user';
+import { users, userSessions } from '../../infra/db/schema/user';
 
 export const BackendUserDbTable = users;
 
