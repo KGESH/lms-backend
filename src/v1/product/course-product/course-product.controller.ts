@@ -24,6 +24,29 @@ import { RolesGuard } from '@src/core/guards/roles.guard';
 export class CourseProductController {
   constructor(private readonly courseProductService: CourseProductService) {}
 
+  /**
+   * 가장 최신의 강의 상품 상세 페이지를 조회합니다.
+   *
+   * 로그인 없이 조회할 수 있습니다.
+   *
+   * title: 상품 제목.
+   *
+   * description: 상품 설명 (사용처 미확정).
+   *
+   * announcement: 상품 상세 페이지 공지사항 rich text content.
+   *
+   * content: 상품 상세 페이지 rich text content.
+   *
+   * refundPolicy: 상품 상세 페이지 환불 정책 rich text content.
+   *
+   * pricing: 상품 가격 정보.
+   *
+   * discounts: 상품 할인 정보.
+   *
+   * @tag product-course
+   * @summary 특정 강의 상품 조회 (public)
+   * @param courseId - 강의 ID
+   */
   @TypedRoute.Get('/:courseId')
   @SkipAuth()
   @TypedException<TypeGuardError>({
@@ -48,8 +71,35 @@ export class CourseProductController {
     });
   }
 
+  /**
+   * 강의 상품 상세 페이지를 생성합니다. (스냅샷)
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * 상세 페이지 추가, 수정 모두 이 엔드포인트를 사용합니다.
+   *
+   * 사용자는 가장 최신의 스냅샷을 조회할 수 있습니다.
+   *
+   * title: 상품 제목.
+   *
+   * description: 상품 설명 (사용처 미확정).
+   *
+   * announcement: 상품 상세 페이지 공지사항 rich text content.
+   *
+   * content: 상품 상세 페이지 rich text content.
+   *
+   * refundPolicy: 상품 상세 페이지 환불 정책 rich text content.
+   *
+   * pricing: 상품 가격 정보.
+   *
+   * discounts: 상품 할인 정보.
+   *
+   * @tag product-course
+   * @summary 강의 상품 생성 - Role('admin', 'manager')
+   * @param courseId - 강의 ID
+   */
   @TypedRoute.Post('/:courseId')
-  @Roles('admin', 'manager', 'teacher')
+  @Roles('admin', 'manager')
   @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
     status: 400,
