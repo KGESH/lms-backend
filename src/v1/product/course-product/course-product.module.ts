@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { CourseProductRepository } from '@src/v1/product/course-product/course-product-repository.service';
+import { CourseProductRepository } from '@src/v1/product/course-product/course-product.repository';
 import { CourseProductService } from '@src/v1/product/course-product/course-product.service';
 import { CourseProductController } from '@src/v1/product/course-product/course-product.controller';
 import { CourseProductQueryRepository } from '@src/v1/product/course-product/course-product-query.repository';
@@ -9,7 +9,6 @@ import { CourseProductSnapshotDiscountRepository } from '@src/v1/product/course-
 import { CourseModule } from '@src/v1/course/course.module';
 import { UserModule } from '@src/v1/user/user.module';
 import { CourseProductSnapshotContentRepository } from '@src/v1/product/course-product/course-product-snapshot-content.repository';
-import { CourseProductSnapshotQueryRepository } from '@src/v1/product/course-product/course-product-snapshot-query.repository';
 import { CourseProductSnapshotAnnouncementRepository } from '@src/v1/product/course-product/course-product-snapshot-announcement.repository';
 import { CourseProductSnapshotRefundPolicyRepository } from '@src/v1/product/course-product/course-product-snapshot-refund-policy.repository';
 
@@ -20,7 +19,6 @@ const providers = [
   CourseProductRepository,
   CourseProductQueryRepository,
   CourseProductSnapshotRepository,
-  CourseProductSnapshotQueryRepository,
   CourseProductSnapshotPricingRepository,
   CourseProductSnapshotDiscountRepository,
   CourseProductSnapshotContentRepository,

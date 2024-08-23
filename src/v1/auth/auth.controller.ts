@@ -37,10 +37,9 @@ export class AuthController {
    * 이미 가입된 이메일 로그인 계정이 존재하면 409 예외를 반환합니다.
    *
    * @tag auth
-   * @summary 카카오 로그인
+   * @summary 카카오 로그인 (public)
    */
   @TypedRoute.Post('/kakao/login')
-  @TypedRoute.Post('/login')
   @SkipAuth()
   @TypedException<TypeGuardError>({
     status: 400,
@@ -65,7 +64,7 @@ export class AuthController {
    * 이메일 또는 패스워드가 일치하지 않으면 404 예외를 반환합니다.
    *
    * @tag auth
-   * @summary 이메일 계정 로그인
+   * @summary 이메일 계정 로그인 (public)
    */
   @TypedRoute.Post('/login')
   @SkipAuth()
@@ -91,7 +90,7 @@ export class AuthController {
    * 이미 가입된 이메일이 존재하면 409 예외를 반환합니다.
    *
    * @tag auth
-   * @summary 이메일 계정 회원가입
+   * @summary 이메일 계정 회원가입 (public)
    */
   @TypedRoute.Post('/signup')
   @SkipAuth()

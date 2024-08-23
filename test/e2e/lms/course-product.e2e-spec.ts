@@ -8,6 +8,7 @@ import { createRandomCourseProduct } from '../helpers/db/lms/course-product.help
 import { CreateCourseProductDto } from '@src/v1/product/course-product/course-product.dto';
 import { createRandomCourse } from '../helpers/db/lms/course.helper';
 import { ConfigsService } from '@src/configs/configs.service';
+import { seedUsers } from '../helpers/db/lms/user.helper';
 
 describe('CourseProductController (e2e)', () => {
   let host: Uri;
@@ -51,25 +52,30 @@ describe('CourseProductController (e2e)', () => {
 
   describe('[Create course product]', () => {
     it('should be create course product success', async () => {
-      const { course, userSession } = await createRandomCourse(drizzle.db);
+      const { course } = await createRandomCourse(drizzle.db);
       const createDto: CreateCourseProductDto = {
         ...typia.random<CreateCourseProductDto>(),
         title: 'mock-product',
       };
+
+      const admin = (
+        await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+      )[0];
 
       const response = await CourseProductAPI.createProductCourse(
         {
           host,
           headers: {
             LmsSecret,
-            UserSessionId: userSession.id,
+            UserSessionId: admin.userSession.id,
           },
         },
         course.id,
         createDto,
       );
       if (!response.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(response.data, null, 4);
+        throw new Error(`assert - ${message}`);
       }
 
       const product = response.data;

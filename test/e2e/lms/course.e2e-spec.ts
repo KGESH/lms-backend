@@ -6,7 +6,7 @@ import { Uri } from '@src/shared/types/primitive';
 import { createCategory } from '../helpers/db/lms/category.helper';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { createCourse, findCourse } from '../helpers/db/lms/course.helper';
-import { ICategoryCreate } from '@src/v1/category/category.interface';
+import { ICategoryCreate } from '@src/v1/course/category/category.interface';
 import { createTeacher } from '../helpers/db/lms/teacher.helper';
 import { ITeacherSignUp } from '@src/v1/teacher/teacher.interface';
 import { CourseCreateDto } from '@src/v1/course/course.dto';

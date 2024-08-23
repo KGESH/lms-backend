@@ -3,7 +3,7 @@ import {
   ICourseProduct,
   ICourseProductCreate,
 } from '@src/v1/product/course-product/course-product.interface';
-import { CourseProductRepository } from '@src/v1/product/course-product/course-product-repository.service';
+import { CourseProductRepository } from '@src/v1/product/course-product/course-product.repository';
 import { CourseProductSnapshotPricingRepository } from '@src/v1/product/course-product/course-product-snapshot-pricing.repository';
 import { CourseProductSnapshotDiscountRepository } from '@src/v1/product/course-product/course-product-snapshot-discount.repository';
 import { CourseProductSnapshotRepository } from '@src/v1/product/course-product/course-product-snapshot.repository';

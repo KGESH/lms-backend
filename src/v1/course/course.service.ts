@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TransactionClient } from '@src/infra/db/drizzle.types';
-import { CategoryService } from '@src/v1/category/category.service';
+import { CategoryService } from '@src/v1/course/category/category.service';
 import { TeacherService } from '@src/v1/teacher/teacher.service';
 import { CourseRepository } from '@src/v1/course/course.repository';
 import {

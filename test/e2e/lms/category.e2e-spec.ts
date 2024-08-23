@@ -6,7 +6,7 @@ import { Uri, Uuid } from '@src/shared/types/primitive';
 import {
   CreateCategoryDto,
   UpdateCategoryDto,
-} from '@src/v1/category/category.dto';
+} from '@src/v1/course/category/category.dto';
 import {
   createCategory,
   seedCategoriesWithChildren,

@@ -1,4 +1,4 @@
-import { Controller, UseGuards } from '@nestjs/common';
+import { Controller, Logger, UseGuards } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { TypeGuardError } from 'typia';
 import {
@@ -31,6 +31,8 @@ import { IErrorResponse } from '@src/shared/types/response';
 
 @Controller('v1/course')
 export class CourseController {
+  private readonly logger = new Logger(CourseController.name);
+
   constructor(
     private readonly courseService: CourseService,
     private readonly courseQueryService: CourseQueryService,

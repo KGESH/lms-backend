@@ -328,7 +328,7 @@ export const courseDbSchemas = {
   courseEnrollments,
   courseCertificates,
 
-  // // Relations
+  // Relations
   courseCategoriesRelations,
   coursesRelations,
   chaptersRelations,

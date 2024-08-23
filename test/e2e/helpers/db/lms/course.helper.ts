@@ -6,7 +6,7 @@ import {
 } from '../../../../../src/v1/course/course.interface';
 import { createCategory } from './category.helper';
 import * as typia from 'typia';
-import { ICategoryCreate } from '../../../../../src/v1/category/category.interface';
+import { ICategoryCreate } from '@src/v1/course/category/category.interface';
 import { createTeacher } from './teacher.helper';
 import { ITeacherSignUp } from '../../../../../src/v1/teacher/teacher.interface';
 import { TransactionClient } from '../../../../../src/infra/db/drizzle.types';

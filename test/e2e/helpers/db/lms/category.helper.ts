@@ -5,7 +5,7 @@ import {
   ICategoryCreate,
   ICategoryWithChildren,
   ICategoryWithRelations,
-} from '../../../../../src/v1/category/category.interface';
+} from '@src/v1/course/category/category.interface';
 import { TransactionClient } from '../../../../../src/infra/db/drizzle.types';
 import { Pagination } from '../../../../../src/shared/types/pagination';
 import { courseCategories } from '../../../../../src/infra/db/schema/course';
@@ -123,7 +123,7 @@ export const getRootCategoriesRawSql = async (
         parentId: row.parent_id,
         description: row.description,
         depth: row.depth,
-        parent: null,
+        // parent: null,
         children: [],
       });
     map.set(category.id, category);
@@ -149,6 +149,7 @@ export const getCategoryWithChildrenRawSql = async (
   where: Pick<ICategory, 'id'>,
   db: TransactionClient,
 ): Promise<ICategoryWithRelations | null> => {
+  console.log(`where.id: ${where.id}`);
   const categorySQL = db
     .select({
       id: courseCategories.id,
@@ -186,35 +187,34 @@ export const getCategoryWithChildrenRawSql = async (
     depth: number;
   }>(rawSql);
 
-  const map = new Map<string, ICategoryWithRelations>();
-  result.rows.forEach((row) => {
-    const category: ICategoryWithRelations =
-      typia.assert<ICategoryWithRelations>({
-        id: row.id,
-        name: row.name,
-        parentId: row.parent_id,
-        description: row.description,
-        depth: row.depth,
-        parent: null,
-        children: [],
-      });
-    map.set(category.id, category);
-  });
+  // rows[0] is root category.
+  // because order by depth asc.
+  if (!result.rows[0]) {
+    return null;
+  }
 
-  const rootCategories: ICategoryWithRelations[] = [];
-  map.forEach((category) => {
-    if (category.parentId) {
-      const parent = map.get(category.parentId);
+  const root = result.rows[0];
+  const children: ICategoryWithRelations[] = result.rows
+    .slice(1)
+    .map((row) => ({
+      id: row.id,
+      parentId: row.parent_id,
+      name: row.name,
+      description: row.description,
+      depth: row.depth,
+      parent: null,
+      children: [],
+    }));
+  const rootCategory: ICategoryWithRelations = {
+    id: root.id,
+    parentId: root.parent_id,
+    name: root.name,
+    description: root.description,
+    depth: root.depth,
+    children,
+  };
 
-      if (parent) {
-        parent.children.push(category);
-      }
-    } else {
-      rootCategories.push(category);
-    }
-  });
-
-  return rootCategories[0] ?? null;
+  return rootCategory;
 };
 
 export const seedCategoriesWithChildren = async (

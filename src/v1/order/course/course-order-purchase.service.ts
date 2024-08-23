@@ -46,8 +46,10 @@ export class CourseOrderPurchaseService {
             courseId: params.courseId,
             orderCreateParams: {
               id: orderId,
-              productType: 'course',
               userId: user.id,
+              productType: 'course',
+              title: courseProduct.lastSnapshot.title,
+              description: courseProduct.lastSnapshot.description,
               paymentMethod: params.paymentMethod,
               amount: params.amount,
               paidAt,

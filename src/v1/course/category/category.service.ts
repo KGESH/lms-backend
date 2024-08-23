@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CategoryRepository } from '@src/v1/category/category.repository';
+import { CategoryRepository } from '@src/v1/course/category/category.repository';
 import {
   ICategory,
   ICategoryCreate,

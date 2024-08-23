@@ -7,13 +7,13 @@ import {
   ICategoryCreate,
   ICategoryUpdate,
   ICategoryWithRelations,
-} from '@src/v1/category/category.interface';
-import { ICourse } from '../course/course.interface';
+} from '@src/v1/course/category/category.interface';
+import { ICourse } from '../course.interface';
 import { Pagination } from '@src/shared/types/pagination';
 import {
   getCategoryWithChildrenRawSql,
   getRootCategoriesRawSql,
-} from '../../../test/e2e/helpers/db/lms/category.helper';
+} from '../../../../test/e2e/helpers/db/lms/category.helper';
 
 @Injectable()
 export class CategoryRepository {

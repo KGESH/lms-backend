@@ -5,7 +5,7 @@ import { DatabaseModule } from '@src/infra/db/db.module';
 import { ConfigsModule } from '@src/configs/configs.module';
 import { UserModule } from '@src/v1/user/user.module';
 import { AuthModule } from '@src/v1/auth/auth.module';
-import { CategoryModule } from '@src/v1/category/category.module';
+import { CategoryModule } from '@src/v1/course/category/category.module';
 import { TeacherModule } from '@src/v1/teacher/teacher.module';
 import { HttpClientModule } from '@src/infra/http/http-client.module';
 import { UiModule } from '@src/v1/ui/ui.module';

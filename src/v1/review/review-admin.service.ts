@@ -46,6 +46,8 @@ export class ReviewAdminService {
             id: orderId,
             userId: reviewCreateParams.userId,
             productType: reviewCreateParams.productType,
+            title: product.lastSnapshot!.title,
+            description: product.lastSnapshot!.description,
             paymentMethod: 'admin',
             amount: product.lastSnapshot!.pricing.amount,
             paidAt: date.now('date'),

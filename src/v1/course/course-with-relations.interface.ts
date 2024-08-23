@@ -1,5 +1,5 @@
 import { ITeacherWithoutPassword } from '@src/v1/teacher/teacher.interface';
-import { ICategory } from '@src/v1/category/category.interface';
+import { ICategory } from '@src/v1/course/category/category.interface';
 import { ICourse } from '@src/v1/course/course.interface';
 import { IChapter } from '@src/v1/course/chapter/chapter.interface';
 import { ILesson } from '@src/v1/course/chapter/lesson/lesson.interface';
