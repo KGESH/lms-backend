@@ -47,6 +47,8 @@ export class OrderController {
         id: order.id,
         userId: order.userId,
         productType: 'course',
+        title: order.title,
+        description: order.description,
         product: {
           courseId: order.productOrder.productSnapshot.courseId,
           snapshotId: order.productOrder.productSnapshot.id,

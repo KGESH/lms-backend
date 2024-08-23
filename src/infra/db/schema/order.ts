@@ -4,17 +4,26 @@ import { relations } from 'drizzle-orm';
 import { courseProductSnapshots } from './course';
 import { users } from './user';
 import { reviews } from './review';
+import { ebookProductSnapshots } from './ebook';
 
 export const orders = pgTable('orders', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').notNull(),
   productType: productType('product_type').notNull(),
+  title: text('title').notNull(),
+  description: text('description'),
   paymentMethod: text('payment_method').notNull(),
   amount: decimal('amount').notNull(),
   paidAt: timestamp('paid_at', { mode: 'date', withTimezone: true }),
 });
 
 export const courseOrders = pgTable('course_orders', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orderId: uuid('order_id').notNull(),
+  productSnapshotId: uuid('product_snapshot_id').notNull(),
+});
+
+export const ebookOrders = pgTable('ebook_orders', {
   id: uuid('id').primaryKey().defaultRandom(),
   orderId: uuid('order_id').notNull(),
   productSnapshotId: uuid('product_snapshot_id').notNull(),
@@ -33,7 +42,7 @@ export const ordersRelations = relations(orders, ({ one, many }) => ({
     references: [users.id],
   }),
   courseOrder: one(courseOrders),
-  // ebookOrder
+  ebookOrder: one(ebookOrders),
   refunds: many(orderRefunds),
   review: one(reviews),
 }));
@@ -49,6 +58,17 @@ export const courseOrdersRelations = relations(courseOrders, ({ one }) => ({
   }),
 }));
 
+export const ebookOrdersRelations = relations(ebookOrders, ({ one }) => ({
+  order: one(orders, {
+    fields: [ebookOrders.orderId],
+    references: [orders.id],
+  }),
+  productSnapshot: one(ebookProductSnapshots, {
+    fields: [ebookOrders.productSnapshotId],
+    references: [ebookProductSnapshots.id],
+  }),
+}));
+
 export const orderRefundsRelations = relations(orderRefunds, ({ one }) => ({
   order: one(orders, {
     fields: [orderRefunds.orderId],
@@ -56,12 +76,14 @@ export const orderRefundsRelations = relations(orderRefunds, ({ one }) => ({
   }),
 }));
 
-export const courseOrderDbSchema = {
+export const orderDbSchema = {
   orders,
   courseOrders,
+  ebookOrders,
   orderRefunds,
 
   ordersRelations,
   courseOrdersRelations,
+  ebookOrdersRelations,
   orderRefundsRelations,
 };

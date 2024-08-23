@@ -5,6 +5,8 @@ export type IOrder = {
   id: Uuid;
   userId: Uuid;
   productType: ProductType;
+  title: string;
+  description: string | null;
   paymentMethod: string;
   amount: Price;
   paidAt: Date | null;

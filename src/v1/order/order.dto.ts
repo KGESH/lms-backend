@@ -10,10 +10,12 @@ import { CourseProductDto } from '@src/v1/product/course-product/course-product.
 export type OrderCourseDto = {
   id: Uuid;
   userId: Uuid;
+  productType: Course;
   paymentMethod: string;
+  title: string;
+  description: string | null;
   amount: Price;
   paidAt: ISO8601 | null;
-  productType: Course;
   product: CourseProductDto;
 };
 
