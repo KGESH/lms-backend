@@ -1,9 +1,10 @@
 import { userDbSchemas } from './user';
 import { courseDbSchemas } from './course';
 import { uiDbSchemas } from './ui';
-import { courseOrderDbSchema } from './order';
+import { orderDbSchema } from './order';
 import { reviewDbSchema } from './review';
 import { teacherDbSchema } from './teacher';
+import { ebookDbSchema } from '@src/infra/db/schema/ebook';
 
 export const dbSchema = {
   // 사용자 (일반 사용자, 관리자(매니저), 최고 관리자)
@@ -15,8 +16,11 @@ export const dbSchema = {
   // 동영상 강의
   ...courseDbSchemas,
 
+  // 전자책
+  ...ebookDbSchema,
+
   // 강의 상품 주문
-  ...courseOrderDbSchema,
+  ...orderDbSchema,
 
   // 리뷰
   ...reviewDbSchema,
