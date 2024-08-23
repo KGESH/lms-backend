@@ -3,10 +3,10 @@ import * as CourseAPI from '@src/api/functional/v1/course';
 import * as typia from 'typia';
 import { createTestingServer } from '../helpers/app.helper';
 import { Uri } from '@src/shared/types/primitive';
-import { createCategory } from '../helpers/db/lms/category.helper';
+import { createCourseCategory } from '../helpers/db/lms/course-category.helper';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { createCourse, findCourse } from '../helpers/db/lms/course.helper';
-import { ICategoryCreate } from '@src/v1/course/category/category.interface';
+import { ICourseCategoryCreate } from '@src/v1/course/category/course-category.interface';
 import { createTeacher } from '../helpers/db/lms/teacher.helper';
 import { ITeacherSignUp } from '@src/v1/teacher/teacher.interface';
 import { CourseCreateDto } from '@src/v1/course/course.dto';
@@ -34,9 +34,9 @@ describe('CourseController (e2e)', () => {
 
   describe('[Get course]', () => {
     it('should be get a course', async () => {
-      const category = await createCategory(
+      const category = await createCourseCategory(
         {
-          ...typia.random<ICategoryCreate>(),
+          ...typia.random<ICourseCategoryCreate>(),
           parentId: null,
         },
         drizzle.db,
@@ -74,9 +74,9 @@ describe('CourseController (e2e)', () => {
 
   describe('[Get courses]', () => {
     it('should be get all courses', async () => {
-      const category = await createCategory(
+      const category = await createCourseCategory(
         {
-          ...typia.random<ICategoryCreate>(),
+          ...typia.random<ICourseCategoryCreate>(),
           parentId: null,
         },
         drizzle.db,
@@ -128,9 +128,9 @@ describe('CourseController (e2e)', () => {
 
   describe('[Create course]', () => {
     it('should be create course success', async () => {
-      const category = await createCategory(
+      const category = await createCourseCategory(
         {
-          ...typia.random<ICategoryCreate>(),
+          ...typia.random<ICourseCategoryCreate>(),
           parentId: null,
         },
         drizzle.db,
@@ -160,9 +160,9 @@ describe('CourseController (e2e)', () => {
 
     describe('[Update course]', () => {
       it('should be update course success', async () => {
-        const category = await createCategory(
+        const category = await createCourseCategory(
           {
-            ...typia.random<ICategoryCreate>(),
+            ...typia.random<ICourseCategoryCreate>(),
             parentId: null,
           },
           drizzle.db,
@@ -205,9 +205,9 @@ describe('CourseController (e2e)', () => {
 
     describe('[Delete course]', () => {
       it('should be delete course success', async () => {
-        const category = await createCategory(
+        const category = await createCourseCategory(
           {
-            ...typia.random<ICategoryCreate>(),
+            ...typia.random<ICourseCategoryCreate>(),
             parentId: null,
           },
           drizzle.db,

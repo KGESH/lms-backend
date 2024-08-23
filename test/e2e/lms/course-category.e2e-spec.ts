@@ -1,21 +1,21 @@
 import { INestApplication } from '@nestjs/common';
-import * as CategoryAPI from '../../../src/api/functional/v1/category';
+import * as CourseCategoryAPI from '../../../src/api/functional/v1/course/category';
 import * as typia from 'typia';
 import { createTestingServer } from '../helpers/app.helper';
 import { Uri, Uuid } from '@src/shared/types/primitive';
 import {
-  CreateCategoryDto,
-  UpdateCategoryDto,
-} from '@src/v1/course/category/category.dto';
+  CreateCourseCategoryDto,
+  UpdateCourseCategoryDto,
+} from '@src/v1/course/category/course-category.dto';
 import {
-  createCategory,
-  seedCategoriesWithChildren,
-} from '../helpers/db/lms/category.helper';
+  createCourseCategory,
+  seedCourseCategoriesWithChildren,
+} from '../helpers/db/lms/course-category.helper';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { ConfigsService } from '@src/configs/configs.service';
 import { seedUsers } from '../helpers/db/lms/user.helper';
 
-describe('CategoryController (e2e)', () => {
+describe('CourseCategoryController (e2e)', () => {
   let host: Uri;
   let app: INestApplication;
   let drizzle: DrizzleService;
@@ -37,7 +37,7 @@ describe('CategoryController (e2e)', () => {
   describe('[Get category]', () => {
     it('should be get a category', async () => {
       const categoryId: Uuid = typia.random<Uuid>();
-      await createCategory(
+      await createCourseCategory(
         {
           id: categoryId,
           name: 'category',
@@ -47,7 +47,7 @@ describe('CategoryController (e2e)', () => {
         drizzle.db,
       );
 
-      const response = await CategoryAPI.getCategory(
+      const response = await CourseCategoryAPI.getCourseCategory(
         {
           host,
           headers: { LmsSecret },
@@ -69,9 +69,9 @@ describe('CategoryController (e2e)', () => {
   describe('[Get categories]', () => {
     it('should be get all categories', async () => {
       const { rootCategories, levelTwoCategories, levelThreeCategories } =
-        await seedCategoriesWithChildren({ count: 2 }, drizzle.db);
+        await seedCourseCategoriesWithChildren({ count: 2 }, drizzle.db);
 
-      const response = await CategoryAPI.getRootCategories(
+      const response = await CourseCategoryAPI.getRootCourseCategories(
         {
           host,
           headers: { LmsSecret },
@@ -99,12 +99,12 @@ describe('CategoryController (e2e)', () => {
         await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
       )[0];
 
-      const createCategoryDto: CreateCategoryDto = {
-        ...typia.random<CreateCategoryDto>(),
+      const createCourseCategoryDto: CreateCourseCategoryDto = {
+        ...typia.random<CreateCourseCategoryDto>(),
         parentId: null,
       };
 
-      const response = await CategoryAPI.createCategory(
+      const response = await CourseCategoryAPI.createCourseCategory(
         {
           host,
           headers: {
@@ -112,14 +112,14 @@ describe('CategoryController (e2e)', () => {
             UserSessionId: admin.userSession.id,
           },
         },
-        createCategoryDto,
+        createCourseCategoryDto,
       );
       if (!response.success) {
         throw new Error('assert');
       }
 
       const category = response.data;
-      expect(category.name).toEqual(createCategoryDto.name);
+      expect(category.name).toEqual(createCourseCategoryDto.name);
     });
   });
 
@@ -130,7 +130,7 @@ describe('CategoryController (e2e)', () => {
       )[0];
 
       const categoryId: Uuid = typia.random<Uuid>();
-      await createCategory(
+      await createCourseCategory(
         {
           id: categoryId,
           name: 'category',
@@ -139,9 +139,11 @@ describe('CategoryController (e2e)', () => {
         },
         drizzle.db,
       );
-      const updateCategoryDto: UpdateCategoryDto = { name: 'updated' };
+      const updateCourseCategoryDto: UpdateCourseCategoryDto = {
+        name: 'updated',
+      };
 
-      const updateResponse = await CategoryAPI.updateCategory(
+      const updateResponse = await CourseCategoryAPI.updateCourseCategory(
         {
           host,
           headers: {
@@ -150,14 +152,14 @@ describe('CategoryController (e2e)', () => {
           },
         },
         categoryId,
-        updateCategoryDto,
+        updateCourseCategoryDto,
       );
       if (!updateResponse.success) {
         throw new Error('assert');
       }
 
-      const updatedCategory = updateResponse.data;
-      expect(updatedCategory.name).toEqual('updated');
+      const updatedCourseCategory = updateResponse.data;
+      expect(updatedCourseCategory.name).toEqual('updated');
     });
 
     it('should be update category fail', async () => {
@@ -166,9 +168,9 @@ describe('CategoryController (e2e)', () => {
       )[0];
 
       const notFoundId = typia.random<Uuid>();
-      const updateCategoryDto = typia.random<UpdateCategoryDto>();
+      const updateCourseCategoryDto = typia.random<UpdateCourseCategoryDto>();
 
-      const notFoundResponse = await CategoryAPI.updateCategory(
+      const notFoundResponse = await CourseCategoryAPI.updateCourseCategory(
         {
           host,
           headers: {
@@ -177,7 +179,7 @@ describe('CategoryController (e2e)', () => {
           },
         },
         notFoundId,
-        updateCategoryDto,
+        updateCourseCategoryDto,
       );
 
       expect(notFoundResponse.status).toEqual(404);
@@ -191,7 +193,7 @@ describe('CategoryController (e2e)', () => {
       )[0];
 
       const categoryId: Uuid = typia.random<Uuid>();
-      await createCategory(
+      await createCourseCategory(
         {
           id: categoryId,
           name: 'category',
@@ -201,7 +203,7 @@ describe('CategoryController (e2e)', () => {
         drizzle.db,
       );
 
-      const deleteResponse = await CategoryAPI.deleteCategory(
+      const deleteResponse = await CourseCategoryAPI.deleteCourseCategory(
         {
           host,
           headers: {
@@ -215,10 +217,10 @@ describe('CategoryController (e2e)', () => {
         throw new Error('assert');
       }
 
-      const deletedCategory = deleteResponse.data;
-      expect(deletedCategory.id).toEqual(categoryId);
+      const deletedCourseCategory = deleteResponse.data;
+      expect(deletedCourseCategory.id).toEqual(categoryId);
 
-      const getResponse = await CategoryAPI.getCategory(
+      const getResponse = await CourseCategoryAPI.getCourseCategory(
         {
           host,
           headers: { LmsSecret },
@@ -230,8 +232,8 @@ describe('CategoryController (e2e)', () => {
         throw new Error('assert');
       }
 
-      const foundCategory = getResponse.data;
-      expect(foundCategory).toBe(null);
+      const foundCourseCategory = getResponse.data;
+      expect(foundCourseCategory).toBe(null);
     });
   });
 });

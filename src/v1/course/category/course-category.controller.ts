@@ -1,5 +1,5 @@
 import { Controller, Logger, UseGuards } from '@nestjs/common';
-import { CategoryService } from './category.service';
+import { CourseCategoryService } from './course-category.service';
 import {
   TypedBody,
   TypedException,
@@ -10,13 +10,13 @@ import {
 } from '@nestia/core';
 import { TypeGuardError } from 'typia';
 import {
-  CategoryDto,
-  CategoryQuery,
-  CategoryWithChildrenDto,
-  CategoryWithChildrenQuery,
-  CreateCategoryDto,
-  UpdateCategoryDto,
-} from '@src/v1/course/category/category.dto';
+  CourseCategoryDto,
+  CourseCategoryQuery,
+  CourseCategoryWithChildrenDto,
+  CourseCategoryWithChildrenQuery,
+  CreateCourseCategoryDto,
+  UpdateCourseCategoryDto,
+} from '@src/v1/course/category/course-category.dto';
 import { Uuid } from '@src/shared/types/primitive';
 import { IErrorResponse } from '@src/shared/types/response';
 import { DEFAULT_PAGINATION } from '@src/core/pagination.constant';
@@ -26,10 +26,10 @@ import { Roles } from '@src/core/decorators/roles.decorator';
 import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
 
 @Controller('v1/course/category')
-export class CategoryController {
-  private readonly logger = new Logger(CategoryController.name);
+export class CourseCategoryController {
+  private readonly logger = new Logger(CourseCategoryController.name);
 
-  constructor(private readonly categoryService: CategoryService) {}
+  constructor(private readonly categoryService: CourseCategoryService) {}
 
   /**
    * 강의 카테고리 목록을 조회합니다.
@@ -51,10 +51,10 @@ export class CategoryController {
     status: 400,
     description: 'invalid request',
   })
-  async getRootCategories(
+  async getRootCourseCategories(
     @TypedHeaders() headers: ApiAuthHeaders,
-    @TypedQuery() query?: CategoryQuery,
-  ): Promise<CategoryWithChildrenDto[]> {
+    @TypedQuery() query?: CourseCategoryQuery,
+  ): Promise<CourseCategoryWithChildrenDto[]> {
     this.logger.verbose('[GET v1/course/category]');
     if (query?.withChildren) {
       const rootsWithChildren =
@@ -65,7 +65,7 @@ export class CategoryController {
       return rootsWithChildren;
     }
 
-    const roots = await this.categoryService.getRootCategories({
+    const roots = await this.categoryService.getRootCourseCategories({
       ...DEFAULT_PAGINATION,
       ...query,
     });
@@ -92,19 +92,19 @@ export class CategoryController {
     status: 400,
     description: 'invalid request',
   })
-  async getCategory(
+  async getCourseCategory(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('id') id: Uuid,
-    @TypedQuery() query?: CategoryWithChildrenQuery,
-  ): Promise<CategoryWithChildrenDto | null> {
+    @TypedQuery() query?: CourseCategoryWithChildrenQuery,
+  ): Promise<CourseCategoryWithChildrenDto | null> {
     this.logger.verbose('[GET v1/course/category/:id]');
     if (query?.withChildren) {
       const categoryWithChildren =
-        await this.categoryService.findCategoryWithChildren({ id });
+        await this.categoryService.findCourseCategoryWithChildren({ id });
       return categoryWithChildren;
     }
 
-    const category = await this.categoryService.findCategory({ id });
+    const category = await this.categoryService.findCourseCategory({ id });
     return category;
   }
 
@@ -123,11 +123,11 @@ export class CategoryController {
     status: 400,
     description: 'invalid request',
   })
-  async createCategory(
+  async createCourseCategory(
     @TypedHeaders() headers: AuthHeaders,
-    @TypedBody() body: CreateCategoryDto,
-  ): Promise<CategoryDto> {
-    const category = await this.categoryService.createCategory(body);
+    @TypedBody() body: CreateCourseCategoryDto,
+  ): Promise<CourseCategoryDto> {
+    const category = await this.categoryService.createCourseCategory(body);
     return category;
   }
 
@@ -151,12 +151,15 @@ export class CategoryController {
     status: 404,
     description: 'category not found',
   })
-  async updateCategory(
+  async updateCourseCategory(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('id') id: Uuid,
-    @TypedBody() body: UpdateCategoryDto,
-  ): Promise<CategoryDto> {
-    const category = await this.categoryService.updateCategory({ id }, body);
+    @TypedBody() body: UpdateCourseCategoryDto,
+  ): Promise<CourseCategoryDto> {
+    const category = await this.categoryService.updateCourseCategory(
+      { id },
+      body,
+    );
     return category;
   }
 
@@ -190,11 +193,11 @@ export class CategoryController {
     status: 404,
     description: 'category not found',
   })
-  async deleteCategory(
+  async deleteCourseCategory(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('id') id: Uuid,
-  ): Promise<CategoryDto> {
-    const category = await this.categoryService.deleteCategory({ id });
+  ): Promise<CourseCategoryDto> {
+    const category = await this.categoryService.deleteCourseCategory({ id });
     return category;
   }
 }

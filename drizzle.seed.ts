@@ -13,7 +13,7 @@ import { seedCourseProducts } from './test/e2e/helpers/db/lms/course-product.hel
 import { clearDatabase } from './src/shared/helpers/db';
 import { seedCourseReviews } from './test/e2e/helpers/db/lms/review.helper';
 import { seedCourseOrders } from './test/e2e/helpers/db/lms/order.helper';
-import { seedCategoriesWithChildren } from './test/e2e/helpers/db/lms/category.helper';
+import { seedCourseCategoriesWithChildren } from './test/e2e/helpers/db/lms/course-category.helper';
 
 const env = new ConfigService();
 
@@ -40,7 +40,7 @@ async function seed() {
 
   // Seed data
   try {
-    await seedCategoriesWithChildren({ count: 10 }, db);
+    await seedCourseCategoriesWithChildren({ count: 10 }, db);
     await seedUiRepeatTimer({ count: 2 }, db);
     await seedCarouselReview({ count: 4 }, db);
     await seedTeachers({ count: 2 }, db);

@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TransactionClient } from '@src/infra/db/drizzle.types';
-import { CategoryService } from '@src/v1/course/category/category.service';
 import { TeacherService } from '@src/v1/teacher/teacher.service';
 import { CourseRepository } from '@src/v1/course/course.repository';
 import {
@@ -8,11 +7,12 @@ import {
   ICourseCreate,
   ICourseUpdate,
 } from '@src/v1/course/course.interface';
+import { CourseCategoryService } from '@src/v1/course/category/course-category.service';
 
 @Injectable()
 export class CourseService {
   constructor(
-    private readonly categoryService: CategoryService,
+    private readonly courseCategoryService: CourseCategoryService,
     private readonly teacherService: TeacherService,
     private readonly courseRepository: CourseRepository,
   ) {}
@@ -23,7 +23,7 @@ export class CourseService {
   ): Promise<ICourse> {
     const { teacherId, categoryId } = params;
 
-    const category = await this.categoryService.findCategory({
+    const category = await this.courseCategoryService.findCourseCategory({
       id: categoryId,
     });
     if (!category) {

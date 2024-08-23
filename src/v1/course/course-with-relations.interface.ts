@@ -1,5 +1,5 @@
 import { ITeacherWithoutPassword } from '@src/v1/teacher/teacher.interface';
-import { ICategory } from '@src/v1/course/category/category.interface';
+import { ICourseCategory } from '@src/v1/course/category/course-category.interface';
 import { ICourse } from '@src/v1/course/course.interface';
 import { IChapter } from '@src/v1/course/chapter/chapter.interface';
 import { ILesson } from '@src/v1/course/chapter/lesson/lesson.interface';
@@ -15,6 +15,6 @@ export type IChapterWithRelations = IChapter & {
 
 export type ICourseWithRelations = ICourse & {
   teacher: ITeacherWithoutPassword;
-  category: ICategory;
+  category: ICourseCategory;
   chapters: IChapterWithRelations[];
 };

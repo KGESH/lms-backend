@@ -5,7 +5,7 @@ import { DatabaseModule } from '@src/infra/db/db.module';
 import { ConfigsModule } from '@src/configs/configs.module';
 import { UserModule } from '@src/v1/user/user.module';
 import { AuthModule } from '@src/v1/auth/auth.module';
-import { CategoryModule } from '@src/v1/course/category/category.module';
+import { CourseCategoryModule } from '@src/v1/course/category/course-category.module';
 import { TeacherModule } from '@src/v1/teacher/teacher.module';
 import { HttpClientModule } from '@src/infra/http/http-client.module';
 import { UiModule } from '@src/v1/ui/ui.module';
@@ -15,6 +15,7 @@ import { OrderModule } from '@src/v1/order/order.module';
 import { FileModule } from '@src/v1/file/file.module';
 import { ReviewModule } from '@src/v1/review/review.module';
 import { UserCourseEnrollmentModule } from '@src/v1/user/course/enrollment/user-course-enrollment.module';
+import { EbookCategoryModule } from '@src/v1/ebook/category/ebook-category.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { UserCourseEnrollmentModule } from '@src/v1/user/course/enrollment/user-
     DatabaseModule,
     UserModule,
     AuthModule,
-    CategoryModule,
+    CourseCategoryModule,
+    EbookCategoryModule,
     LessonContentModule,
     TeacherModule,
     FileModule,
