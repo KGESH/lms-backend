@@ -42,7 +42,7 @@ export class CategoryController {
    *
    * Query parameter 'withChildren' 속성이 false 일때, 하위 카테고리 목록은 빈 배열로 반환됩니다.
    *
-   * @tag category
+   * @tag course-category
    * @summary 강의 카테고리 목록 조회 (public)
    */
   @TypedRoute.Get('/')
@@ -83,7 +83,7 @@ export class CategoryController {
    *
    * Query parameter 'withChildren' 속성이 false 일때, 하위 카테고리 목록은 빈 배열로 반환됩니다.
    *
-   * @tag category
+   * @tag course-category
    * @summary 강의 카테고리 목록 조회 (public)
    */
   @TypedRoute.Get('/:id')
@@ -113,7 +113,7 @@ export class CategoryController {
    *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
    *
-   * @tag category
+   * @tag course-category
    * @summary 강의 카테고리 생성 - Role('admin', 'manager')
    */
   @TypedRoute.Post('/')
@@ -136,7 +136,7 @@ export class CategoryController {
    *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
    *
-   * @tag category
+   * @tag course-category
    * @summary 강의 카테고리 수정 - Role('admin', 'manager')
    * @param id - 수정할 강의 카테고리의 id
    */
@@ -171,7 +171,7 @@ export class CategoryController {
    *
    * 삭제 대상 카테고리와 연관된 강의를 먼저 삭제해야 합니다.
    *
-   * @tag category
+   * @tag course-category
    * @summary 강의 카테고리 삭제 - Role('admin', 'manager')
    * @param id - 삭제할 강의 카테고리의 id
    */
