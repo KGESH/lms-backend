@@ -16,12 +16,12 @@ export class CourseQueryRepository {
     const course = await this.drizzle.db.query.courses.findFirst({
       where: eq(dbSchema.courses.id, where.id),
       with: {
+        category: true,
         teacher: {
           with: {
             account: true,
           },
         },
-        category: true,
         chapters: {
           with: {
             lessons: {
@@ -34,12 +34,12 @@ export class CourseQueryRepository {
       },
     });
 
-    if (!course?.teacher?.account) {
+    if (!course) {
       return null;
     }
 
-    return typia.assert<ICourseWithRelations>(course);
-    // return course;
+    // return typia.assert<ICourseWithRelations>(course);
+    return course;
   }
 
   // async findManyWithTeacher() {

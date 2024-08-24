@@ -11,7 +11,7 @@ import { ISessionWithUser } from '@src/v1/auth/session.interface';
 import { Uuid } from '@src/shared/types/primitive';
 
 @Injectable()
-export class CourseEnrollmentGuard implements CanActivate {
+export class CourseAccessGuard implements CanActivate {
   constructor(
     private readonly courseEnrollmentRepository: CourseEnrollmentRepository,
   ) {}

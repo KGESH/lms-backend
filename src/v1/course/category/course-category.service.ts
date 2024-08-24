@@ -39,6 +39,18 @@ export class CourseCategoryService {
     };
   }
 
+  async findCourseCategoryOrThrow(
+    where: Pick<ICourseCategory, 'id'>,
+  ): Promise<ICourseCategoryWithChildren> {
+    const category = await this.findCourseCategory(where);
+
+    if (!category) {
+      throw new NotFoundException('CourseCategory not found');
+    }
+
+    return category;
+  }
+
   async findCourseCategoryWithChildren(
     where: Pick<ICourseCategory, 'id'>,
   ): Promise<ICourseCategoryWithChildren | null> {

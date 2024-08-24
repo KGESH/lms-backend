@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
@@ -25,11 +25,11 @@ export class CourseRepository {
     return course;
   }
 
-  async findOneOrThrow(where: Pick<ICourse, 'id'>): Promise<ICourse> {
+  async findCourseOrThrow(where: Pick<ICourse, 'id'>): Promise<ICourse> {
     const course = await this.findCourse(where);
 
     if (!course) {
-      throw new Error('Course not found');
+      throw new NotFoundException('Course not found');
     }
 
     return course;

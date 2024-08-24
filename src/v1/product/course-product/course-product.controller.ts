@@ -57,7 +57,7 @@ export class CourseProductController {
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
   ): Promise<CourseProductDto | null> {
-    const product = await this.courseProductService.findCourseProduct({
+    const product = await this.courseProductService.findCourseProductWithRelations({
       courseId,
     });
 

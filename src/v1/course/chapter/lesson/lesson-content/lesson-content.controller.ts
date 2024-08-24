@@ -21,7 +21,7 @@ import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
 import { SessionUser } from '@src/core/decorators/session-user.decorator';
 import { ISessionWithUser } from '@src/v1/auth/session.interface';
-import { CourseEnrollmentGuard } from '@src/core/guards/course-enrollment.guard';
+import { CourseAccessGuard } from '@src/core/guards/course-access.guard';
 
 @Controller(
   'v1/course/:courseId/chapter/:chapterId/lesson/:lessonId/lesson-content',
@@ -46,7 +46,7 @@ export class LessonContentController {
    * @param lessonId - 조회할 레슨 컨텐츠가 속한 레슨의 id
    */
   @TypedRoute.Get('/')
-  @UseGuards(CourseEnrollmentGuard)
+  @UseGuards(CourseAccessGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -61,7 +61,6 @@ export class LessonContentController {
     @TypedParam('chapterId') chapterId: Uuid,
     @TypedParam('lessonId') lessonId: Uuid,
   ): Promise<LessonContentDto[]> {
-    console.log(courseId, lessonId);
     const lessonContents =
       await this.lessonContentQueryService.findLessonContents({ lessonId });
     return lessonContents;
@@ -82,7 +81,7 @@ export class LessonContentController {
    * @param id - 조회할 레슨 컨텐츠의 id
    */
   @TypedRoute.Get('/:id')
-  @UseGuards(CourseEnrollmentGuard)
+  @UseGuards(CourseAccessGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -93,7 +92,6 @@ export class LessonContentController {
   })
   async getLessonContent(
     @TypedHeaders() headers: AuthHeaders,
-    @SessionUser() session: ISessionWithUser,
     @TypedParam('courseId') courseId: Uuid,
     @TypedParam('chapterId') chapterId: Uuid,
     @TypedParam('lessonId') lessonId: Uuid,
@@ -126,7 +124,7 @@ export class LessonContentController {
   })
   @TypedException<IErrorResponse<404>>({
     status: 404,
-    description: 'lesson content not found',
+    description: 'lesson not found',
   })
   async createLessonContent(
     @TypedHeaders() headers: AuthHeaders,

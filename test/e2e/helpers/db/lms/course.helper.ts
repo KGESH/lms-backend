@@ -50,10 +50,10 @@ export const createRandomCourse = async (db: TransactionClient) => {
   );
   const course = await createCourse(
     {
-      title: 'mock-course',
+      title: 'mock course',
       categoryId: category.id,
       teacherId: teacher.id,
-      description: '',
+      description: 'mock course description',
     },
     db,
   );

@@ -5,7 +5,10 @@ import { ICourseOrderPurchase } from '@src/v1/order/course/course-order-purchase
 import { CourseProductService } from '@src/v1/product/course-product/course-product.service';
 import { UserService } from '@src/v1/user/user.service';
 import { ICourseOrder } from '@src/v1/order/course/course-order.interface';
-import { ICourseProductWithRelations } from '@src/v1/product/course-product/course-product-relations.interface';
+import {
+  ICourseProductWithLastSnapshot,
+  ICourseProductWithRelations,
+} from '@src/v1/product/course-product/course-product-relations.interface';
 import { NonNullableInfer } from '@src/shared/types/non-nullable-infer';
 import { IOrder } from '@src/v1/order/order.interface';
 import { createUuid } from '@src/shared/utils/uuid';
@@ -24,7 +27,7 @@ export class CourseOrderPurchaseService {
   async purchaseCourse(params: Omit<ICourseOrderPurchase, 'paidAt'>): Promise<{
     order: IOrder;
     courseOrder: ICourseOrder;
-    courseProduct: NonNullableInfer<ICourseProductWithRelations>;
+    courseProduct: NonNullableInfer<ICourseProductWithLastSnapshot>;
     enrollment: ICourseEnrollment;
   }> {
     const paidAt = date.now('date');

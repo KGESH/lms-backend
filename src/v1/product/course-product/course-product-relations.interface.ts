@@ -5,12 +5,15 @@ import { IProductSnapshotDiscount } from '@src/v1/product/common/snapshot/discou
 import { IProductSnapshotContent } from '@src/v1/product/common/snapshot/content/product-snapshot-content.interface';
 import { IProductSnapshotAnnouncement } from '@src/v1/product/common/snapshot/announcement/product-snapshot-announcement.interface';
 import { IProductSnapshotRefundPolicy } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
+import { ICourseWithRelations } from '@src/v1/course/course-with-relations.interface';
 
 export type ICourseProductWithLastSnapshot = ICourseProduct & {
+  course: ICourseWithRelations;
   lastSnapshot: IProductSnapshot | null;
 };
 
 export type ICourseProductWithRelations = ICourseProduct & {
+  course: ICourseWithRelations;
   lastSnapshot:
     | (IProductSnapshot & {
         announcement: IProductSnapshotAnnouncement;

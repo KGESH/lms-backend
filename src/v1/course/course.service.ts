@@ -23,17 +23,13 @@ export class CourseService {
   ): Promise<ICourse> {
     const { teacherId, categoryId } = params;
 
-    const category = await this.courseCategoryService.findCourseCategory({
+    await this.courseCategoryService.findCourseCategoryOrThrow({
       id: categoryId,
     });
-    if (!category) {
-      throw new NotFoundException('Category not found');
-    }
 
-    const teacher = await this.teacherService.findTeacher({ id: teacherId });
-    if (!teacher) {
-      throw new NotFoundException('Teacher not found');
-    }
+    await this.teacherService.findTeacherOrThrow({
+      id: teacherId,
+    });
 
     return await this.courseRepository.createCourse(params, tx);
   }

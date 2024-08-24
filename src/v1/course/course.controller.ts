@@ -60,6 +60,7 @@ export class CourseController {
       ...DEFAULT_PAGINATION,
       ...query,
     });
+
     return courses.map(courseToDto);
   }
 
@@ -129,6 +130,7 @@ export class CourseController {
    *
    * @tag course
    * @summary 강의 수정 - Role('admin', 'manager', 'teacher')
+   * @param id - 수정할 강의의 id
    */
   @TypedRoute.Patch('/:id')
   @Roles('admin', 'manager', 'teacher')

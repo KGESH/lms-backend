@@ -19,7 +19,13 @@ export type ILessonContent = {
 
 export type ILessonContentCreate = Pick<
   Optional<ILessonContent, 'id'>,
-  'lessonId' | 'title' | 'description' | 'contentType' | 'url' | 'metadata'
+  | 'lessonId'
+  | 'title'
+  | 'description'
+  | 'contentType'
+  | 'url'
+  | 'metadata'
+  | 'sequence'
 >;
 
 export type ILessonContentUpdate = Omit<

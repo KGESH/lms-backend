@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import * as typia from 'typia';
 import { dbSchema } from '@src/infra/db/schema';
 import { desc, eq, isNull } from 'drizzle-orm';
@@ -18,12 +18,40 @@ import { IProductSnapshotRefundPolicy } from '@src/v1/product/common/snapshot/re
 export class CourseProductQueryRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async findOneWithRelations(
+  async findCourseProducts() {
+    const products = await this.drizzle.db.query.courseProducts.findMany({
+      with: {
+        snapshots: true,
+        course: {
+          with: {
+            teacher: true,
+          },
+        },
+      },
+    });
+  }
+
+  async findCourseProductWithRelations(
     where: Pick<ICourseProduct, 'courseId'>,
   ): Promise<ICourseProductWithRelations | null> {
     const product = await this.drizzle.db.query.courseProducts.findFirst({
       where: eq(dbSchema.courseProducts.courseId, where.courseId),
       with: {
+        course: {
+          with: {
+            category: true,
+            teacher: {
+              with: {
+                account: true,
+              },
+            },
+            chapters: {
+              with: {
+                lessons: true,
+              },
+            },
+          },
+        },
         snapshots: {
           where: isNull(dbSchema.courseProductSnapshots.deletedAt),
           orderBy: desc(dbSchema.courseProductSnapshots.createdAt),
@@ -46,6 +74,17 @@ export class CourseProductQueryRepository {
     const lastSnapshot = product.snapshots[0];
     return {
       ...product,
+      course: {
+        ...product.course,
+        teacher: product.course.teacher,
+        chapters: product.course.chapters.map((chapter) => ({
+          ...chapter,
+          lessons: chapter.lessons.map((lesson) => ({
+            ...lesson,
+            lessonContents: [],
+          })),
+        })),
+      },
       lastSnapshot: lastSnapshot
         ? {
             ...lastSnapshot,
@@ -75,7 +114,7 @@ export class CourseProductQueryRepository {
     };
   }
 
-  async findOneWithLastSnapshot({
+  async findCourseProductWithLastSnapshot({
     courseId,
   }: Pick<
     ICourseProduct,
@@ -84,6 +123,16 @@ export class CourseProductQueryRepository {
     const product = await this.drizzle.db.query.courseProducts.findFirst({
       where: eq(dbSchema.courseProducts.courseId, courseId),
       with: {
+        course: {
+          with: {
+            category: true,
+            teacher: {
+              with: {
+                account: true,
+              },
+            },
+          },
+        },
         snapshots: {
           where: isNull(dbSchema.courseProductSnapshots.deletedAt),
           orderBy: desc(dbSchema.courseProductSnapshots.createdAt),
@@ -98,7 +147,26 @@ export class CourseProductQueryRepository {
 
     return {
       ...product,
+      course: {
+        ...product.course,
+        chapters: [],
+      },
       lastSnapshot: product.snapshots[0] ?? null,
     };
+  }
+
+  async findCourseProductWithLastSnapshotOrThrow({
+    courseId,
+  }: Pick<
+    ICourseProduct,
+    'courseId'
+  >): Promise<ICourseProductWithLastSnapshot> {
+    const product = await this.findCourseProductWithLastSnapshot({ courseId });
+
+    if (!product) {
+      throw new NotFoundException('Course product not found');
+    }
+
+    return product;
   }
 }

@@ -117,7 +117,16 @@ export const createCourseProductSnapshotDiscount = async (
 export const createRandomCourseProduct = async (
   db: TransactionClient,
 ): Promise<ICourseProductWithRelations> => {
-  const { course } = await createRandomCourse(db);
+  const {
+    course,
+    user,
+    userSession,
+    teacher,
+    category,
+    chapters,
+    lessons,
+    lessonContents,
+  } = await createRandomCourse(db);
   const product = await createCourseProduct(
     {
       ...typia.random<ICourseProductCreate>(),
@@ -170,6 +179,21 @@ export const createRandomCourseProduct = async (
 
   return {
     ...product,
+    course: {
+      ...course,
+      teacher: {
+        ...teacher,
+        account: user,
+      },
+      category,
+      chapters: chapters.map((chapter) => ({
+        ...chapter,
+        lessons: lessons.map((lesson) => ({
+          ...lesson,
+          lessonContents: lessonContents,
+        })),
+      })),
+    },
     lastSnapshot: {
       ...snapshot,
       announcement,
