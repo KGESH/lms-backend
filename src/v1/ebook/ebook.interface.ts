@@ -1,5 +1,6 @@
 import { Uuid } from '@src/shared/types/primitive';
 import { Optional } from '@src/shared/types/optional';
+import { Pagination } from '@src/shared/types/pagination';
 
 export type IEbook = {
   id: Uuid;
@@ -17,3 +18,5 @@ export type IEbookCreate = Pick<
 >;
 
 export type IEbookUpdate = Omit<Partial<IEbookCreate>, 'id' | 'teacherId'>;
+
+export type IEbookQuery = Pagination & Partial<Pick<IEbook, 'categoryId'>>;

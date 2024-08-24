@@ -11,6 +11,7 @@ import { courses } from './course';
 import { productType } from './enum';
 import { relations } from 'drizzle-orm';
 import { orders } from './order';
+import { ebooks } from './ebook';
 
 export const reviews = pgTable('reviews', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -76,10 +77,11 @@ export const courseReviews = pgTable('course_reviews', {
 export const ebookReviews = pgTable('ebook_reviews', {
   id: uuid('id').primaryKey().defaultRandom(),
   reviewId: uuid('review_id')
-    // .references(() => reviews.id)
+    .references(() => reviews.id)
     .notNull(),
-  // Todo: Impl
-  ebookId: uuid('ebook_id'),
+  ebookId: uuid('ebook_id')
+    .references(() => ebooks.id)
+    .notNull(),
 });
 
 export const reviewsRelations = relations(reviews, ({ one, many }) => ({
@@ -153,10 +155,10 @@ export const ebookReviewRelations = relations(ebookReviews, ({ one }) => ({
     fields: [ebookReviews.reviewId],
     references: [reviews.id],
   }),
-  // ebook: one(ebooks, {
-  //   fields: [ebookReviews.ebookId],
-  //   references: [ebooks.id],
-  // }),
+  ebook: one(ebooks, {
+    fields: [ebookReviews.ebookId],
+    references: [ebooks.id],
+  }),
 }));
 
 export const reviewDbSchema = {

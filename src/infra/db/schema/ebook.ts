@@ -4,6 +4,7 @@ import { decimal, integer, timestamp } from 'drizzle-orm/pg-core';
 import { discountType, lessonContentType } from './enum';
 import { teachers } from './teacher';
 import { ebookOrders } from './order';
+import { users } from './user';
 
 export const ebookCategories = pgTable('ebook_categories', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -32,7 +33,7 @@ export const ebooks = pgTable('ebooks', {
     .$onUpdate(() => new Date()),
 });
 
-export const ebookContents = pgTable('ebookContents', {
+export const ebookContents = pgTable('ebook_contents', {
   id: uuid('id').primaryKey().defaultRandom(),
   ebookId: uuid('ebook_id').notNull(),
   title: text('title').notNull(),
@@ -118,6 +119,18 @@ export const ebookProductSnapshotContents = pgTable(
   },
 );
 
+export const ebookEnrollments = pgTable('ebook_enrollments', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull(),
+  ebookId: uuid('ebook_id').notNull(),
+  createdAt: timestamp('created_at', {
+    mode: 'date',
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+});
+
 export const ebookCategoriesRelations = relations(
   ebookCategories,
   ({ one, many }) => ({
@@ -144,6 +157,13 @@ export const ebooksRelations = relations(ebooks, ({ one, many }) => ({
   }),
   contents: many(ebookContents),
   products: one(ebookProducts),
+}));
+
+export const ebookContentsRelations = relations(ebookContents, ({ one }) => ({
+  ebook: one(ebooks, {
+    fields: [ebookContents.ebookId],
+    references: [ebooks.id],
+  }),
 }));
 
 export const ebookProductsRelations = relations(
@@ -223,6 +243,20 @@ export const ebookProductSnapshotDiscountsRelations = relations(
   }),
 );
 
+export const ebookEnrollmentsRelations = relations(
+  ebookEnrollments,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [ebookEnrollments.userId],
+      references: [users.id],
+    }),
+    ebook: one(ebooks, {
+      fields: [ebookEnrollments.ebookId],
+      references: [ebooks.id],
+    }),
+  }),
+);
+
 export const ebookDbSchema = {
   // Entities
   ebookCategories,
@@ -235,10 +269,12 @@ export const ebookDbSchema = {
   ebookProductSnapshotAnnouncements,
   ebookProductSnapshotRefundPolicies,
   ebookProductSnapshotContents,
+  ebookEnrollments,
 
   // Relations
   ebookCategoriesRelations,
   ebooksRelations,
+  ebookContentsRelations,
   ebookProductsRelations,
   ebookProductSnapshotsRelations,
   ebookProductSnapshotPricingRelations,
@@ -246,4 +282,5 @@ export const ebookDbSchema = {
   ebookProductSnapshotAnnouncementsRelations,
   ebookProductSnapshotRefundPoliciesRelations,
   ebookProductSnapshotContentsRelations,
+  ebookEnrollmentsRelations,
 };

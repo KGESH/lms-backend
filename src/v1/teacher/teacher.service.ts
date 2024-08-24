@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import * as typia from 'typia';
 import { TeacherRepository } from '@src/v1/teacher/teacher.repository';
 import {
@@ -33,6 +33,18 @@ export class TeacherService {
   ): Promise<ITeacherWithAccount | null> {
     const teacher = await this.teacherRepository.findOne(query);
     return teacher ? typia.misc.clone<ITeacherWithAccount>(teacher) : null;
+  }
+
+  async findTeacherOrThrow(
+    query: Pick<ITeacher, 'id'>,
+  ): Promise<ITeacherWithAccount> {
+    const teacher = await this.findTeacher(query);
+
+    if (!teacher) {
+      throw new NotFoundException('Teacher not found');
+    }
+
+    return teacher;
   }
 
   async findTeacherByEmail(

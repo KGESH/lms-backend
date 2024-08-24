@@ -52,3 +52,5 @@ export type Ebook = 'ebook';
 export type ProductType = Course | Ebook;
 
 export type LessonContentType = 'video' | 'image' | 'text' | 'file';
+
+export type EbookContentType = 'video' | 'image' | 'text' | 'file';

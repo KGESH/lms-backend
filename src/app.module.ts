@@ -16,6 +16,7 @@ import { FileModule } from '@src/v1/file/file.module';
 import { ReviewModule } from '@src/v1/review/review.module';
 import { UserCourseEnrollmentModule } from '@src/v1/user/course/enrollment/user-course-enrollment.module';
 import { EbookCategoryModule } from '@src/v1/ebook/category/ebook-category.module';
+import { EbookContentModule } from '@src/v1/ebook/ebook-content/ebook-content.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { EbookCategoryModule } from '@src/v1/ebook/category/ebook-category.modul
     CourseCategoryModule,
     EbookCategoryModule,
     LessonContentModule,
+    EbookContentModule,
     TeacherModule,
     FileModule,
     UiModule,

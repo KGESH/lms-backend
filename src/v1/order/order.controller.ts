@@ -3,7 +3,7 @@ import { TypedBody, TypedHeaders, TypedParam, TypedRoute } from '@nestia/core';
 import { CourseOrderPurchaseService } from '@src/v1/order/course/course-order-purchase.service';
 import { CourseOrderPurchaseDto } from '@src/v1/order/course/course-order-purchase.dto';
 import * as date from '@src/shared/utils/date';
-import { OrderCourseDto, OrderDto } from '@src/v1/order/order.dto';
+import { OrderCoursePurchasedDto, OrderDto } from '@src/v1/order/order.dto';
 import { toISOString } from '@src/shared/utils/date';
 import { Uuid } from '@src/shared/types/primitive';
 import { OrderService } from '@src/v1/order/order.service';
@@ -118,7 +118,7 @@ export class OrderController {
   async purchaseCourseProduct(
     @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: CourseOrderPurchaseDto,
-  ): Promise<OrderCourseDto> {
+  ): Promise<OrderCoursePurchasedDto> {
     const { order, courseProduct } =
       await this.courseOrderPurchaseService.purchaseCourse(body);
 
@@ -131,31 +131,6 @@ export class OrderController {
         snapshotId: courseProduct.lastSnapshot.id,
         title: courseProduct.lastSnapshot.title,
         description: courseProduct.lastSnapshot.description,
-        announcement: {
-          ...courseProduct.lastSnapshot.announcement,
-        },
-        refundPolicy: {
-          ...courseProduct.lastSnapshot.refundPolicy,
-        },
-        content: {
-          ...courseProduct.lastSnapshot.content,
-        },
-        pricing: {
-          ...courseProduct.lastSnapshot.pricing,
-        },
-        discounts: courseProduct.lastSnapshot.discounts
-          ? {
-              ...courseProduct.lastSnapshot.discounts,
-              validTo: courseProduct.lastSnapshot.discounts.validTo
-                ? date.toISOString(courseProduct.lastSnapshot.discounts.validTo)
-                : null,
-              validFrom: courseProduct.lastSnapshot.discounts.validFrom
-                ? date.toISOString(
-                    courseProduct.lastSnapshot.discounts.validFrom,
-                  )
-                : null,
-            }
-          : null,
         createdAt: toISOString(courseProduct.lastSnapshot.createdAt),
         updatedAt: toISOString(courseProduct.lastSnapshot.updatedAt),
         deletedAt: courseProduct.lastSnapshot.deletedAt

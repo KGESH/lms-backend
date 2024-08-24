@@ -51,7 +51,7 @@ export class EbookCategoryController {
     status: 400,
     description: 'invalid request',
   })
-  async getRootCategories(
+  async getRootEbookCategories(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedQuery() query?: EbookCategoryQuery,
   ): Promise<EbookCategoryWithChildrenDto[]> {

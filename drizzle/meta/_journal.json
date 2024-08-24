@@ -64,6 +64,20 @@
       "when": 1724406824368,
       "tag": "0008_glossy_silk_fever",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1724482568933,
+      "tag": "0009_lonely_spiral",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1724485009611,
+      "tag": "0010_dear_blade",
+      "breakpoints": true
     }
   ]
 }

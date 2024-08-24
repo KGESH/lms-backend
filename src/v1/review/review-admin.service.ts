@@ -30,7 +30,7 @@ export class ReviewAdminService {
   ): Promise<IReviewWithRelations> {
     const { courseId, reviewCreateParams, snapshotCreateParams } = params;
 
-    const product = await this.courseProductService.findCourseProduct({
+    const product = await this.courseProductService.findCourseProductWithRelations({
       courseId,
     });
 

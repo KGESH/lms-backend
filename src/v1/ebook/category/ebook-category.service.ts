@@ -37,6 +37,18 @@ export class EbookCategoryService {
     };
   }
 
+  async findEbookCategoryOrThrow(
+    where: Pick<IEbookCategory, 'id'>,
+  ): Promise<IEbookCategoryWithChildren> {
+    const category = await this.findEbookCategory(where);
+
+    if (!category) {
+      throw new NotFoundException('EbookCategory not found');
+    }
+
+    return category;
+  }
+
   async findEbookCategoryWithChildren(
     where: Pick<IEbookCategory, 'id'>,
   ): Promise<IEbookCategoryWithChildren | null> {

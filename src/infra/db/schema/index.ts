@@ -4,7 +4,7 @@ import { uiDbSchemas } from './ui';
 import { orderDbSchema } from './order';
 import { reviewDbSchema } from './review';
 import { teacherDbSchema } from './teacher';
-import { ebookDbSchema } from '@src/infra/db/schema/ebook';
+import { ebookDbSchema } from './ebook';
 
 export const dbSchema = {
   // 사용자 (일반 사용자, 관리자(매니저), 최고 관리자)
