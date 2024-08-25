@@ -8,6 +8,7 @@ import {
 import { LessonContentQueryRepository } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content-query.repository';
 import { LessonContentRepository } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.repository';
 import { LessonQueryService } from '@src/v1/course/chapter/lesson/lesson-query.service';
+import { Uuid } from '@src/shared/types/primitive';
 
 @Injectable()
 export class LessonContentService {
@@ -17,12 +18,17 @@ export class LessonContentService {
     private readonly lessonContentQueryRepository: LessonContentQueryRepository,
   ) {}
 
-  async createLessonContent(
-    params: Omit<ILessonContentCreate, 'sequence'>,
+  async createLessonContents(
+    lessonId: Uuid,
+    params: Omit<ILessonContentCreate, 'sequence'>[],
     tx?: TransactionClient,
-  ): Promise<ILessonContent> {
+  ): Promise<ILessonContent[]> {
+    if (params.length === 0) {
+      return [];
+    }
+
     const lesson = await this.lessonQueryService.findLessonById({
-      id: params.lessonId,
+      id: lessonId,
     });
 
     if (!lesson) {
@@ -31,19 +37,76 @@ export class LessonContentService {
 
     const existContents =
       await this.lessonContentQueryRepository.findManyByLessonId({
-        lessonId: params.lessonId,
+        lessonId,
       });
 
-    const maxSequence = Math.max(
-      ...existContents.map((content) => content.sequence ?? 0),
+    const fileContents = params.filter(
+      (content) => content.contentType === 'file',
+    );
+    const existFileContents = existContents.filter(
+      (content) => content.contentType === 'file',
+    );
+    const fileContentMaxSequence = Math.max(
+      ...existFileContents.map((content) => content.sequence ?? 0),
       0,
     );
+    const fileContentCreateParams = fileContents.map((content, index) => ({
+      ...content,
+      sequence: fileContentMaxSequence + index + 1,
+    }));
 
-    return await this.lessonContentRepository.createLessonContent(
-      {
-        ...params,
-        sequence: maxSequence + 1,
-      },
+    const imageContents = params.filter(
+      (content) => content.contentType === 'image',
+    );
+    const existImageContents = existContents.filter(
+      (content) => content.contentType === 'image',
+    );
+    const imageContentMaxSequence = Math.max(
+      ...existImageContents.map((content) => content.sequence ?? 0),
+      0,
+    );
+    const imageContentCreateParams = imageContents.map((content, index) => ({
+      ...content,
+      sequence: imageContentMaxSequence + index + 1,
+    }));
+
+    const textContents = params.filter(
+      (content) => content.contentType === 'text',
+    );
+    const existTextContents = existContents.filter(
+      (content) => content.contentType === 'text',
+    );
+    const textContentMaxSequence = Math.max(
+      ...existTextContents.map((content) => content.sequence ?? 0),
+      0,
+    );
+    const textContentCreateParams = textContents.map((content, index) => ({
+      ...content,
+      sequence: textContentMaxSequence + index + 1,
+    }));
+
+    const videoContents = params.filter(
+      (content) => content.contentType === 'video',
+    );
+    const existVideoContents = existContents.filter(
+      (content) => content.contentType === 'video',
+    );
+    const videoContentMaxSequence = Math.max(
+      ...existVideoContents.map((content) => content.sequence ?? 0),
+      0,
+    );
+    const videoContentCreateParams = videoContents.map((content, index) => ({
+      ...content,
+      sequence: videoContentMaxSequence + index + 1,
+    }));
+
+    return await this.lessonContentRepository.createLessonContents(
+      [
+        ...fileContentCreateParams,
+        ...imageContentCreateParams,
+        ...textContentCreateParams,
+        ...videoContentCreateParams,
+      ],
       tx,
     );
   }

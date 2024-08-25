@@ -12,15 +12,15 @@ import {
 export class LessonContentRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async createLessonContent(
-    params: ILessonContentCreate,
+  async createLessonContents(
+    params: ILessonContentCreate[],
     db = this.drizzle.db,
-  ): Promise<ILessonContent> {
-    const [lessonContent] = await db
+  ): Promise<ILessonContent[]> {
+    const lessonContents = await db
       .insert(dbSchema.lessonContents)
       .values(params)
       .returning();
-    return lessonContent;
+    return lessonContents;
   }
 
   async updateLessonContent(

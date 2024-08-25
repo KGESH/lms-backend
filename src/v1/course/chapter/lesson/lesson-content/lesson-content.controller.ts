@@ -124,17 +124,21 @@ export class LessonContentController {
     status: 404,
     description: 'lesson not found',
   })
-  async createLessonContent(
+  async createLessonContents(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
     @TypedParam('chapterId') chapterId: Uuid,
     @TypedParam('lessonId') lessonId: Uuid,
-    @TypedBody() body: LessonContentCreateDto,
-  ): Promise<LessonContentDto> {
-    const lessonContent = await this.lessonContentService.createLessonContent({
-      ...body,
+    @TypedBody() body: LessonContentCreateDto[],
+  ): Promise<LessonContentDto[]> {
+    const lessonContent = await this.lessonContentService.createLessonContents(
       lessonId,
-    });
+      body.map((params) => ({ ...params, lessonId })),
+    );
+    // const lessonContent = await this.lessonContentService.createLessonContent({
+    //   ...body,
+    //   lessonId,
+    // });
     return lessonContent;
   }
 
