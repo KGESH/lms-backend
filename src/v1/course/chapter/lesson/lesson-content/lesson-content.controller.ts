@@ -19,8 +19,6 @@ import { IErrorResponse } from '@src/shared/types/response';
 import { AuthHeaders } from '@src/v1/auth/auth.headers';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
-import { SessionUser } from '@src/core/decorators/session-user.decorator';
-import { ISessionWithUser } from '@src/v1/auth/session.interface';
 import { CourseAccessGuard } from '@src/core/guards/course-access.guard';
 
 @Controller(

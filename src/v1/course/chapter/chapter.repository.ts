@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
@@ -12,37 +12,7 @@ import {
 export class ChapterRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async findOne(where: Pick<IChapter, 'id'>): Promise<IChapter | null> {
-    const chapter = await this.drizzle.db.query.chapters.findFirst({
-      where: eq(dbSchema.chapters.id, where.id),
-    });
-
-    if (!chapter) {
-      return null;
-    }
-
-    return chapter;
-  }
-
-  async findOneOrThrow(where: Pick<IChapter, 'id'>): Promise<IChapter> {
-    const chapter = await this.findOne(where);
-
-    if (!chapter) {
-      throw new NotFoundException('Chapter not found');
-    }
-
-    return chapter;
-  }
-
-  async findManyByCourseId(
-    where: Pick<IChapter, 'courseId'>,
-  ): Promise<IChapter[]> {
-    return await this.drizzle.db.query.chapters.findMany({
-      where: eq(dbSchema.chapters.courseId, where.courseId),
-    });
-  }
-
-  async create(
+  async createChapter(
     params: IChapterCreate,
     db = this.drizzle.db,
   ): Promise<IChapter> {
@@ -53,7 +23,7 @@ export class ChapterRepository {
     return chapter;
   }
 
-  async update(
+  async updateChapter(
     where: Pick<IChapter, 'id'>,
     params: IChapterUpdate,
     db = this.drizzle.db,
@@ -66,7 +36,7 @@ export class ChapterRepository {
     return updated;
   }
 
-  async delete(
+  async deleteChapter(
     where: Pick<IChapter, 'id'>,
     db = this.drizzle.db,
   ): Promise<IChapter> {

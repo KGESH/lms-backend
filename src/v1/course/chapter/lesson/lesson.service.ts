@@ -18,7 +18,7 @@ export class LessonService {
   ) {}
 
   async createLesson(
-    params: ILessonCreate,
+    params: Omit<ILessonCreate, 'sequence'>,
     tx?: TransactionClient,
   ): Promise<ILesson> {
     const chapter = await this.chapterQueryService.findChapterById({
@@ -29,7 +29,23 @@ export class LessonService {
       throw new NotFoundException('Chapter not found');
     }
 
-    return await this.lessonRepository.createLesson(params, tx);
+    const existLessons =
+      await this.lessonQueryRepository.findLessonsByChapterId({
+        chapterId: params.chapterId,
+      });
+
+    const maxSequence = Math.max(
+      ...existLessons.map((lesson) => lesson.sequence),
+      0,
+    );
+
+    return await this.lessonRepository.createLesson(
+      {
+        ...params,
+        sequence: maxSequence + 1,
+      },
+      tx,
+    );
   }
 
   async updateLesson(

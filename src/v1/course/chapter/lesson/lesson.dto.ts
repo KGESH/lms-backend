@@ -8,9 +8,8 @@ export type LessonDto = {
   sequence: UInt;
 };
 
-export type LessonCreateDto = Pick<
-  LessonDto,
-  'title' | 'description' | 'sequence'
->;
+export type LessonCreateDto = Pick<LessonDto, 'title' | 'description'>;
 
-export type LessonUpdateDto = Partial<LessonDto>;
+export type LessonUpdateDto = Partial<
+  Pick<LessonDto, 'title' | 'description' | 'sequence'>
+>;

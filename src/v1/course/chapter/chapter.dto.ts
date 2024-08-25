@@ -8,9 +8,8 @@ export type ChapterDto = {
   sequence: UInt;
 };
 
-export type ChapterCreateDto = Pick<
-  ChapterDto,
-  'title' | 'description' | 'sequence'
->;
+export type ChapterCreateDto = Pick<ChapterDto, 'title' | 'description'>;
 
-export type ChapterUpdateDto = Partial<ChapterCreateDto>;
+export type ChapterUpdateDto = Partial<
+  Pick<ChapterDto, 'title' | 'description' | 'sequence'>
+>;

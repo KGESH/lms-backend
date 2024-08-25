@@ -7,16 +7,18 @@ import {
   IChapterCreate,
   IChapterUpdate,
 } from '@src/v1/course/chapter/chapter.interface';
+import { ChapterQueryRepository } from '@src/v1/course/chapter/chapter-query.repository';
 
 @Injectable()
 export class ChapterService {
   constructor(
     private readonly courseQueryService: CourseQueryService,
     private readonly chapterRepository: ChapterRepository,
+    private readonly chapterQueryRepository: ChapterQueryRepository,
   ) {}
 
   async createChapter(
-    params: IChapterCreate,
+    params: Omit<IChapterCreate, 'sequence'>,
     tx?: TransactionClient,
   ): Promise<IChapter> {
     const course = await this.courseQueryService.findCourseById({
@@ -27,7 +29,23 @@ export class ChapterService {
       throw new NotFoundException('Course not found');
     }
 
-    return await this.chapterRepository.create(params, tx);
+    const existChapters =
+      await this.chapterQueryRepository.findChaptersByCourseId({
+        courseId: params.courseId,
+      });
+
+    const maxSequence = Math.max(
+      ...existChapters.map((chapter) => chapter.sequence),
+      0,
+    );
+
+    return await this.chapterRepository.createChapter(
+      {
+        ...params,
+        sequence: maxSequence + 1,
+      },
+      tx,
+    );
   }
 
   async updateChapter(
@@ -35,15 +53,15 @@ export class ChapterService {
     params: IChapterUpdate,
     tx?: TransactionClient,
   ): Promise<IChapter> {
-    await this.chapterRepository.findOneOrThrow({ id: where.id });
-    return await this.chapterRepository.update(where, params, tx);
+    await this.chapterQueryRepository.findChapterOrThrow({ id: where.id });
+    return await this.chapterRepository.updateChapter(where, params, tx);
   }
 
   async deleteChapter(
     where: Pick<IChapter, 'id'>,
     tx?: TransactionClient,
   ): Promise<IChapter> {
-    await this.chapterRepository.findOneOrThrow({ id: where.id });
-    return await this.chapterRepository.delete(where, tx);
+    await this.chapterQueryRepository.findChapterOrThrow({ id: where.id });
+    return await this.chapterRepository.deleteChapter(where, tx);
   }
 }

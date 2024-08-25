@@ -13,6 +13,6 @@ export class LessonQueryService {
   async findLessonsByChapterId(
     where: Pick<ILesson, 'chapterId'>,
   ): Promise<ILesson[]> {
-    return await this.lessonQueryRepository.findManyByChapterId(where);
+    return await this.lessonQueryRepository.findLessonsByChapterId(where);
   }
 }

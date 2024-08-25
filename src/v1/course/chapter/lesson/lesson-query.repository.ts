@@ -30,7 +30,7 @@ export class LessonQueryRepository {
     return lesson;
   }
 
-  async findManyByChapterId(where: Pick<ILesson, 'chapterId'>) {
+  async findLessonsByChapterId(where: Pick<ILesson, 'chapterId'>) {
     return await this.drizzle.db.query.lessons.findMany({
       where: eq(dbSchema.lessons.chapterId, where.chapterId),
     });
