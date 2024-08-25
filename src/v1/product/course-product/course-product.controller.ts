@@ -11,6 +11,7 @@ import { Uuid } from '@src/shared/types/primitive';
 import {
   CreateCourseProductDto,
   CourseProductDto,
+  UpdateCourseProductDto,
 } from '@src/v1/product/course-product/course-product.dto';
 import * as date from '@src/shared/utils/date';
 import { TypeGuardError } from 'typia';
@@ -57,9 +58,10 @@ export class CourseProductController {
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
   ): Promise<CourseProductDto | null> {
-    const product = await this.courseProductService.findCourseProductWithRelations({
-      courseId,
-    });
+    const product =
+      await this.courseProductService.findCourseProductWithRelations({
+        courseId,
+      });
 
     if (!product || !product.lastSnapshot) {
       return null;
@@ -75,9 +77,7 @@ export class CourseProductController {
    * 강의 상품 상세 페이지를 생성합니다. (스냅샷)
    *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
-   *
-   * 상세 페이지 추가, 수정 모두 이 엔드포인트를 사용합니다.
-   *
+   **
    * 사용자는 가장 최신의 스냅샷을 조회할 수 있습니다.
    *
    * title: 상품 제목.
@@ -145,5 +145,78 @@ export class CourseProductController {
     });
 
     return courseProductToDto(product);
+  }
+
+  /**
+   * 강의 상품 상세 페이지를 수정합니다. (스냅샷)
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   **
+   * 사용자는 가장 최신의 스냅샷을 조회할 수 있습니다.
+   *
+   * 업데이트할 필드만 body에 담아서 요청합니다.
+   *
+   * body에 담기지 않은 필드는 이전 스냅샷의 값을 그대로 사용합니다.
+   *
+   * title: 상품 제목.
+   *
+   * description: 상품 설명 (사용처 미확정).
+   *
+   * announcement: 상품 상세 페이지 공지사항 rich text content.
+   *
+   * content: 상품 상세 페이지 rich text content.
+   *
+   * refundPolicy: 상품 상세 페이지 환불 정책 rich text content.
+   *
+   * pricing: 상품 가격 정보.
+   *
+   * discounts: 상품 할인 정보.
+   *
+   * @tag product-course
+   * @summary 강의 상품 생성 - Role('admin', 'manager')
+   * @param courseId - 강의 ID
+   */
+  @TypedRoute.Patch('/:courseId')
+  @Roles('admin', 'manager')
+  @UseGuards(RolesGuard)
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<TypeGuardError>({
+    status: 404,
+    description: 'Course product snapshot not found',
+  })
+  async updateProductCourse(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedParam('courseId') courseId: Uuid,
+    @TypedBody() body: UpdateCourseProductDto,
+  ): Promise<CourseProductDto> {
+    const updated = await this.courseProductService.updateCourseProduct(
+      {
+        courseId,
+      },
+      {
+        courseProductSnapshotCreateParams: { ...body },
+        courseProductSnapshotAnnouncementCreateParams: body.announcement,
+        courseProductSnapshotContentCreateParams: body.content,
+        courseProductSnapshotRefundPolicyCreateParams: body.refundPolicy,
+        courseProductSnapshotPricingCreateParams: body.pricing,
+        courseProductSnapshotDiscountCreateParams: body.discounts
+          ? {
+              discountType: body.discounts.discountType,
+              value: body.discounts.value,
+              validFrom: body.discounts.validFrom
+                ? date.toDate(body.discounts.validFrom)
+                : null,
+              validTo: body.discounts.validTo
+                ? date.toDate(body.discounts.validTo)
+                : null,
+            }
+          : null,
+      },
+    );
+
+    return courseProductToDto(updated);
   }
 }

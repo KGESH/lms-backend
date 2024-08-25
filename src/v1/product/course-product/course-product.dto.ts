@@ -33,3 +33,5 @@ export type CreateCourseProductDto = Pick<
     'id' | 'productSnapshotId'
   > | null;
 };
+
+export type UpdateCourseProductDto = Partial<CreateCourseProductDto>;

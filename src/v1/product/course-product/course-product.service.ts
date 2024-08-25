@@ -24,6 +24,7 @@ import { CourseProductSnapshotAnnouncementRepository } from '@src/v1/product/cou
 import { CourseProductSnapshotRefundPolicyRepository } from '@src/v1/product/course-product/course-product-snapshot-refund-policy.repository';
 import { IProductSnapshotAnnouncementCreate } from '@src/v1/product/common/snapshot/announcement/product-snapshot-announcement.interface';
 import { IProductSnapshotRefundPolicyCreate } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
+import { createUuid } from '@src/shared/utils/uuid';
 
 @Injectable()
 export class CourseProductService {
@@ -128,38 +129,47 @@ export class CourseProductService {
       const courseProduct =
         existProduct ??
         (await this.courseProductRepository.create(
-          courseProductCreateParams,
+          {
+            ...courseProductCreateParams,
+            id: createUuid(),
+          },
           tx,
         ));
       const snapshot = await this.courseProductSnapshotRepository.create(
         {
           ...courseProductSnapshotCreateParams,
           productId: courseProduct.id,
+          id: createUuid(),
         },
         tx,
       );
       const content = await this.courseProductSnapshotContentRepository.create({
         ...courseProductSnapshotContentCreateParams,
         productSnapshotId: snapshot.id,
+        id: createUuid(),
       });
       const announcement =
         await this.courseProductSnapshotAnnouncementRepository.create({
           ...courseProductSnapshotAnnouncementCreateParams,
           productSnapshotId: snapshot.id,
+          id: createUuid(),
         });
       const refundPolicy =
         await this.courseProductSnapshotRefundPolicyRepository.create({
           ...courseProductSnapshotRefundPolicyCreateParams,
           productSnapshotId: snapshot.id,
+          id: createUuid(),
         });
       const pricing = await this.courseProductSnapshotPricingRepository.create({
         ...courseProductSnapshotPricingCreateParams,
         productSnapshotId: snapshot.id,
+        id: createUuid(),
       });
       const discount = courseProductSnapshotDiscountCreateParams
         ? await this.courseProductSnapshotDiscountRepository.create({
             ...courseProductSnapshotDiscountCreateParams,
             productSnapshotId: snapshot.id,
+            id: createUuid(),
           })
         : null;
 
@@ -168,10 +178,10 @@ export class CourseProductService {
         lastSnapshot: {
           ...snapshot,
           announcement,
+          content,
           refundPolicy,
           pricing,
           discounts: discount,
-          content,
         },
       } satisfies NonNullableInfer<Omit<ICourseProductWithRelations, 'course'>>;
     });
@@ -194,5 +204,124 @@ export class CourseProductService {
       ...product,
       course: createdCourseProduct.course,
     };
+  }
+
+  async updateCourseProduct(
+    where: Pick<ICourseProduct, 'courseId'>,
+    {
+      courseProductSnapshotCreateParams,
+      courseProductSnapshotContentCreateParams,
+      courseProductSnapshotAnnouncementCreateParams,
+      courseProductSnapshotRefundPolicyCreateParams,
+      courseProductSnapshotPricingCreateParams,
+      courseProductSnapshotDiscountCreateParams,
+    }: {
+      courseProductSnapshotCreateParams?: Partial<
+        Omit<IProductSnapshotCreate, 'productId'>
+      >;
+      courseProductSnapshotContentCreateParams?: Pick<
+        IProductSnapshotContentCreate,
+        'richTextContent'
+      >;
+      courseProductSnapshotAnnouncementCreateParams?: Pick<
+        IProductSnapshotAnnouncementCreate,
+        'richTextContent'
+      >;
+      courseProductSnapshotRefundPolicyCreateParams?: Pick<
+        IProductSnapshotRefundPolicyCreate,
+        'richTextContent'
+      >;
+      courseProductSnapshotPricingCreateParams?: Pick<
+        IProductSnapshotPricingCreate,
+        'amount'
+      >;
+      courseProductSnapshotDiscountCreateParams?: Omit<
+        IProductSnapshotDiscountCreate,
+        'productSnapshotId'
+      > | null;
+    },
+  ): Promise<NonNullableInfer<ICourseProductWithRelations>> {
+    const existProduct =
+      await this.findCourseProductWithRelationsOrThrow(where);
+
+    // Create new snapshot using the given parameters.
+    // If the parameter is not given, use the existing snapshot. e.g. pricing create params.
+    const updatedProduct: NonNullableInfer<ICourseProductWithRelations> =
+      await this.drizzle.db.transaction(async (tx) => {
+        const snapshot = await this.courseProductSnapshotRepository.create(
+          {
+            ...existProduct.lastSnapshot,
+            ...courseProductSnapshotCreateParams,
+            productId: existProduct.id,
+            id: createUuid(),
+          },
+          tx,
+        );
+        const content =
+          await this.courseProductSnapshotContentRepository.create(
+            {
+              ...existProduct.lastSnapshot.content,
+              ...courseProductSnapshotContentCreateParams,
+              productSnapshotId: snapshot.id,
+              id: createUuid(),
+            },
+            tx,
+          );
+        const announcement =
+          await this.courseProductSnapshotAnnouncementRepository.create(
+            {
+              ...existProduct.lastSnapshot.announcement,
+              ...courseProductSnapshotAnnouncementCreateParams,
+              productSnapshotId: snapshot.id,
+              id: createUuid(),
+            },
+            tx,
+          );
+        const refundPolicy =
+          await this.courseProductSnapshotRefundPolicyRepository.create(
+            {
+              ...existProduct.lastSnapshot.refundPolicy,
+              ...courseProductSnapshotRefundPolicyCreateParams,
+              productSnapshotId: snapshot.id,
+              id: createUuid(),
+            },
+            tx,
+          );
+        const pricing =
+          await this.courseProductSnapshotPricingRepository.create({
+            ...existProduct.lastSnapshot.pricing,
+            ...courseProductSnapshotPricingCreateParams,
+            productSnapshotId: snapshot.id,
+            id: createUuid(),
+          });
+        const discount = existProduct.lastSnapshot.discounts
+          ? await this.courseProductSnapshotDiscountRepository.create({
+              ...existProduct.lastSnapshot.discounts,
+              ...courseProductSnapshotDiscountCreateParams,
+              productSnapshotId: snapshot.id,
+              id: createUuid(),
+            })
+          : courseProductSnapshotDiscountCreateParams
+            ? await this.courseProductSnapshotDiscountRepository.create({
+                ...courseProductSnapshotDiscountCreateParams,
+                productSnapshotId: snapshot.id,
+                id: createUuid(),
+              })
+            : null;
+
+        return {
+          ...existProduct,
+          lastSnapshot: {
+            ...snapshot,
+            announcement,
+            content,
+            refundPolicy,
+            pricing,
+            discounts: discount,
+          },
+        } satisfies NonNullableInfer<ICourseProductWithRelations>;
+      });
+
+    return updatedProduct;
   }
 }

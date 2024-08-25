@@ -135,10 +135,7 @@ export class LessonContentController {
       lessonId,
       body.map((params) => ({ ...params, lessonId })),
     );
-    // const lessonContent = await this.lessonContentService.createLessonContent({
-    //   ...body,
-    //   lessonId,
-    // });
+
     return lessonContent;
   }
 
