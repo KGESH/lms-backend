@@ -146,7 +146,7 @@ export class CourseController {
   async updateCourse(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('id') id: Uuid,
-    @TypedBody() body: Partial<CourseUpdateDto>,
+    @TypedBody() body: CourseUpdateDto,
   ): Promise<CourseDto> {
     const course = await this.courseService.updateCourse({ id }, body);
     return courseToDto(course);

@@ -17,6 +17,7 @@ import { ReviewModule } from '@src/v1/review/review.module';
 import { UserCourseEnrollmentModule } from '@src/v1/user/course/enrollment/user-course-enrollment.module';
 import { EbookCategoryModule } from '@src/v1/ebook/category/ebook-category.module';
 import { EbookContentModule } from '@src/v1/ebook/ebook-content/ebook-content.module';
+import { CourseDashboardModule } from '@src/v1/dashboard/course/course-dashboard.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { EbookContentModule } from '@src/v1/ebook/ebook-content/ebook-content.mo
     OrderModule,
     ReviewModule,
     UserCourseEnrollmentModule,
+    CourseDashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
