@@ -6,6 +6,7 @@ import {
   ICourseProduct,
   ICourseProductCreate,
 } from '@src/v1/product/course-product/course-product.interface';
+import * as typia from 'typia';
 
 @Injectable()
 export class CourseProductRepository {
@@ -17,7 +18,7 @@ export class CourseProductRepository {
   ): Promise<ICourseProduct> {
     const [product] = await db
       .insert(dbSchema.courseProducts)
-      .values(params)
+      .values(typia.misc.clone(params))
       .returning();
     return product;
   }

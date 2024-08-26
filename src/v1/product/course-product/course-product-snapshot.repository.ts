@@ -8,6 +8,7 @@ import {
   IProductSnapshotCreate,
 } from '@src/v1/product/common/snapshot/conrse-product-snapshot.interface';
 import * as date from '@src/shared/utils/date';
+import * as typia from 'typia';
 
 @Injectable()
 export class CourseProductSnapshotRepository {
@@ -19,7 +20,7 @@ export class CourseProductSnapshotRepository {
   ): Promise<IProductSnapshot> {
     const [snapshot] = await db
       .insert(dbSchema.courseProductSnapshots)
-      .values(params)
+      .values(typia.misc.clone(params))
       .returning();
     return snapshot;
   }

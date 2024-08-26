@@ -5,6 +5,7 @@ import {
   IProductSnapshotContent,
   IProductSnapshotContentCreate,
 } from '@src/v1/product/common/snapshot/content/product-snapshot-content.interface';
+import * as typia from 'typia';
 
 @Injectable()
 export class CourseProductSnapshotContentRepository {
@@ -16,7 +17,7 @@ export class CourseProductSnapshotContentRepository {
   ): Promise<IProductSnapshotContent> {
     const [courseProductContent] = await db
       .insert(dbSchema.courseProductSnapshotContents)
-      .values(params)
+      .values(typia.misc.clone(params))
       .returning();
 
     return courseProductContent;

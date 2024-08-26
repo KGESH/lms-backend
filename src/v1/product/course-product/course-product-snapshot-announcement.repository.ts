@@ -5,6 +5,7 @@ import {
   IProductSnapshotAnnouncement,
   IProductSnapshotAnnouncementCreate,
 } from '@src/v1/product/common/snapshot/announcement/product-snapshot-announcement.interface';
+import * as typia from 'typia';
 
 @Injectable()
 export class CourseProductSnapshotAnnouncementRepository {
@@ -15,8 +16,8 @@ export class CourseProductSnapshotAnnouncementRepository {
     db = this.drizzle.db,
   ): Promise<IProductSnapshotAnnouncement> {
     const [courseProductContent] = await db
-      .insert(dbSchema.courseProductSnapshotContents)
-      .values(params)
+      .insert(dbSchema.courseProductSnapshotAnnouncements)
+      .values(typia.misc.clone(params))
       .returning();
 
     return courseProductContent;

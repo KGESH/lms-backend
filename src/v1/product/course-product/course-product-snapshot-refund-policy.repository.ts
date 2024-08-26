@@ -5,6 +5,7 @@ import {
   IProductSnapshotRefundPolicy,
   IProductSnapshotRefundPolicyCreate,
 } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
+import * as typia from 'typia';
 
 @Injectable()
 export class CourseProductSnapshotRefundPolicyRepository {
@@ -15,8 +16,8 @@ export class CourseProductSnapshotRefundPolicyRepository {
     db = this.drizzle.db,
   ): Promise<IProductSnapshotRefundPolicy> {
     const [courseProductContent] = await db
-      .insert(dbSchema.courseProductSnapshotContents)
-      .values(params)
+      .insert(dbSchema.courseProductSnapshotRefundPolicies)
+      .values(typia.misc.clone(params))
       .returning();
 
     return courseProductContent;

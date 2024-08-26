@@ -18,7 +18,7 @@ export class CourseProductSnapshotDiscountRepository {
   ): Promise<IProductSnapshotDiscount> {
     const [discount] = await db
       .insert(dbSchema.courseProductSnapshotDiscounts)
-      .values(params)
+      .values(typia.misc.clone(params))
       .returning();
 
     return {
