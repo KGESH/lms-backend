@@ -15,6 +15,7 @@ import { seedCourseReviews } from './test/e2e/helpers/db/lms/review.helper';
 import { seedCourseOrders } from './test/e2e/helpers/db/lms/order.helper';
 import { seedCourseCategoriesWithChildren } from './test/e2e/helpers/db/lms/course-category.helper';
 import { seedEbooks } from './test/e2e/helpers/db/lms/ebook.helper';
+import { seedEbookProducts } from './test/e2e/helpers/db/lms/ebook-product.helper';
 
 const env = new ConfigService();
 
@@ -53,6 +54,7 @@ async function seed() {
     await seedCourseReviews({ count: 10 }, db);
     await seedCourseOrders({ count: 5 }, db);
     await seedEbooks({ count: 10 }, db);
+    await seedEbookProducts({ count: 10 }, db);
   } catch (e) {
     console.error(e);
     await clearDatabase(db);
