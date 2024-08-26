@@ -6,6 +6,7 @@ import {
   Uuid,
 } from '@src/shared/types/primitive';
 import { CourseProductDto } from '@src/v1/product/course-product/course-product.dto';
+import { EbookProductDto } from '@src/v1/product/ebook-product/ebook-product.dto';
 
 export type OrderBaseDto = {
   id: Uuid;
@@ -31,12 +32,12 @@ export type OrderCoursePurchasedDto = Omit<OrderCourseDto, 'product'> & {
 
 export type OrderEbookDto = OrderBaseDto & {
   productType: Ebook;
-  product: unknown;
+  product: EbookProductDto;
 };
 
 export type OrderEbookPurchasedDto = Omit<OrderEbookDto, 'product'> & {
   product: Omit<
-    OrderEbookDto,
+    EbookProductDto,
     'content' | 'announcement' | 'refundPolicy' | 'pricing' | 'discounts' // Todo: Impl
   >;
 };

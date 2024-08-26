@@ -4,8 +4,9 @@ import { OrderController } from '@src/v1/order/order.controller';
 import { OrderService } from '@src/v1/order/order.service';
 import { OrderQueryRepository } from '@src/v1/order/order-query.repository';
 import { OrderRefundRepository } from '@src/v1/order/order-refund.repository';
+import { EbookOrderModule } from '@src/v1/order/ebook/ebook-order.module';
 
-const modules = [CourseOrderModule];
+const modules = [CourseOrderModule, EbookOrderModule];
 
 const providers = [OrderService, OrderQueryRepository, OrderRefundRepository];
 

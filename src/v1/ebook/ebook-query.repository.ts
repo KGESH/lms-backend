@@ -3,7 +3,6 @@ import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { IEbook, IEbookQuery } from '@src/v1/ebook/ebook.interface';
 import { eq } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
-import { Pagination } from '@src/shared/types/pagination';
 import { IEbookWithRelations } from '@src/v1/ebook/ebook-with-relations.interface';
 
 @Injectable()

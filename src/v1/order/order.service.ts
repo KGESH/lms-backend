@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { OrderQueryRepository } from '@src/v1/order/order-query.repository';
 import { IOrder } from '@src/v1/order/order.interface';
-import { ICourseOrderRelations } from '@src/v1/order/course/course-order.interface';
 import {
   IOrderRefund,
   IOrderRefundCreate,
 } from '@src/v1/order/order-refund.interface';
 import { OrderRefundRepository } from '@src/v1/order/order-refund.repository';
 import * as date from '@src/shared/utils/date';
+import { IOrderRelations } from '@src/v1/order/order-relations.interface';
 
 @Injectable()
 export class OrderService {
@@ -16,10 +16,24 @@ export class OrderService {
     private readonly orderRefundRepository: OrderRefundRepository,
   ) {}
 
-  async findOrderById(
+  async findOrderWithRelations(
     where: Pick<IOrder, 'id'>,
-  ): Promise<ICourseOrderRelations | null> {
-    return await this.orderQueryRepository.findOrderWithCourseRelations(where);
+  ): Promise<IOrderRelations | null> {
+    const order = await this.orderQueryRepository.findOrder(where);
+
+    if (!order) {
+      return null;
+    }
+
+    if (order.productType === 'course') {
+      return await this.orderQueryRepository.findOrderWithCourseRelationsOrThrow(
+        where,
+      );
+    } else {
+      return await this.orderQueryRepository.findOrderWithEbookRelationsOrThrow(
+        where,
+      );
+    }
   }
 
   async refundOrder(

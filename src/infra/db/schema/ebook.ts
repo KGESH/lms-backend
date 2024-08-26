@@ -157,6 +157,7 @@ export const ebooksRelations = relations(ebooks, ({ one, many }) => ({
   }),
   contents: many(ebookContents),
   products: one(ebookProducts),
+  enrollments: many(ebookEnrollments),
 }));
 
 export const ebookContentsRelations = relations(ebookContents, ({ one }) => ({
