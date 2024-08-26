@@ -29,6 +29,6 @@ export type ILessonContentCreate = Pick<
 >;
 
 export type ILessonContentUpdate = Omit<
-  Partial<ILessonContentCreate>,
+  Partial<ILessonContent>,
   'lessonId'
 >;

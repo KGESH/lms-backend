@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { TransactionClient } from '@src/infra/db/drizzle.types';
 import {
   ILessonContent,
@@ -9,6 +13,7 @@ import { LessonContentQueryRepository } from '@src/v1/course/chapter/lesson/less
 import { LessonContentRepository } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.repository';
 import { LessonQueryService } from '@src/v1/course/chapter/lesson/lesson-query.service';
 import { Uuid } from '@src/shared/types/primitive';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
 
 @Injectable()
 export class LessonContentService {
@@ -16,6 +21,7 @@ export class LessonContentService {
     private readonly lessonQueryService: LessonQueryService,
     private readonly lessonContentRepository: LessonContentRepository,
     private readonly lessonContentQueryRepository: LessonContentQueryRepository,
+    private readonly drizzle: DrizzleService,
   ) {}
 
   async createLessonContents(
@@ -111,16 +117,48 @@ export class LessonContentService {
     );
   }
 
+  // Validate unique [contentType, sequence] in lesson contents
+  validateSequence(
+    existContents: ILessonContent[],
+    updateTarget: Pick<ILessonContent, 'contentType' | 'sequence'>,
+  ): void {
+    const sequenceSet = new Set<string>();
+
+    const updateKey = `${updateTarget.contentType}/${updateTarget.sequence}`;
+    existContents.forEach((content) => {
+      const existKey = `${content.contentType}/${content.sequence}`;
+      sequenceSet.add(existKey);
+
+      if (sequenceSet.has(updateKey)) {
+        throw new ConflictException(
+          `Duplicate sequence [${updateTarget.contentType}, ${updateTarget.sequence}]`,
+        );
+      }
+    });
+  }
+
   async updateLessonContent(
-    where: Pick<ILessonContent, 'id'>,
+    where: Pick<ILessonContent, 'id' | 'lessonId'>,
     params: ILessonContentUpdate,
-    tx?: TransactionClient,
   ): Promise<ILessonContent> {
-    await this.lessonContentQueryRepository.findOneOrThrow({ id: where.id });
+    const lessonContents =
+      await this.lessonContentQueryRepository.findManyByLessonId(where);
+
+    const exist = lessonContents.find((content) => content.id === where.id);
+    if (!exist) {
+      throw new NotFoundException('LessonContent not found');
+    }
+
+    if (params.contentType || params.sequence) {
+      this.validateSequence(lessonContents, {
+        contentType: params.contentType ?? exist.contentType,
+        sequence: params.sequence ?? exist.sequence,
+      });
+    }
+
     return await this.lessonContentRepository.updateLessonContent(
       where,
       params,
-      tx,
     );
   }
 

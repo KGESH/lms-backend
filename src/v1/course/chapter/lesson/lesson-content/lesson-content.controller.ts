@@ -162,6 +162,10 @@ export class LessonContentController {
     status: 404,
     description: 'lesson content not found',
   })
+  @TypedException<IErrorResponse<404>>({
+    status: 409,
+    description: 'Duplicate sequence [contentType, sequence]',
+  })
   async updateLessonContent(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
@@ -171,7 +175,7 @@ export class LessonContentController {
     @TypedBody() body: LessonContentUpdateDto,
   ): Promise<LessonContentDto> {
     const lessonContent = await this.lessonContentService.updateLessonContent(
-      { id },
+      { id, lessonId },
       body,
     );
     return lessonContent;

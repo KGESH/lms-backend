@@ -23,5 +23,11 @@ export type LessonContentCreateDto = Pick<
 
 export type LessonContentUpdateDto = Pick<
   LessonContentDto,
-  'title' | 'description' | 'contentType' | 'url' | 'metadata' | 'sequence'
+  | 'id'
+  | 'title'
+  | 'description'
+  | 'contentType'
+  | 'url'
+  | 'metadata'
+  | 'sequence'
 >;
