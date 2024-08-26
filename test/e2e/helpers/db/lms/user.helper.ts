@@ -32,7 +32,7 @@ export const createUser = async (
       .values({
         id: createUuid(),
         userId: user.id,
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
       })
       .returning();
     const [userInfo] = await tx
