@@ -12,6 +12,7 @@ import { IProductSnapshotContent } from '@src/v1/product/common/snapshot/content
 import { IReview } from '@src/v1/review/review.interface';
 import { IProductSnapshotRefundPolicy } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
 import { IProductSnapshotAnnouncement } from '@src/v1/product/common/snapshot/announcement/product-snapshot-announcement.interface';
+import { IEbookOrderRelations } from '@src/v1/order/ebook/ebook-order.interface';
 
 @Injectable()
 export class OrderQueryRepository {
@@ -35,13 +36,13 @@ export class OrderQueryRepository {
     return order;
   }
 
+  // Todo: extract
   async findOrderWithCourseRelations(
     where: Pick<IOrder, 'id'>,
   ): Promise<ICourseOrderRelations | null> {
     const order = await this.drizzle.db.query.orders.findFirst({
       where: eq(dbSchema.orders.id, where.id),
       with: {
-        // Todo: Add ebook order
         courseOrder: {
           with: {
             productSnapshot: {
@@ -139,5 +140,85 @@ export class OrderQueryRepository {
       order,
       review: orderWithReview?.review ?? null,
     };
+  }
+
+  // Todo: extract
+  async findOrderWithEbookRelations(
+    where: Pick<IOrder, 'id'>,
+  ): Promise<IEbookOrderRelations | null> {
+    const order = await this.drizzle.db.query.orders.findFirst({
+      where: eq(dbSchema.orders.id, where.id),
+      with: {
+        ebookOrder: {
+          with: {
+            productSnapshot: {
+              with: {
+                product: true,
+                announcement: true,
+                refundPolicy: true,
+                content: true,
+                pricing: true,
+                discounts: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!order?.ebookOrder?.productSnapshot) {
+      return null;
+    }
+
+    return {
+      ...order,
+      amount: typia.assert<Price>(`${order.amount}`),
+      productOrder: {
+        ...order.ebookOrder,
+        productSnapshot: {
+          ...order.ebookOrder.productSnapshot,
+          ebookId: order.ebookOrder.productSnapshot.product.ebookId,
+          announcement: typia.assert<IProductSnapshotAnnouncement>(
+            order.ebookOrder.productSnapshot.announcement,
+          ),
+          refundPolicy: typia.assert<IProductSnapshotRefundPolicy>(
+            order.ebookOrder.productSnapshot.refundPolicy,
+          ),
+          content: typia.assert<IProductSnapshotContent>(
+            order.ebookOrder.productSnapshot.content,
+          ),
+          pricing: {
+            ...typia.assert<Omit<IProductSnapshotPricing, 'amount'>>(
+              order.ebookOrder.productSnapshot.pricing,
+            ),
+            amount: typia.assert<Price>(
+              `${order.ebookOrder.productSnapshot.pricing!.amount}`,
+            ),
+          },
+          discounts: typia.assert<IProductSnapshotDiscount | null>(
+            order.ebookOrder.productSnapshot.discounts
+              ? ({
+                  ...order.ebookOrder.productSnapshot.discounts,
+                  value: typia.assert<DiscountValue>(
+                    `${order.ebookOrder.productSnapshot.discounts.value}`,
+                  ),
+                } satisfies IProductSnapshotDiscount)
+              : null,
+          ),
+        },
+      },
+    };
+  }
+
+  async findOrderWithEbookRelationsOrThrow(
+    where: Pick<IOrder, 'id'>,
+  ): Promise<IEbookOrderRelations> {
+    const order = await this.findOrderWithEbookRelations(where);
+
+    if (!order) {
+      throw new NotFoundException(`Order not found`);
+    }
+
+    return order;
   }
 }

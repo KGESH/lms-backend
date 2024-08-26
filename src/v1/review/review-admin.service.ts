@@ -30,9 +30,10 @@ export class ReviewAdminService {
   ): Promise<IReviewWithRelations> {
     const { courseId, reviewCreateParams, snapshotCreateParams } = params;
 
-    const product = await this.courseProductService.findCourseProductWithRelations({
-      courseId,
-    });
+    const product =
+      await this.courseProductService.findCourseProductWithRelations({
+        courseId,
+      });
 
     if (!product?.lastSnapshot) {
       throw new NotFoundException('Course product not found');

@@ -4,7 +4,6 @@ import { OrderModule } from '@src/v1/order/order.module';
 import { ProductModule } from '@src/v1/product/product.module';
 import { ReviewRepository } from '@src/v1/review/review.repository';
 import { ReviewQueryRepository } from '@src/v1/review/review-query.repository';
-import { ReviewController } from '@src/v1/review/review.controller';
 import { ReviewService } from '@src/v1/review/review.service';
 import { ReviewSnapshotRepository } from '@src/v1/review/review-snapshot.repository';
 import { ReviewSnapshotQueryRepository } from '@src/v1/review/review-snapshot-query.repository';
@@ -23,7 +22,6 @@ const providers = [
 
 @Module({
   imports: [...modules],
-  controllers: [ReviewController],
   providers: [...providers],
   exports: [...modules, ...providers],
 })

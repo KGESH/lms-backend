@@ -4,6 +4,8 @@ import { teachers } from './teacher';
 import { relations } from 'drizzle-orm';
 import { reviewReplies, reviews } from './review';
 import { orders } from './order';
+import { ebookEnrollments } from './ebook';
+import { courseEnrollments } from './course';
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -63,6 +65,8 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   reviews: many(reviews),
   reviewComments: many(reviewReplies),
   orders: many(orders),
+  coursesEnrollments: many(courseEnrollments),
+  ebookEnrollments: many(ebookEnrollments),
 }));
 
 export const userSessionsRelations = relations(userSessions, ({ one }) => ({

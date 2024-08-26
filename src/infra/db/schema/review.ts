@@ -98,6 +98,7 @@ export const reviewsRelations = relations(reviews, ({ one, many }) => ({
   replies: many(reviewReplies),
   snapshots: many(reviewSnapshots),
 }));
+
 export const reviewSnapshotsRelations = relations(
   reviewSnapshots,
   ({ one }) => ({
@@ -107,6 +108,7 @@ export const reviewSnapshotsRelations = relations(
     }),
   }),
 );
+
 export const reviewRepliesRelations = relations(
   reviewReplies,
   ({ one, many }) => ({

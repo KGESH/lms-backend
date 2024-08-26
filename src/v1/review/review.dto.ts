@@ -80,4 +80,4 @@ export type ReviewWithRelationsDto = ReviewDto & {
   replies: ReviewReplyWithSnapshotDto[];
 };
 
-export type ReviewQuery = Pick<ReviewDto, 'productType'> & Partial<Pagination>;
+export type ReviewQuery = Partial<Pagination>;
