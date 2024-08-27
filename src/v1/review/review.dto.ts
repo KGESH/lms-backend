@@ -47,7 +47,6 @@ export type ReviewReplyDto = {
   id: Uuid;
   reviewId: Uuid;
   userId: Uuid;
-  parentId: Uuid | null;
   createdAt: ISO8601;
   deletedAt: ISO8601 | null;
 };
@@ -61,6 +60,9 @@ export type ReviewReplySnapshotDto = {
   comment: string;
   createdAt: ISO8601;
 };
+
+export type CreateReviewReplyDto = Pick<ReviewReplyDto, 'reviewId' | 'userId'> &
+  Pick<ReviewReplySnapshotDto, 'comment'>;
 
 export type ReviewReplyWithSnapshotDto = ReviewReplyDto & {
   /**

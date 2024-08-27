@@ -46,7 +46,6 @@ export const reviewReplies = pgTable('review_replies', {
   userId: uuid('user_id')
     .references(() => users.id)
     .notNull(),
-  parentId: uuid('parent_id').references((): AnyPgColumn => reviewReplies.id),
   createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
     .notNull()
     .defaultNow(),
@@ -72,6 +71,16 @@ export const courseReviews = pgTable('course_reviews', {
   courseId: uuid('course_id')
     .references(() => courses.id)
     .notNull(),
+  createdAt: timestamp('created_at', {
+    mode: 'date',
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+  deletedAt: timestamp('deleted_at', {
+    mode: 'date',
+    withTimezone: true,
+  }),
 });
 
 export const ebookReviews = pgTable('ebook_reviews', {
@@ -82,6 +91,16 @@ export const ebookReviews = pgTable('ebook_reviews', {
   ebookId: uuid('ebook_id')
     .references(() => ebooks.id)
     .notNull(),
+  createdAt: timestamp('created_at', {
+    mode: 'date',
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+  deletedAt: timestamp('deleted_at', {
+    mode: 'date',
+    withTimezone: true,
+  }),
 });
 
 export const reviewsRelations = relations(reviews, ({ one, many }) => ({
@@ -119,14 +138,6 @@ export const reviewRepliesRelations = relations(
     review: one(reviews, {
       fields: [reviewReplies.reviewId],
       references: [reviews.id],
-    }),
-    parent: one(reviewReplies, {
-      fields: [reviewReplies.parentId],
-      references: [reviewReplies.id],
-      relationName: 'review_replies_relation',
-    }),
-    children: many(reviewReplies, {
-      relationName: 'review_replies_relation',
     }),
     snapshots: many(reviewReplySnapshots),
   }),

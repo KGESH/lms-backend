@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { IReview, IReviewCreate } from '@src/v1/review/review.interface';
+import * as typia from 'typia';
 
 @Injectable()
 export class ReviewRepository {
@@ -33,7 +34,7 @@ export class ReviewRepository {
   async create(params: IReviewCreate, db = this.drizzle.db): Promise<IReview> {
     const [review] = await db
       .insert(dbSchema.reviews)
-      .values(params)
+      .values(typia.misc.clone(params))
       .returning();
 
     return review;

@@ -33,7 +33,7 @@ export class CourseReviewController {
   @SkipAuth()
   async getCourseReviews(
     @TypedHeaders() headers: ApiAuthHeaders,
-    @TypedQuery() query: ReviewQuery,
+    @TypedQuery() query?: ReviewQuery,
   ): Promise<ReviewWithRelationsDto[]> {
     const reviews = await this.reviewService.findManyReviews(
       { productType: 'course' },
@@ -44,25 +44,30 @@ export class CourseReviewController {
   }
 
   /**
-   * 특정 강의 리뷰를 조회합니다.
+   * 특정 강의 리뷰 목록을 조회합니다.
    *
    * @tag review-course
-   * @summary 특정 리뷰 조회
-   * @param id - 조회할 강의 리뷰의 id
+   * @summary 특정 강의 리뷰 목록 조회
+   * @param courseId - 조회할 강의 id
    */
-  @TypedRoute.Get('/:id')
+  @TypedRoute.Get('/:courseId')
   @SkipAuth()
-  async getCourseReview(
+  async getCourseReviewsByCourseId(
     @TypedHeaders() headers: ApiAuthHeaders,
-    @TypedParam('id') id: Uuid,
-  ): Promise<ReviewWithRelationsDto | null> {
-    const review = await this.reviewService.findOneById({ id });
+    @TypedParam('courseId') courseId: Uuid,
+    @TypedQuery() query?: ReviewQuery,
+  ): Promise<ReviewWithRelationsDto[]> {
+    const reviews = await this.courseReviewService.findCourseReviewsByCourseId(
+      {
+        courseId,
+      },
+      {
+        ...DEFAULT_PAGINATION,
+        ...query,
+      },
+    );
 
-    if (!review) {
-      return null;
-    }
-
-    return reviewToDto(review);
+    return reviews.map(reviewToDto);
   }
 
   /**
@@ -89,4 +94,6 @@ export class CourseReviewController {
 
     return reviewToDto(review);
   }
+
+  // @TypedRoute.Patch('')
 }

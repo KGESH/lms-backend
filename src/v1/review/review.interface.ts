@@ -12,7 +12,7 @@ export type IReview = {
 
 export type IReviewCreate = Pick<
   Optional<IReview, 'id'>,
-  'userId' | 'orderId' | 'productType'
+  'id' | 'userId' | 'orderId' | 'productType'
 >;
 
 export type IReviewSnapshot = {
@@ -32,7 +32,7 @@ export type IReviewReply = {
   id: Uuid;
   reviewId: Uuid;
   userId: Uuid;
-  parentId: Uuid | null;
+  // parentId: Uuid | null;
   createdAt: Date;
   deletedAt: Date | null;
 };
@@ -43,6 +43,16 @@ export type IReviewReplySnapshot = {
   comment: string;
   createdAt: Date;
 };
+
+export type IReviewReplyCreate = Pick<
+  Optional<IReviewReply, 'id'>,
+  'id' | 'reviewId' | 'userId'
+>;
+
+export type IReviewReplySnapshotCreate = Pick<
+  Optional<IReviewReplySnapshot, 'id'>,
+  'id' | 'reviewReplyId' | 'comment'
+>;
 
 export type IReviewReplyWithSnapshot = IReviewReply & {
   snapshot: IReviewReplySnapshot;

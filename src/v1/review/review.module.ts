@@ -7,21 +7,27 @@ import { ReviewQueryRepository } from '@src/v1/review/review-query.repository';
 import { ReviewService } from '@src/v1/review/review.service';
 import { ReviewSnapshotRepository } from '@src/v1/review/review-snapshot.repository';
 import { ReviewSnapshotQueryRepository } from '@src/v1/review/review-snapshot-query.repository';
-import { ReviewAdminService } from '@src/v1/review/review-admin.service';
+import { ReviewReplyService } from '@src/v1/review/review-reply.service';
+import { ReviewReplyRepository } from '@src/v1/review/review-reply.repository';
+import { ReviewReplySnapshotRepository } from '@src/v1/review/review-reply-snapshot.repository';
+import { ReviewController } from '@src/v1/review/review.controller';
 
 const modules = [ProductModule, OrderModule, UserModule];
 
 const providers = [
   ReviewService,
-  ReviewAdminService,
+  ReviewReplyService,
   ReviewRepository,
   ReviewQueryRepository,
   ReviewSnapshotRepository,
   ReviewSnapshotQueryRepository,
+  ReviewReplyRepository,
+  ReviewReplySnapshotRepository,
 ];
 
 @Module({
   imports: [...modules],
+  controllers: [ReviewController],
   providers: [...providers],
   exports: [...modules, ...providers],
 })

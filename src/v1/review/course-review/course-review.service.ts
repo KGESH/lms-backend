@@ -3,20 +3,21 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { ReviewAdminService } from '@src/v1/review/review-admin.service';
 import { UserService } from '@src/v1/user/user.service';
 import { ReviewRepository } from '@src/v1/review/review.repository';
 import { ReviewSnapshotRepository } from '@src/v1/review/review-snapshot.repository';
 import { ReviewQueryRepository } from '@src/v1/review/review-query.repository';
 import { OrderQueryRepository } from '@src/v1/order/order-query.repository';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
-import { ICourseReviewCreate } from '@src/v1/review/course-review/course-review.interface';
+import { ICourseReviewRelationsCreate } from '@src/v1/review/course-review/course-review.interface';
 import { IReviewWithRelations } from '@src/v1/review/review.interface';
+import { Pagination } from '@src/shared/types/pagination';
+import { CourseReviewAdminService } from '@src/v1/review/course-review/course-review-admin.service';
 
 @Injectable()
 export class CourseReviewService {
   constructor(
-    private readonly reviewAdminService: ReviewAdminService,
+    private readonly courseReviewAdminService: CourseReviewAdminService,
     private readonly userService: UserService,
     private readonly reviewRepository: ReviewRepository,
     private readonly reviewSnapshotRepository: ReviewSnapshotRepository,
@@ -25,8 +26,20 @@ export class CourseReviewService {
     private readonly drizzle: DrizzleService,
   ) {}
 
+  async findCourseReviewsByCourseId(
+    where: Pick<ICourseReviewRelationsCreate, 'courseId'>,
+    pagination: Pagination,
+  ): Promise<IReviewWithRelations[]> {
+    const reviews = await this.reviewQueryRepository.findManyWithCourseReviews({
+      where,
+      pagination,
+    });
+
+    return reviews;
+  }
+
   async createCourseReviewByUser(
-    params: Omit<ICourseReviewCreate, 'courseId'>,
+    params: Omit<ICourseReviewRelationsCreate, 'courseId'>,
   ): Promise<IReviewWithRelations> {
     const { reviewCreateParams, snapshotCreateParams } = params;
 
@@ -66,7 +79,7 @@ export class CourseReviewService {
   }
 
   async createCourseReview(
-    params: ICourseReviewCreate,
+    params: ICourseReviewRelationsCreate,
   ): Promise<IReviewWithRelations> {
     const user = await this.userService.findUserById({
       id: params.reviewCreateParams.userId,
@@ -78,7 +91,7 @@ export class CourseReviewService {
 
     if (user?.role === 'admin' || user?.role === 'manager') {
       const mockCourseReview =
-        await this.reviewAdminService.createCourseReviewByAdmin(params);
+        await this.courseReviewAdminService.createCourseReviewByAdmin(params);
       return mockCourseReview;
     }
 

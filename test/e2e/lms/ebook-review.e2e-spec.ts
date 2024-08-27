@@ -32,9 +32,12 @@ describe('EbookReviewController (e2e)', () => {
 
   describe('[Get ebook review]', () => {
     it('should be get ebook review success', async () => {
-      const { order } = (await seedEbookOrders({ count: 1 }, drizzle.db))[0];
+      const { order, product } = (
+        await seedEbookOrders({ count: 1 }, drizzle.db)
+      )[0];
       const review = await createRandomEbookReview(
         {
+          ebookId: product.ebookId,
           orderId: order.id,
           productType: order.productType,
           userId: order.userId,
@@ -42,20 +45,27 @@ describe('EbookReviewController (e2e)', () => {
         drizzle.db,
       );
 
-      const response = await EbookReviewAPI.getEbookReview(
+      const response = await EbookReviewAPI.getEbookReviewsByEbookId(
         {
           host,
           headers: { LmsSecret },
         },
-        review.id,
+        product.ebookId,
+        {
+          page: 1,
+          pageSize: 10,
+          orderBy: 'desc',
+        },
       );
       if (!response.success) {
         const message = JSON.stringify(response.data, null, 4);
         throw new Error(`[assert] ${message}`);
       }
 
-      const foundReview = response.data;
-      expect(foundReview!.orderId).toEqual(order.id);
+      const foundReviews = response.data;
+      expect(
+        foundReviews.find((foundReview) => foundReview.id === review.id),
+      ).toBeDefined();
     });
   });
 

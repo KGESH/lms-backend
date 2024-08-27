@@ -32,9 +32,12 @@ describe('CourseReviewController (e2e)', () => {
 
   describe('[Get course review]', () => {
     it('should be get course review success', async () => {
-      const { order } = (await seedCourseOrders({ count: 1 }, drizzle.db))[0];
+      const { order, product } = (
+        await seedCourseOrders({ count: 1 }, drizzle.db)
+      )[0];
       const review = await createRandomCourseReview(
         {
+          courseId: product.courseId,
           orderId: order.id,
           productType: order.productType,
           userId: order.userId,
@@ -42,20 +45,28 @@ describe('CourseReviewController (e2e)', () => {
         drizzle.db,
       );
 
-      const response = await CourseReviewAPI.getCourseReview(
+      const response = await CourseReviewAPI.getCourseReviewsByCourseId(
         {
           host,
           headers: { LmsSecret },
         },
-        review.id,
+        product.courseId,
+        {
+          page: 1,
+          pageSize: 10,
+          orderBy: 'desc',
+        },
       );
       if (!response.success) {
         const message = JSON.stringify(response.data, null, 4);
         throw new Error(`[assert] ${message}`);
       }
 
-      const foundReview = response.data;
-      expect(foundReview!.orderId).toEqual(order.id);
+      const foundReviews = response.data;
+      console.log('foundReviews', foundReviews);
+      expect(
+        foundReviews.find((foundReview) => foundReview.id === review.id),
+      ).toBeDefined();
     });
   });
 

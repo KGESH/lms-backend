@@ -15,11 +15,13 @@ import { reviewToDto } from '@src/shared/helpers/transofrm/review';
 import { Uuid } from '@src/shared/types/primitive';
 import { EbookReviewService } from '@src/v1/review/ebook-review/ebook-review.service';
 import { CreateEbookReviewDto } from '@src/v1/review/ebook-review/ebook-review.dto';
+import { ReviewReplyService } from '@src/v1/review/review-reply.service';
 
 @Controller('v1/review/ebook')
 export class EbookReviewController {
   constructor(
     private readonly reviewService: ReviewService,
+    private readonly reviewReplyService: ReviewReplyService,
     private readonly ebookReviewService: EbookReviewService,
   ) {}
 
@@ -33,7 +35,7 @@ export class EbookReviewController {
   @SkipAuth()
   async getEbookReviews(
     @TypedHeaders() headers: ApiAuthHeaders,
-    @TypedQuery() query: ReviewQuery,
+    @TypedQuery() query?: ReviewQuery,
   ): Promise<ReviewWithRelationsDto[]> {
     const reviews = await this.reviewService.findManyReviews(
       { productType: 'ebook' },
@@ -44,25 +46,30 @@ export class EbookReviewController {
   }
 
   /**
-   * 특정 전자책 리뷰를 조회합니다.
+   * 특정 전자책 리뷰 목록을 조회합니다.
    *
    * @tag review-ebook
-   * @summary 특정 전자책 리뷰 조회
-   * @param id - 조회할 리뷰의 id
+   * @summary 특정 전자책 리뷰 목록 조회
+   * @param ebookId - 조회할 전자책 id
    */
-  @TypedRoute.Get('/:id')
+  @TypedRoute.Get('/:ebookId')
   @SkipAuth()
-  async getEbookReview(
+  async getEbookReviewsByEbookId(
     @TypedHeaders() headers: ApiAuthHeaders,
-    @TypedParam('id') id: Uuid,
-  ): Promise<ReviewWithRelationsDto | null> {
-    const review = await this.reviewService.findOneById({ id });
+    @TypedParam('ebookId') ebookId: Uuid,
+    @TypedQuery() query?: ReviewQuery,
+  ): Promise<ReviewWithRelationsDto[]> {
+    const reviews = await this.ebookReviewService.findEbookReviewsByEbookId(
+      {
+        ebookId,
+      },
+      {
+        ...DEFAULT_PAGINATION,
+        ...query,
+      },
+    );
 
-    if (!review) {
-      return null;
-    }
-
-    return reviewToDto(review);
+    return reviews.map(reviewToDto);
   }
 
   /**
@@ -76,7 +83,7 @@ export class EbookReviewController {
     @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: CreateEbookReviewDto,
   ): Promise<ReviewWithRelationsDto> {
-    const review = await this.ebookReviewService.createEbookReview({
+    const review = await this.ebookReviewService.createEbookReviewWithSnapshot({
       ebookId: body.ebookId,
       reviewCreateParams: {
         ...body,

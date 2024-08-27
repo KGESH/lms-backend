@@ -7,6 +7,7 @@ import { dbSchema } from '../../../../../src/infra/db/schema';
 import { createRandomCourse } from './course.helper';
 import { seedCourseOrders, seedEbookOrders } from './order.helper';
 import { createRandomEbook } from './ebook.helper';
+import { Uuid } from '@src/shared/types/primitive';
 
 export const createReview = async (
   params: IReviewCreate,
@@ -33,7 +34,7 @@ export const createReview = async (
     .values({
       userId: params.userId,
       reviewId: review.id,
-      parentId: parentReviewReply.id,
+      // parentId: parentReviewReply.id,
     })
     .returning();
   const [parentReviewReplySnapshot] = await db
@@ -70,16 +71,19 @@ export const createReview = async (
 };
 
 export const createRandomCourseReview = async (
-  reviewCreateParams: IReviewCreate,
+  reviewCreateParams: IReviewCreate & {
+    courseId?: Uuid;
+  },
   db: TransactionClient,
 ): Promise<IReviewWithRelations> => {
-  const { course } = await createRandomCourse(db);
+  const courseId =
+    reviewCreateParams?.courseId ?? (await createRandomCourse(db)).course.id;
   const review = await createReview(reviewCreateParams, db);
   const [courseReview] = await db
     .insert(dbSchema.courseReviews)
     .values({
       reviewId: review.id,
-      courseId: course.id,
+      courseId,
     })
     .returning();
 
@@ -87,16 +91,19 @@ export const createRandomCourseReview = async (
 };
 
 export const createRandomEbookReview = async (
-  reviewCreateParams: IReviewCreate,
+  reviewCreateParams: IReviewCreate & {
+    ebookId?: Uuid;
+  },
   db: TransactionClient,
 ): Promise<IReviewWithRelations> => {
-  const { ebook } = await createRandomEbook(db);
+  const ebookId =
+    reviewCreateParams?.ebookId ?? (await createRandomEbook(db)).ebook.id;
   const review = await createReview(reviewCreateParams, db);
   const [ebookReview] = await db
     .insert(dbSchema.ebookReviews)
     .values({
       reviewId: review.id,
-      ebookId: ebook.id,
+      ebookId,
     })
     .returning();
 
@@ -112,9 +119,10 @@ export const seedCourseReviews = async (
     await Promise.all(
       Array.from({ length: count }).map(() =>
         Promise.all(
-          orders.map(({ order }) =>
+          orders.map(({ order, product }) =>
             createRandomCourseReview(
               {
+                courseId: product.courseId,
                 orderId: order.id,
                 userId: order.userId,
                 productType: order.productType,
@@ -139,9 +147,10 @@ export const seedEbookReviews = async (
     await Promise.all(
       Array.from({ length: count }).map(() =>
         Promise.all(
-          orders.map(({ order }) =>
+          orders.map(({ order, product }) =>
             createRandomEbookReview(
               {
+                ebookId: product.ebookId,
                 orderId: order.id,
                 userId: order.userId,
                 productType: order.productType,
