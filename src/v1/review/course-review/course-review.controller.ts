@@ -24,12 +24,10 @@ export class CourseReviewController {
   ) {}
 
   /**
-   * 리뷰 목록을 조회합니다.
-   *
-   * 'productType'을 기준으로 '강의 리뷰' 또는 'ebook 리뷰'를 조회합니다.
+   * 강의 리뷰 목록을 조회합니다.
    *
    * @tag review-course
-   * @summary 리뷰 목록 조회
+   * @summary 강의 리뷰 목록 조회
    */
   @TypedRoute.Get('/')
   @SkipAuth()
@@ -46,11 +44,11 @@ export class CourseReviewController {
   }
 
   /**
-   * 특정 리뷰를 조회합니다.
+   * 특정 강의 리뷰를 조회합니다.
    *
    * @tag review-course
    * @summary 특정 리뷰 조회
-   * @param id - 조회할 리뷰의 id
+   * @param id - 조회할 강의 리뷰의 id
    */
   @TypedRoute.Get('/:id')
   @SkipAuth()
@@ -68,10 +66,10 @@ export class CourseReviewController {
   }
 
   /**
-   * 리뷰를 생성합니다.
+   * 강의 리뷰를 생성합니다.
    *
    * @tag review-course
-   * @summary 리뷰 생성
+   * @summary 강의 리뷰 생성
    */
   @TypedRoute.Post('/')
   async createCourseReview(

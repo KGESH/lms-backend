@@ -5,7 +5,7 @@ import {
 } from '@src/v1/review/review.interface';
 
 export type IEbookReviewCreate = {
-  courseId: Uuid;
+  ebookId: Uuid;
   reviewCreateParams: IReviewCreate;
   snapshotCreateParams: Omit<IReviewSnapshotCreate, 'reviewId'>;
 };

@@ -65,24 +65,23 @@ export class EbookReviewService {
     return reviewWithReplies;
   }
 
-  // Todo: Impl
-  // async createEbookReview(
-  //   params: IEbookReviewCreate,
-  // ): Promise<IReviewWithRelations> {
-  //   const user = await this.userService.findUserById({
-  //     id: params.reviewCreateParams.userId,
-  //   });
-  //
-  //   if (!user) {
-  //     throw new NotFoundException('User not found');
-  //   }
-  //
-  //   if (user?.role === 'admin' || user?.role === 'manager') {
-  //     const mockEbookReview =
-  //       await this.reviewAdminService.createEbookReviewByAdmin(params);
-  //     return mockEbookReview;
-  //   }
-  //
-  //   return await this.createEbookReviewByUser(params);
-  // }
+  async createEbookReview(
+    params: IEbookReviewCreate,
+  ): Promise<IReviewWithRelations> {
+    const user = await this.userService.findUserById({
+      id: params.reviewCreateParams.userId,
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user?.role === 'admin' || user?.role === 'manager') {
+      const mockEbookReview =
+        await this.reviewAdminService.createEbookReviewByAdmin(params);
+      return mockEbookReview;
+    }
+
+    return await this.createEbookReviewByUser(params);
+  }
 }

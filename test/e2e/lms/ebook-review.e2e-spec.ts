@@ -3,17 +3,15 @@ import { createTestingServer } from '../helpers/app.helper';
 import { Uri } from '../../../src/shared/types/primitive';
 import { DrizzleService } from '../../../src/infra/db/drizzle.service';
 import {
-  createRandomCourseReview,
-  seedCourseReviews,
+  createRandomEbookReview,
+  seedEbookReviews,
 } from '../helpers/db/lms/review.helper';
-import { seedCourseOrders } from '../helpers/db/lms/order.helper';
-import * as ReviewAPI from '../../../src/api/functional/v1/review';
-import * as CourseReviewAPI from '../../../src/api/functional/v1/review/course';
-import * as typia from 'typia';
-import { CreateCourseReviewDto } from '../../../src/v1/review/course-review/course-review.dto';
+import { seedEbookOrders } from '../helpers/db/lms/order.helper';
+import * as EbookReviewAPI from '../../../src/api/functional/v1/review/ebook';
+import { CreateEbookReviewDto } from '../../../src/v1/review/ebook-review/ebook-review.dto';
 import { ConfigsService } from '../../../src/configs/configs.service';
 
-describe('ReviewController (e2e)', () => {
+describe('EbookReviewController (e2e)', () => {
   let host: Uri;
   let app: INestApplication;
   let drizzle: DrizzleService;
@@ -32,10 +30,10 @@ describe('ReviewController (e2e)', () => {
     await app.close();
   });
 
-  describe('[Get review]', () => {
-    it('should be get review success', async () => {
-      const { order } = (await seedCourseOrders({ count: 1 }, drizzle.db))[0];
-      const reviewWithSnapshot = await createRandomCourseReview(
+  describe('[Get ebook review]', () => {
+    it('should be get ebook review success', async () => {
+      const { order } = (await seedEbookOrders({ count: 1 }, drizzle.db))[0];
+      const review = await createRandomEbookReview(
         {
           orderId: order.id,
           productType: order.productType,
@@ -44,12 +42,12 @@ describe('ReviewController (e2e)', () => {
         drizzle.db,
       );
 
-      const response = await ReviewAPI.getReview(
+      const response = await EbookReviewAPI.getEbookReview(
         {
           host,
           headers: { LmsSecret },
         },
-        reviewWithSnapshot.id,
+        review.id,
       );
       if (!response.success) {
         const message = JSON.stringify(response.data, null, 4);
@@ -61,17 +59,19 @@ describe('ReviewController (e2e)', () => {
     });
   });
 
-  describe('[Get reviews]', () => {
-    it('should be get many reviews success', async () => {
-      const reviews = await seedCourseReviews({ count: 3 }, drizzle.db);
+  describe('[Get ebook reviews]', () => {
+    it('should be get many ebook reviews success', async () => {
+      const reviews = await seedEbookReviews({ count: 3 }, drizzle.db);
 
-      const response = await ReviewAPI.getReviews(
+      const response = await EbookReviewAPI.getEbookReviews(
         {
           host,
           headers: { LmsSecret },
         },
         {
-          productType: 'course',
+          page: 1,
+          pageSize: 10,
+          orderBy: 'desc',
         },
       );
       if (!response.success) {
@@ -87,19 +87,19 @@ describe('ReviewController (e2e)', () => {
   });
 
   describe('[Create review]', () => {
-    it('should be create course review success', async () => {
+    it('should be create ebook review success', async () => {
       const { order, product, userSession } = (
-        await seedCourseOrders({ count: 1 }, drizzle.db)
+        await seedEbookOrders({ count: 1 }, drizzle.db)
       )[0];
-      const reviewCreateParams: CreateCourseReviewDto = {
-        ...typia.random<CreateCourseReviewDto>(),
+      const reviewCreateParams: CreateEbookReviewDto = {
+        comment: 'Mock review comment',
         userId: order.userId,
         orderId: order.id,
-        courseId: product.courseId,
+        ebookId: product.ebookId,
         rating: 5,
       };
 
-      const response = await CourseReviewAPI.createCourseReview(
+      const response = await EbookReviewAPI.createEbookReview(
         {
           host,
           headers: {
@@ -115,6 +115,7 @@ describe('ReviewController (e2e)', () => {
       }
 
       const createdReview = response.data;
+      expect(createdReview.snapshot.comment).toEqual('Mock review comment');
       expect(createdReview.snapshot.rating).toEqual(5);
     });
   });

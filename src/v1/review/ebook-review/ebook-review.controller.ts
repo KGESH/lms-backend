@@ -13,11 +13,15 @@ import { ReviewQuery, ReviewWithRelationsDto } from '@src/v1/review/review.dto';
 import { DEFAULT_PAGINATION } from '@src/core/pagination.constant';
 import { reviewToDto } from '@src/shared/helpers/transofrm/review';
 import { Uuid } from '@src/shared/types/primitive';
+import { EbookReviewService } from '@src/v1/review/ebook-review/ebook-review.service';
 import { CreateEbookReviewDto } from '@src/v1/review/ebook-review/ebook-review.dto';
 
 @Controller('v1/review/ebook')
 export class EbookReviewController {
-  constructor(private readonly reviewService: ReviewService) {}
+  constructor(
+    private readonly reviewService: ReviewService,
+    private readonly ebookReviewService: EbookReviewService,
+  ) {}
 
   /**
    * 전자책 리뷰 목록을 조회합니다.
@@ -67,22 +71,22 @@ export class EbookReviewController {
    * @tag review-ebook
    * @summary 전자책 리뷰 생성
    */
-  // @TypedRoute.Post('/')
-  // async createEbookReview(
-  //   @TypedHeaders() headers: AuthHeaders,
-  //   @TypedBody() body: CreateEbookReviewDto,
-  // ): Promise<ReviewWithRelationsDto> {
-  //   const review = await this.reviewService.createEbookReview({
-  //     ebookId: body.ebookId,
-  //     reviewCreateParams: {
-  //       ...body,
-  //       productType: 'ebook',
-  //     },
-  //     snapshotCreateParams: {
-  //       ...body,
-  //     },
-  //   });
-  //
-  //   return reviewToDto(review);
-  // }
+  @TypedRoute.Post('/')
+  async createEbookReview(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedBody() body: CreateEbookReviewDto,
+  ): Promise<ReviewWithRelationsDto> {
+    const review = await this.ebookReviewService.createEbookReview({
+      ebookId: body.ebookId,
+      reviewCreateParams: {
+        ...body,
+        productType: 'ebook',
+      },
+      snapshotCreateParams: {
+        ...body,
+      },
+    });
+
+    return reviewToDto(review);
+  }
 }

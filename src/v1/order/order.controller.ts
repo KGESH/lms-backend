@@ -61,7 +61,6 @@ export class OrderController {
         description: order.description,
         product: {
           ...order.productOrder.productSnapshot,
-          // courseId: order.productOrder.productSnapshot.courseId,
           snapshotId: order.productOrder.productSnapshot.id,
           title: order.productOrder.productSnapshot.title,
           description: order.productOrder.productSnapshot.description,
@@ -112,10 +111,37 @@ export class OrderController {
         description: order.description,
         product: {
           ...order.productOrder.productSnapshot,
-          // ebookId: order.productOrder.productSnapshot.ebookId,
           snapshotId: order.productOrder.productSnapshot.id,
           title: order.productOrder.productSnapshot.title,
           description: order.productOrder.productSnapshot.description,
+          announcement: {
+            ...order.productOrder.productSnapshot.announcement,
+          },
+          refundPolicy: {
+            ...order.productOrder.productSnapshot.refundPolicy,
+          },
+          content: {
+            ...order.productOrder.productSnapshot.content,
+          },
+          pricing: {
+            ...order.productOrder.productSnapshot.pricing,
+          },
+          discounts: order.productOrder.productSnapshot.discounts
+            ? {
+                ...order.productOrder.productSnapshot.discounts,
+                validTo: order.productOrder.productSnapshot.discounts.validTo
+                  ? date.toISOString(
+                      order.productOrder.productSnapshot.discounts.validTo,
+                    )
+                  : null,
+                validFrom: order.productOrder.productSnapshot.discounts
+                  .validFrom
+                  ? date.toISOString(
+                      order.productOrder.productSnapshot.discounts.validFrom,
+                    )
+                  : null,
+              }
+            : null,
           createdAt: toISOString(order.productOrder.productSnapshot.createdAt),
           updatedAt: toISOString(order.productOrder.productSnapshot.updatedAt),
           deletedAt: order.productOrder.productSnapshot.deletedAt

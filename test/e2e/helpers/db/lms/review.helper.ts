@@ -1,13 +1,12 @@
 import { TransactionClient } from '../../../../../src/infra/db/drizzle.types';
 import {
-  IReview,
   IReviewCreate,
   IReviewWithRelations,
 } from '../../../../../src/v1/review/review.interface';
 import { dbSchema } from '../../../../../src/infra/db/schema';
 import { createRandomCourse } from './course.helper';
-import * as typia from 'typia';
-import { seedCourseOrders } from './order.helper';
+import { seedCourseOrders, seedEbookOrders } from './order.helper';
+import { createRandomEbook } from './ebook.helper';
 
 export const createReview = async (
   params: IReviewCreate,
@@ -87,12 +86,21 @@ export const createRandomCourseReview = async (
   return review;
 };
 
-export const createManyReviews = async (
-  params: IReviewCreate[],
+export const createRandomEbookReview = async (
+  reviewCreateParams: IReviewCreate,
   db: TransactionClient,
-): Promise<IReview[]> => {
-  const reviews = await db.insert(dbSchema.reviews).values(params).returning();
-  return reviews;
+): Promise<IReviewWithRelations> => {
+  const { ebook } = await createRandomEbook(db);
+  const review = await createReview(reviewCreateParams, db);
+  const [ebookReview] = await db
+    .insert(dbSchema.ebookReviews)
+    .values({
+      reviewId: review.id,
+      ebookId: ebook.id,
+    })
+    .returning();
+
+  return review;
 };
 
 export const seedCourseReviews = async (
@@ -104,9 +112,40 @@ export const seedCourseReviews = async (
     await Promise.all(
       Array.from({ length: count }).map(() =>
         Promise.all(
-          orders.map((order) =>
+          orders.map(({ order }) =>
             createRandomCourseReview(
-              { ...typia.random<IReviewCreate>(), userId: order.order.userId },
+              {
+                orderId: order.id,
+                userId: order.userId,
+                productType: order.productType,
+              },
+              db,
+            ),
+          ),
+        ),
+      ),
+    )
+  ).flat();
+
+  return reviews;
+};
+
+export const seedEbookReviews = async (
+  { count }: { count: number },
+  db: TransactionClient,
+): Promise<IReviewWithRelations[]> => {
+  const orders = await seedEbookOrders({ count: 1 }, db);
+  const reviews = (
+    await Promise.all(
+      Array.from({ length: count }).map(() =>
+        Promise.all(
+          orders.map(({ order }) =>
+            createRandomEbookReview(
+              {
+                orderId: order.id,
+                userId: order.userId,
+                productType: order.productType,
+              },
               db,
             ),
           ),

@@ -67,7 +67,6 @@ export class EbookProductQueryRepository {
     }
 
     const lastSnapshot = product.snapshots[0];
-    console.log('[Last Snapshot]', lastSnapshot);
     return {
       ...product,
       ebook: {

@@ -1,17 +1,17 @@
 import { INestApplication } from '@nestjs/common';
-import * as CourseOrderAPI from '../../../src/api/functional/v1/order/course';
+import * as EbookOrderAPI from '../../../src/api/functional/v1/order/ebook';
 import * as OrderAPI from '../../../src/api/functional/v1/order';
 import * as typia from 'typia';
 import { createTestingServer } from '../helpers/app.helper';
 import { Price, Uri } from '../../../src/shared/types/primitive';
 import { DrizzleService } from '../../../src/infra/db/drizzle.service';
-import { createRandomCourseProduct } from '../helpers/db/lms/course-product.helper';
+import { createRandomEbookProduct } from '../helpers/db/lms/ebook-product.helper';
 import { seedUsers } from '../helpers/db/lms/user.helper';
-import { seedCourseOrders } from '../helpers/db/lms/order.helper';
+import { seedEbookOrders } from '../helpers/db/lms/order.helper';
 import { CreateOrderRefundDto } from '../../../src/v1/order/order-refund.dto';
 import { ConfigsService } from '../../../src/configs/configs.service';
 
-describe('CourseOrderController (e2e)', () => {
+describe('EbookOrderController (e2e)', () => {
   let host: Uri;
   let app: INestApplication;
   let drizzle: DrizzleService;
@@ -30,14 +30,14 @@ describe('CourseOrderController (e2e)', () => {
     await app.close();
   });
 
-  describe('[Get course order]', () => {
-    it('should be get a course order success', async () => {
+  describe('[Get ebook order]', () => {
+    it('should be get a ebook order success', async () => {
       const { user, userSession } = (
         await seedUsers({ count: 1 }, drizzle.db)
       )[0];
-      const courseProduct = await createRandomCourseProduct(drizzle.db);
+      const ebookProduct = await createRandomEbookProduct(drizzle.db);
 
-      const response = await CourseOrderAPI.purchaseCourseProduct(
+      const response = await EbookOrderAPI.purchaseEbookProduct(
         {
           host,
           headers: {
@@ -47,7 +47,7 @@ describe('CourseOrderController (e2e)', () => {
         },
         {
           userId: user.id,
-          courseId: courseProduct.courseId,
+          ebookId: ebookProduct.ebookId,
           paymentMethod: '신용카드',
           amount: typia.random<Price>(),
         },
@@ -76,18 +76,18 @@ describe('CourseOrderController (e2e)', () => {
       const foundOrder = foundResponse.data;
       expect(foundOrder.paymentMethod).toEqual('신용카드');
       // Order title is the same as the last snapshot title of the product
-      expect(foundOrder.title).toEqual(courseProduct!.lastSnapshot!.title);
+      expect(foundOrder.title).toEqual(ebookProduct!.lastSnapshot!.title);
     });
   });
 
-  describe('[Create course order]', () => {
-    it('should be purchase a course order success', async () => {
+  describe('[Create ebook order]', () => {
+    it('should be purchase a ebook order success', async () => {
       const { user, userSession } = (
         await seedUsers({ count: 1 }, drizzle.db)
       )[0];
-      const courseProduct = await createRandomCourseProduct(drizzle.db);
+      const ebookProduct = await createRandomEbookProduct(drizzle.db);
 
-      const response = await CourseOrderAPI.purchaseCourseProduct(
+      const response = await EbookOrderAPI.purchaseEbookProduct(
         {
           host,
           headers: {
@@ -97,7 +97,7 @@ describe('CourseOrderController (e2e)', () => {
         },
         {
           userId: user.id,
-          courseId: courseProduct.courseId,
+          ebookId: ebookProduct.ebookId,
           paymentMethod: '신용카드',
           amount: typia.random<Price>(),
         },
@@ -110,17 +110,17 @@ describe('CourseOrderController (e2e)', () => {
       const order = response.data;
       expect(order).not.toBeNull();
       expect(order.paymentMethod).toEqual('신용카드');
-      expect(order.productType).toEqual('course');
+      expect(order.productType).toEqual('ebook');
     });
   });
 
-  describe('[Refund course order]', () => {
-    it('should be refund course order success', async () => {
+  describe('[Refund ebook order]', () => {
+    it('should be refund ebook order success', async () => {
       const admin = (
         await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
       )[0];
 
-      const { order } = (await seedCourseOrders({ count: 1 }, drizzle.db))[0];
+      const { order } = (await seedEbookOrders({ count: 1 }, drizzle.db))[0];
       const createOrderRefundDto: CreateOrderRefundDto = {
         amount: '10000',
       };
