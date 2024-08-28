@@ -18,7 +18,7 @@ export class ReviewController {
    * @summary 전자책 리뷰 답글 생성
    */
   @TypedRoute.Post('/reply')
-  async createEbookReviewReply(
+  async createReviewReply(
     @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: CreateReviewReplyDto,
   ): Promise<ReviewReplyWithSnapshotDto> {
