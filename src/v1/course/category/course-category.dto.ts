@@ -1,4 +1,4 @@
-import { Uuid } from '@src/shared/types/primitive';
+import { Uuid, UInt } from '@src/shared/types/primitive';
 import { Pagination } from '@src/shared/types/pagination';
 
 export type CourseCategoryDto = {
@@ -9,6 +9,7 @@ export type CourseCategoryDto = {
 };
 
 export type CourseCategoryWithChildrenDto = CourseCategoryDto & {
+  depth: UInt;
   children: Array<CourseCategoryWithChildrenDto>;
 };
 
@@ -23,5 +24,6 @@ export type CourseCategoryWithChildrenQuery = {
   withChildren?: boolean;
 };
 
-export type CourseCategoryQuery = CourseCategoryWithChildrenQuery &
-  Partial<Pagination>;
+export type CourseCategoryQuery = Partial<
+  CourseCategoryWithChildrenQuery & Pagination
+>;

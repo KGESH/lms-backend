@@ -11,6 +11,7 @@ import { ReviewReplyService } from '@src/v1/review/review-reply.service';
 @Controller('v1/review')
 export class ReviewController {
   constructor(private readonly reviewReplyService: ReviewReplyService) {}
+
   /**
    * 리뷰에 대한 답글을 생성합니다.
    *

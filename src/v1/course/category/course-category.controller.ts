@@ -25,7 +25,7 @@ import { RolesGuard } from '@src/core/guards/roles.guard';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
 
-@Controller('v1/course/category')
+@Controller('v1/course-category')
 export class CourseCategoryController {
   private readonly logger = new Logger(CourseCategoryController.name);
 
@@ -55,7 +55,6 @@ export class CourseCategoryController {
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedQuery() query?: CourseCategoryQuery,
   ): Promise<CourseCategoryWithChildrenDto[]> {
-    this.logger.verbose('[GET v1/course/category]');
     if (query?.withChildren) {
       const rootsWithChildren =
         await this.categoryService.getRootCategoriesWithChildren({

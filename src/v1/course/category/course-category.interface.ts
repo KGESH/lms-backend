@@ -1,4 +1,4 @@
-import { Uuid } from '@src/shared/types/primitive';
+import { UInt, Uuid } from "@src/shared/types/primitive";
 import { Optional } from '@src/shared/types/optional';
 
 export type ICourseCategory = {
@@ -17,6 +17,6 @@ export type ICourseCategoryCreate = Optional<ICourseCategory, 'id'>;
 export type ICourseCategoryUpdate = Omit<Partial<ICourseCategoryCreate>, 'id'>;
 
 export type ICourseCategoryWithRelations = ICourseCategory & {
-  depth: number;
+  depth: UInt;
   children: Array<ICourseCategoryWithRelations>;
 };

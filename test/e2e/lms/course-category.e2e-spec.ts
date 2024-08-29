@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import * as CourseCategoryAPI from '../../../src/api/functional/v1/course/category';
+import * as CourseCategoryAPI from '../../../src/api/functional/v1/course_category';
 import * as typia from 'typia';
 import { createTestingServer } from '../helpers/app.helper';
 import { Uri, Uuid } from '@src/shared/types/primitive';

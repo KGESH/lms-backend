@@ -8,7 +8,7 @@ import {
   ICourseCategory,
   ICourseCategoryCreate,
   ICourseCategoryUpdate,
-  ICourseCategoryWithChildren,
+  ICourseCategoryWithRelations,
 } from './course-category.interface';
 import { TransactionClient } from '@src/infra/db/drizzle.types';
 import { Pagination } from '@src/shared/types/pagination';
@@ -23,7 +23,7 @@ export class CourseCategoryService {
 
   async findCourseCategory(
     where: Pick<ICourseCategory, 'id'>,
-  ): Promise<ICourseCategoryWithChildren | null> {
+  ): Promise<ICourseCategoryWithRelations | null> {
     const category =
       await this.courseCategoryQueryRepository.findCourseCategoryWithChildren(
         where,
@@ -41,7 +41,7 @@ export class CourseCategoryService {
 
   async findCourseCategoryOrThrow(
     where: Pick<ICourseCategory, 'id'>,
-  ): Promise<ICourseCategoryWithChildren> {
+  ): Promise<ICourseCategoryWithRelations> {
     const category = await this.findCourseCategory(where);
 
     if (!category) {
@@ -53,7 +53,7 @@ export class CourseCategoryService {
 
   async findCourseCategoryWithChildren(
     where: Pick<ICourseCategory, 'id'>,
-  ): Promise<ICourseCategoryWithChildren | null> {
+  ): Promise<ICourseCategoryWithRelations | null> {
     return await this.courseCategoryQueryRepository.findCourseCategoryWithChildren(
       where,
     );
@@ -61,18 +61,20 @@ export class CourseCategoryService {
 
   async getRootCourseCategories(
     pagination: Pagination,
-  ): Promise<ICourseCategoryWithChildren[]> {
+  ): Promise<ICourseCategoryWithRelations[]> {
     const roots =
       await this.courseCategoryQueryRepository.findRootCategories(pagination);
+
     return roots.map((root) => ({
       ...root,
+      depth: 1,
       children: [],
     }));
   }
 
   async getRootCategoriesWithChildren(
     pagination: Pagination,
-  ): Promise<ICourseCategoryWithChildren[]> {
+  ): Promise<ICourseCategoryWithRelations[]> {
     return await this.courseCategoryQueryRepository.findRootCategoriesWithChildren(
       pagination,
     );

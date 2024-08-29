@@ -68,7 +68,8 @@ export class CourseCategoryQueryRepository {
   async findRootCategories(pagination: Pagination): Promise<ICourseCategory[]> {
     const roots = await this.drizzle.db.query.courseCategories.findMany({
       where: isNull(dbSchema.courseCategories.parentId),
-      orderBy: (category, { asc }) => asc(category.name),
+      orderBy: (category, { asc, desc }) =>
+        pagination.orderBy === 'asc' ? asc(category.name) : desc(category.name),
       offset: (pagination.page - 1) * pagination.pageSize,
       limit: pagination.pageSize,
     });
@@ -160,7 +161,6 @@ export class CourseCategoryQueryRepository {
         name: row.name,
         description: row.description,
         depth: row.depth,
-        parent: null,
         children: [],
       }));
     const rootCategory: ICourseCategoryWithRelations = {
