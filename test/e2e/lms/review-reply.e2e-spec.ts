@@ -2,7 +2,10 @@ import { INestApplication } from '@nestjs/common';
 import { createTestingServer } from '../helpers/app.helper';
 import { Uri } from '../../../src/shared/types/primitive';
 import { DrizzleService } from '../../../src/infra/db/drizzle.service';
-import { seedCourseReviews } from '../helpers/db/lms/review.helper';
+import {
+  findReviewRepliesByReviewId,
+  seedCourseReviews,
+} from '../helpers/db/lms/review.helper';
 import * as ReviewAPI from '../../../src/api/functional/v1/review';
 import { ConfigsService } from '../../../src/configs/configs.service';
 import { CreateReviewReplyDto } from '@src/v1/review/review.dto';
@@ -54,6 +57,16 @@ describe('ReviewController (e2e)', () => {
 
       const createdReply = response.data;
       expect(createdReply.snapshot.comment).toEqual('Good job!');
+
+      // find all replies of the review
+      const replies = await findReviewRepliesByReviewId(
+        { reviewId: review.id },
+        drizzle.db,
+      );
+
+      expect(
+        replies.find((reply) => reply.snapshot.comment === 'Good job!'),
+      ).toBeDefined();
     });
   });
 });
