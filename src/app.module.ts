@@ -20,6 +20,7 @@ import { EbookContentModule } from '@src/v1/ebook/ebook-content/ebook-content.mo
 import { CourseDashboardModule } from '@src/v1/dashboard/course/course-dashboard.module';
 import { CourseReviewModule } from '@src/v1/review/course-review/course-review.module';
 import { EbookReviewModule } from '@src/v1/review/ebook-review/ebook-review.module';
+import { PostRelationsModule } from '@src/v1/post/post-relations.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { EbookReviewModule } from '@src/v1/review/ebook-review/ebook-review.modu
     CourseDashboardModule,
     CourseReviewModule,
     EbookReviewModule,
+    PostRelationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

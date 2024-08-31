@@ -5,6 +5,7 @@ import { orderDbSchema } from './order';
 import { reviewDbSchema } from './review';
 import { teacherDbSchema } from './teacher';
 import { ebookDbSchema } from './ebook';
+import { postDbSchemas } from '@src/infra/db/schema/post';
 
 export const dbSchema = {
   // 사용자 (일반 사용자, 관리자(매니저), 최고 관리자)
@@ -24,6 +25,9 @@ export const dbSchema = {
 
   // 리뷰
   ...reviewDbSchema,
+
+  // 게시글
+  ...postDbSchemas,
 
   // UI 빌더
   ...uiDbSchemas,
