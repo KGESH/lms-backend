@@ -3,10 +3,7 @@ import {
   IPostWithComments,
   IPostRelationsWithCommentCount,
 } from '@src/v1/post/post-relations.interface';
-import {
-  PostWithCommentCountDto,
-  PostWithCommentsDto,
-} from '@src/v1/post/post-relations.dto';
+import { PostRelationsDto, PostWithCommentsDto } from '@src/v1/post/post-relations.dto';
 
 export const postToPostWithCommentsDto = (
   post: IPostWithComments,
@@ -25,7 +22,7 @@ export const postToPostWithCommentsDto = (
 
 export const postToPostWithCommentCountDto = (
   post: IPostRelationsWithCommentCount,
-): PostWithCommentCountDto => {
+): PostRelationsDto => {
   return {
     ...post,
     title: post.snapshot.title,

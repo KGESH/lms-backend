@@ -7,10 +7,15 @@ import {
   TypedQuery,
   TypedRoute,
 } from '@nestia/core';
-import { CreatePostDto, PostQuery, UpdatePostDto } from '@src/v1/post/post.dto';
+import {
+  CreatePostDto,
+  PostCommentQuery,
+  PostQuery,
+  UpdatePostDto,
+} from '@src/v1/post/post.dto';
 import { PostRelationsService } from '@src/v1/post/post-relations.service';
 import {
-  PostWithCommentCountDto,
+  PostRelationsDto,
   PostWithCommentsDto,
 } from '@src/v1/post/post-relations.dto';
 import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
@@ -37,7 +42,9 @@ export class PostRelationsController {
    *
    * Query parameter 'categoryId' 속성을 설정해야합니다.
    *
-   * 게시글 본문은 제공하지 않습니다.
+   * 댓글 목록은 제공하지 않습니다.
+   *
+   * 댓글 count만 제공합니다.
    *
    * @tag post
    * @summary 게시글 목록 조회 (public)
@@ -55,7 +62,7 @@ export class PostRelationsController {
   async getPostsByCategory(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedQuery() query: PostQuery,
-  ): Promise<PostWithCommentCountDto[]> {
+  ): Promise<PostRelationsDto[]> {
     const posts = await this.postRelationsService.findPostsByCategory(
       {
         categoryId: query.categoryId,
@@ -69,6 +76,20 @@ export class PostRelationsController {
     return posts.map(postToPostWithCommentCountDto);
   }
 
+  /**
+   * 특정 게시글을 조회합니다.
+   *
+   * 로그인 없이 조회할 수 있습니다.
+   *
+   * 댓글 목록을 제공합니다.
+   *
+   * Query parameter의 'commentPagination' 속성으로 초기 로딩 댓글 목록을 페이징할 수 있습니다.
+   *
+   * 초기 로딩 이후 추가 댓글 목록을 불러오기 위해서는 댓글 목록 조회 API를 사용해야합니다.
+   *
+   * @tag post
+   * @summary 특정 게시글 조회 (public)
+   */
   @TypedRoute.Get('/:id')
   @SkipAuth()
   @TypedException<TypeGuardError>({
@@ -78,10 +99,16 @@ export class PostRelationsController {
   async getPostById(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('id') id: Uuid,
+    @TypedQuery() query?: PostCommentQuery,
   ): Promise<PostWithCommentsDto | null> {
     const post = await this.postRelationsService.findPostWithComments(
       { id },
-      { commentPagination: DEFAULT_PAGINATION },
+      {
+        commentPagination: {
+          ...DEFAULT_PAGINATION,
+          ...query,
+        },
+      },
     );
 
     if (!post) {
@@ -125,6 +152,7 @@ export class PostRelationsController {
       author: session.user,
       title: snapshot.title,
       content: snapshot.content,
+      commentCount: 0,
       comments: [],
     };
   }

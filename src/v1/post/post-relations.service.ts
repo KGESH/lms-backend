@@ -50,18 +50,6 @@ export class PostRelationsService {
     return await this.postQueryRepository.findPostWithRelations(where);
   }
 
-  async findPostWithRelationsOrThrow(
-    where: Pick<IPost, 'id'>,
-  ): Promise<IPostRelations> {
-    const post = await this.findPostWithRelations(where);
-
-    if (!post) {
-      throw new NotFoundException('[Service] Post not found');
-    }
-
-    return post;
-  }
-
   async findPostWithComments(
     where: Pick<IPost, 'id'>,
     {
@@ -86,6 +74,7 @@ export class PostRelationsService {
     return {
       ...post,
       comments,
+      commentCount: comments.length,
     };
   }
 
@@ -115,6 +104,7 @@ export class PostRelationsService {
         snapshot,
         category,
         likeCount: 0,
+        commentCount: 0,
         comments: [],
       } satisfies Omit<IPostWithComments, 'author'>;
     });
@@ -151,6 +141,7 @@ export class PostRelationsService {
     return typia.assert<IPostWithComments>(newPost);
   }
 
+  // Todo: Impl
   async deletePost(where: Pick<IPost, 'id'>): Promise<IPost> {
     return await this.postRepository.deletePost(where);
   }

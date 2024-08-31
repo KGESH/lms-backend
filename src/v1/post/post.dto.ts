@@ -26,3 +26,7 @@ export type UpdatePostDto = Partial<
 
 export type PostQuery = Pick<PostWithContentDto, 'categoryId'> &
   Partial<Pagination>;
+
+export type PostCommentQuery = {
+  commentPagination: Partial<Pagination>;
+};

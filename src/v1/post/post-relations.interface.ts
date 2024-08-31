@@ -19,7 +19,7 @@ export type IPostRelationsWithCommentCount = IPostRelations & {
   commentCount: number;
 };
 
-export type IPostWithComments = IPostRelations & {
+export type IPostWithComments = IPostRelationsWithCommentCount & {
   comments: IPostCommentRelations[];
 };
 

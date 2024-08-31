@@ -3,16 +3,13 @@ import { PostWithContentDto } from '@src/v1/post/post.dto';
 import { PostCommentDto } from '@src/v1/post/comment/post-comment.dto';
 import { IUserWithoutPassword } from '@src/v1/user/user.interface';
 
-export type PostWithCommentCountDto = PostWithContentDto & {
+export type PostRelationsDto = PostWithContentDto & {
   category: PostCategoryDto;
   author: IUserWithoutPassword;
   likeCount: number;
   commentCount: number;
 };
 
-export type PostWithCommentsDto = PostWithContentDto & {
-  category: PostCategoryDto;
-  author: IUserWithoutPassword;
-  likeCount: number;
+export type PostWithCommentsDto = PostRelationsDto & {
   comments: PostCommentDto[];
 };
