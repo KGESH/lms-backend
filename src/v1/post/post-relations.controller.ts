@@ -10,6 +10,7 @@ import {
 import {
   CreatePostDto,
   PostCommentQuery,
+  PostDto,
   PostQuery,
   UpdatePostDto,
 } from '@src/v1/post/post.dto';
@@ -83,7 +84,9 @@ export class PostRelationsController {
    *
    * 댓글 목록을 제공합니다.
    *
-   * Query parameter의 'commentPagination' 속성으로 초기 로딩 댓글 목록을 페이징할 수 있습니다.
+   * Query parameter의 pagination 속성들로 초기 로딩 댓글 목록을 페이징할 수 있습니다.
+   *
+   * Query parameter의 pagination을 빈 객체({})로 설정하면 default 페이징이 적용됩니다. (pageSize: 10, page: 1, order: 'desc')
    *
    * 초기 로딩 이후 추가 댓글 목록을 불러오기 위해서는 댓글 목록 조회 API를 사용해야합니다.
    *
@@ -157,6 +160,12 @@ export class PostRelationsController {
     };
   }
 
+  /**
+   * 게시글을 수정합니다.
+   *
+   * @tag post
+   * @summary 게시글 수정
+   */
   @TypedRoute.Patch('/:id')
   @TypedException<TypeGuardError>({
     status: 400,
@@ -177,5 +186,29 @@ export class PostRelationsController {
     });
 
     return postToPostWithCommentsDto(updatedPost);
+  }
+
+  /**
+   * 게시글을 삭제합니다.
+   *
+   * Soft delete로 구현되어 있습니다.
+   *
+   * @tag post
+   * @summary 게시글 삭제
+   */
+  @TypedRoute.Delete('/:id')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'post not found',
+  })
+  async deletePost(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedParam('id') id: Uuid,
+  ): Promise<Pick<PostDto, 'id'>> {
+    return await this.postRelationsService.deletePost({ id });
   }
 }

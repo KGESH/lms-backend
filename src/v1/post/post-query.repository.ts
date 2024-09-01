@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { IPost } from '@src/v1/post/post.interface';
-import { eq, desc, asc, countDistinct } from 'drizzle-orm';
+import { eq, desc, asc, countDistinct, and, isNull } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { Pagination } from '@src/shared/types/pagination';
@@ -16,7 +16,10 @@ export class PostQueryRepository {
 
   async findPost(where: Pick<IPost, 'id'>): Promise<IPost | null> {
     const post = await this.drizzle.db.query.posts.findFirst({
-      where: eq(dbSchema.posts.id, where.id),
+      where: and(
+        eq(dbSchema.posts.id, where.id),
+        isNull(dbSchema.posts.deletedAt),
+      ),
     });
 
     return post ?? null;
@@ -26,7 +29,10 @@ export class PostQueryRepository {
     where: Pick<IPost, 'id'>,
   ): Promise<IPostWithSnapshot | null> {
     const post = await this.drizzle.db.query.posts.findFirst({
-      where: eq(dbSchema.posts.id, where.id),
+      where: and(
+        eq(dbSchema.posts.id, where.id),
+        isNull(dbSchema.posts.deletedAt),
+      ),
       with: {
         snapshots: {
           orderBy: (snapshot, { desc }) => desc(snapshot.createdAt),
@@ -73,7 +79,12 @@ export class PostQueryRepository {
         commentCount: countDistinct(dbSchema.postComments.id),
       })
       .from(dbSchema.posts)
-      .where(eq(dbSchema.posts.categoryId, where.categoryId))
+      .where(
+        and(
+          eq(dbSchema.posts.categoryId, where.categoryId),
+          isNull(dbSchema.posts.deletedAt),
+        ),
+      )
       .innerJoin(
         dbSchema.postCategories,
         eq(dbSchema.posts.categoryId, dbSchema.postCategories.id),
@@ -138,7 +149,9 @@ export class PostQueryRepository {
         likeCount: countDistinct(dbSchema.postLikes.id),
       })
       .from(dbSchema.posts)
-      .where(eq(dbSchema.posts.id, where.id))
+      .where(
+        and(eq(dbSchema.posts.id, where.id), isNull(dbSchema.posts.deletedAt)),
+      )
       .innerJoin(
         dbSchema.postCategories,
         eq(dbSchema.posts.categoryId, dbSchema.postCategories.id),

@@ -141,8 +141,9 @@ export class PostRelationsService {
     return typia.assert<IPostWithComments>(newPost);
   }
 
-  // Todo: Impl
+  // Soft delete
   async deletePost(where: Pick<IPost, 'id'>): Promise<IPost> {
-    return await this.postRepository.deletePost(where);
+    const post = await this.postService.findPostOrThrow(where);
+    return await this.postRepository.deletePost(post);
   }
 }
