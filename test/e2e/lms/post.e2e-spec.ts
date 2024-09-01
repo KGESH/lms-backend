@@ -1,4 +1,5 @@
 import * as PostAPI from '../../../src/api/functional/v1/post';
+import * as PostLikeAPI from '../../../src/api/functional/v1/post/like';
 import { Uri } from '@src/shared/types/primitive';
 import { INestApplication } from '@nestjs/common';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
@@ -261,6 +262,57 @@ describe('PostController (e2e)', () => {
 
       const foundPost = getResponse.data;
       expect(foundPost).toBeNull();
+    });
+  });
+
+  describe('[Create post like]', () => {
+    it('should be create post like success', async () => {
+      const [author, likedUser] = await seedUsers(
+        { count: 2, role: 'user' },
+        drizzle.db,
+      );
+      const [post] = await seedPosts(
+        {
+          count: 1,
+          author: author.user,
+        },
+        drizzle.db,
+      );
+
+      const likedResponse = await PostLikeAPI.createPostLike(
+        {
+          host,
+          headers: {
+            LmsSecret,
+            UserSessionId: likedUser.userSession.id,
+          },
+        },
+        post.id,
+      );
+      if (!likedResponse.success) {
+        const message = JSON.stringify(likedResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      const liked = likedResponse.data;
+      expect(liked.postId).toEqual(post.id);
+      expect(liked.userId).toEqual(likedUser.user.id);
+
+      const afterLikedPostResponse = await PostAPI.getPostById(
+        {
+          host,
+          headers: { LmsSecret },
+        },
+        post.id,
+        {},
+      );
+      if (!afterLikedPostResponse.success) {
+        const message = JSON.stringify(afterLikedPostResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      const afterLikedPost = afterLikedPostResponse.data;
+      expect(afterLikedPost!.likeCount).toEqual(post.likeCount + 1);
     });
   });
 });

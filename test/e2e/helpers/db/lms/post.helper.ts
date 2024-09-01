@@ -22,7 +22,7 @@ import {
   IPostLikeCreate,
 } from '@src/v1/post/like/post-like.interface';
 import { IPostCommentRelations } from '@src/v1/post/comment/post-comment-relations.interface';
-import { IPostRelations } from '@src/v1/post/post-relations.interface';
+import { IPostWithComments } from '@src/v1/post/post-relations.interface';
 import { IUserWithoutPassword } from '@src/v1/user/user.interface';
 import { IPostCategory } from '@src/v1/post/category/post-category.interface';
 
@@ -92,7 +92,11 @@ export const createManyPostLikes = async (
 };
 
 export const seedPostComment = async (
-  { postId, users }: { postId: Uuid; users: IUserWithoutPassword[] },
+  {
+    postId,
+    users,
+    parentId,
+  }: { postId: Uuid; users: IUserWithoutPassword[]; parentId?: Uuid },
   db: TransactionClient,
 ): Promise<IPostCommentRelations[]> => {
   const comments: IPostCommentRelations[] = [];
@@ -101,6 +105,7 @@ export const seedPostComment = async (
       {
         postId,
         userId: user.id,
+        parentId: parentId ?? null,
       },
       db,
     );
@@ -122,7 +127,7 @@ export const createPostRelations = async (
   author: IUserWithoutPassword,
   category: IPostCategory,
   db: TransactionClient,
-): Promise<IPostRelations> => {
+): Promise<IPostWithComments> => {
   const postCommenters = await seedUsers({ count: 5 }, db);
 
   const post = await createPost(
@@ -160,8 +165,10 @@ export const createPostRelations = async (
     ...post,
     category,
     author,
+    comments,
     snapshot: postSnapshot,
     likeCount: likes.length,
+    commentCount: comments.length,
   };
 };
 
@@ -172,7 +179,7 @@ export const seedPosts = async (
     category?: IPostCategory;
   },
   db: TransactionClient,
-): Promise<IPostRelations[]> => {
+): Promise<IPostWithComments[]> => {
   const author =
     params.author ?? (await seedUsers({ count: 1, role: 'user' }, db))[0].user;
   const category =

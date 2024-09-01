@@ -1,20 +1,18 @@
 import { Controller } from '@nestjs/common';
 import { PostLikeService } from '@src/v1/post/like/post-like.service';
 import {
-  TypedBody,
   TypedException,
   TypedHeaders,
   TypedParam,
   TypedRoute,
 } from '@nestia/core';
 import { AuthHeaders } from '@src/v1/auth/auth.headers';
-import {
-  CreatePostLikeDto,
-  PostLikeDto,
-} from '@src/v1/post/like/post-like.dto';
+import { PostLikeDto } from '@src/v1/post/like/post-like.dto';
 import { Uuid } from '@src/shared/types/primitive';
 import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '@src/shared/types/response';
+import { SessionUser } from '@src/core/decorators/session-user.decorator';
+import { ISessionWithUser } from '@src/v1/auth/session.interface';
 
 @Controller('v1/post/:postId/like')
 export class PostLikeController {
@@ -45,11 +43,11 @@ export class PostLikeController {
   async createPostLike(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('postId') postId: Uuid,
-    @TypedBody() body: CreatePostLikeDto,
+    @SessionUser() session: ISessionWithUser,
   ): Promise<PostLikeDto> {
     return await this.postLikeService.createPostLike({
       postId,
-      userId: body.userId,
+      userId: session.userId,
     });
   }
 }
