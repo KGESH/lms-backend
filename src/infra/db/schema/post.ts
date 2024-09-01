@@ -6,9 +6,9 @@ import {
   integer,
   timestamp,
 } from 'drizzle-orm/pg-core';
-import { userRole } from '@src/infra/db/schema/enum';
 import { users } from './user';
 import { relations } from 'drizzle-orm';
+import { userRole } from './enum';
 
 export const postCategories = pgTable('post_categories', {
   id: uuid('id').primaryKey().defaultRandom(),
