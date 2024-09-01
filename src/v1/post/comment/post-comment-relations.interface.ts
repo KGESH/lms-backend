@@ -6,3 +6,7 @@ export type IPostCommentRelations = IPostComment & {
   user: IUserWithoutPassword;
   snapshot: IPostCommentSnapshot;
 };
+
+export type IPostCommentRelationsWithChildren = IPostCommentRelations & {
+  children: IPostCommentRelations[];
+};

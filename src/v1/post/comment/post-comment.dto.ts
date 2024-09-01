@@ -8,3 +8,13 @@ export type PostCommentDto = {
   content: string;
   createdAt: ISO8601;
 };
+
+export type PostCommentWithChildrenDto = PostCommentDto & {
+  children: PostCommentDto[];
+};
+
+export type CreatePostCommentDto = {
+  content: string;
+};
+
+export type UpdatePostCommentDto = CreatePostCommentDto;

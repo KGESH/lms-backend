@@ -1,12 +1,20 @@
 import { Controller } from '@nestjs/common';
 import { PostLikeService } from '@src/v1/post/like/post-like.service';
-import { TypedBody, TypedHeaders, TypedParam, TypedRoute } from '@nestia/core';
+import {
+  TypedBody,
+  TypedException,
+  TypedHeaders,
+  TypedParam,
+  TypedRoute,
+} from '@nestia/core';
 import { AuthHeaders } from '@src/v1/auth/auth.headers';
 import {
   CreatePostLikeDto,
   PostLikeDto,
 } from '@src/v1/post/like/post-like.dto';
 import { Uuid } from '@src/shared/types/primitive';
+import { TypeGuardError } from 'typia';
+import { IErrorResponse } from '@src/shared/types/response';
 
 @Controller('v1/post/:postId/like')
 export class PostLikeController {
@@ -19,8 +27,21 @@ export class PostLikeController {
    *
    * @tag post-like
    * @summary 게시글 '좋아요' 생성
+   * @param postId - 게시글 ID
    */
   @TypedRoute.Post('/')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'post not found',
+  })
+  @TypedException<IErrorResponse<409>>({
+    status: 409,
+    description: 'already liked',
+  })
   async createPostLike(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('postId') postId: Uuid,

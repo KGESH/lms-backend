@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PostRepository } from '@src/v1/post/post.repository';
 import { IPost, IPostCreate } from '@src/v1/post/post.interface';
 import { PostQueryRepository } from '@src/v1/post/post-query.repository';
@@ -64,11 +64,14 @@ export class PostRelationsService {
       return null;
     }
 
-    const comments = await this.postCommentService.findPostComments(
+    const comments = await this.postCommentService.findPostRootComments(
       {
         postId: post.id,
       },
-      commentPagination,
+      {
+        parentPagination: commentPagination,
+        childrenPagination: DEFAULT_PAGINATION,
+      },
     );
 
     return {

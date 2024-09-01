@@ -24,6 +24,6 @@ export class PostLikeService {
       throw new ConflictException('Already liked');
     }
 
-    return this.postLikeRepository.createPostLike(params);
+    return await this.postLikeRepository.createPostLike(params);
   }
 }

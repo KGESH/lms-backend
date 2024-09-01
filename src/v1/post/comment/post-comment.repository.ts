@@ -5,6 +5,8 @@ import {
   IPostComment,
   IPostCommentCreate,
 } from '@src/v1/post/comment/post-comment.interface';
+import { eq } from 'drizzle-orm';
+import * as date from '@src/shared/utils/date';
 
 @Injectable()
 export class PostCommentRepository {
@@ -20,5 +22,16 @@ export class PostCommentRepository {
       .returning();
 
     return postComment;
+  }
+
+  // Soft delete
+  async deletePostComment(
+    where: Pick<IPostComment, 'id'>,
+    db = this.drizzle.db,
+  ): Promise<void> {
+    await db
+      .update(dbSchema.postComments)
+      .set({ deletedAt: date.now('date') })
+      .where(eq(dbSchema.postComments.id, where.id));
   }
 }

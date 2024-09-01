@@ -1,4 +1,5 @@
 import { Uuid } from '@src/shared/types/primitive';
+import { Pagination } from '@src/shared/types/pagination';
 
 export type IPostComment = {
   id: Uuid;
@@ -8,3 +9,8 @@ export type IPostComment = {
 };
 
 export type IPostCommentCreate = Pick<IPostComment, 'postId' | 'userId'>;
+
+export type IPostCommentPagination = {
+  parentPagination: Pagination;
+  childrenPagination: Omit<Pagination, 'page'>;
+};

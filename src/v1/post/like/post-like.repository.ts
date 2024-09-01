@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
-import { count, eq } from 'drizzle-orm';
 import {
   IPostLike,
   IPostLikeCreate,
@@ -18,16 +17,5 @@ export class PostLikeRepository {
       .returning();
 
     return postLike;
-  }
-
-  async getPostLikeCount(where: Pick<IPostLike, 'postId'>): Promise<number> {
-    const [likes] = await this.drizzle.db
-      .select({
-        count: count(),
-      })
-      .from(dbSchema.postLikes)
-      .where(eq(dbSchema.postLikes.postId, where.postId));
-
-    return likes.count;
   }
 }

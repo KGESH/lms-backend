@@ -86,9 +86,11 @@ export const postComments = pgTable('post_comments', {
   userId: uuid('user_id')
     .notNull()
     .references((): AnyPgColumn => users.id),
+  parentId: uuid('parent_id').references((): AnyPgColumn => postComments.id),
   createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
     .notNull()
     .defaultNow(),
+  deletedAt: timestamp('deleted_at', { mode: 'date', withTimezone: true }),
 });
 
 export const postCommentSnapshots = pgTable('post_comment_snapshots', {
@@ -194,6 +196,14 @@ export const postCommentsRelations = relations(
     user: one(users, {
       fields: [postComments.userId],
       references: [users.id],
+    }),
+    parent: one(postComments, {
+      fields: [postComments.parentId],
+      references: [postComments.id],
+      relationName: 'post_comments_relation',
+    }),
+    children: many(postComments, {
+      relationName: 'post_comments_relation',
     }),
     snapshots: many(postCommentSnapshots),
     likes: many(postCommentLikes),
