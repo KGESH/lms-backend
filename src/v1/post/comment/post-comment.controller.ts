@@ -133,8 +133,9 @@ export class PostCommentController {
       createParams: {
         postId,
         userId: session.userId,
+        ...body,
       },
-      snapshotCreateParams: body,
+      snapshotCreateParams: { ...body },
     });
 
     return postCommentWithChildrenToDto({

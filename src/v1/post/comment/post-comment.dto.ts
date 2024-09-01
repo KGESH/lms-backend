@@ -4,17 +4,16 @@ import { IUserWithoutPassword } from '@src/v1/user/user.interface';
 export type PostCommentDto = {
   id: Uuid;
   postId: Uuid;
-  user: IUserWithoutPassword;
+  parentId: Uuid | null;
   content: string;
   createdAt: ISO8601;
+  user: IUserWithoutPassword;
 };
 
 export type PostCommentWithChildrenDto = PostCommentDto & {
   children: PostCommentDto[];
 };
 
-export type CreatePostCommentDto = {
-  content: string;
-};
+export type CreatePostCommentDto = Pick<PostCommentDto, 'content' | 'parentId'>;
 
-export type UpdatePostCommentDto = CreatePostCommentDto;
+export type UpdatePostCommentDto = Pick<PostCommentDto, 'content'>;
