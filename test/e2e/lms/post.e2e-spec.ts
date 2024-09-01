@@ -61,6 +61,7 @@ describe('PostController (e2e)', () => {
           headers: { LmsSecret },
         },
         post.id,
+        {},
       );
       if (!response.success) {
         const message = JSON.stringify(response.data, null, 4);
@@ -213,6 +214,53 @@ describe('PostController (e2e)', () => {
       const updatedOnlyContentPost = updated2Response.data;
       expect(updatedOnlyContentPost.title).toEqual('updated post');
       expect(updatedOnlyContentPost.content).toEqual('updated only content');
+    });
+  });
+
+  describe('[Delete post', () => {
+    it('should be delete post success (soft delete)', async () => {
+      const [student] = await seedUsers({ count: 1, role: 'user' }, drizzle.db);
+      const [post] = await seedPosts(
+        {
+          count: 1,
+          author: student.user,
+        },
+        drizzle.db,
+      );
+
+      const deletedResponse = await PostAPI.deletePost(
+        {
+          host,
+          headers: {
+            LmsSecret,
+            UserSessionId: student.userSession.id,
+          },
+        },
+        post.id,
+      );
+      if (!deletedResponse.success) {
+        const message = JSON.stringify(deletedResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      const deletedResult = deletedResponse.data;
+      expect(deletedResult.id).toEqual(post.id);
+
+      const getResponse = await PostAPI.getPostById(
+        {
+          host,
+          headers: { LmsSecret },
+        },
+        post.id,
+        {},
+      );
+      if (!getResponse.success) {
+        const message = JSON.stringify(getResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      const foundPost = getResponse.data;
+      expect(foundPost).toBeNull();
     });
   });
 });

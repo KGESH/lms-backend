@@ -63,7 +63,6 @@ describe('CourseReviewController (e2e)', () => {
       }
 
       const foundReviews = response.data;
-      console.log('foundReviews', foundReviews);
       expect(
         foundReviews.find((foundReview) => foundReview.id === review.id),
       ).toBeDefined();
