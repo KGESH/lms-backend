@@ -63,6 +63,44 @@ export const createManyUsers = async (
   );
 };
 
+export const seedAdminUser = async (
+  {
+    email,
+    password,
+  }: {
+    email;
+    password;
+  },
+  db: TransactionClient,
+) => {
+  const userId = createUuid();
+  const adminCreateDto: IUserSignUp = {
+    userCreateParams: {
+      id: userId,
+      displayName: '관리자',
+      email,
+      password,
+      role: 'admin',
+    },
+    accountCreateParams: {
+      providerId: null,
+      providerType: 'email',
+      userId,
+    },
+    infoCreateParams: {
+      name: '관리자',
+      birthDate: '2024-01-01',
+      connectingInformation: null,
+      duplicationInformation: null,
+      gender: 'male',
+      phoneNumber: '+821000000000',
+      userId,
+    },
+  };
+
+  return await createUser(adminCreateDto, db);
+};
+
 export const seedPgUsers = async (db: TransactionClient) => {
   const userId = createUuid();
   const userCreateDtos: IUserSignUp[] = [

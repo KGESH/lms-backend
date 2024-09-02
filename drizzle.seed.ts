@@ -7,7 +7,11 @@ import { sql } from 'drizzle-orm';
 import { IS_PRODUCTION } from './src/shared/utils/is-production';
 import { seedUiRepeatTimer } from './test/e2e/helpers/db/ui/repeat-timer.helper';
 import { seedCarouselReview } from './test/e2e/helpers/db/ui/carousel-review.helper';
-import { seedPgUsers, seedUsers } from './test/e2e/helpers/db/lms/user.helper';
+import {
+  seedAdminUser,
+  seedPgUsers,
+  seedUsers,
+} from './test/e2e/helpers/db/lms/user.helper';
 import { seedTeachers } from './test/e2e/helpers/db/lms/teacher.helper';
 import { seedCourseProducts } from './test/e2e/helpers/db/lms/course-product.helper';
 import { clearDatabase } from './src/shared/helpers/db';
@@ -54,8 +58,14 @@ async function seed() {
     await seedTeachers({ count: 2 }, db);
     await seedUsers({ count: 3, role: 'user' }, db);
     await seedUsers({ count: 1, role: 'manager' }, db);
-    await seedUsers({ count: 1, role: 'admin' }, db);
     await seedUsers({ count: 1, role: 'teacher' }, db);
+    await seedAdminUser(
+      {
+        email: env.get('ADMIN_EMAIL'),
+        password: env.get('ADMIN_PASSWORD'),
+      },
+      db,
+    );
     await seedPgUsers(db);
     await seedCourseProducts({ count: 10 }, db);
     await seedCourseReviews({ count: 10 }, db);
