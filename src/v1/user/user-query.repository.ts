@@ -43,9 +43,16 @@ export class UserQueryRepository {
     return user;
   }
 
-  async findMany(pagination: Pagination): Promise<IUser[]> {
+  async findManyUsers(
+    where: Partial<Pick<IUser, 'role'>>,
+    pagination: Pagination,
+  ): Promise<IUser[]> {
     return await this.drizzle.db.query.users.findMany({
-      orderBy: (user, { desc }) => desc(user.createdAt),
+      where: where.role ? eq(dbSchema.users.role, where.role) : undefined,
+      orderBy: (user, { asc, desc }) =>
+        pagination.orderBy === 'asc'
+          ? asc(user.createdAt)
+          : desc(user.createdAt),
       limit: pagination.pageSize,
       offset: (pagination.page - 1) * pagination.pageSize,
     });

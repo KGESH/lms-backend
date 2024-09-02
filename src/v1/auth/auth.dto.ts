@@ -1,6 +1,7 @@
 import { UserDto, UserInfoDto } from '@src/v1/user/user.dto';
 import { AuthProvider, Uuid } from '@src/shared/types/primitive';
 import { IUser } from '@src/v1/user/user.interface';
+import { NonNullableInfer } from '@src/shared/types/non-nullable-infer';
 
 export type LoginUserDto = Pick<UserDto, 'email' | 'password'>;
 
@@ -38,3 +39,5 @@ export type SignUpUserDto = {
 };
 
 export type UpdateUserRoleDto = Pick<UserDto, 'id' | 'role'>;
+
+export type UpdatePasswordDto = Pick<NonNullableInfer<UserDto>, 'password'>;

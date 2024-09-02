@@ -7,6 +7,7 @@ import {
 } from '@src/shared/types/primitive';
 import { OmitPassword } from '@src/shared/types/omit-password';
 import { Optional } from '@src/shared/types/optional';
+import { NonNullableInfer } from '@src/shared/types/non-nullable-infer';
 
 export type IUser = {
   id: Uuid;
@@ -24,8 +25,8 @@ export type IUser = {
 export type IUserWithoutPassword = OmitPassword<IUser>;
 
 export type IUserCreate = Pick<
-  Optional<IUser, 'id'>,
-  'id' | 'email' | 'password' | 'displayName' | 'role'
+  Optional<IUser, 'id' | 'emailVerified'>,
+  'id' | 'email' | 'password' | 'displayName' | 'role' | 'emailVerified'
 >;
 
 export type IUserUpdate = Partial<Omit<IUser, 'id'>>;
@@ -62,3 +63,7 @@ export type IUserAccount = {
 };
 
 export type IUserAccountCreate = Optional<IUserAccount, 'id'>;
+
+export type IUserPasswordUpdate = NonNullableInfer<
+  Pick<IUser, 'id' | 'password'>
+>;

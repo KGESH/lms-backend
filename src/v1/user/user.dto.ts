@@ -35,4 +35,4 @@ export type UserInfoDto = {
   duplicationInformation: string | null;
 };
 
-export type UserQuery = Partial<Pagination>;
+export type UserQuery = Partial<Pick<IUser, 'role'>> & Partial<Pagination>;

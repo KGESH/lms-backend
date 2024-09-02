@@ -7,9 +7,17 @@ import { SessionRepository } from '@src/v1/auth/session.repository';
 import { SessionGuard } from '@src/core/guards/session.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { ApiGuard } from '@src/core/guards/api.guard';
+import { AuthAdminService } from '@src/v1/auth/auth-admin.service';
 
 const modules = [UserModule];
-const providers = [AuthService, KakaoAuthService, SessionRepository];
+
+const providers = [
+  AuthService,
+  AuthAdminService,
+  KakaoAuthService,
+  SessionRepository,
+];
+
 const guards = [
   SessionGuard,
   {

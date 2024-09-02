@@ -6,7 +6,12 @@ import {
   TypedHeaders,
   TypedRoute,
 } from '@nestia/core';
-import { LoginUserDto, SignUpUserDto, UpdateUserRoleDto } from './auth.dto';
+import {
+  LoginUserDto,
+  SignUpUserDto,
+  UpdatePasswordDto,
+  UpdateUserRoleDto,
+} from '@src/v1/auth/auth.dto';
 import { KakaoLoginDto } from '@src/v1/auth/kakao-auth.dto';
 import { KakaoAuthService } from '@src/v1/auth/kakao-auth.service';
 import { UserWithoutPasswordDto } from '@src/v1/user/user.dto';
@@ -17,6 +22,10 @@ import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
+import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
+import { AuthAdminService } from '@src/v1/auth/auth-admin.service';
+import { SessionUser } from '@src/core/decorators/session-user.decorator';
+import { ISessionWithUser } from '@src/v1/auth/session.interface';
 
 @Controller('v1/auth')
 export class AuthController {
@@ -24,6 +33,7 @@ export class AuthController {
 
   constructor(
     private readonly authService: AuthService,
+    private readonly authAdminService: AuthAdminService,
     private readonly kakaoAuthService: KakaoAuthService,
   ) {}
 
@@ -48,6 +58,10 @@ export class AuthController {
   @TypedException<IErrorResponse<404>>({
     status: 409,
     description: 'User already exists',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   @SkipAuth()
   async kakaoLogin(
@@ -76,6 +90,10 @@ export class AuthController {
     status: 404,
     description: 'user not found',
   })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
   async login(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedBody() body: LoginUserDto,
@@ -102,12 +120,87 @@ export class AuthController {
     status: 409,
     description: 'user already exists',
   })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
   async signup(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedBody() body: SignUpUserDto,
   ): Promise<UserWithoutPasswordDto> {
-    this.logger.log('Signup request received', body);
     const user = await this.authService.signUpUser(body);
+    return userToDto(user);
+  }
+
+  /**
+   * 현재 세션 사용자의 비밀번호를 변경합니다. (이메일 계정)
+   *
+   * @tag auth
+   * @summary 이메일 계정 비밀번호 변경
+   */
+  @TypedRoute.Patch('/password')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'user not found',
+  })
+  @TypedException<IErrorResponse<409>>({
+    status: 409,
+    description: 'new password is the same as the old one',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async changePassword(
+    @TypedHeaders() headers: ApiAuthHeaders,
+    @TypedBody() body: UpdatePasswordDto,
+    @SessionUser() session: ISessionWithUser,
+  ): Promise<UserWithoutPasswordDto> {
+    const user = await this.authService.updatePassword({
+      id: session.userId,
+      ...body,
+    });
+    return userToDto(user);
+  }
+
+  /**
+   * 이메일 사용자를 생성합니다. (관리자 API)
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * 이메일 인증이 필요 없이 바로 사용자를 생성합니다.
+   *
+   * @tag auth
+   * @summary 이메일 인증 없이 사용자 생성 - Role('admin', 'manager')
+   */
+  @TypedRoute.Post('/admin/user')
+  @Roles('admin', 'manager')
+  @UseGuards(RolesGuard)
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'Not enough [role] to access this resource.',
+  })
+  @TypedException<IErrorResponse<409>>({
+    status: 409,
+    description: 'user already exists',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async createEmailUser(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedBody() body: SignUpUserDto,
+  ): Promise<UserWithoutPasswordDto> {
+    const user = await this.authAdminService.createEmailUser(body);
     return userToDto(user);
   }
 
@@ -119,7 +212,7 @@ export class AuthController {
    * @tag auth
    * @summary 사용자 권한 변경 - Role('admin', 'manager')
    */
-  @TypedRoute.Patch('/role')
+  @TypedRoute.Patch('/admin/role')
   @Roles('admin', 'manager')
   @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
@@ -129,6 +222,10 @@ export class AuthController {
   @TypedException<IErrorResponse<404>>({
     status: 404,
     description: 'user not found',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   async updateUserRole(
     @TypedHeaders() headers: AuthHeaders,

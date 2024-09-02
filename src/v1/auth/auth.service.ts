@@ -8,7 +8,11 @@ import { UserService } from '@src/v1/user/user.service';
 import { IUserLogin, IUserSignUp } from '@src/v1/auth/auth.interface';
 import * as typia from 'typia';
 import * as date from '@src/shared/utils/date';
-import { IUser, IUserWithoutPassword } from '@src/v1/user/user.interface';
+import {
+  IUser,
+  IUserPasswordUpdate,
+  IUserWithoutPassword,
+} from '@src/v1/user/user.interface';
 import { compareHash } from '@src/shared/helpers/hash';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { SessionRepository } from '@src/v1/auth/session.repository';
@@ -87,5 +91,30 @@ export class AuthService {
     }
 
     return sessionWithUser;
+  }
+
+  async updatePassword(params: IUserPasswordUpdate) {
+    const user = await this.userService.findUserWithPasswordOrThrow({
+      id: params.id,
+    });
+
+    const isSamePassword = await compareHash({
+      rawValue: params.password,
+      hash: typia.assert<string>(user.password),
+    });
+
+    if (!isSamePassword) {
+      throw new ConflictException('New password is the same as the old one');
+    }
+
+    // Todo: Impl password policy
+
+    const updated = await this.userService.updateUser(
+      { id: user.id },
+      { password: params.password },
+      this.drizzle.db,
+    );
+
+    return updated;
   }
 }

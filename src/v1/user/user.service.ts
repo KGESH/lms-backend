@@ -19,8 +19,14 @@ export class UserService {
     private readonly userAccountRepository: UserAccountRepository,
   ) {}
 
-  async findUsers(pagination: Pagination): Promise<IUserWithoutPassword[]> {
-    const users = await this.userQueryRepository.findMany(pagination);
+  async findUsers(
+    where: Partial<Pick<IUser, 'role'>>,
+    pagination: Pagination,
+  ): Promise<IUserWithoutPassword[]> {
+    const users = await this.userQueryRepository.findManyUsers(
+      where,
+      pagination,
+    );
     return users.map((user) => typia.misc.clone<IUserWithoutPassword>(user));
   }
 
@@ -43,9 +49,14 @@ export class UserService {
     return user;
   }
 
+  async findUserWithPasswordOrThrow(query: Pick<IUser, 'id'>): Promise<IUser> {
+    const user = await this.userQueryRepository.findOneOrThrow(query);
+    return user;
+  }
+
   async createUser(
     { userCreateParams, infoCreateParams, accountCreateParams }: IUserSignUp,
-    tx: TransactionClient,
+    tx?: TransactionClient,
   ): Promise<IUserWithoutPassword> {
     const userId = userCreateParams.id ?? createUuid();
 

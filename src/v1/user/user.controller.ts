@@ -17,6 +17,8 @@ import { RolesGuard } from '@src/core/guards/roles.guard';
 import { SessionUser } from '@src/core/decorators/session-user.decorator';
 import { ISessionWithUser } from '@src/v1/auth/session.interface';
 import { IErrorResponse } from '@src/shared/types/response';
+import { TypeGuardError } from 'typia';
+import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
 
 @Controller('v1/user')
 export class UserController {
@@ -28,24 +30,37 @@ export class UserController {
    *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
    *
+   * Query parameter 'role'을 통해 사용자 권한을 필터링할 수 있습니다.
+   *
    * @tag user
    * @summary 사용자 목록 조회 - Role('admin', 'manager', 'teacher')
    */
   @TypedRoute.Get('/')
   @Roles('admin', 'manager', 'teacher')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
   @TypedException<IErrorResponse<403>>({
     status: 403,
     description: 'Not enough [role] to access this resource.',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   @UseGuards(RolesGuard)
   async getUsers(
     @TypedHeaders() headers: AuthHeaders,
     @TypedQuery() query?: UserQuery,
   ): Promise<UserWithoutPasswordDto[]> {
-    const users = await this.userService.findUsers({
-      ...DEFAULT_PAGINATION,
-      ...query,
-    });
+    const users = await this.userService.findUsers(
+      { ...query },
+      {
+        ...DEFAULT_PAGINATION,
+        ...query,
+      },
+    );
     return users.map(userToDto);
   }
 
@@ -58,9 +73,17 @@ export class UserController {
    * @summary 현재 세션 사용자 조회
    */
   @TypedRoute.Get('/me')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
   @TypedException<IErrorResponse<401>>({
     status: 401,
     description: 'Session user not found.',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   async getCurrentUser(
     @TypedHeaders() headers: AuthHeaders,
@@ -80,11 +103,19 @@ export class UserController {
    */
   @TypedRoute.Get('/:id')
   @Roles('admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
   @TypedException<IErrorResponse<403>>({
     status: 403,
     description: 'Not enough [role] to access this resource.',
   })
-  @UseGuards(RolesGuard)
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
   async getUser(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('id') id: Uuid,
