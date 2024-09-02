@@ -156,7 +156,7 @@ export class AuthController {
     description: 'invalid LMS api secret',
   })
   async changePassword(
-    @TypedHeaders() headers: ApiAuthHeaders,
+    @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: UpdatePasswordDto,
     @SessionUser() session: ISessionWithUser,
   ): Promise<UserWithoutPasswordDto> {

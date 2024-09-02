@@ -55,13 +55,18 @@ export class CourseController {
   async getCourses(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedQuery() query?: CourseQuery,
-  ): Promise<CourseDto[]> {
-    const courses = await this.courseQueryService.findCourses({
-      ...DEFAULT_PAGINATION,
-      ...query,
-    });
+  ): Promise<CourseWithRelationsDto[]> {
+    const courses = await this.courseQueryService.findCoursesWithRelations(
+      {
+        ...query,
+      },
+      {
+        ...DEFAULT_PAGINATION,
+        ...query,
+      },
+    );
 
-    return courses.map(courseToDto);
+    return courses.map(courseRelationsToDto);
   }
 
   /**

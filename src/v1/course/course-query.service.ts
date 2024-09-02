@@ -18,6 +18,16 @@ export class CourseQueryService {
     return await this.courseRepository.findManyCourses(params);
   }
 
+  async findCoursesWithRelations(
+    where: Partial<Pick<ICourse, 'categoryId'>>,
+    pagination: Pagination,
+  ): Promise<ICourseWithRelations[]> {
+    return await this.courseQueryRepository.findManyCoursesWithRelations(
+      where,
+      pagination,
+    );
+  }
+
   async findCourseById(where: Pick<ICourse, 'id'>): Promise<ICourse | null> {
     return await this.courseRepository.findCourse(where);
   }
