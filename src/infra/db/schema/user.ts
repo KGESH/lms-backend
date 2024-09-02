@@ -1,12 +1,12 @@
+import { relations } from 'drizzle-orm';
 import { date, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { authProvider, userRole } from './enum';
 import { teachers } from './teacher';
-import { relations } from 'drizzle-orm';
 import { reviewReplies, reviews } from './review';
 import { orders } from './order';
 import { ebookEnrollments } from './ebook';
 import { courseEnrollments } from './course';
-import { posts } from '@src/infra/db/schema/post';
+import { posts } from './post';
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),

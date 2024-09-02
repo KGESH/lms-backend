@@ -7,7 +7,7 @@ import { sql } from 'drizzle-orm';
 import { IS_PRODUCTION } from './src/shared/utils/is-production';
 import { seedUiRepeatTimer } from './test/e2e/helpers/db/ui/repeat-timer.helper';
 import { seedCarouselReview } from './test/e2e/helpers/db/ui/carousel-review.helper';
-import { seedUsers } from './test/e2e/helpers/db/lms/user.helper';
+import { seedPgUsers, seedUsers } from './test/e2e/helpers/db/lms/user.helper';
 import { seedTeachers } from './test/e2e/helpers/db/lms/teacher.helper';
 import { seedCourseProducts } from './test/e2e/helpers/db/lms/course-product.helper';
 import { clearDatabase } from './src/shared/helpers/db';
@@ -56,6 +56,7 @@ async function seed() {
     await seedUsers({ count: 1, role: 'manager' }, db);
     await seedUsers({ count: 1, role: 'admin' }, db);
     await seedUsers({ count: 1, role: 'teacher' }, db);
+    await seedPgUsers(db);
     await seedCourseProducts({ count: 10 }, db);
     await seedCourseReviews({ count: 10 }, db);
     await seedCourseOrders({ count: 5 }, db);

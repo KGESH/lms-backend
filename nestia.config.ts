@@ -40,6 +40,10 @@ const NESTIA_CONFIG: INestiaConfig = {
         url: `http://localhost:${env.get('APP_PORT')}`,
         description: 'Local Server',
       },
+      {
+        url: `http://h4gwg4kkw4kww80o8cc8k0s8.118.36.207.199.sslip.io`,
+        description: 'Dev Server',
+      },
     ],
     beautify: true,
   },

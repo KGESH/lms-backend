@@ -63,6 +63,36 @@ export const createManyUsers = async (
   );
 };
 
+export const seedPgUsers = async (db: TransactionClient) => {
+  const userId = createUuid();
+  const userCreateDtos: IUserSignUp[] = [
+    {
+      userCreateParams: {
+        id: userId,
+        displayName: 'test user',
+        email: 'test@gmail.com',
+        password: 'testuser1234!@#$',
+        role: 'user',
+      },
+      accountCreateParams: {
+        providerId: null,
+        providerType: 'email',
+        userId,
+      },
+      infoCreateParams: {
+        name: 'test user',
+        birthDate: '2024-01-01',
+        connectingInformation: null,
+        duplicationInformation: null,
+        gender: 'male',
+        phoneNumber: '+821012345678',
+        userId,
+      },
+    },
+  ];
+  return await createManyUsers(userCreateDtos, db);
+};
+
 export const seedUsers = async (
   params: { count: number } | { count: number; role: IUser['role'] } = {
     count: 1,

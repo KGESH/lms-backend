@@ -1,14 +1,15 @@
 import {
   CanActivate,
   ExecutionContext,
+  HttpException,
   Injectable,
   Logger,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigsService } from '@src/configs/configs.service';
 import { LMS_API_HEADER } from '@src/v1/auth/auth.constant';
 import { Reflector } from '@nestjs/core';
 import { SKIP_API_GUARD_KEY } from '@src/core/decorators/skip-api-guard';
+import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
 
 @Injectable()
 export class ApiGuard implements CanActivate {
@@ -35,7 +36,7 @@ export class ApiGuard implements CanActivate {
       return true;
     }
 
-    throw new UnauthorizedException('Invalid LMS api secret');
+    throw new HttpException('Invalid LMS api secret', INVALID_LMS_SECRET);
   }
 
   private _getApiSecret(request: Request): string | null {
