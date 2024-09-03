@@ -24,6 +24,7 @@ import { ISessionWithUser } from '@src/v1/auth/session.interface';
 import { postCommentWithChildrenToDto } from '@src/shared/helpers/transofrm/post-comment';
 import { IErrorResponse } from '@src/shared/types/response';
 import { TypeGuardError } from 'typia';
+import { withDefaultPagination } from '@src/core/pagination';
 
 @Controller('v1/post/:postId/comment')
 export class PostCommentController {
@@ -56,15 +57,12 @@ export class PostCommentController {
   async getPostRootComments(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('postId') postId: Uuid,
-    @TypedQuery() query?: PostCommentQuery,
+    @TypedQuery() query: PostCommentQuery,
   ): Promise<PostCommentWithChildrenDto[]> {
     const comments = await this.postCommentService.findPostRootComments(
       { postId },
       {
-        parentPagination: {
-          ...DEFAULT_PAGINATION,
-          ...query,
-        },
+        parentPagination: withDefaultPagination(query),
         childrenPagination: {
           pageSize: DEFAULT_PAGINATION.pageSize,
           orderBy: 'asc',

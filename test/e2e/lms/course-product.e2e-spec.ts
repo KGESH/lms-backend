@@ -36,6 +36,36 @@ describe('CourseProductController (e2e)', () => {
     await app.close();
   });
 
+  describe('[Get course products]', () => {
+    it('should be get many course products success', async () => {
+      const SEED_PRODUCT_COUNT = 10;
+      await seedCourseProducts({ count: SEED_PRODUCT_COUNT }, drizzle.db);
+
+      const response = await CourseProductAPI.getCourseProducts(
+        {
+          host,
+          headers: { LmsSecret },
+        },
+        {
+          page: 1,
+          pageSize: 5,
+          orderBy: 'asc',
+        },
+      );
+      if (!response.success) {
+        const message = JSON.stringify(response.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      const { data: fetchedProducts, pagination, totalCount } = response.data;
+
+      expect(fetchedProducts.length).toEqual(5);
+      expect(pagination.pageSize).toEqual(5);
+      expect(pagination.page).toEqual(1);
+      expect(totalCount).toEqual(SEED_PRODUCT_COUNT);
+    });
+  });
+
   describe('[Get course product]', () => {
     it('should be get a course product success', async () => {
       const product = await createRandomCourseProduct(drizzle.db);
@@ -48,7 +78,8 @@ describe('CourseProductController (e2e)', () => {
         product.courseId,
       );
       if (!response.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(response.data, null, 4);
+        throw new Error(`assert - ${message}`);
       }
 
       const foundCourseProduct = response.data;

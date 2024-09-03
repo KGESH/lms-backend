@@ -20,7 +20,7 @@ export type OrderBaseDto = {
 
 export type OrderCourseDto = OrderBaseDto & {
   productType: Course;
-  product: CourseProductDto;
+  product: Omit<CourseProductDto, 'course'>;
 };
 
 export type OrderCoursePurchasedDto = Omit<OrderCourseDto, 'product'> & {

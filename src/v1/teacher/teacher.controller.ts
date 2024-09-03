@@ -7,6 +7,7 @@ import { TeacherDto, TeacherQuery } from '@src/v1/teacher/teacher.dto';
 import { teacherToDto } from '@src/shared/helpers/transofrm/teacher';
 import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
 import { ApiAuthHeaders } from '@src/v1/auth/auth.headers';
+import { withDefaultPagination } from '@src/core/pagination';
 
 @Controller('v1/teacher')
 export class TeacherController {
@@ -23,12 +24,11 @@ export class TeacherController {
   @SkipAuth()
   async getTeachers(
     @TypedHeaders() headers: ApiAuthHeaders,
-    @TypedQuery() query?: TeacherQuery,
+    @TypedQuery() query: TeacherQuery,
   ): Promise<TeacherDto[]> {
-    const teachers = await this.teacherService.findTeachers({
-      ...DEFAULT_PAGINATION,
-      ...query,
-    });
+    const teachers = await this.teacherService.findTeachers(
+      withDefaultPagination(query),
+    );
     return teachers.map(teacherToDto);
   }
 

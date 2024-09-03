@@ -20,6 +20,7 @@ import { IErrorResponse } from '@src/shared/types/response';
 import { TypeGuardError } from 'typia';
 import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
 import { Paginated } from '@src/shared/types/pagination';
+import { withDefaultPagination } from "@src/core/pagination";
 
 @Controller('v1/user')
 export class UserController {
@@ -53,14 +54,11 @@ export class UserController {
   @UseGuards(RolesGuard)
   async getUsers(
     @TypedHeaders() headers: AuthHeaders,
-    @TypedQuery() query?: UserQuery,
+    @TypedQuery() query: UserQuery,
   ): Promise<Paginated<UserWithoutPasswordDto[]>> {
     const { data: users, ...paginated } = await this.userService.findUsers(
       { ...query },
-      {
-        ...DEFAULT_PAGINATION,
-        ...query,
-      },
+      withDefaultPagination(query),
     );
 
     return {

@@ -16,6 +16,7 @@ import { Uuid } from '@src/shared/types/primitive';
 import { EbookReviewService } from '@src/v1/review/ebook-review/ebook-review.service';
 import { CreateEbookReviewDto } from '@src/v1/review/ebook-review/ebook-review.dto';
 import { ReviewReplyService } from '@src/v1/review/review-reply.service';
+import { withDefaultPagination } from "@src/core/pagination";
 
 @Controller('v1/review/ebook')
 export class EbookReviewController {
@@ -35,11 +36,11 @@ export class EbookReviewController {
   @SkipAuth()
   async getEbookReviews(
     @TypedHeaders() headers: ApiAuthHeaders,
-    @TypedQuery() query?: ReviewQuery,
+    @TypedQuery() query: ReviewQuery,
   ): Promise<ReviewWithRelationsDto[]> {
     const reviews = await this.reviewService.findManyReviews(
       { productType: 'ebook' },
-      { ...DEFAULT_PAGINATION, ...query },
+      withDefaultPagination(query),
     );
 
     return reviews.map(reviewToDto);
@@ -57,16 +58,13 @@ export class EbookReviewController {
   async getEbookReviewsByEbookId(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('ebookId') ebookId: Uuid,
-    @TypedQuery() query?: ReviewQuery,
+    @TypedQuery() query: ReviewQuery,
   ): Promise<ReviewWithRelationsDto[]> {
     const reviews = await this.ebookReviewService.findEbookReviewsByEbookId(
       {
         ebookId,
       },
-      {
-        ...DEFAULT_PAGINATION,
-        ...query,
-      },
+      withDefaultPagination(query),
     );
 
     return reviews.map(reviewToDto);

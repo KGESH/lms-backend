@@ -1,9 +1,10 @@
 import { ITeacherWithoutPassword } from '@src/v1/teacher/teacher.interface';
 import { TeacherDto } from '@src/v1/teacher/teacher.dto';
 import * as date from '@src/shared/utils/date';
+import * as typia from 'typia';
 
 export const teacherToDto = (teacher: ITeacherWithoutPassword): TeacherDto => {
-  return {
+  return typia.misc.clone<TeacherDto>({
     ...teacher,
     account: {
       ...teacher.account,
@@ -16,5 +17,5 @@ export const teacherToDto = (teacher: ITeacherWithoutPassword): TeacherDto => {
         ? date.toISOString(teacher.account.deletedAt)
         : null,
     },
-  };
+  });
 };

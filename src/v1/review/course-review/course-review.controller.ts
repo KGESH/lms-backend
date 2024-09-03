@@ -15,6 +15,7 @@ import { reviewToDto } from '@src/shared/helpers/transofrm/review';
 import { Uuid } from '@src/shared/types/primitive';
 import { CreateCourseReviewDto } from '@src/v1/review/course-review/course-review.dto';
 import { CourseReviewService } from '@src/v1/review/course-review/course-review.service';
+import { withDefaultPagination } from '@src/core/pagination';
 
 @Controller('v1/review/course')
 export class CourseReviewController {
@@ -33,11 +34,11 @@ export class CourseReviewController {
   @SkipAuth()
   async getCourseReviews(
     @TypedHeaders() headers: ApiAuthHeaders,
-    @TypedQuery() query?: ReviewQuery,
+    @TypedQuery() query: ReviewQuery,
   ): Promise<ReviewWithRelationsDto[]> {
     const reviews = await this.reviewService.findManyReviews(
       { productType: 'course' },
-      { ...DEFAULT_PAGINATION, ...query },
+      withDefaultPagination(query),
     );
 
     return reviews.map(reviewToDto);
@@ -55,16 +56,13 @@ export class CourseReviewController {
   async getCourseReviewsByCourseId(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
-    @TypedQuery() query?: ReviewQuery,
+    @TypedQuery() query: ReviewQuery,
   ): Promise<ReviewWithRelationsDto[]> {
     const reviews = await this.courseReviewService.findCourseReviewsByCourseId(
       {
         courseId,
       },
-      {
-        ...DEFAULT_PAGINATION,
-        ...query,
-      },
+      withDefaultPagination(query),
     );
 
     return reviews.map(reviewToDto);

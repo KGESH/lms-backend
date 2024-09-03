@@ -32,6 +32,7 @@ import {
   postToPostWithCommentsDto,
 } from '@src/shared/helpers/transofrm/post';
 import { Paginated } from '@src/shared/types/pagination';
+import { withDefaultPagination } from '@src/core/pagination';
 
 @Controller('v1/post')
 export class PostRelationsController {
@@ -70,10 +71,7 @@ export class PostRelationsController {
         {
           categoryId: query.categoryId,
         },
-        {
-          ...DEFAULT_PAGINATION,
-          ...query,
-        },
+        withDefaultPagination(query),
       );
 
     return {
@@ -107,15 +105,12 @@ export class PostRelationsController {
   async getPostById(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('id') id: Uuid,
-    @TypedQuery() query?: PostCommentQuery,
+    @TypedQuery() query: PostCommentQuery,
   ): Promise<PostWithCommentsDto | null> {
     const post = await this.postRelationsService.findPostWithComments(
       { id },
       {
-        commentPagination: {
-          ...DEFAULT_PAGINATION,
-          ...query,
-        },
+        commentPagination: withDefaultPagination(query),
       },
     );
 

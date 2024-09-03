@@ -24,6 +24,7 @@ import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
+import { withDefaultPagination } from '@src/core/pagination';
 
 @Controller('v1/course-category')
 export class CourseCategoryController {
@@ -53,21 +54,19 @@ export class CourseCategoryController {
   })
   async getRootCourseCategories(
     @TypedHeaders() headers: ApiAuthHeaders,
-    @TypedQuery() query?: CourseCategoryQuery,
+    @TypedQuery() query: CourseCategoryQuery,
   ): Promise<CourseCategoryWithChildrenDto[]> {
-    if (query?.withChildren) {
+    if (query.withChildren) {
       const rootsWithChildren =
-        await this.categoryService.getRootCategoriesWithChildren({
-          ...DEFAULT_PAGINATION,
-          ...query,
-        });
+        await this.categoryService.getRootCategoriesWithChildren(
+          withDefaultPagination(query),
+        );
       return rootsWithChildren;
     }
 
-    const roots = await this.categoryService.getRootCourseCategories({
-      ...DEFAULT_PAGINATION,
-      ...query,
-    });
+    const roots = await this.categoryService.getRootCourseCategories(
+      withDefaultPagination(query),
+    );
     return roots;
   }
 

@@ -1,0 +1,2 @@
+ALTER TABLE "users" ALTER COLUMN "emailVerified" SET DATA TYPE timestamp with time zone;--> statement-breakpoint
+ALTER TABLE "course_products" ADD COLUMN "created_at" timestamp with time zone DEFAULT now() NOT NULL;

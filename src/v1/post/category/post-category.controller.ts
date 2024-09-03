@@ -24,6 +24,7 @@ import { RolesGuard } from '@src/core/guards/roles.guard';
 import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
 import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '@src/shared/types/response';
+import { withDefaultPagination } from '@src/core/pagination';
 
 @Controller('v1/post-category')
 export class PostCategoryController {
@@ -51,19 +52,17 @@ export class PostCategoryController {
   })
   async getRootPostCategories(
     @TypedHeaders() headers: ApiAuthHeaders,
-    @TypedQuery() query?: PostCategoryQuery,
+    @TypedQuery() query: PostCategoryQuery,
   ): Promise<PostCategoryWithChildrenDto[]> {
-    if (query?.withChildren) {
-      return await this.postCategoryService.getRootPostCategoriesWithChildren({
-        ...DEFAULT_PAGINATION,
-        ...query,
-      });
+    if (query.withChildren) {
+      return await this.postCategoryService.getRootPostCategoriesWithChildren(
+        withDefaultPagination(query),
+      );
     }
 
-    return await this.postCategoryService.getRootPostCategories({
-      ...DEFAULT_PAGINATION,
-      ...query,
-    });
+    return await this.postCategoryService.getRootPostCategories(
+      withDefaultPagination(query),
+    );
   }
 
   /**

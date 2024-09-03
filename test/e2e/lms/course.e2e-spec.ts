@@ -85,7 +85,7 @@ describe('CourseController (e2e)', () => {
         typia.random<ITeacherSignUp>(),
         drizzle.db,
       );
-      const courseOne = await createCourse(
+      await createCourse(
         {
           categoryId: category.id,
           teacherId: teacher.id,
@@ -94,7 +94,7 @@ describe('CourseController (e2e)', () => {
         },
         drizzle.db,
       );
-      const courseTwo = await createCourse(
+      await createCourse(
         {
           categoryId: category.id,
           teacherId: teacher.id,
@@ -109,7 +109,12 @@ describe('CourseController (e2e)', () => {
           host,
           headers: { LmsSecret },
         },
-        {},
+        {
+          page: 1,
+          pageSize: 5,
+          // orderBy: 'desc',
+          // categoryId: category.id,
+        },
       );
 
       if (!response.success) {

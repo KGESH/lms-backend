@@ -16,6 +16,10 @@ export const courseToDto = (course: ICourse): CourseDto => {
 export const courseRelationsToDto = (
   courseWithRelations: ICourseWithRelations,
 ): CourseWithRelationsDto => {
+  console.log(
+    '[COURSE WITH RELATIONS]',
+    JSON.stringify(courseWithRelations, null, 4),
+  );
   return {
     ...courseWithRelations,
     createdAt: date.toISOString(courseWithRelations.createdAt),

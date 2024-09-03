@@ -1,5 +1,6 @@
 import { ISO8601, Uuid } from '@src/shared/types/primitive';
 import { Pagination } from '@src/shared/types/pagination';
+import { OptionalPick } from '@src/shared/types/optional';
 
 export type CourseDto = {
   id: Uuid;
@@ -19,4 +20,4 @@ export type CourseCreateDto = Pick<
 export type CourseUpdateDto = Omit<Partial<CourseCreateDto>, 'teacherId'>;
 
 export type CourseQuery = Partial<Pagination> &
-  Partial<Pick<CourseDto, 'categoryId'>>;
+  OptionalPick<CourseDto, 'categoryId'>;

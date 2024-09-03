@@ -1,4 +1,4 @@
-import { Controller, Logger, UseGuards } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { TypeGuardError } from 'typia';
 import {
@@ -24,11 +24,11 @@ import {
 } from '@src/shared/helpers/transofrm/course';
 import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
 import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
-import { DEFAULT_PAGINATION } from '@src/core/pagination.constant';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
 import { IErrorResponse } from '@src/shared/types/response';
 import { Paginated } from '@src/shared/types/pagination';
+import { withDefaultPagination } from '@src/core/pagination';
 
 @Controller('v1/course')
 export class CourseController {
@@ -53,17 +53,14 @@ export class CourseController {
   @SkipAuth()
   async getCourses(
     @TypedHeaders() headers: ApiAuthHeaders,
-    @TypedQuery() query?: CourseQuery,
+    @TypedQuery() query: CourseQuery,
   ): Promise<Paginated<CourseWithRelationsDto[]>> {
     const { data: courses, ...paginated } =
       await this.courseQueryService.findCoursesWithRelations(
         {
           ...query,
         },
-        {
-          ...DEFAULT_PAGINATION,
-          ...query,
-        },
+        withDefaultPagination(query),
       );
 
     return {

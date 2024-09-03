@@ -6,6 +6,7 @@ import { ICourse } from '@src/v1/course/course.interface';
 import { ICourseWithRelations } from '@src/v1/course/course-with-relations.interface';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
 import { OptionalPick } from '@src/shared/types/optional';
+import typia from 'typia';
 
 @Injectable()
 export class CourseQueryRepository {
@@ -68,17 +69,19 @@ export class CourseQueryRepository {
       .limit(pagination.pageSize);
 
     return {
-      data: courses.map((course) => ({
-        ...course,
-        teacher: {
-          id: course.teacherId,
-          userId: course.teacherUser.id,
-          account: course.teacherUser,
-        },
-        chapters: [],
-      })),
       pagination,
-      totalCount: courses[0].totalCount,
+      totalCount: courses[0]?.totalCount ?? 0,
+      data: typia.misc.clone<ICourseWithRelations[]>(
+        courses.map((course) => ({
+          ...course,
+          teacher: {
+            id: course.teacherId,
+            userId: course.teacherUser.id,
+            account: course.teacherUser,
+          },
+          chapters: [],
+        })),
+      ),
     };
   }
 

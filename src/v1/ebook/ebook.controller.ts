@@ -24,6 +24,7 @@ import { RolesGuard } from '@src/core/guards/roles.guard';
 import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '@src/shared/types/response';
 import { Uuid } from '@src/shared/types/primitive';
+import { withDefaultPagination } from '@src/core/pagination';
 
 @Controller('v1/ebook')
 export class EbookController {
@@ -50,12 +51,11 @@ export class EbookController {
   @SkipAuth()
   async getEbooks(
     @TypedHeaders() headers: ApiAuthHeaders,
-    @TypedQuery() query?: EbookQuery,
+    @TypedQuery() query: EbookQuery,
   ): Promise<EbookDto[]> {
-    const ebooks = await this.ebookQueryService.findEbooks({
-      ...DEFAULT_PAGINATION,
-      ...query,
-    });
+    const ebooks = await this.ebookQueryService.findEbooks(
+      withDefaultPagination(query),
+    );
 
     return ebooks.map(ebookToDto);
   }

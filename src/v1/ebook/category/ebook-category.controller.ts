@@ -24,6 +24,7 @@ import { RolesGuard } from '@src/core/guards/roles.guard';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
 import { EbookCategoryService } from '@src/v1/ebook/category/ebook-category.service';
+import { withDefaultPagination } from '@src/core/pagination';
 
 @Controller('v1/ebook/category')
 export class EbookCategoryController {
@@ -53,22 +54,20 @@ export class EbookCategoryController {
   })
   async getRootEbookCategories(
     @TypedHeaders() headers: ApiAuthHeaders,
-    @TypedQuery() query?: EbookCategoryQuery,
+    @TypedQuery() query: EbookCategoryQuery,
   ): Promise<EbookCategoryWithChildrenDto[]> {
     this.logger.verbose('[GET v1/ebook/category]');
-    if (query?.withChildren) {
+    if (query.withChildren) {
       const rootsWithChildren =
-        await this.ebookCategoryService.getRootCategoriesWithChildren({
-          ...DEFAULT_PAGINATION,
-          ...query,
-        });
+        await this.ebookCategoryService.getRootCategoriesWithChildren(
+          withDefaultPagination(query),
+        );
       return rootsWithChildren;
     }
 
-    const roots = await this.ebookCategoryService.getRootCategories({
-      ...DEFAULT_PAGINATION,
-      ...query,
-    });
+    const roots = await this.ebookCategoryService.getRootCategories(
+      withDefaultPagination(query),
+    );
     return roots;
   }
 
