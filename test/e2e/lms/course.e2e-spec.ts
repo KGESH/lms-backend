@@ -113,10 +113,11 @@ describe('CourseController (e2e)', () => {
       );
 
       if (!response.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(response.data, null, 4);
+        throw new Error(`assert - ${message}`);
       }
 
-      const courses = response.data;
+      const { data: courses, pagination, totalCount } = response.data;
       expect(
         courses.find((course) => course.title === 'course-one'),
       ).not.toBeNull();
