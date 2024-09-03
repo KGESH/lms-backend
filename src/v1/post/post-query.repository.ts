@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { IPost } from '@src/v1/post/post.interface';
-import { eq, desc, asc, countDistinct, and, isNull } from 'drizzle-orm';
+import { eq, desc, asc, countDistinct, and, isNull, sql } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
-import { Pagination } from '@src/shared/types/pagination';
+import { Paginated, Pagination } from '@src/shared/types/pagination';
 import {
   IPostRelations,
   IPostRelationsWithCommentCount,
@@ -54,7 +54,7 @@ export class PostQueryRepository {
   async findPostsByCategory(
     where: Pick<IPost, 'categoryId'>,
     pagination: Pagination,
-  ): Promise<IPostRelationsWithCommentCount[]> {
+  ): Promise<Paginated<IPostRelationsWithCommentCount[]>> {
     const latestSnapshotQuery = this.drizzle.db
       .select({
         id: dbSchema.postSnapshots.id,
@@ -75,6 +75,7 @@ export class PostQueryRepository {
         category: dbSchema.postCategories,
         snapshot: dbSchema.postSnapshots,
         author: dbSchema.users,
+        totalPostCount: sql<number>`count(*) over()`.mapWith(Number),
         likeCount: countDistinct(dbSchema.postLikes.id),
         commentCount: countDistinct(dbSchema.postComments.id),
       })
@@ -116,14 +117,18 @@ export class PostQueryRepository {
       .offset((pagination.page - 1) * pagination.pageSize)
       .limit(pagination.pageSize);
 
-    return posts.map((post) => ({
-      ...post,
-      snapshot: post.snapshot,
-      category: post.category,
-      likeCount: post.likeCount,
-      author: post.author,
-      commentCount: post.commentCount,
-    }));
+    return {
+      data: posts.map((post) => ({
+        ...post,
+        snapshot: post.snapshot,
+        category: post.category,
+        likeCount: post.likeCount,
+        author: post.author,
+        commentCount: post.commentCount,
+      })),
+      totalCount: posts[0].totalPostCount,
+      pagination,
+    };
   }
 
   async findPostWithRelations(

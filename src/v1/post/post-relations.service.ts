@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PostRepository } from '@src/v1/post/post.repository';
 import { IPost, IPostCreate } from '@src/v1/post/post.interface';
 import { PostQueryRepository } from '@src/v1/post/post-query.repository';
-import { Pagination } from '@src/shared/types/pagination';
+import { Paginated, Pagination } from '@src/shared/types/pagination';
 import { PostSnapshotRepository } from '@src/v1/post/post-snapshot.repository';
 import { IPostSnapshotCreate } from '@src/v1/post/post-snapshot.interface';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
@@ -33,7 +33,7 @@ export class PostRelationsService {
   async findPostsByCategory(
     where: Pick<IPost, 'categoryId'>,
     pagination: Pagination,
-  ): Promise<IPostRelationsWithCommentCount[]> {
+  ): Promise<Paginated<IPostRelationsWithCommentCount[]>> {
     const category = await this.postCategoryService.findPostCategoryOrThrow({
       id: where.categoryId,
     });

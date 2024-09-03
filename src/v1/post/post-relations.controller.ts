@@ -31,6 +31,7 @@ import {
   postToPostWithCommentCountDto,
   postToPostWithCommentsDto,
 } from '@src/shared/helpers/transofrm/post';
+import { Paginated } from '@src/shared/types/pagination';
 
 @Controller('v1/post')
 export class PostRelationsController {
@@ -63,7 +64,7 @@ export class PostRelationsController {
   async getPostsByCategory(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedQuery() query: PostQuery,
-  ): Promise<PostRelationsDto[]> {
+  ): Promise<Paginated<PostRelationsDto[]>> {
     const posts = await this.postRelationsService.findPostsByCategory(
       {
         categoryId: query.categoryId,
@@ -74,7 +75,10 @@ export class PostRelationsController {
       },
     );
 
-    return posts.map(postToPostWithCommentCountDto);
+    return {
+      ...posts,
+      data: posts.data.map(postToPostWithCommentCountDto),
+    };
   }
 
   /**
