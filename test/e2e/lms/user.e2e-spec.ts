@@ -80,6 +80,11 @@ describe('UserController (e2e)', () => {
       const admin = (
         await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
       )[0];
+      const STUDENT_USER_COUNT = 5;
+      const students = await seedUsers(
+        { count: STUDENT_USER_COUNT, role: 'user' },
+        drizzle.db,
+      );
 
       const response = await UserAPI.getUsers(
         {
@@ -90,9 +95,10 @@ describe('UserController (e2e)', () => {
           },
         },
         {
+          role: 'user',
           page: 1,
+          pageSize: 3,
           orderBy: 'asc',
-          pageSize: 10,
         },
       );
       if (!response.success) {
@@ -100,9 +106,12 @@ describe('UserController (e2e)', () => {
         throw new Error(`assert - ${message}`);
       }
 
-      const users = response.data;
+      const { data: users, pagination, totalCount } = response.data;
 
-      expect(users.length).toEqual(1);
+      expect(users.length).toEqual(3);
+      expect(pagination.page).toEqual(1);
+      expect(pagination.pageSize).toEqual(3);
+      expect(totalCount).toEqual(STUDENT_USER_COUNT);
     });
   });
 });
