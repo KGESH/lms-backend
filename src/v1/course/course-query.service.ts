@@ -3,13 +3,14 @@ import { ICourse } from '@src/v1/course/course.interface';
 import { CourseQueryRepository } from '@src/v1/course/course-query.repository';
 import { ICourseWithRelations } from '@src/v1/course/course-with-relations.interface';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
+import { OptionalPick } from '@src/shared/types/optional';
 
 @Injectable()
 export class CourseQueryService {
   constructor(private readonly courseQueryRepository: CourseQueryRepository) {}
 
   async findCoursesWithRelations(
-    where: Partial<Pick<ICourse, 'categoryId'>>,
+    where: OptionalPick<ICourse, 'categoryId'>,
     pagination: Pagination,
   ): Promise<Paginated<ICourseWithRelations[]>> {
     return await this.courseQueryRepository.findManyCoursesWithRelations(

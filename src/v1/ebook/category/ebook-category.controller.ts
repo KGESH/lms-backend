@@ -56,7 +56,6 @@ export class EbookCategoryController {
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedQuery() query: EbookCategoryQuery,
   ): Promise<EbookCategoryWithChildrenDto[]> {
-    this.logger.verbose('[GET v1/ebook/category]');
     if (query.withChildren) {
       const rootsWithChildren =
         await this.ebookCategoryService.getRootCategoriesWithChildren(
@@ -96,7 +95,6 @@ export class EbookCategoryController {
     @TypedParam('id') id: Uuid,
     @TypedQuery() query?: EbookCategoryWithChildrenQuery,
   ): Promise<EbookCategoryWithChildrenDto | null> {
-    this.logger.verbose('[GET v1/ebook/category/:id]');
     if (query?.withChildren) {
       const categoryWithChildren =
         await this.ebookCategoryService.findEbookCategoryWithChildren({ id });

@@ -45,7 +45,7 @@ export class CourseQueryRepository {
       .from(dbSchema.courses)
       .where(
         where.categoryId
-          ? eq(dbSchema.courses.categoryId, where!.categoryId)
+          ? eq(dbSchema.courses.categoryId, where.categoryId)
           : undefined,
       )
       .innerJoin(

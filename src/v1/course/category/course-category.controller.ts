@@ -93,10 +93,9 @@ export class CourseCategoryController {
   async getCourseCategory(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('id') id: Uuid,
-    @TypedQuery() query?: CourseCategoryWithChildrenQuery,
+    @TypedQuery() query: CourseCategoryWithChildrenQuery,
   ): Promise<CourseCategoryWithChildrenDto | null> {
-    this.logger.verbose('[GET v1/course/category/:id]');
-    if (query?.withChildren) {
+    if (query.withChildren) {
       const categoryWithChildren =
         await this.categoryService.findCourseCategoryWithChildren({ id });
       return categoryWithChildren;
