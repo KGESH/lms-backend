@@ -13,7 +13,10 @@ export const users = pgTable('users', {
   displayName: text('display_name').notNull(),
   email: text('email').unique().notNull(),
   password: text('password'),
-  emailVerified: date('emailVerified'),
+  emailVerified: timestamp('emailVerified', {
+    mode: 'date',
+    withTimezone: true,
+  }),
   role: userRole('role').notNull().default('user'),
   image: text('image'),
   createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })

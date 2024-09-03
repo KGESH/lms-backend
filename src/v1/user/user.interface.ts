@@ -13,7 +13,7 @@ export type IUser = {
   id: Uuid;
   displayName: string;
   email: EMail;
-  emailVerified: string | null;
+  emailVerified: Date | null;
   password: string | null;
   role: UserRole;
   image: string | null;

@@ -7,6 +7,9 @@ export const teacherToDto = (teacher: ITeacherWithoutPassword): TeacherDto => {
     ...teacher,
     account: {
       ...teacher.account,
+      emailVerified: teacher.account.emailVerified
+        ? date.toISOString(teacher.account.emailVerified)
+        : null,
       createdAt: date.toISOString(teacher.account.createdAt),
       updatedAt: date.toISOString(teacher.account.updatedAt),
       deletedAt: teacher.account.deletedAt

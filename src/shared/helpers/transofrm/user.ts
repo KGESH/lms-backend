@@ -7,6 +7,9 @@ export const userToDto = (
 ): UserWithoutPasswordDto => {
   return {
     ...user,
+    emailVerified: user.emailVerified
+      ? date.toISOString(user.emailVerified)
+      : null,
     createdAt: date.toISOString(user.createdAt),
     updatedAt: date.toISOString(user.updatedAt),
     deletedAt: user.deletedAt ? date.toISOString(user.deletedAt) : null,

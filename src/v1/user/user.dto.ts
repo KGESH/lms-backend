@@ -13,7 +13,7 @@ export type UserDto = {
   id: Uuid;
   displayName: string;
   email: EMail;
-  emailVerified: string | null;
+  emailVerified: ISO8601 | null;
   password: string | null;
   role: UserRole;
   image: string | null;

@@ -25,7 +25,7 @@ export class AuthAdminService {
       ...params,
       userCreateParams: {
         ...params.userCreateParams,
-        emailVerified: date.now('iso'),
+        emailVerified: date.now('date'),
       },
     });
   }
