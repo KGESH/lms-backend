@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from '@src/v1/user/user.repository';
 import { IUser, IUserUpdate, IUserWithoutPassword } from './user.interface';
-import { Pagination } from '@src/shared/types/pagination';
+import { Paginated, Pagination } from '@src/shared/types/pagination';
 import * as typia from 'typia';
 import { IUserSignUp } from '@src/v1/auth/auth.interface';
 import { UserInfoRepository } from '@src/v1/user/user-info.repository';
@@ -9,6 +9,7 @@ import { UserAccountRepository } from '@src/v1/user/user-account.repository';
 import { UserQueryRepository } from '@src/v1/user/user-query.repository';
 import { createUuid } from '@src/shared/utils/uuid';
 import { TransactionClient } from '@src/infra/db/drizzle.types';
+import { OptionalPick } from '@src/shared/types/optional';
 
 @Injectable()
 export class UserService {
@@ -20,14 +21,19 @@ export class UserService {
   ) {}
 
   async findUsers(
-    where: Partial<Pick<IUser, 'role'>>,
+    where: OptionalPick<IUser, 'role'>,
     pagination: Pagination,
-  ): Promise<IUserWithoutPassword[]> {
+  ): Promise<Paginated<IUserWithoutPassword[]>> {
     const users = await this.userQueryRepository.findManyUsers(
       where,
       pagination,
     );
-    return users.map((user) => typia.misc.clone<IUserWithoutPassword>(user));
+    return {
+      ...users,
+      data: users.data.map((user) =>
+        typia.misc.clone<IUserWithoutPassword>(user),
+      ),
+    };
   }
 
   async findUserById(

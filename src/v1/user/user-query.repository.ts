@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { asc, desc, eq, sql } from 'drizzle-orm';
 import { IUser } from '@src/v1/user/user.interface';
 import { dbSchema } from '@src/infra/db/schema';
-import { Pagination } from '@src/shared/types/pagination';
+import { Paginated, Pagination } from '@src/shared/types/pagination';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { OptionalPick } from '@src/shared/types/optional';
 
 @Injectable()
 export class UserQueryRepository {
@@ -44,17 +45,37 @@ export class UserQueryRepository {
   }
 
   async findManyUsers(
-    where: Partial<Pick<IUser, 'role'>>,
+    where: OptionalPick<IUser, 'role'>,
     pagination: Pagination,
-  ): Promise<IUser[]> {
-    return await this.drizzle.db.query.users.findMany({
-      where: where.role ? eq(dbSchema.users.role, where.role) : undefined,
-      orderBy: (user, { asc, desc }) =>
+  ): Promise<Paginated<IUser[]>> {
+    const users = await this.drizzle.db
+      .select({
+        id: dbSchema.users.id,
+        displayName: dbSchema.users.displayName,
+        email: dbSchema.users.email,
+        password: dbSchema.users.password,
+        emailVerified: dbSchema.users.emailVerified,
+        role: dbSchema.users.role,
+        image: dbSchema.users.image,
+        createdAt: dbSchema.users.createdAt,
+        updatedAt: dbSchema.users.updatedAt,
+        deletedAt: dbSchema.users.deletedAt,
+        totalUserCount: sql<number>`count(*) over()`.mapWith(Number),
+      })
+      .from(dbSchema.users)
+      .where(where.role ? eq(dbSchema.users.role, where.role) : undefined)
+      .orderBy(
         pagination.orderBy === 'asc'
-          ? asc(user.createdAt)
-          : desc(user.createdAt),
-      limit: pagination.pageSize,
-      offset: (pagination.page - 1) * pagination.pageSize,
-    });
+          ? asc(dbSchema.users.createdAt)
+          : desc(dbSchema.users.createdAt),
+      )
+      .offset((pagination.page - 1) * pagination.pageSize)
+      .limit(pagination.pageSize);
+
+    return {
+      data: users,
+      pagination,
+      totalCount: users[0].totalUserCount,
+    };
   }
 }

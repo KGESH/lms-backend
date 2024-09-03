@@ -19,6 +19,7 @@ import { ISessionWithUser } from '@src/v1/auth/session.interface';
 import { IErrorResponse } from '@src/shared/types/response';
 import { TypeGuardError } from 'typia';
 import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
+import { Paginated } from '@src/shared/types/pagination';
 
 @Controller('v1/user')
 export class UserController {
@@ -53,7 +54,7 @@ export class UserController {
   async getUsers(
     @TypedHeaders() headers: AuthHeaders,
     @TypedQuery() query?: UserQuery,
-  ): Promise<UserWithoutPasswordDto[]> {
+  ): Promise<Paginated<UserWithoutPasswordDto[]>> {
     const users = await this.userService.findUsers(
       { ...query },
       {
@@ -61,7 +62,11 @@ export class UserController {
         ...query,
       },
     );
-    return users.map(userToDto);
+
+    return {
+      ...users,
+      data: users.data.map(userToDto),
+    };
   }
 
   /**
