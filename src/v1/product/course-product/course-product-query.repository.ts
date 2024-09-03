@@ -1,22 +1,142 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import * as typia from 'typia';
 import { dbSchema } from '@src/infra/db/schema';
-import { desc, eq, isNull } from 'drizzle-orm';
+import { asc, desc, eq, isNull, sql } from 'drizzle-orm';
 import { DiscountValue, Price } from '@src/shared/types/primitive';
 import { ICourseProduct } from '@src/v1/product/course-product/course-product.interface';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import {
   ICourseProductWithLastSnapshot,
+  ICourseProductWithPricing,
   ICourseProductWithRelations,
 } from '@src/v1/product/course-product/course-product-relations.interface';
 import { IProductSnapshotPricing } from '@src/v1/product/common/snapshot/pricing/product-snapshot-pricing.interface';
 import { IProductSnapshotContent } from '@src/v1/product/common/snapshot/content/product-snapshot-content.interface';
 import { IProductSnapshotAnnouncement } from '@src/v1/product/common/snapshot/announcement/product-snapshot-announcement.interface';
 import { IProductSnapshotRefundPolicy } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
+import { Paginated, Pagination } from '@src/shared/types/pagination';
 
 @Injectable()
 export class CourseProductQueryRepository {
   constructor(private readonly drizzle: DrizzleService) {}
+
+  async findCourseProductsWithRelations(
+    // orderByColumn  Todo: Impl
+    pagination: Pagination,
+  ): Promise<Paginated<ICourseProductWithPricing[]>> {
+    const productLatestSnapshotQuery = this.drizzle.db
+      .select({
+        id: dbSchema.courseProductSnapshots.id,
+      })
+      .from(dbSchema.courseProductSnapshots)
+      .where(
+        eq(
+          dbSchema.courseProductSnapshots.productId,
+          dbSchema.courseProducts.id,
+        ),
+      )
+      .orderBy(desc(dbSchema.courseProductSnapshots.createdAt))
+      .limit(1);
+
+    const products = await this.drizzle.db
+      .select({
+        id: dbSchema.courseProducts.id,
+        courseId: dbSchema.courseProducts.courseId,
+        course: dbSchema.courses,
+        courseCategory: dbSchema.courseCategories,
+        teacher: dbSchema.teachers,
+        teacherUser: dbSchema.users,
+        snapshot: dbSchema.courseProductSnapshots,
+        pricing: dbSchema.courseProductSnapshotPricing,
+        discount: dbSchema.courseProductSnapshotDiscounts,
+        totalCount: sql<number>`count(*) over()`.mapWith(Number),
+      })
+      .from(dbSchema.courseProducts)
+      .innerJoin(
+        dbSchema.courses,
+        eq(dbSchema.courses.id, dbSchema.courseProducts.courseId),
+      )
+      .innerJoin(
+        dbSchema.courseCategories,
+        eq(dbSchema.courseCategories.id, dbSchema.courses.categoryId),
+      )
+      .innerJoin(
+        dbSchema.teachers,
+        eq(dbSchema.teachers.id, dbSchema.courses.teacherId),
+      )
+      .innerJoin(
+        dbSchema.users,
+        eq(dbSchema.users.id, dbSchema.teachers.userId),
+      )
+      .innerJoin(
+        dbSchema.courseProductSnapshots,
+        eq(dbSchema.courseProductSnapshots.id, productLatestSnapshotQuery),
+      )
+      // .innerJoin(
+      //   dbSchema.courseProductSnapshotAnnouncements,
+      //   eq(
+      //     dbSchema.courseProductSnapshotAnnouncements.productSnapshotId,
+      //     dbSchema.courseProductSnapshots.id,
+      //   ),
+      // )
+      // .innerJoin(
+      //   dbSchema.courseProductSnapshotRefundPolicies,
+      //   eq(
+      //     dbSchema.courseProductSnapshotRefundPolicies.productSnapshotId,
+      //     dbSchema.courseProductSnapshots.id,
+      //   ),
+      // )
+      // .innerJoin(
+      //   dbSchema.courseProductSnapshotContents,
+      //   eq(
+      //     dbSchema.courseProductSnapshotContents.productSnapshotId,
+      //     dbSchema.courseProductSnapshots.id,
+      //   ),
+      // )
+      .innerJoin(
+        dbSchema.courseProductSnapshotPricing,
+        eq(
+          dbSchema.courseProductSnapshotPricing.productSnapshotId,
+          dbSchema.courseProductSnapshots.id,
+        ),
+      )
+      .leftJoin(
+        dbSchema.courseProductSnapshotDiscounts,
+        eq(
+          dbSchema.courseProductSnapshotDiscounts.productSnapshotId,
+          dbSchema.courseProductSnapshots.id,
+        ),
+      )
+      .orderBy(
+        pagination.orderBy === 'asc'
+          ? asc(dbSchema.courseProducts.createdAt)
+          : desc(dbSchema.courseProducts.createdAt),
+      )
+      .offset((pagination.page - 1) * pagination.pageSize)
+      .limit(pagination.pageSize);
+
+    return typia.assert<Paginated<ICourseProductWithPricing[]>>({
+      pagination,
+      totalCount: products[0]?.totalCount ?? 0,
+      data: products.map((product) => ({
+        ...product,
+        course: {
+          ...product.course,
+          category: product.courseCategory,
+          teacher: {
+            ...product.teacher,
+            account: product.teacherUser,
+          },
+          chapters: [],
+        },
+        lastSnapshot: {
+          ...product.snapshot,
+          pricing: product.pricing,
+          discount: product.discount ?? null,
+        },
+      })),
+    });
+  }
 
   async findCourseProductWithRelations(
     where: Pick<ICourseProduct, 'courseId'>,

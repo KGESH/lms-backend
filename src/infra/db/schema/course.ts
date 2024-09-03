@@ -70,6 +70,9 @@ export const lessonContents = pgTable('lesson_contents', {
 export const courseProducts = pgTable('course_products', {
   id: uuid('id').primaryKey().defaultRandom(),
   courseId: uuid('course_id').notNull(),
+  createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });
 
 export const courseProductSnapshots = pgTable('course_product_snapshots', {

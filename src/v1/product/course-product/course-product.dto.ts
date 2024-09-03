@@ -4,12 +4,15 @@ import { ProductSnapshotPricingDto } from '@src/v1/product/common/snapshot/prici
 import { ProductSnapshotContentDto } from '@src/v1/product/common/snapshot/content/product-snapshot-content.dto';
 import { ProductSnapshotAnnouncementDto } from '@src/v1/product/common/snapshot/announcement/product-snapshot-announcement.dto';
 import { ProductSnapshotRefundPolicyDto } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.dto';
+import { Pagination } from '@src/shared/types/pagination';
+import { CourseWithRelationsDto } from '@src/v1/course/course-with-relations.dto';
 
 export type CourseProductDto = {
   courseId: Uuid;
   snapshotId: Uuid;
   title: string;
   description: string | null;
+  course: CourseWithRelationsDto;
   content: ProductSnapshotContentDto;
   announcement: ProductSnapshotAnnouncementDto;
   refundPolicy: ProductSnapshotRefundPolicyDto;
@@ -35,3 +38,5 @@ export type CreateCourseProductDto = Pick<
 };
 
 export type UpdateCourseProductDto = Partial<CreateCourseProductDto>;
+
+export type CourseProductQuery = Partial<Pagination>;

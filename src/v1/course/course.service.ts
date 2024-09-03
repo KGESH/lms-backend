@@ -8,6 +8,7 @@ import {
   ICourseUpdate,
 } from '@src/v1/course/course.interface';
 import { CourseCategoryService } from '@src/v1/course/category/course-category.service';
+import { CourseQueryRepository } from '@src/v1/course/course-query.repository';
 
 @Injectable()
 export class CourseService {
@@ -15,6 +16,7 @@ export class CourseService {
     private readonly courseCategoryService: CourseCategoryService,
     private readonly teacherService: TeacherService,
     private readonly courseRepository: CourseRepository,
+    private readonly courseQueryRepository: CourseQueryRepository,
   ) {}
 
   async createCourse(
@@ -39,7 +41,7 @@ export class CourseService {
     params: ICourseUpdate,
     tx?: TransactionClient,
   ): Promise<ICourse> {
-    const exist = await this.courseRepository.findCourse({ id: where.id });
+    const exist = await this.courseQueryRepository.findCourse({ id: where.id });
 
     if (!exist) {
       throw new NotFoundException('Course not found');
@@ -52,7 +54,7 @@ export class CourseService {
     where: Pick<ICourse, 'id'>,
     tx?: TransactionClient,
   ): Promise<ICourse> {
-    const exist = await this.courseRepository.findCourse({ id: where.id });
+    const exist = await this.courseQueryRepository.findCourse({ id: where.id });
 
     if (!exist) {
       throw new NotFoundException('Course not found');

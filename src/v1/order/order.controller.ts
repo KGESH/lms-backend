@@ -21,6 +21,7 @@ import { RolesGuard } from '@src/core/guards/roles.guard';
 import { EbookOrderPurchaseDto } from '@src/v1/order/ebook/ebook-order-purchase.dto';
 import { EbookOrderPurchaseService } from '@src/v1/order/ebook/ebook-order-purchase.service';
 import * as typia from 'typia';
+import { courseRelationsToDto } from '@src/shared/helpers/transofrm/course';
 
 @Controller('v1/order')
 export class OrderController {
@@ -227,6 +228,7 @@ export class OrderController {
         deletedAt: courseProduct.lastSnapshot.deletedAt
           ? toISOString(courseProduct.lastSnapshot.deletedAt)
           : null,
+        course: courseRelationsToDto(courseProduct.course),
       },
     };
   }

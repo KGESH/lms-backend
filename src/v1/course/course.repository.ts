@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
@@ -7,50 +7,10 @@ import {
   ICourseCreate,
   ICourseUpdate,
 } from '@src/v1/course/course.interface';
-import { Pagination } from '@src/shared/types/pagination';
 
 @Injectable()
 export class CourseRepository {
   constructor(private readonly drizzle: DrizzleService) {}
-
-  async findCourse(where: Pick<ICourse, 'id'>): Promise<ICourse | null> {
-    const course = await this.drizzle.db.query.courses.findFirst({
-      where: eq(dbSchema.courses.id, where.id),
-    });
-
-    if (!course) {
-      return null;
-    }
-
-    return course;
-  }
-
-  async findCourseOrThrow(where: Pick<ICourse, 'id'>): Promise<ICourse> {
-    const course = await this.findCourse(where);
-
-    if (!course) {
-      throw new NotFoundException('Course not found');
-    }
-
-    return course;
-  }
-
-  async findManyCourses(
-    params: Pagination & Partial<Pick<ICourse, 'categoryId'>>,
-  ): Promise<ICourse[]> {
-    const { categoryId, ...pagination } = params;
-    return await this.drizzle.db.query.courses.findMany({
-      where: categoryId
-        ? eq(dbSchema.courses.categoryId, categoryId)
-        : undefined,
-      orderBy: (course, { asc, desc }) =>
-        pagination.orderBy === 'desc'
-          ? desc(course.createdAt)
-          : asc(course.createdAt),
-      limit: pagination.pageSize,
-      offset: (pagination.page - 1) * pagination.pageSize,
-    });
-  }
 
   async createCourse(
     params: ICourseCreate,

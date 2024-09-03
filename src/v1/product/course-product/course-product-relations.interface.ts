@@ -12,6 +12,14 @@ export type ICourseProductWithLastSnapshot = ICourseProduct & {
   lastSnapshot: IProductSnapshot | null;
 };
 
+export type ICourseProductWithPricing = ICourseProduct & {
+  course: ICourseWithRelations;
+  lastSnapshot: IProductSnapshot & {
+    pricing: IProductSnapshotPricing;
+    discount: IProductSnapshotDiscount | null;
+  };
+};
+
 export type ICourseProductWithRelations = ICourseProduct & {
   course: ICourseWithRelations;
   lastSnapshot:

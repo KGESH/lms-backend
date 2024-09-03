@@ -14,6 +14,7 @@ import { IProductSnapshotPricingCreate } from '@src/v1/product/common/snapshot/p
 import { IProductSnapshotDiscountCreate } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
 import {
   ICourseProductWithLastSnapshot,
+  ICourseProductWithPricing,
   ICourseProductWithRelations,
 } from '@src/v1/product/course-product/course-product-relations.interface';
 import { NonNullableInfer } from '@src/shared/types/non-nullable-infer';
@@ -25,10 +26,13 @@ import { CourseProductSnapshotRefundPolicyRepository } from '@src/v1/product/cou
 import { IProductSnapshotAnnouncementCreate } from '@src/v1/product/common/snapshot/announcement/product-snapshot-announcement.interface';
 import { IProductSnapshotRefundPolicyCreate } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
 import { createUuid } from '@src/shared/utils/uuid';
+import { Paginated, Pagination } from '@src/shared/types/pagination';
+import { CourseQueryService } from '@src/v1/course/course-query.service';
 
 @Injectable()
 export class CourseProductService {
   constructor(
+    private readonly courseQueryService: CourseQueryService,
     private readonly courseProductRepository: CourseProductRepository,
     private readonly courseProductQueryRepository: CourseProductQueryRepository,
     private readonly courseProductSnapshotRepository: CourseProductSnapshotRepository,
@@ -39,6 +43,14 @@ export class CourseProductService {
     private readonly courseProductSnapshotRefundPolicyRepository: CourseProductSnapshotRefundPolicyRepository,
     private readonly drizzle: DrizzleService,
   ) {}
+
+  async findCourseProductsWithPricing(
+    pagination: Pagination,
+  ): Promise<Paginated<ICourseProductWithPricing[]>> {
+    return await this.courseProductQueryRepository.findCourseProductsWithRelations(
+      pagination,
+    );
+  }
 
   async findCourseProductWithRelations(
     where: Pick<ICourseProduct, 'courseId'>,
@@ -116,10 +128,14 @@ export class CourseProductService {
       'productSnapshotId'
     > | null;
   }): Promise<NonNullableInfer<ICourseProductWithRelations>> {
+    const course = await this.courseQueryService.findCourseByIdOrThrow({
+      id: courseProductCreateParams.courseId,
+    });
+
     const existProduct =
       await this.courseProductQueryRepository.findCourseProductWithLastSnapshot(
         {
-          courseId: courseProductCreateParams.courseId,
+          courseId: course.id,
         },
       );
 
@@ -196,7 +212,7 @@ export class CourseProductService {
     const createdCourseProduct =
       await this.courseProductQueryRepository.findCourseProductWithLastSnapshotOrThrow(
         {
-          courseId: courseProductCreateParams.courseId,
+          courseId: course.id,
         },
       );
 

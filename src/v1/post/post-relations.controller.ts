@@ -65,19 +65,20 @@ export class PostRelationsController {
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedQuery() query: PostQuery,
   ): Promise<Paginated<PostRelationsDto[]>> {
-    const posts = await this.postRelationsService.findPostsByCategory(
-      {
-        categoryId: query.categoryId,
-      },
-      {
-        ...DEFAULT_PAGINATION,
-        ...query,
-      },
-    );
+    const { data: posts, ...paginated } =
+      await this.postRelationsService.findPostsByCategory(
+        {
+          categoryId: query.categoryId,
+        },
+        {
+          ...DEFAULT_PAGINATION,
+          ...query,
+        },
+      );
 
     return {
-      ...posts,
-      data: posts.data.map(postToPostWithCommentCountDto),
+      ...paginated,
+      data: posts.map(postToPostWithCommentCountDto),
     };
   }
 

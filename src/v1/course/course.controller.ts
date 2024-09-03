@@ -28,11 +28,10 @@ import { DEFAULT_PAGINATION } from '@src/core/pagination.constant';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
 import { IErrorResponse } from '@src/shared/types/response';
+import { Paginated } from '@src/shared/types/pagination';
 
 @Controller('v1/course')
 export class CourseController {
-  private readonly logger = new Logger(CourseController.name);
-
   constructor(
     private readonly courseService: CourseService,
     private readonly courseQueryService: CourseQueryService,
@@ -55,18 +54,22 @@ export class CourseController {
   async getCourses(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedQuery() query?: CourseQuery,
-  ): Promise<CourseWithRelationsDto[]> {
-    const courses = await this.courseQueryService.findCoursesWithRelations(
-      {
-        ...query,
-      },
-      {
-        ...DEFAULT_PAGINATION,
-        ...query,
-      },
-    );
+  ): Promise<Paginated<CourseWithRelationsDto[]>> {
+    const { data: courses, ...paginated } =
+      await this.courseQueryService.findCoursesWithRelations(
+        {
+          ...query,
+        },
+        {
+          ...DEFAULT_PAGINATION,
+          ...query,
+        },
+      );
 
-    return courses.map(courseRelationsToDto);
+    return {
+      ...paginated,
+      data: courses.map(courseRelationsToDto),
+    };
   }
 
   /**

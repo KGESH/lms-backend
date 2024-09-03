@@ -1,27 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { CourseRepository } from '@src/v1/course/course.repository';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ICourse } from '@src/v1/course/course.interface';
 import { CourseQueryRepository } from '@src/v1/course/course-query.repository';
 import { ICourseWithRelations } from '@src/v1/course/course-with-relations.interface';
-import { Pagination } from '@src/shared/types/pagination';
+import { Paginated, Pagination } from '@src/shared/types/pagination';
 
 @Injectable()
 export class CourseQueryService {
-  constructor(
-    private readonly courseRepository: CourseRepository,
-    private readonly courseQueryRepository: CourseQueryRepository,
-  ) {}
-
-  async findCourses(
-    params: Pagination & Partial<Pick<ICourse, 'categoryId'>>,
-  ): Promise<ICourse[]> {
-    return await this.courseRepository.findManyCourses(params);
-  }
+  constructor(private readonly courseQueryRepository: CourseQueryRepository) {}
 
   async findCoursesWithRelations(
     where: Partial<Pick<ICourse, 'categoryId'>>,
     pagination: Pagination,
-  ): Promise<ICourseWithRelations[]> {
+  ): Promise<Paginated<ICourseWithRelations[]>> {
     return await this.courseQueryRepository.findManyCoursesWithRelations(
       where,
       pagination,
@@ -29,7 +19,17 @@ export class CourseQueryService {
   }
 
   async findCourseById(where: Pick<ICourse, 'id'>): Promise<ICourse | null> {
-    return await this.courseRepository.findCourse(where);
+    return await this.courseQueryRepository.findCourse(where);
+  }
+
+  async findCourseByIdOrThrow(where: Pick<ICourse, 'id'>): Promise<ICourse> {
+    const course = await this.findCourseById(where);
+
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+
+    return course;
   }
 
   async findCourseWithRelations(
