@@ -18,19 +18,6 @@ import { IProductSnapshotRefundPolicy } from '@src/v1/product/common/snapshot/re
 export class CourseProductQueryRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async findCourseProducts() {
-    const products = await this.drizzle.db.query.courseProducts.findMany({
-      with: {
-        snapshots: true,
-        course: {
-          with: {
-            teacher: true,
-          },
-        },
-      },
-    });
-  }
-
   async findCourseProductWithRelations(
     where: Pick<ICourseProduct, 'courseId'>,
   ): Promise<ICourseProductWithRelations | null> {
