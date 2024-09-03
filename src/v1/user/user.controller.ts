@@ -55,7 +55,7 @@ export class UserController {
     @TypedHeaders() headers: AuthHeaders,
     @TypedQuery() query?: UserQuery,
   ): Promise<Paginated<UserWithoutPasswordDto[]>> {
-    const users = await this.userService.findUsers(
+    const { data: users, ...paginated } = await this.userService.findUsers(
       { ...query },
       {
         ...DEFAULT_PAGINATION,
@@ -64,8 +64,8 @@ export class UserController {
     );
 
     return {
-      ...users,
-      data: users.data.map(userToDto),
+      ...paginated,
+      data: users.map(userToDto),
     };
   }
 
