@@ -127,7 +127,7 @@ describe('AuthController (e2e)', () => {
       const users = await seedUsers({ count: 1, role: 'admin' }, drizzle.db);
       const { user, userSession } = users[0];
 
-      const response = await AuthAPI.role.updateUserRole(
+      const response = await AuthAPI.admin.role.updateUserRole(
         {
           host,
           headers: { LmsSecret, UserSessionId: userSession.id },
