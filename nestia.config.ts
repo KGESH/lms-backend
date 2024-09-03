@@ -19,7 +19,7 @@ const NESTIA_CONFIG: INestiaConfig = {
     return app;
   },
   output: 'src/api',
-  // clone: true,
+  clone: true,
   assert: true,
   simulate: true,
   propagate: true,

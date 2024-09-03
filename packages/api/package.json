@@ -1,6 +1,6 @@
 {
   "name": "@kgesh/lms",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "갈길이 머니 LMS 서비스 API",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -35,7 +35,7 @@
     "typescript": "^5.5.2"
   },
   "dependencies": {
-    "@nestia/fetcher": "^3.11.1",
-    "typia": "^6.8.0"
+    "@nestia/fetcher": "^3.12.1",
+    "typia": "^6.9.0"
   }
 }

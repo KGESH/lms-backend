@@ -9,10 +9,10 @@ importers:
   .:
     dependencies:
       '@nestia/fetcher':
-        specifier: ^3.11.1
-        version: 3.11.2(typescript@5.5.2)
+        specifier: ^3.12.1
+        version: 3.12.1(typescript@5.5.2)
       typia:
-        specifier: ^6.8.0
+        specifier: ^6.9.0
         version: 6.9.0(typescript@5.5.2)
     devDependencies:
       rimraf:
@@ -31,8 +31,8 @@ packages:
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
     engines: {node: '>=12'}
 
-  '@nestia/fetcher@3.11.2':
-    resolution: {integrity: sha512-vzz0gA98bn9qFmJ1A3PJOlwOgf0KzoS2hPby2pT3huvwqnj4ZizWYcce4OSbI0vpARPJEnNhBSLIvmm9Flo3jg==}
+  '@nestia/fetcher@3.12.1':
+    resolution: {integrity: sha512-aAqww6ruoQYAUyKarE2Qq+UabB5rhRCvx4/yzJiNCbesj1fuzNfn7S8XVUVnqW7q/Mn/+bLds/SPSUPmXe1aeg==}
     peerDependencies:
       typescript: '>= 4.8.0'
 
@@ -442,7 +442,7 @@ snapshots:
       wrap-ansi: 8.1.0
       wrap-ansi-cjs: wrap-ansi@7.0.0
 
-  '@nestia/fetcher@3.11.2(typescript@5.5.2)':
+  '@nestia/fetcher@3.12.1(typescript@5.5.2)':
     dependencies:
       '@samchon/openapi': 0.4.6
       typescript: 5.5.2
