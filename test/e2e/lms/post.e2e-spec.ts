@@ -85,7 +85,11 @@ describe('PostController (e2e)', () => {
         },
         drizzle.db,
       );
-      const posts = await seedPosts({ count: 3, category }, drizzle.db);
+      const SEED_POST_COUNT = 5;
+      const posts = await seedPosts(
+        { count: SEED_POST_COUNT, category },
+        drizzle.db,
+      );
 
       const response = await PostAPI.getPostsByCategory(
         {
@@ -95,7 +99,7 @@ describe('PostController (e2e)', () => {
         {
           categoryId: category.id,
           page: 1,
-          pageSize: 10,
+          pageSize: 2,
           orderBy: 'desc',
         },
       );
@@ -104,9 +108,13 @@ describe('PostController (e2e)', () => {
         throw new Error(`assert - ${message}`);
       }
 
-      const foundPosts = response.data;
+      const { data: foundPosts, pagination, totalCount } = response.data;
       expect(foundPosts[0].categoryId).toEqual(category.id);
       expect(posts.find((p) => p.id === foundPosts[0].id)).toBeDefined();
+      expect(pagination.page).toEqual(1);
+      expect(pagination.pageSize).toEqual(2);
+      expect(foundPosts.length).toEqual(pagination.pageSize);
+      expect(totalCount).toEqual(SEED_POST_COUNT);
     });
   });
 
@@ -218,7 +226,7 @@ describe('PostController (e2e)', () => {
     });
   });
 
-  describe('[Delete post', () => {
+  describe('[Delete post]', () => {
     it('should be delete post success (soft delete)', async () => {
       const [student] = await seedUsers({ count: 1, role: 'user' }, drizzle.db);
       const [post] = await seedPosts(
