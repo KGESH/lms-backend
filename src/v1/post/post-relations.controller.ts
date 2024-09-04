@@ -21,7 +21,6 @@ import {
 } from '@src/v1/post/post-relations.dto';
 import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
 import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
-import { DEFAULT_PAGINATION } from '@src/core/pagination.constant';
 import { Uuid } from '@src/shared/types/primitive';
 import { TypeGuardError } from 'typia';
 import { SessionUser } from '@src/core/decorators/session-user.decorator';
@@ -116,6 +115,10 @@ export class PostRelationsController {
 
     if (!post) {
       return null;
+    }
+
+    if (query.incrementViewCount) {
+      await this.postRelationsService.incrementPostViewCount(post);
     }
 
     return postToPostWithCommentsDto(post);
