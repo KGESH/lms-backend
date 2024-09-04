@@ -1,5 +1,7 @@
 import { Uuid } from '@src/shared/types/primitive';
 import { Pagination } from '@src/shared/types/pagination';
+import { UserDto } from '@src/v1/user/user.dto';
+import { OptionalPick } from '@src/shared/types/optional';
 
 export type PostDto = {
   id: Uuid;
@@ -25,6 +27,8 @@ export type UpdatePostDto = Partial<
 >;
 
 export type PostQuery = Pick<PostWithContentDto, 'categoryId'> &
+  OptionalPick<UserDto, 'displayName'> &
+  OptionalPick<PostWithContentDto, 'title' | 'content'> &
   Partial<Pagination>;
 
 export type PostCommentQuery = {

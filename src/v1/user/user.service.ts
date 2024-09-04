@@ -60,6 +60,14 @@ export class UserService {
     return user;
   }
 
+  async findUserByMatchedUsername(
+    where: Pick<IUser, 'displayName'>,
+  ): Promise<IUserWithoutPassword | null> {
+    const user =
+      await this.userQueryRepository.findUserByMatchedUsername(where);
+    return user ? typia.misc.clone<IUserWithoutPassword>(user) : null;
+  }
+
   async createUser(
     { userCreateParams, infoCreateParams, accountCreateParams }: IUserSignUp,
     tx?: TransactionClient,

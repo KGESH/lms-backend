@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { asc, desc, eq, sql } from 'drizzle-orm';
+import { asc, desc, eq, ilike, sql } from 'drizzle-orm';
 import { IUser } from '@src/v1/user/user.interface';
 import { dbSchema } from '@src/infra/db/schema';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
@@ -44,6 +44,21 @@ export class UserQueryRepository {
     return user;
   }
 
+  async findUserByMatchedUsername(
+    where: Pick<IUser, 'displayName'>,
+  ): Promise<IUser | null> {
+    const [user] = await this.drizzle.db
+      .select()
+      .from(dbSchema.users)
+      .where(ilike(dbSchema.users.displayName, `%${where.displayName}%`));
+
+    if (!user) {
+      return null;
+    }
+
+    return user;
+  }
+
   async findManyUsers(
     where: OptionalPick<IUser, 'role'>,
     pagination: Pagination,
@@ -73,9 +88,9 @@ export class UserQueryRepository {
       .limit(pagination.pageSize);
 
     return {
-      data: users,
       pagination,
-      totalCount: users[0].totalUserCount,
+      totalCount: users[0]?.totalUserCount ?? 0,
+      data: users,
     };
   }
 }

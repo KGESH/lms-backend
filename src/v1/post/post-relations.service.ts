@@ -4,7 +4,10 @@ import { IPost, IPostCreate } from '@src/v1/post/post.interface';
 import { PostQueryRepository } from '@src/v1/post/post-query.repository';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
 import { PostSnapshotRepository } from '@src/v1/post/post-snapshot.repository';
-import { IPostSnapshotCreate } from '@src/v1/post/post-snapshot.interface';
+import {
+  IPostSnapshot,
+  IPostSnapshotCreate,
+} from '@src/v1/post/post-snapshot.interface';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import {
   IPostContentUpdate,
@@ -17,10 +20,14 @@ import { PostService } from '@src/v1/post/post.service';
 import { PostCommentService } from '@src/v1/post/comment/post-comment.service';
 import { DEFAULT_PAGINATION } from '@src/core/pagination.constant';
 import * as typia from 'typia';
+import { OptionalPick } from '@src/shared/types/optional';
+import { UserService } from '@src/v1/user/user.service';
+import { IUserWithoutPassword } from '@src/v1/user/user.interface';
 
 @Injectable()
 export class PostRelationsService {
   constructor(
+    private readonly userService: UserService,
     private readonly postService: PostService,
     private readonly postCategoryService: PostCategoryService,
     private readonly postCommentService: PostCommentService,
@@ -31,15 +38,28 @@ export class PostRelationsService {
   ) {}
 
   async findPostsByCategory(
-    where: Pick<IPost, 'categoryId'>,
+    where: Pick<IPost, 'categoryId'> &
+      OptionalPick<IPostSnapshot, 'title' | 'content'> &
+      OptionalPick<IUserWithoutPassword, 'displayName'>,
     pagination: Pagination,
   ): Promise<Paginated<IPostRelationsWithCommentCount[]>> {
     const category = await this.postCategoryService.findPostCategoryOrThrow({
       id: where.categoryId,
     });
 
+    const user = where.displayName
+      ? await this.userService.findUserByMatchedUsername({
+          displayName: where.displayName,
+        })
+      : null;
+
     return await this.postQueryRepository.findPostsByCategory(
-      { categoryId: category.id },
+      {
+        categoryId: category.id,
+        userId: user?.id,
+        title: where?.title,
+        content: where?.content,
+      },
       pagination,
     );
   }

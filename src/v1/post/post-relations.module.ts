@@ -5,8 +5,10 @@ import { PostRelationsController } from '@src/v1/post/post-relations.controller'
 import { PostRelationsService } from '@src/v1/post/post-relations.service';
 import { PostCommentModule } from '@src/v1/post/comment/post-comment.module';
 import { PostCommentLikeModule } from '@src/v1/post/comment/like/post-comment-like.module';
+import { UserModule } from '@src/v1/user/user.module';
 
 const modules = [
+  UserModule,
   PostModule,
   PostLikeModule,
   PostCommentModule,

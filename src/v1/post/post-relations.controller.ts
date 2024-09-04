@@ -67,9 +67,7 @@ export class PostRelationsController {
   ): Promise<Paginated<PostRelationsDto[]>> {
     const { data: posts, ...paginated } =
       await this.postRelationsService.findPostsByCategory(
-        {
-          categoryId: query.categoryId,
-        },
+        query,
         withDefaultPagination(query),
       );
 

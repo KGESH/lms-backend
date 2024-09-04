@@ -1,6 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { IPost } from '@src/v1/post/post.interface';
-import { eq, desc, asc, countDistinct, and, isNull, sql } from 'drizzle-orm';
+import {
+  eq,
+  desc,
+  asc,
+  countDistinct,
+  and,
+  isNull,
+  sql,
+  ilike,
+} from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
@@ -9,6 +18,8 @@ import {
   IPostRelationsWithCommentCount,
   IPostWithSnapshot,
 } from '@src/v1/post/post-relations.interface';
+import { OptionalPick } from '@src/shared/types/optional';
+import { IPostSnapshot } from '@src/v1/post/post-snapshot.interface';
 
 @Injectable()
 export class PostQueryRepository {
@@ -52,7 +63,9 @@ export class PostQueryRepository {
   }
 
   async findPostsByCategory(
-    where: Pick<IPost, 'categoryId'>,
+    where: Pick<IPost, 'categoryId'> &
+      OptionalPick<IPost, 'userId'> &
+      OptionalPick<IPostSnapshot, 'title' | 'content'>,
     pagination: Pagination,
   ): Promise<Paginated<IPostRelationsWithCommentCount[]>> {
     const latestSnapshotQuery = this.drizzle.db
@@ -83,6 +96,13 @@ export class PostQueryRepository {
       .where(
         and(
           eq(dbSchema.posts.categoryId, where.categoryId),
+          where.userId ? eq(dbSchema.posts.userId, where.userId) : undefined,
+          where.title
+            ? ilike(dbSchema.postSnapshots.title, `%${where.title}%`)
+            : undefined,
+          where.content
+            ? ilike(dbSchema.postSnapshots.content, `%${where.content}%`)
+            : undefined,
           isNull(dbSchema.posts.deletedAt),
         ),
       )
@@ -118,6 +138,8 @@ export class PostQueryRepository {
       .limit(pagination.pageSize);
 
     return {
+      pagination,
+      totalCount: posts[0]?.totalPostCount ?? 0,
       data: posts.map((post) => ({
         ...post,
         snapshot: post.snapshot,
@@ -126,8 +148,6 @@ export class PostQueryRepository {
         author: post.author,
         commentCount: post.commentCount,
       })),
-      totalCount: posts[0].totalPostCount,
-      pagination,
     };
   }
 
