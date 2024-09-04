@@ -9,6 +9,7 @@ import {
   isNull,
   sql,
   ilike,
+  or,
 } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
@@ -97,12 +98,17 @@ export class PostQueryRepository {
         and(
           eq(dbSchema.posts.categoryId, where.categoryId),
           where.userId ? eq(dbSchema.posts.userId, where.userId) : undefined,
-          where.title
-            ? ilike(dbSchema.postSnapshots.title, `%${where.title}%`)
-            : undefined,
-          where.content
-            ? ilike(dbSchema.postSnapshots.content, `%${where.content}%`)
-            : undefined,
+          where.title && where.content
+            ? or(
+                ilike(dbSchema.postSnapshots.title, `%${where.title}%`),
+                ilike(dbSchema.postSnapshots.content, `%${where.content}%`),
+              )
+            : (where.title
+                ? ilike(dbSchema.postSnapshots.title, `%${where.title}%`)
+                : undefined,
+              where.content
+                ? ilike(dbSchema.postSnapshots.content, `%${where.content}%`)
+                : undefined),
           isNull(dbSchema.posts.deletedAt),
         ),
       )
