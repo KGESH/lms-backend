@@ -6,7 +6,7 @@ export const withDefaultPagination = (
 ): Pagination => {
   return {
     page: query.page ?? DEFAULT_PAGINATION.page,
-    pageSize: query.pageSize || DEFAULT_PAGINATION.pageSize,
-    orderBy: query.orderBy || DEFAULT_PAGINATION.orderBy,
+    pageSize: query.pageSize ?? DEFAULT_PAGINATION.pageSize,
+    orderBy: query.orderBy ?? DEFAULT_PAGINATION.orderBy,
   };
 };
