@@ -44,6 +44,14 @@ export class PostRelationsController {
    *
    * Query parameter 'categoryId' 속성을 설정해야합니다.
    *
+   * Query parameter 'displayName'을 통해 작성자 닉네임으로 필터링할 수 있습니다.
+   *
+   * Query parameter 'title'을 통해 게시글 제목으로 필터링할 수 있습니다.
+   *
+   * Query parameter 'content'을 통해 게시글 내용으로 필터링할 수 있습니다.
+   *
+   * Query parameter 'title'과 'content'를 동시에 설정하면 OR 조건으로  필터링됩니다. (제목 + 내용)
+   *
    * 댓글 목록은 제공하지 않습니다.
    *
    * 댓글 count만 제공합니다.
