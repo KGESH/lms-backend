@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from '@src/v1/user/user.repository';
-import { IUser, IUserUpdate, IUserWithoutPassword } from './user.interface';
+import {
+  IUser,
+  IUserInfo,
+  IUserUpdate,
+  IUserWithoutPassword,
+} from './user.interface';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
 import * as typia from 'typia';
 import { IUserSignUp } from '@src/v1/auth/auth.interface';
@@ -21,7 +26,8 @@ export class UserService {
   ) {}
 
   async findUsers(
-    where: OptionalPick<IUser, 'role'>,
+    where: OptionalPick<IUser, 'role' | 'email' | 'displayName'> &
+      OptionalPick<IUserInfo, 'name'>,
     pagination: Pagination,
   ): Promise<Paginated<IUserWithoutPassword[]>> {
     const users = await this.userQueryRepository.findManyUsers(

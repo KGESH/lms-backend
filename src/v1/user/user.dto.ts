@@ -6,8 +6,8 @@ import {
   Uuid,
 } from '@src/shared/types/primitive';
 import { OmitPassword } from '@src/shared/types/omit-password';
-import { IUser } from '@src/v1/user/user.interface';
 import { Pagination } from '@src/shared/types/pagination';
+import { OptionalPick } from '@src/shared/types/optional';
 
 export type UserDto = {
   id: Uuid;
@@ -26,7 +26,7 @@ export type UserWithoutPasswordDto = OmitPassword<UserDto>;
 
 export type UserInfoDto = {
   id: Uuid;
-  userId: IUser['id'];
+  userId: Uuid;
   name: string;
   gender: string | null;
   phoneNumber: string | null;
@@ -35,4 +35,8 @@ export type UserInfoDto = {
   duplicationInformation: string | null;
 };
 
-export type UserQuery = Partial<Pick<IUser, 'role'>> & Partial<Pagination>;
+export type UserQuery = OptionalPick<UserDto, 'role' | 'displayName'> & {
+  // email?: EMail
+  email?: string; // Partial search
+} & OptionalPick<UserInfoDto, 'name'> &
+  Partial<Pagination>;

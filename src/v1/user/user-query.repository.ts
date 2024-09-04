@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { asc, desc, eq, ilike, sql } from 'drizzle-orm';
-import { IUser } from '@src/v1/user/user.interface';
+import { and, asc, desc, eq, ilike, sql } from 'drizzle-orm';
+import { IUser, IUserInfo } from '@src/v1/user/user.interface';
 import { dbSchema } from '@src/infra/db/schema';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
@@ -60,7 +60,8 @@ export class UserQueryRepository {
   }
 
   async findManyUsers(
-    where: OptionalPick<IUser, 'role'>,
+    where: OptionalPick<IUser, 'role' | 'email' | 'displayName'> &
+      OptionalPick<IUserInfo, 'name'>,
     pagination: Pagination,
   ): Promise<Paginated<IUser[]>> {
     const users = await this.drizzle.db
@@ -75,10 +76,38 @@ export class UserQueryRepository {
         createdAt: dbSchema.users.createdAt,
         updatedAt: dbSchema.users.updatedAt,
         deletedAt: dbSchema.users.deletedAt,
+        info: dbSchema.userInfos,
+        account: dbSchema.userAccounts,
         totalUserCount: sql<number>`count(*) over()`.mapWith(Number),
       })
       .from(dbSchema.users)
-      .where(where.role ? eq(dbSchema.users.role, where.role) : undefined)
+      .where(
+        and(
+          where.role ? eq(dbSchema.users.role, where.role) : undefined,
+          where.displayName
+            ? ilike(dbSchema.users.displayName, `%${where.displayName}%`)
+            : undefined,
+          where.email
+            ? ilike(dbSchema.users.email, `%${where.email}%`)
+            : undefined,
+          where.name
+            ? ilike(dbSchema.userInfos.name, `%${where.name}%`)
+            : undefined,
+        ),
+      )
+      .innerJoin(
+        dbSchema.userInfos,
+        eq(dbSchema.users.id, dbSchema.userInfos.userId),
+      )
+      .innerJoin(
+        dbSchema.userAccounts,
+        eq(dbSchema.users.id, dbSchema.userAccounts.userId),
+      )
+      .groupBy(
+        dbSchema.users.id,
+        dbSchema.userInfos.id,
+        dbSchema.userAccounts.id,
+      )
       .orderBy(
         pagination.orderBy === 'asc'
           ? asc(dbSchema.users.createdAt)

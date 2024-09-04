@@ -10,7 +10,6 @@ import {
 import { Uuid } from '@src/shared/types/primitive';
 import { UserQuery, UserWithoutPasswordDto } from './user.dto';
 import { userToDto } from '@src/shared/helpers/transofrm/user';
-import { DEFAULT_PAGINATION } from '@src/core/pagination.constant';
 import { AuthHeaders } from '@src/v1/auth/auth.headers';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
@@ -20,7 +19,7 @@ import { IErrorResponse } from '@src/shared/types/response';
 import { TypeGuardError } from 'typia';
 import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
 import { Paginated } from '@src/shared/types/pagination';
-import { withDefaultPagination } from "@src/core/pagination";
+import { withDefaultPagination } from '@src/core/pagination';
 
 @Controller('v1/user')
 export class UserController {
@@ -57,7 +56,7 @@ export class UserController {
     @TypedQuery() query: UserQuery,
   ): Promise<Paginated<UserWithoutPasswordDto[]>> {
     const { data: users, ...paginated } = await this.userService.findUsers(
-      { ...query },
+      query,
       withDefaultPagination(query),
     );
 
