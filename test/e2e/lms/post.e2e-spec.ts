@@ -198,6 +198,38 @@ describe('PostController (e2e)', () => {
         `Partial search content - ${randomString}`,
       );
 
+      const searchByTitleOrContentResponse = await PostAPI.getPostsByCategory(
+        {
+          host,
+          headers: { LmsSecret },
+        },
+        {
+          categoryId: category.id,
+          title: randomString,
+          content: randomString,
+          page: 1,
+          pageSize: 10,
+          orderBy: 'desc',
+        },
+      );
+      if (!searchByTitleOrContentResponse.success) {
+        const message = JSON.stringify(
+          searchByTitleOrContentResponse.data,
+          null,
+          4,
+        );
+        throw new Error(`assert - ${message}`);
+      }
+
+      const { data: searchByTitleOrContentPosts } =
+        searchByTitleOrContentResponse.data;
+      expect(searchByTitleOrContentPosts[0].title).toEqual(
+        `Partial search title - ${randomString}`,
+      );
+      expect(searchByTitleOrContentPosts[0].content).toEqual(
+        `Partial search content - ${randomString}`,
+      );
+
       const searchByAuthorResponse = await PostAPI.getPostsByCategory(
         {
           host,
