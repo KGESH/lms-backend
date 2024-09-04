@@ -33,6 +33,12 @@ export class UserController {
    *
    * Query parameter 'role'을 통해 사용자 권한을 필터링할 수 있습니다.
    *
+   * Query parameter 'email'을 통해 사용자 이메일에 특정 문자열이 포함된 사용자를 조회할 수 있습니다.
+   *
+   * Query parameter 'displayName'을 통해 사용자 닉네임에 특정 문자열이 포함된 사용자를 조회할 수 있습니다.
+   *
+   * Query parameter 'name'을 통해 사용자 이름에 특정 문자열이 포함된 사용자를 조회할 수 있습니다.
+   *
    * @tag user
    * @summary 사용자 목록 조회 - Role('admin', 'manager', 'teacher')
    */
