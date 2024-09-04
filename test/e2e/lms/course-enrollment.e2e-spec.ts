@@ -11,7 +11,7 @@ import {
   createCourseEnrollmentProgress,
 } from '../helpers/db/lms/course-enrollment';
 
-describe('CourseController (e2e)', () => {
+describe('UserCourseEnrollmentController (e2e)', () => {
   let host: Uri;
   let app: INestApplication;
   let drizzle: DrizzleService;
