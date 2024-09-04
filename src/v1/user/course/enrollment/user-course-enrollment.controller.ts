@@ -41,6 +41,18 @@ export class UserCourseEnrollmentController {
   @TypedRoute.Get('/')
   @Roles('user')
   @UseGuards(RolesGuard)
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'Not enough [role] to access this resource.',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
   async getCourseEnrollments(
     @TypedHeaders() headers: AuthHeaders,
     @SessionUser() session: ISessionWithUser,
@@ -63,12 +75,26 @@ export class UserCourseEnrollmentController {
     );
   }
 
+  /**
+   * 레슨을 완료합니다.
+   *
+   * 레슨을 완료하면 해당 레슨의 진도가 저장되며, 이후에는 중복 완료가 불가능합니다.
+   *
+   * 현재 사용자의 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag user
+   * @summary 레슨 완료 - Role('user')
+   */
   @TypedRoute.Post('/')
   @Roles('user')
   @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'Not enough [role] to access this resource.',
   })
   @TypedException<IErrorResponse<404>>({
     status: 404,
