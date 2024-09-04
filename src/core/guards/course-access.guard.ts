@@ -5,15 +5,15 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { CourseEnrollmentRepository } from '@src/v1/course/enrollment/course-enrollment.repository';
 import * as typia from 'typia';
 import { ISessionWithUser } from '@src/v1/auth/session.interface';
 import { Uuid } from '@src/shared/types/primitive';
+import { CourseEnrollmentQueryRepository } from '@src/v1/course/enrollment/course-enrollment-query.repository';
 
 @Injectable()
 export class CourseAccessGuard implements CanActivate {
   constructor(
-    private readonly courseEnrollmentRepository: CourseEnrollmentRepository,
+    private readonly courseEnrollmentQueryRepository: CourseEnrollmentQueryRepository,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -40,7 +40,7 @@ export class CourseAccessGuard implements CanActivate {
     if (sessionWithUser.user.role === 'user') {
       const courseId = typia.assert<Uuid>(req.params['courseId']);
       const enrolled =
-        await this.courseEnrollmentRepository.findCourseEnrollment({
+        await this.courseEnrollmentQueryRepository.findCourseEnrollment({
           courseId,
           userId: sessionWithUser.userId,
         });

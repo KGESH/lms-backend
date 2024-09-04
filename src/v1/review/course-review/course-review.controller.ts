@@ -10,7 +10,6 @@ import {
 import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
 import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
 import { ReviewQuery, ReviewWithRelationsDto } from '@src/v1/review/review.dto';
-import { DEFAULT_PAGINATION } from '@src/core/pagination.constant';
 import { reviewToDto } from '@src/shared/helpers/transofrm/review';
 import { Uuid } from '@src/shared/types/primitive';
 import { CreateCourseReviewDto } from '@src/v1/review/course-review/course-review.dto';
@@ -92,6 +91,4 @@ export class CourseReviewController {
 
     return reviewToDto(review);
   }
-
-  // @TypedRoute.Patch('')
 }

@@ -8,6 +8,9 @@ import { CourseQueryService } from '@src/v1/course/course-query.service';
 import { CourseRepository } from '@src/v1/course/course.repository';
 import { CourseCertificateRepository } from '@src/v1/course/enrollment/certificate/course-certificate.repository';
 import { CourseEnrollmentRepository } from '@src/v1/course/enrollment/course-enrollment.repository';
+import { CourseEnrollmentQueryRepository } from '@src/v1/course/enrollment/course-enrollment-query.repository';
+import { CourseEnrollmentProgressQueryRepository } from '@src/v1/course/enrollment/progress/course-enrollment-progress-query.repository';
+import { CourseEnrollmentProgressRepository } from '@src/v1/course/enrollment/progress/course-enrollment-progress.repository';
 
 const modules = [CourseCategoryModule, TeacherModule];
 
@@ -17,6 +20,9 @@ const providers = [
   CourseRepository,
   CourseQueryRepository,
   CourseEnrollmentRepository,
+  CourseEnrollmentQueryRepository,
+  CourseEnrollmentProgressRepository,
+  CourseEnrollmentProgressQueryRepository,
   CourseCertificateRepository,
 ];
 

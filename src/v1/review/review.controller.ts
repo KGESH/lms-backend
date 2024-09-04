@@ -16,7 +16,7 @@ export class ReviewController {
    * 리뷰에 대한 답글을 생성합니다.
    *
    * @tag review
-   * @summary 전자책 리뷰 답글 생성
+   * @summary 리뷰 답글 생성
    */
   @TypedRoute.Post('/reply')
   async createReviewReply(

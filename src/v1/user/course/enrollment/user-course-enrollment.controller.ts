@@ -1,15 +1,28 @@
 import { Controller, UseGuards } from '@nestjs/common';
-import { TypedHeaders, TypedRoute } from '@nestia/core';
+import {
+  TypedBody,
+  TypedException,
+  TypedHeaders,
+  TypedRoute,
+} from '@nestia/core';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
 import { SessionUser } from '@src/core/decorators/session-user.decorator';
 import { ISessionWithUser } from '@src/v1/auth/session.interface';
 import { UserCourseEnrollmentService } from '@src/v1/user/course/enrollment/user-course-enrollment.service';
 import { AuthHeaders } from '@src/v1/auth/auth.headers';
-import { CourseEnrollmentCertificateDto } from '@src/v1/user/course/enrollment/user-course-enrollment.dto';
+import {
+  CompleteLessonDto,
+  CourseEnrollmentCertificateDto,
+} from '@src/v1/user/course/enrollment/user-course-enrollment.dto';
 import { courseToDto } from '@src/shared/helpers/transofrm/course';
 import { enrollmentToDto } from '@src/shared/helpers/transofrm/enrollment';
 import { certificateToDto } from '@src/shared/helpers/transofrm/certifacate';
+import * as date from '@src/shared/utils/date';
+import { CourseEnrollmentProgressDto } from '@src/v1/course/enrollment/progress/course-enrollment-progress.dto';
+import { TypeGuardError } from 'typia';
+import { IErrorResponse } from '@src/shared/types/response';
+import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
 
 @Controller('v1/user/course/enrollment')
 export class UserCourseEnrollmentController {
@@ -37,10 +50,57 @@ export class UserCourseEnrollmentController {
         userId: session.userId,
       });
 
-    return enrollments.map(({ course, enrollment, certificate }) => ({
-      course: courseToDto(course),
-      enrollment: enrollmentToDto(enrollment),
-      certificate: certificate ? certificateToDto(certificate) : null,
-    }));
+    return enrollments.map(
+      ({ course, enrollment, certificate, progresses }) => ({
+        course: courseToDto(course),
+        enrollment: enrollmentToDto(enrollment),
+        certificate: certificate ? certificateToDto(certificate) : null,
+        progresses: progresses.map((p) => ({
+          ...p,
+          createdAt: date.toISOString(p.createdAt),
+        })),
+      }),
+    );
+  }
+
+  @TypedRoute.Post('/')
+  @Roles('user')
+  @UseGuards(RolesGuard)
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'enrollment not found',
+  })
+  @TypedException<IErrorResponse<409>>({
+    status: 409,
+    description: 'lesson already completed',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async completeLesson(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedBody() body: CompleteLessonDto,
+    @SessionUser() session: ISessionWithUser,
+  ): Promise<CourseEnrollmentProgressDto> {
+    const completed =
+      await this.userCourseEnrollmentService.createEnrollmentProgress(
+        {
+          userId: session.userId,
+          courseId: body.courseId,
+        },
+        {
+          lessonId: body.lessonId,
+        },
+      );
+
+    return {
+      ...completed,
+      createdAt: date.toISOString(completed.createdAt),
+    };
   }
 }

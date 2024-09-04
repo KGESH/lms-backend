@@ -15,15 +15,43 @@ export class UserCourseEnrollmentQueryRepository {
     const enrollments = await this.drizzle.db.query.courseEnrollments.findMany({
       where: eq(dbSchema.courseEnrollments.userId, where.userId),
       with: {
-        course: true,
+        course: {
+          with: {
+            category: true,
+            teacher: {
+              with: {
+                account: true,
+              },
+            },
+            chapters: {
+              with: {
+                lessons: true,
+              },
+            },
+          },
+        },
         certificate: true,
+        progresses: true,
       },
     });
 
-    return enrollments.map(({ course, certificate, ...enrollment }) => ({
-      enrollment: enrollment,
-      course,
-      certificate,
-    }));
+    return enrollments.map(
+      ({ course, certificate, progresses, ...enrollment }) =>
+        ({
+          enrollment: enrollment,
+          certificate,
+          progresses,
+          course: {
+            ...course,
+            chapters: course.chapters.map((chapter) => ({
+              ...chapter,
+              lessons: chapter.lessons.map((lesson) => ({
+                ...lesson,
+                lessonContents: [],
+              })),
+            })),
+          },
+        }) satisfies ICourseEnrollmentCertificate,
+    );
   }
 }

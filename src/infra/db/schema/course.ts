@@ -150,6 +150,25 @@ export const courseEnrollments = pgTable('course_enrollments', {
     .defaultNow(),
 });
 
+export const courseEnrollmentProgresses = pgTable(
+  'course_enrollment_progresses',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    enrollmentId: uuid('enrollment_id')
+      .notNull()
+      .references(() => courseEnrollments.id, { onDelete: 'cascade' }),
+    lessonId: uuid('lesson_id')
+      .notNull()
+      .references(() => lessons.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at', {
+      mode: 'date',
+      withTimezone: true,
+    })
+      .notNull()
+      .defaultNow(),
+  },
+);
+
 export const courseCertificates = pgTable('course_certificates', {
   id: uuid('id').primaryKey().defaultRandom(),
   enrollmentId: uuid('enrollment_id').notNull(),
@@ -281,6 +300,7 @@ export const lessonsRelations = relations(lessons, ({ one, many }) => ({
     references: [chapters.id],
   }),
   lessonContents: many(lessonContents),
+  completion: many(courseEnrollmentProgresses),
 }));
 
 export const lessonContentsRelations = relations(lessonContents, ({ one }) => ({
@@ -292,7 +312,7 @@ export const lessonContentsRelations = relations(lessonContents, ({ one }) => ({
 
 export const courseEnrollmentsRelations = relations(
   courseEnrollments,
-  ({ one }) => ({
+  ({ one, many }) => ({
     user: one(users, {
       fields: [courseEnrollments.userId],
       references: [users.id],
@@ -302,6 +322,21 @@ export const courseEnrollmentsRelations = relations(
       references: [courses.id],
     }),
     certificate: one(courseCertificates),
+    progresses: many(courseEnrollmentProgresses),
+  }),
+);
+
+export const courseEnrollmentProgressesRelations = relations(
+  courseEnrollmentProgresses,
+  ({ one }) => ({
+    enrollment: one(courseEnrollments, {
+      fields: [courseEnrollmentProgresses.enrollmentId],
+      references: [courseEnrollments.id],
+    }),
+    lesson: one(lessons, {
+      fields: [courseEnrollmentProgresses.lessonId],
+      references: [lessons.id],
+    }),
   }),
 );
 
@@ -330,6 +365,7 @@ export const courseDbSchemas = {
   courseProductSnapshotPricing,
   courseProductSnapshotDiscounts,
   courseEnrollments,
+  courseEnrollmentProgresses,
   courseCertificates,
 
   // Relations
@@ -346,5 +382,6 @@ export const courseDbSchemas = {
   courseProductSnapshotPricingRelations,
   courseProductSnapshotDiscountsRelations,
   courseEnrollmentsRelations,
+  courseEnrollmentProgressesRelations,
   courseCertificatesRelations,
 };
