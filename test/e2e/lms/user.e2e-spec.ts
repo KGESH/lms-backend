@@ -76,7 +76,123 @@ describe('UserController (e2e)', () => {
   });
 
   describe('[Get Users]', () => {
-    it('should be get one user', async () => {
+    it('should be search users by email success', async () => {
+      const admin = (
+        await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+      )[0];
+      const STUDENT_USER_COUNT = 5;
+      const students = await seedUsers(
+        { count: STUDENT_USER_COUNT, role: 'user' },
+        drizzle.db,
+      );
+      const targetStudent = students[0];
+
+      const searchByEmailResponse = await UserAPI.getUsers(
+        {
+          host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
+          },
+        },
+        {
+          role: 'user',
+          email: targetStudent.user.email.slice(0, 3),
+          page: 1,
+          pageSize: 10,
+          orderBy: 'asc',
+        },
+      );
+      if (!searchByEmailResponse.success) {
+        const message = JSON.stringify(searchByEmailResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      const { data: foundUsers } = searchByEmailResponse.data;
+      expect(
+        foundUsers.find((user) => user.email === targetStudent.user.email),
+      ).toBeDefined();
+    });
+
+    it('should be search users by nickname success', async () => {
+      const admin = (
+        await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+      )[0];
+      const STUDENT_USER_COUNT = 5;
+      const students = await seedUsers(
+        { count: STUDENT_USER_COUNT, role: 'user' },
+        drizzle.db,
+      );
+      const targetStudent = students[0];
+
+      const searchByNicknameResponse = await UserAPI.getUsers(
+        {
+          host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
+          },
+        },
+        {
+          role: 'user',
+          displayName: targetStudent.user.displayName.slice(0, 3),
+          page: 1,
+          pageSize: 10,
+          orderBy: 'asc',
+        },
+      );
+      if (!searchByNicknameResponse.success) {
+        const message = JSON.stringify(searchByNicknameResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      expect(
+        searchByNicknameResponse.data.data.find(
+          (user) => user.displayName === targetStudent.user.displayName,
+        ),
+      ).toBeDefined();
+    });
+
+    it('should be search users by name success', async () => {
+      const admin = (
+        await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+      )[0];
+      const STUDENT_USER_COUNT = 5;
+      const students = await seedUsers(
+        { count: STUDENT_USER_COUNT, role: 'user' },
+        drizzle.db,
+      );
+      const targetStudent = students[0];
+
+      const searchByNameResponse = await UserAPI.getUsers(
+        {
+          host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
+          },
+        },
+        {
+          role: 'user',
+          name: targetStudent.userInfo.name.slice(0, 2),
+          page: 1,
+          pageSize: 10,
+          orderBy: 'asc',
+        },
+      );
+      if (!searchByNameResponse.success) {
+        const message = JSON.stringify(searchByNameResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      expect(
+        searchByNameResponse.data.data.find(
+          (user) => user.displayName === targetStudent.user.displayName,
+        ),
+      ).toBeDefined();
+    });
+
+    it('should be get one user success', async () => {
       const admin = (
         await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
       )[0];
