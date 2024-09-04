@@ -55,7 +55,7 @@ export class AuthController {
     status: 400,
     description: 'invalid request',
   })
-  @TypedException<IErrorResponse<404>>({
+  @TypedException<IErrorResponse<409>>({
     status: 409,
     description: 'User already exists',
   })
