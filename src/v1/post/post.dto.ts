@@ -27,4 +27,6 @@ export type UpdatePostDto = Partial<
 export type PostQuery = Pick<PostWithContentDto, 'categoryId'> &
   Partial<Pagination>;
 
-export type PostCommentQuery = Partial<Pagination>;
+export type PostCommentQuery = {
+  incrementViewCount?: boolean;
+} & Partial<Pagination>;
