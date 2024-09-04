@@ -8,7 +8,12 @@ import { createTestingServer } from '../helpers/app.helper';
 import { createPostCategory } from '../helpers/db/lms/post-category.helper';
 import { seedUsers } from '../helpers/db/lms/user.helper';
 import { CreatePostDto, UpdatePostDto } from '@src/v1/post/post.dto';
-import { createPostSnapshot, seedPosts } from '../helpers/db/lms/post.helper';
+import {
+  createPostRelations,
+  createPostSnapshot,
+  seedPosts,
+} from '../helpers/db/lms/post.helper';
+import { createUuid } from '@src/shared/utils/uuid';
 
 describe('PostController (e2e)', () => {
   let host: Uri;
@@ -115,6 +120,108 @@ describe('PostController (e2e)', () => {
       expect(pagination.pageSize).toEqual(2);
       expect(foundPosts.length).toEqual(pagination.pageSize);
       expect(totalCount).toEqual(SEED_POST_COUNT);
+    });
+  });
+
+  describe('[Get posts by search params]', () => {
+    it('should be get many posts by search params success', async () => {
+      const [author] = await seedUsers({ count: 1, role: 'user' }, drizzle.db);
+      const category = await createPostCategory(
+        {
+          name: 'seed post category',
+          description: 'seed post category',
+          parentId: null,
+        },
+        drizzle.db,
+      );
+      const SEED_POST_COUNT = 5;
+      await seedPosts({ count: SEED_POST_COUNT, category }, drizzle.db);
+      const searchTargetPost = await createPostRelations(
+        author.user,
+        category,
+        drizzle.db,
+      );
+      const randomString = createUuid();
+      await createPostSnapshot(
+        {
+          postId: searchTargetPost.id,
+          title: `Partial search title - ${randomString}`,
+          content: `Partial search content - ${randomString}`,
+        },
+        drizzle.db,
+      );
+
+      const searchByTitleResponse = await PostAPI.getPostsByCategory(
+        {
+          host,
+          headers: { LmsSecret },
+        },
+        {
+          categoryId: category.id,
+          title: `${randomString}`,
+          page: 1,
+          pageSize: 10,
+          orderBy: 'desc',
+        },
+      );
+      if (!searchByTitleResponse.success) {
+        const message = JSON.stringify(searchByTitleResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      const { data: searchByTitlePosts } = searchByTitleResponse.data;
+      expect(searchByTitlePosts[0].categoryId).toEqual(category.id);
+      expect(searchByTitlePosts[0].title).toEqual(
+        `Partial search title - ${randomString}`,
+      );
+
+      const searchByContentResponse = await PostAPI.getPostsByCategory(
+        {
+          host,
+          headers: { LmsSecret },
+        },
+        {
+          categoryId: category.id,
+          content: `content - ${randomString}`,
+          page: 1,
+          pageSize: 10,
+          orderBy: 'desc',
+        },
+      );
+      if (!searchByContentResponse.success) {
+        const message = JSON.stringify(searchByContentResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      const { data: searchByContentPosts } = searchByContentResponse.data;
+      expect(searchByContentPosts[0].content).toEqual(
+        `Partial search content - ${randomString}`,
+      );
+
+      const searchByAuthorResponse = await PostAPI.getPostsByCategory(
+        {
+          host,
+          headers: { LmsSecret },
+        },
+        {
+          categoryId: category.id,
+          displayName: author.user.displayName.slice(0, 3), // partial search
+          page: 1,
+          pageSize: 10,
+          orderBy: 'desc',
+        },
+      );
+      if (!searchByAuthorResponse.success) {
+        const message = JSON.stringify(searchByAuthorResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      const { data: searchByAuthorPosts } = searchByContentResponse.data;
+      expect(
+        searchByAuthorPosts.find(
+          (post) => post.title === `Partial search title - ${randomString}`,
+        ),
+      ).toBeDefined();
     });
   });
 

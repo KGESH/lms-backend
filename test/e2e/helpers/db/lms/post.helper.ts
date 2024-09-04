@@ -146,8 +146,8 @@ export const createPostRelations = async (
   const postSnapshot = await createPostSnapshot(
     {
       postId: post.id,
-      title: 'mock post',
-      content: 'mock post content',
+      title: `mock post by ${author.displayName}`,
+      content: `mock post content by ${author.displayName}`,
     },
     db,
   );
