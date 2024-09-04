@@ -1,6 +1,5 @@
 import { Controller } from '@nestjs/common';
 import {
-  TypedBody,
   TypedException,
   TypedHeaders,
   TypedParam,
@@ -11,10 +10,7 @@ import { Uuid } from '@src/shared/types/primitive';
 import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '@src/shared/types/response';
 import { PostCommentLikeService } from '@src/v1/post/comment/like/post-comment-like.service';
-import {
-  CreatePostCommentLikeDto,
-  PostCommentLikeDto,
-} from '@src/v1/post/comment/like/post-comment-like.dto';
+import { PostCommentLikeDto } from '@src/v1/post/comment/like/post-comment-like.dto';
 import { SessionUser } from '@src/core/decorators/session-user.decorator';
 import { ISessionWithUser } from '@src/v1/auth/session.interface';
 
@@ -52,7 +48,6 @@ export class PostCommentLikeController {
     @TypedParam('postId') postId: Uuid,
     @TypedParam('commentId') commentId: Uuid,
     @SessionUser() session: ISessionWithUser,
-    // @TypedBody() body: CreatePostCommentLikeDto,
   ): Promise<PostCommentLikeDto> {
     return await this.postCommentLikeService.createPostCommentLike({
       commentId,

@@ -21,7 +21,7 @@ import {
   IPostLike,
   IPostLikeCreate,
 } from '@src/v1/post/like/post-like.interface';
-import { IPostCommentRelations } from '@src/v1/post/comment/post-comment-relations.interface';
+import { IPostCommentRelationsWithChildren } from '@src/v1/post/comment/post-comment-relations.interface';
 import { IPostWithComments } from '@src/v1/post/post-relations.interface';
 import { IUserWithoutPassword } from '@src/v1/user/user.interface';
 import { IPostCategory } from '@src/v1/post/category/post-category.interface';
@@ -98,8 +98,8 @@ export const seedPostComment = async (
     parentId,
   }: { postId: Uuid; users: IUserWithoutPassword[]; parentId?: Uuid },
   db: TransactionClient,
-): Promise<IPostCommentRelations[]> => {
-  const comments: IPostCommentRelations[] = [];
+): Promise<IPostCommentRelationsWithChildren[]> => {
+  const comments: IPostCommentRelationsWithChildren[] = [];
   for (const [index, user] of users.entries()) {
     const comment = await createPostComment(
       {
@@ -117,7 +117,12 @@ export const seedPostComment = async (
       db,
     );
 
-    comments.push({ ...comment, snapshot: commentSnapshot, user });
+    comments.push({
+      ...comment,
+      snapshot: commentSnapshot,
+      user,
+      children: [],
+    });
   }
 
   return comments;
@@ -153,6 +158,30 @@ export const createPostRelations = async (
     },
     db,
   );
+
+  const parentCommentIds = comments.map((comment) => comment.id);
+  const childrenComments = (
+    await Promise.all(
+      parentCommentIds.map((parentCommentId) =>
+        seedPostComment(
+          {
+            postId: post.id,
+            users: postCommenters.map((commenter) => commenter.user),
+            parentId: parentCommentId,
+          },
+          db,
+        ),
+      ),
+    )
+  ).flat();
+
+  for (const parentComment of comments) {
+    const children = childrenComments.filter(
+      (child) => child.parentId === parentComment.id,
+    );
+    parentComment.children.push(...children);
+  }
+
   const likes = await createManyPostLikes(
     postCommenters.map((commenter) => ({
       postId: post.id,

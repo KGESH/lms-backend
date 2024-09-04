@@ -6,7 +6,7 @@ import {
   integer,
   timestamp,
 } from 'drizzle-orm/pg-core';
-import { userRole } from "./enum";
+import { userRole } from './enum';
 import { users } from './user';
 import { relations } from 'drizzle-orm';
 

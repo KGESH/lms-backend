@@ -9,10 +9,12 @@ export const postCommentWithChildrenToDto = (
     ...comment,
     content: comment.snapshot.content,
     createdAt: date.toISOString(comment.createdAt),
+    deletedAt: comment.deletedAt ? date.toISOString(comment.deletedAt) : null,
     children: comment.children.map((child) => ({
       ...child,
       content: child.snapshot.content,
       createdAt: date.toISOString(child.createdAt),
+      deletedAt: child.deletedAt ? date.toISOString(child.deletedAt) : null,
     })),
   };
 };

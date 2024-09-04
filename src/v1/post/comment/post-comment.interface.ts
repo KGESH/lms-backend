@@ -7,6 +7,7 @@ export type IPostComment = {
   userId: Uuid;
   parentId: Uuid | null;
   createdAt: Date;
+  deletedAt: Date | null;
 };
 
 export type IPostCommentCreate = Pick<

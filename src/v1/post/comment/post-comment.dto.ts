@@ -7,6 +7,7 @@ export type PostCommentDto = {
   parentId: Uuid | null;
   content: string;
   createdAt: ISO8601;
+  deletedAt: ISO8601 | null;
   user: IUserWithoutPassword;
 };
 
