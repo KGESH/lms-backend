@@ -36,6 +36,7 @@ export class CourseDashboardController {
    * @summary 챕터, 레슨 순서 변경 - Role('admin', 'manager', 'teacher')
    * @param courseId - 강의 id
    */
+  @TypedRoute.Patch('/')
   @Roles('admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)
   @UseGuards(CourseDashboardUniqueSequenceGuard)
@@ -51,7 +52,6 @@ export class CourseDashboardController {
     status: 409,
     description: 'item sequence conflict',
   })
-  @TypedRoute.Patch('/')
   async updateDashboardSequence(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
@@ -74,7 +74,17 @@ export class CourseDashboardController {
    * @param lessonId - 레슨 id
    */
   @TypedRoute.Patch('/chapter/:chapterId/lesson/:lessonId')
+  @Roles('admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
   @UseGuards(CourseDashboardContentUniqueSequenceGuard)
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<TypeGuardError>({
+    status: 409,
+    description: 'item sequence conflict',
+  })
   async updateLessonContentSequence(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('courseId') courseId: Uuid,

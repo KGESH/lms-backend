@@ -3,18 +3,23 @@ import {
   ConflictException,
   ExecutionContext,
   Injectable,
+  Logger,
 } from '@nestjs/common';
 import * as typia from 'typia';
 import { CourseDashboardLessonContentDto } from '@src/v1/dashboard/course/course-dashboard.dto';
 
 @Injectable()
 export class CourseDashboardContentUniqueSequenceGuard implements CanActivate {
+  private readonly logger = new Logger(
+    CourseDashboardContentUniqueSequenceGuard.name,
+  );
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
     const body = typia.assert<CourseDashboardLessonContentDto[]>(req['body']);
 
     this._validateUniqueSequence(body);
-    console.log(`[Guard] CourseDashboardContentUniqueSequenceGuard`, body);
+    this.logger.log(`[Guard] CourseDashboardContentUniqueSequenceGuard`, body);
 
     return true;
   }

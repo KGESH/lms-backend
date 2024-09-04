@@ -17,7 +17,6 @@ import {
   EbookQuery,
   EbookUpdateDto,
 } from '@src/v1/ebook/ebook.dto';
-import { DEFAULT_PAGINATION } from '@src/core/pagination.constant';
 import { ebookToDto } from '@src/shared/helpers/transofrm/ebook';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';

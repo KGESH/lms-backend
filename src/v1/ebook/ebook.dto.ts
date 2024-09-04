@@ -1,5 +1,6 @@
 import { ISO8601, Uuid } from '@src/shared/types/primitive';
 import { Pagination } from '@src/shared/types/pagination';
+import { OptionalPick } from '@src/shared/types/optional';
 
 export type EbookDto = {
   id: Uuid;
@@ -19,4 +20,4 @@ export type EbookCreateDto = Pick<
 export type EbookUpdateDto = Omit<Partial<EbookCreateDto>, 'teacherId'>;
 
 export type EbookQuery = Partial<Pagination> &
-  Partial<Pick<EbookDto, 'categoryId'>>;
+  OptionalPick<EbookDto, 'categoryId'>;
