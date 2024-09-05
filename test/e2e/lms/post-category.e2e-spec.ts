@@ -44,6 +44,10 @@ describe('PostCategoryController (e2e)', () => {
           description: 'GET post category test',
           parentId: null,
         },
+        {
+          readableRoles: ['guest'],
+          writableRoles: ['user', 'teacher', 'manager', 'admin'],
+        },
         drizzle.db,
       );
 
@@ -141,6 +145,10 @@ describe('PostCategoryController (e2e)', () => {
           description: 'UPDATE category test',
           parentId: null,
         },
+        {
+          readableRoles: ['guest'],
+          writableRoles: ['user', 'teacher', 'manager', 'admin'],
+        },
         drizzle.db,
       );
       const updatePostCategoryDto: UpdatePostCategoryDto = {
@@ -204,6 +212,10 @@ describe('PostCategoryController (e2e)', () => {
           name: 'category',
           description: 'DELETE category test',
           parentId: null,
+        },
+        {
+          readableRoles: ['guest'],
+          writableRoles: ['user', 'teacher', 'manager', 'admin'],
         },
         drizzle.db,
       );

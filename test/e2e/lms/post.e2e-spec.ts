@@ -46,6 +46,10 @@ describe('PostController (e2e)', () => {
           description: 'seed post category',
           parentId: null,
         },
+        {
+          readableRoles: ['guest'],
+          writableRoles: ['user', 'teacher', 'manager', 'admin'],
+        },
         drizzle.db,
       );
       const [post] = await seedPosts(
@@ -87,6 +91,10 @@ describe('PostController (e2e)', () => {
           name: 'seed post category',
           description: 'seed post category',
           parentId: null,
+        },
+        {
+          readableRoles: ['guest'],
+          writableRoles: ['user', 'teacher', 'manager', 'admin'],
         },
         drizzle.db,
       );
@@ -131,6 +139,10 @@ describe('PostController (e2e)', () => {
           name: 'seed post category',
           description: 'seed post category',
           parentId: null,
+        },
+        {
+          readableRoles: ['guest'],
+          writableRoles: ['user', 'teacher', 'manager', 'admin'],
         },
         drizzle.db,
       );
@@ -266,13 +278,16 @@ describe('PostController (e2e)', () => {
           description: 'seed post category',
           parentId: null,
         },
+        {
+          readableRoles: ['guest'],
+          writableRoles: ['user', 'teacher', 'manager', 'admin'],
+        },
         drizzle.db,
       );
 
       const createPostDto: CreatePostDto = {
         title: 'new post',
         content: 'new post content',
-        userId: student.user.id,
         categoryId: category.id,
       };
       const response = await PostAPI.createPost(
@@ -304,6 +319,10 @@ describe('PostController (e2e)', () => {
           name: 'seed post category',
           description: 'seed post category',
           parentId: null,
+        },
+        {
+          readableRoles: ['guest'],
+          writableRoles: ['user', 'teacher', 'manager', 'admin'],
         },
         drizzle.db,
       );
