@@ -6,6 +6,7 @@ export const discountType = pgEnum('discount_type', [
 ]);
 
 export const userRole = pgEnum('user_role', [
+  'guest',
   'user',
   'teacher',
   'manager',

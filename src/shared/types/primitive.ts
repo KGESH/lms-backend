@@ -35,6 +35,7 @@ export type DiscountValue = Price | Percentage;
 export type ISO8601 = string & typia.tags.Format<'date-time'>;
 
 export const USER_ROLE = {
+  GUEST: 'guest',
   USER: 'user',
   TEACHER: 'teacher',
   MANAGER: 'manager',

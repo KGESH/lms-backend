@@ -120,6 +120,13 @@
       "when": 1725450423848,
       "tag": "0016_purple_lilith",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1725514097947,
+      "tag": "0017_sharp_shatterstar",
+      "breakpoints": true
     }
   ]
 }
