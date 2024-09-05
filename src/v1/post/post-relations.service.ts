@@ -16,7 +16,7 @@ import {
   IPostRelationsWithCommentCount,
 } from '@src/v1/post/post-relations.interface';
 import { PostCategoryService } from '@src/v1/post/category/post-category.service';
-import { PostService } from '@src/v1/post/post.service';
+import { PostQueryService } from '@src/v1/post/post-query.service';
 import { PostCommentService } from '@src/v1/post/comment/post-comment.service';
 import { DEFAULT_PAGINATION } from '@src/core/pagination.constant';
 import * as typia from 'typia';
@@ -28,7 +28,7 @@ import { IUserWithoutPassword } from '@src/v1/user/user.interface';
 export class PostRelationsService {
   constructor(
     private readonly userService: UserService,
-    private readonly postService: PostService,
+    private readonly postQueryService: PostQueryService,
     private readonly postCategoryService: PostCategoryService,
     private readonly postCommentService: PostCommentService,
     private readonly postRepository: PostRepository,
@@ -145,7 +145,7 @@ export class PostRelationsService {
       });
     }
 
-    const exists = await this.postService.findPostWithSnapshotOrThrow({
+    const exists = await this.postQueryService.findPostWithSnapshotOrThrow({
       id: params.postId,
     });
 
@@ -166,7 +166,7 @@ export class PostRelationsService {
 
   // Soft delete
   async deletePost(where: Pick<IPost, 'id'>): Promise<IPost> {
-    const post = await this.postService.findPostOrThrow(where);
+    const post = await this.postQueryService.findPostOrThrow(where);
     return await this.postRepository.deletePost(post);
   }
 

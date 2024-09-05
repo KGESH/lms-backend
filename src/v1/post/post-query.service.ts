@@ -4,7 +4,7 @@ import { IPost } from '@src/v1/post/post.interface';
 import { IPostWithSnapshot } from '@src/v1/post/post-relations.interface';
 
 @Injectable()
-export class PostService {
+export class PostQueryService {
   constructor(private readonly postQueryRepository: PostQueryRepository) {}
 
   async findPostOrThrow(where: Pick<IPost, 'id'>): Promise<IPost> {

@@ -19,12 +19,12 @@ import { IPostCommentSnapshotCreate } from '@src/v1/post/comment/post-comment-sn
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import * as typia from 'typia';
 import { IUserWithoutPassword } from '@src/v1/user/user.interface';
-import { PostService } from '@src/v1/post/post.service';
+import { PostQueryService } from '@src/v1/post/post-query.service';
 
 @Injectable()
 export class PostCommentService {
   constructor(
-    private readonly postService: PostService,
+    private readonly postQueryService: PostQueryService,
     private readonly postCommentRepository: PostCommentRepository,
     private readonly postCommentSnapshotRepository: PostCommentSnapshotRepository,
     private readonly postCommentQueryRepository: PostCommentQueryRepository,
@@ -48,7 +48,7 @@ export class PostCommentService {
     where: Pick<IPostComment, 'postId'>,
     { parentPagination, childrenPagination }: IPostCommentPagination,
   ): Promise<IPostCommentRelationsWithChildren[]> {
-    await this.postService.findPostOrThrow({ id: where.postId });
+    await this.postQueryService.findPostOrThrow({ id: where.postId });
 
     return await this.postCommentQueryRepository.findPostCommentsWithChildren(
       where,
@@ -71,7 +71,7 @@ export class PostCommentService {
     createParams: IPostCommentCreate;
     snapshotCreateParams: Omit<IPostCommentSnapshotCreate, 'commentId'>;
   }): Promise<Omit<IPostCommentRelations, 'user'>> {
-    await this.postService.findPostOrThrow({ id: createParams.postId });
+    await this.postQueryService.findPostOrThrow({ id: createParams.postId });
 
     return await this.drizzle.db.transaction(async (tx) => {
       const postComment = await this.postCommentRepository.createPostComment(
