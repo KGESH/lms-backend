@@ -11,6 +11,7 @@ import { SKIP_AUTH_KEY } from '@src/core/decorators/skip-auth.decorator';
 import { Reflector } from '@nestjs/core';
 import * as typia from 'typia';
 import { ISessionWithUser } from '@src/v1/auth/session.interface';
+import { Request } from 'express';
 
 @Injectable()
 export class SessionGuard implements CanActivate {
@@ -50,6 +51,6 @@ export class SessionGuard implements CanActivate {
   }
 
   private _getUserSessionId(request: Request): string | null {
-    return request.headers[USER_SESSION_ID_HEADER];
+    return (request.headers[USER_SESSION_ID_HEADER] as string) ?? null;
   }
 }
