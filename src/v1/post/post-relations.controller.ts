@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import {
   TypedBody,
   TypedException,
@@ -32,6 +32,7 @@ import {
 } from '@src/shared/helpers/transofrm/post';
 import { Paginated } from '@src/shared/types/pagination';
 import { withDefaultPagination } from '@src/core/pagination';
+import { PostCategoryAccessGuard } from '@src/core/guards/post-category-access.guard';
 
 @Controller('v1/post')
 export class PostRelationsController {
@@ -61,6 +62,7 @@ export class PostRelationsController {
    */
   @TypedRoute.Get('/')
   @SkipAuth()
+  @UseGuards(PostCategoryAccessGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -103,6 +105,7 @@ export class PostRelationsController {
    */
   @TypedRoute.Get('/:id')
   @SkipAuth()
+  @UseGuards(PostCategoryAccessGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -137,6 +140,7 @@ export class PostRelationsController {
    * @summary 게시글 생성
    */
   @TypedRoute.Post('/')
+  @UseGuards(PostCategoryAccessGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -153,6 +157,7 @@ export class PostRelationsController {
     const { snapshot, ...post } = await this.postRelationsService.createPost({
       postCreateParams: {
         ...body,
+        userId: session.userId,
       },
       snapshotCreateParams: {
         ...body,
@@ -176,6 +181,7 @@ export class PostRelationsController {
    * @summary 게시글 수정
    */
   @TypedRoute.Patch('/:id')
+  @UseGuards(PostCategoryAccessGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -206,6 +212,7 @@ export class PostRelationsController {
    * @summary 게시글 삭제
    */
   @TypedRoute.Delete('/:id')
+  @UseGuards(PostCategoryAccessGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',

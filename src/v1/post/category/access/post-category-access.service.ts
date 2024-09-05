@@ -1,10 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PostCategoryAccessRepository } from '@src/v1/post/category/access/post-category-access.repository';
-import {
-  IPostCategoryAccess,
-  IPostCategoryAccessDelete,
-  IPostCategoryAccessRoles,
-} from '@src/v1/post/category/access/post-category-access.interface';
+import { IPostCategoryAccessRoles } from '@src/v1/post/category/access/post-category-access.interface';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { PostCategoryAccessQueryRepository } from '@src/v1/post/category/access/post-category-access-query.repository';
 
@@ -88,6 +84,5 @@ export class PostCategoryAccessService {
           deletedWriteAccess,
         };
       });
-    console.log({ deletedReadAccess, deletedWriteAccess });
   }
 }
