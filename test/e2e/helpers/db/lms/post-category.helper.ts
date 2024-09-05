@@ -4,9 +4,15 @@ import {
   IPostCategory,
   IPostCategoryCreate,
 } from '../../../../../src/v1/post/category/post-category.interface';
+import { IPostCategoryAccessRoles } from '@src/v1/post/category/access/post-category-access.interface';
+import { OptionalPick } from '@src/shared/types/optional';
 
 export const createPostCategory = async (
   params: IPostCategoryCreate,
+  createAccessRoleParams: Pick<
+    IPostCategoryAccessRoles,
+    'readableRoles' | 'writableRoles'
+  >,
   db: TransactionClient,
 ): Promise<IPostCategory> => {
   const [category] = await db
@@ -14,35 +20,108 @@ export const createPostCategory = async (
     .values(params)
     .returning();
 
+  const readAccesses = await db
+    .insert(dbSchema.postCategoryReadAccesses)
+    .values(
+      createAccessRoleParams.readableRoles.map((role) => ({
+        categoryId: category.id,
+        role,
+      })),
+    );
+
+  const writeAccesses = await db
+    .insert(dbSchema.postCategoryWriteAccesses)
+    .values(
+      createAccessRoleParams.writableRoles.map((role) => ({
+        categoryId: category.id,
+        role,
+      })),
+    );
+
   return category;
 };
 
 export const createManyPostCategories = async (
   createManyParams: IPostCategoryCreate[],
+  createAccessRoleParams: Pick<
+    IPostCategoryAccessRoles,
+    'readableRoles' | 'writableRoles'
+  >,
   db: TransactionClient,
 ): Promise<IPostCategory[]> => {
   const categories = await db
     .insert(dbSchema.postCategories)
     .values(createManyParams)
     .returning();
+
+  const readAccesses = await db
+    .insert(dbSchema.postCategoryReadAccesses)
+    .values(
+      categories
+        .map((category) =>
+          createAccessRoleParams.readableRoles.map((role) => ({
+            categoryId: category.id,
+            role,
+          })),
+        )
+        .flat(),
+    );
+
+  const writeAccesses = await db
+    .insert(dbSchema.postCategoryWriteAccesses)
+    .values(
+      categories
+        .map((category) =>
+          createAccessRoleParams.writableRoles.map((role) => ({
+            categoryId: category.id,
+            role,
+          })),
+        )
+        .flat(),
+    );
+
   return categories;
 };
 
 export const seedPostCategoriesWithChildren = async (
-  { count }: { count: number },
+  params: { count: number } & OptionalPick<
+    IPostCategoryAccessRoles,
+    'readableRoles' | 'writableRoles'
+  >,
   db: TransactionClient,
 ) => {
-  const rootCreateParams = Array.from({ length: count }).map((_, index) => ({
-    name: `root ${index} category`,
-    description: null,
-    parentId: null,
-  }));
+  const readableRoles = params.readableRoles ?? [
+    'admin',
+    'manager',
+    'teacher',
+    'user',
+    'guest',
+  ];
+  const writableRoles = params.writableRoles ?? [
+    'admin',
+    'manager',
+    'teacher',
+    'user',
+    'guest',
+  ];
 
-  const rootCategories = await createManyPostCategories(rootCreateParams, db);
+  const rootCreateParams = Array.from({ length: params.count }).map(
+    (_, index) => ({
+      name: `root ${index} category`,
+      description: null,
+      parentId: null,
+    }),
+  );
+
+  const rootCategories = await createManyPostCategories(
+    rootCreateParams,
+    { readableRoles, writableRoles },
+    db,
+  );
 
   const levelTwoCreateParams = rootCategories
     .map((root) =>
-      Array.from({ length: count }).map((_, index) => ({
+      Array.from({ length: params.count }).map((_, index) => ({
         name: `${root.name} child ${index}`,
         description: null,
         parentId: root.id,
@@ -52,12 +131,13 @@ export const seedPostCategoriesWithChildren = async (
 
   const levelTwoCategories = await createManyPostCategories(
     levelTwoCreateParams,
+    { readableRoles, writableRoles },
     db,
   );
 
   const levelThreeCreateParams = levelTwoCategories
     .map((levelTwo) =>
-      Array.from({ length: count }).map((_, index) => ({
+      Array.from({ length: params.count }).map((_, index) => ({
         name: `${levelTwo.name} child ${index}`,
         description: null,
         parentId: levelTwo.id,
@@ -67,6 +147,7 @@ export const seedPostCategoriesWithChildren = async (
 
   const levelThreeCategories = await createManyPostCategories(
     levelThreeCreateParams,
+    { readableRoles, writableRoles },
     db,
   );
 

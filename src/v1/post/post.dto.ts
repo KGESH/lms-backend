@@ -19,7 +19,7 @@ export type PostWithContentDto = PostDto & {
 
 export type CreatePostDto = Pick<
   PostWithContentDto,
-  'userId' | 'categoryId' | 'title' | 'content'
+  'categoryId' | 'title' | 'content'
 >;
 
 export type UpdatePostDto = Partial<

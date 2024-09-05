@@ -61,12 +61,14 @@ export class PostCategoryAccessGuard implements CanActivate {
         }
 
         // GET POST '/:id'
-        const post = await this.postQueryService.findPostOrThrow({
+        const post = await this.postQueryService.findPost({
           id: req.params['id'],
         });
+
+        // Hack. If post is not found, controller will return null.
         return {
           action: 'read',
-          categoryIds: [post.categoryId],
+          categoryIds: post?.categoryId ? [post.categoryId] : [],
         };
 
       case 'POST':

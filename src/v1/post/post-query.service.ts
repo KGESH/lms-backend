@@ -7,6 +7,10 @@ import { IPostWithSnapshot } from '@src/v1/post/post-relations.interface';
 export class PostQueryService {
   constructor(private readonly postQueryRepository: PostQueryRepository) {}
 
+  async findPost(where: Pick<IPost, 'id'>): Promise<IPost | null> {
+    return this.postQueryRepository.findPost(where);
+  }
+
   async findPostOrThrow(where: Pick<IPost, 'id'>): Promise<IPost> {
     const post = await this.postQueryRepository.findPost(where);
 

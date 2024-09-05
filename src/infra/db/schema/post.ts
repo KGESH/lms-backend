@@ -23,7 +23,7 @@ export const postCategoryReadAccesses = pgTable('post_category_read_accesses', {
   id: uuid('id').primaryKey().defaultRandom(),
   categoryId: uuid('category_id')
     .notNull()
-    .references((): AnyPgColumn => postCategories.id),
+    .references(() => postCategories.id, { onDelete: 'cascade' }),
   role: userRole('role').notNull(),
 });
 
@@ -33,7 +33,7 @@ export const postCategoryWriteAccesses = pgTable(
     id: uuid('id').primaryKey().defaultRandom(),
     categoryId: uuid('category_id')
       .notNull()
-      .references((): AnyPgColumn => postCategories.id),
+      .references(() => postCategories.id, { onDelete: 'cascade' }),
     role: userRole('role').notNull(),
   },
 );
