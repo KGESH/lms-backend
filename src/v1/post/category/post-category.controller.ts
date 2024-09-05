@@ -17,7 +17,6 @@ import {
   PostCategoryWithChildrenQuery,
 } from '@src/v1/post/category/post-category.dto';
 import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
-import { DEFAULT_PAGINATION } from '@src/core/pagination.constant';
 import { Uuid } from '@src/shared/types/primitive';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
