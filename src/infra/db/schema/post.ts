@@ -3,6 +3,7 @@ import {
   pgTable,
   text,
   uuid,
+  unique,
   integer,
   timestamp,
 } from 'drizzle-orm/pg-core';
@@ -19,13 +20,19 @@ export const postCategories = pgTable('post_categories', {
   description: text('description'),
 });
 
-export const postCategoryReadAccesses = pgTable('post_category_read_accesses', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  categoryId: uuid('category_id')
-    .notNull()
-    .references(() => postCategories.id, { onDelete: 'cascade' }),
-  role: userRole('role').notNull(),
-});
+export const postCategoryReadAccesses = pgTable(
+  'post_category_read_accesses',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    categoryId: uuid('category_id')
+      .notNull()
+      .references(() => postCategories.id, { onDelete: 'cascade' }),
+    role: userRole('role').notNull(),
+  },
+  (table) => ({
+    access: unique().on(table.categoryId, table.role),
+  }),
+);
 
 export const postCategoryWriteAccesses = pgTable(
   'post_category_write_accesses',
@@ -36,6 +43,9 @@ export const postCategoryWriteAccesses = pgTable(
       .references(() => postCategories.id, { onDelete: 'cascade' }),
     role: userRole('role').notNull(),
   },
+  (table) => ({
+    access: unique().on(table.categoryId, table.role),
+  }),
 );
 
 export const posts = pgTable('posts', {

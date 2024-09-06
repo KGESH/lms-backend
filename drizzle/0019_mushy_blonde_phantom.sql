@@ -1,0 +1,2 @@
+ALTER TABLE "post_category_read_accesses" ADD CONSTRAINT "post_category_read_accesses_category_id_role_unique" UNIQUE("category_id","role");--> statement-breakpoint
+ALTER TABLE "post_category_write_accesses" ADD CONSTRAINT "post_category_write_accesses_category_id_role_unique" UNIQUE("category_id","role");

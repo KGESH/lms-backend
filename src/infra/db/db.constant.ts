@@ -1,0 +1,1 @@
+export const UNIQUE_CONSTRAINT_ERROR_CODE = '23505';

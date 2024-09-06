@@ -1,11 +1,19 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { PostCategoryAccessRepository } from '@src/v1/post/category/access/post-category-access.repository';
 import { IPostCategoryAccessRoles } from '@src/v1/post/category/access/post-category-access.interface';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { PostCategoryAccessQueryRepository } from '@src/v1/post/category/access/post-category-access-query.repository';
+import { UNIQUE_CONSTRAINT_ERROR_CODE } from '@src/infra/db/db.constant';
 
 @Injectable()
 export class PostCategoryAccessService {
+  private readonly logger = new Logger(PostCategoryAccessService.name);
   constructor(
     private readonly postCategoryAccessRepository: PostCategoryAccessRepository,
     private readonly postCategoryAccessQueryRepository: PostCategoryAccessQueryRepository,
@@ -15,6 +23,8 @@ export class PostCategoryAccessService {
   async createPostCategoryAccesses(
     params: IPostCategoryAccessRoles,
   ): Promise<IPostCategoryAccessRoles> {
+    this._validateCreateParamsOrThrow(params);
+
     const createReadAccessParams = params.readableRoles.map((role) => ({
       categoryId: params.categoryId,
       role,
@@ -24,24 +34,54 @@ export class PostCategoryAccessService {
       role,
     }));
 
-    return await this.drizzle.db.transaction(async (tx) => {
-      const readableAccesses =
-        await this.postCategoryAccessRepository.createPostCategoryReadAccesses(
-          createReadAccessParams,
-          tx,
-        );
-      const writableAccesses =
-        await this.postCategoryAccessRepository.createPostCategoryWriteAccesses(
-          createWriteAccessParams,
-          tx,
-        );
+    const accesses = await this.drizzle.db
+      .transaction(async (tx) => {
+        const readableAccesses =
+          await this.postCategoryAccessRepository.createPostCategoryReadAccesses(
+            createReadAccessParams,
+            tx,
+          );
+        const writableAccesses =
+          await this.postCategoryAccessRepository.createPostCategoryWriteAccesses(
+            createWriteAccessParams,
+            tx,
+          );
 
-      return {
-        categoryId: params.categoryId,
-        readableRoles: readableAccesses.map((access) => access.role),
-        writableRoles: writableAccesses.map((access) => access.role),
-      } satisfies IPostCategoryAccessRoles;
-    });
+        return {
+          categoryId: params.categoryId,
+          readableRoles: readableAccesses.map((access) => access.role),
+          writableRoles: writableAccesses.map((access) => access.role),
+        } satisfies IPostCategoryAccessRoles;
+      })
+      .catch((e) => {
+        this.logger.verbose(`[Create post category access]`, e);
+        if (e.code === UNIQUE_CONSTRAINT_ERROR_CODE) {
+          throw new ConflictException(
+            `[Category ID, Role] pair already exists.`,
+          );
+        }
+
+        throw e;
+      });
+
+    return accesses;
+  }
+
+  _validateCreateParamsOrThrow({
+    readableRoles,
+    writableRoles,
+  }: Pick<IPostCategoryAccessRoles, 'readableRoles' | 'writableRoles'>) {
+    if (writableRoles.includes('guest') && writableRoles.length > 2) {
+      throw new ForbiddenException(
+        'If guest role is included in writable roles, another role should not be included.',
+      );
+    }
+
+    if (readableRoles.includes('guest') && readableRoles.length > 2) {
+      throw new ForbiddenException(
+        'If guest role is included in readable roles, another role should not be included.',
+      );
+    }
   }
 
   async deletePostCategoryAccesses(
