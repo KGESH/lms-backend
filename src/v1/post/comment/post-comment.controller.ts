@@ -31,6 +31,11 @@ export class PostCommentController {
   constructor(private readonly postCommentService: PostCommentService) {}
 
   /**
+   *
+   * [Deprecated] Post API에서 댓글을 함께 조회할 수 있도록 변경되었습니다.
+   *
+   * 이 엔드포인트는 더 이상 사용되지 않습니다.
+   *
    * 특정 게시글의 댓글 목록을 조회합니다.
    *
    * 로그인 없이 조회할 수 있습니다.
@@ -43,6 +48,8 @@ export class PostCommentController {
    *
    * @tag post-comment
    * @summary 댓글 목록 조회 (public)
+   * @param postId - 댓글이 속한 게시글의 id
+   * @deprecated
    */
   @TypedRoute.Get('/')
   @SkipAuth()
@@ -82,6 +89,8 @@ export class PostCommentController {
    *
    * @tag post-comment
    * @summary 특정 댓글 조회 (public)
+   * @param postId - 댓글이 속한 게시글의 id
+   * @param id - 조회할 댓글의 id
    */
   @TypedRoute.Get('/:id')
   @SkipAuth()
@@ -93,7 +102,7 @@ export class PostCommentController {
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('postId') postId: Uuid,
     @TypedParam('id') id: Uuid,
-  ) {
+  ): Promise<PostCommentWithChildrenDto | null> {
     const comment = await this.postCommentService.findPostCommentWithChildren({
       id,
     });
@@ -126,7 +135,7 @@ export class PostCommentController {
     @TypedParam('postId') postId: Uuid,
     @TypedBody() body: CreatePostCommentDto,
     @SessionUser() session: ISessionWithUser,
-  ) {
+  ): Promise<PostCommentWithChildrenDto> {
     const comment = await this.postCommentService.createPostComment({
       createParams: {
         postId,
@@ -172,7 +181,7 @@ export class PostCommentController {
     @TypedParam('id') id: Uuid,
     @TypedBody() body: UpdatePostCommentDto,
     @SessionUser() session: ISessionWithUser,
-  ) {
+  ): Promise<PostCommentWithChildrenDto> {
     const comment = await this.postCommentService.updatePostComment(
       session.user,
       {
