@@ -10,6 +10,8 @@ import { ReviewQueryRepository } from '@src/v1/review/review-query.repository';
 import { createUuid } from '@src/shared/utils/uuid';
 import * as date from '@src/shared/utils/date';
 import { CourseReviewRepository } from '@src/v1/review/course-review/course-review.repository';
+import * as typia from 'typia';
+import { IOrderCreate } from '@src/v1/order/order.interface';
 
 @Injectable()
 export class CourseReviewAdminService {
@@ -40,6 +42,8 @@ export class CourseReviewAdminService {
           {
             id: orderId,
             userId: reviewCreateParams.userId,
+            txId: typia.random<IOrderCreate['txId']>(),
+            paymentId: typia.random<IOrderCreate['paymentId']>(),
             productType: reviewCreateParams.productType,
             title: product.lastSnapshot!.title,
             description: product.lastSnapshot!.description,

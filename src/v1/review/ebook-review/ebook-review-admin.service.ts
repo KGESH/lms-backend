@@ -6,9 +6,11 @@ import { ReviewSnapshotRepository } from '@src/v1/review/review-snapshot.reposit
 import { ReviewQueryRepository } from '@src/v1/review/review-query.repository';
 import { createUuid } from '@src/shared/utils/uuid';
 import * as date from '@src/shared/utils/date';
+import * as typia from 'typia';
 import { EbookProductService } from '@src/v1/product/ebook-product/ebook-product.service';
 import { IEbookReviewRelationsCreate } from '@src/v1/review/ebook-review/ebook-review.interface';
 import { EbookReviewRepository } from '@src/v1/review/ebook-review/ebook-review.repository';
+import { IOrderCreate } from '@src/v1/order/order.interface';
 
 @Injectable()
 export class EbookReviewAdminService {
@@ -37,6 +39,8 @@ export class EbookReviewAdminService {
           {
             id: orderId,
             userId: reviewCreateParams.userId,
+            txId: typia.random<IOrderCreate['txId']>(),
+            paymentId: typia.random<IOrderCreate['paymentId']>(),
             productType: reviewCreateParams.productType,
             title: product.lastSnapshot!.title,
             description: product.lastSnapshot!.description,

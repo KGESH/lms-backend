@@ -19,7 +19,13 @@ export type IAwsConfigs = {
   AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS: number;
 };
 
+export type IPortoneConfigs = {
+  PORTONE_API_SECRET: string;
+  PORTONE_API_BASE_URL: string;
+};
+
 export type IEnvironment = IAppConfigs &
   IAuthConfigs &
   IDatabaseConfigs &
-  IAwsConfigs;
+  IAwsConfigs &
+  IPortoneConfigs;

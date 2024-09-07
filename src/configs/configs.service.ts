@@ -37,6 +37,8 @@ export class ConfigsService {
       AWS_S3_BUCKET: process.env.AWS_S3_BUCKET,
       AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS:
         +`${process.env.AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS}`,
+      PORTONE_API_SECRET: process.env.PORTONE_API_SECRET,
+      PORTONE_API_BASE_URL: process.env.PORTONE_API_BASE_URL,
     };
 
     const productionConfigs = typia.validate<IEnvironment>(fromExternal);
@@ -65,6 +67,8 @@ export class ConfigsService {
       AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS: +this.dotEnv.get(
         'AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS',
       ),
+      PORTONE_API_SECRET: this.dotEnv.get('PORTONE_API_SECRET'),
+      PORTONE_API_BASE_URL: this.dotEnv.get('PORTONE_API_BASE_URL'),
     };
 
     const devConfigs = typia.validate<IEnvironment>(fromDotEnv);

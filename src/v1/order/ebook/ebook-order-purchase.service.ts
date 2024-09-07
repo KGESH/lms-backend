@@ -48,6 +48,8 @@ export class EbookOrderPurchaseService {
             orderCreateParams: {
               id: orderId,
               userId: user.id,
+              txId: params.txId,
+              paymentId: params.paymentId,
               productType: 'ebook',
               title: ebookProduct.lastSnapshot.title,
               description: ebookProduct.lastSnapshot.description,

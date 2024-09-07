@@ -28,7 +28,7 @@ export class HttpClientService implements IHttpClient {
     return data;
   }
 
-  async post<T>(url: string, body: any, headers: IHttpHeaders = {}) {
+  async post<T>(url: string, body: unknown, headers: IHttpHeaders = {}) {
     const { data } = await firstValueFrom(
       this.httpService
         .post<T>(url, body, {
@@ -47,7 +47,7 @@ export class HttpClientService implements IHttpClient {
     return data;
   }
 
-  async put<T>(url: string, body: any, headers: IHttpHeaders = {}) {
+  async put<T>(url: string, body: unknown, headers: IHttpHeaders = {}) {
     const { data } = await firstValueFrom(
       this.httpService
         .put<T>(url, body, {
@@ -66,7 +66,7 @@ export class HttpClientService implements IHttpClient {
     return data;
   }
 
-  async patch<T>(url: string, body: any, headers: IHttpHeaders = {}) {
+  async patch<T>(url: string, body: unknown, headers: IHttpHeaders = {}) {
     const { data } = await firstValueFrom(
       this.httpService
         .patch<T>(url, body, {

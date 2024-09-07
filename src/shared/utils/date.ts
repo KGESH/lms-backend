@@ -6,21 +6,30 @@ import { ISO8601 } from '@src/shared/types/primitive';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
+type DateInput = Date | dayjs.Dayjs | string | number;
+
 type DateType = 'date';
+
 type IsoStrType = 'iso';
+
 type FormattedType = 'formatted';
 
 const displayDateFormat = 'YYYY-MM-DD HH:mm:ss';
+
 type DisplayDateFormat = typeof displayDateFormat;
 
+type DateUnit = 'year' | 'month' | 'week' | 'day' | 'hour' | 'minute';
+
 export function now(type: DateType): Date;
+
 export function now(type: IsoStrType): string;
+
 export function now(type: FormattedType): DisplayDateFormat;
 
 export function now(
-  type: DateType | IsoStrType | FormattedType = 'date',
+  output: DateType | IsoStrType | FormattedType = 'date',
 ): Date | string {
-  switch (type) {
+  switch (output) {
     case 'date':
       return dayjs().utc().toDate();
     case 'iso':
@@ -49,4 +58,72 @@ export function toISOString(date: Date): ISO8601 {
 
 export function isBefore(date: Date, compare: Date): boolean {
   return dayjs(date).isBefore(compare);
+}
+
+export function addDate(
+  date: DateInput,
+  value: number,
+  unit: DateUnit,
+  output: DateType,
+): Date;
+
+export function addDate(
+  date: DateInput,
+  value: number,
+  unit: DateUnit,
+  output: IsoStrType | FormattedType,
+): string;
+
+export function addDate(
+  date: DateInput,
+  value: number,
+  unit: DateUnit,
+  output: DateType | IsoStrType | FormattedType = 'date',
+): Date | string {
+  const calculatedDate = dayjs(date).add(value, unit);
+
+  switch (output) {
+    case 'date':
+      return calculatedDate.toDate();
+    case 'iso':
+      return calculatedDate.toISOString();
+    case 'formatted':
+      return calculatedDate.format(displayDateFormat);
+    default:
+      throw new Error('Invalid date type');
+  }
+}
+
+export function subtractDate(
+  date: DateInput,
+  value: number,
+  unit: DateUnit,
+  output: DateType,
+): Date;
+
+export function subtractDate(
+  date: DateInput,
+  value: number,
+  unit: DateUnit,
+  output: IsoStrType | FormattedType,
+): string;
+
+export function subtractDate(
+  date: DateInput,
+  value: number,
+  unit: DateUnit,
+  output: DateType | IsoStrType | FormattedType = 'date',
+): Date | string {
+  const calculatedDate = dayjs(date).subtract(value, unit);
+
+  switch (output) {
+    case 'date':
+      return calculatedDate.toDate();
+    case 'iso':
+      return calculatedDate.toISOString();
+    case 'formatted':
+      return calculatedDate.format(displayDateFormat);
+    default:
+      throw new Error('Invalid date type');
+  }
 }

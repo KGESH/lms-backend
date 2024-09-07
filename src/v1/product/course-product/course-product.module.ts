@@ -30,6 +30,6 @@ const providers = [
   imports: [...modules],
   controllers: [CourseProductController],
   providers: [...providers],
-  exports: [...providers, ...modules],
+  exports: [...modules, ...providers],
 })
 export class CourseProductModule {}

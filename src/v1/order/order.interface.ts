@@ -4,6 +4,8 @@ import { Optional } from '@src/shared/types/optional';
 export type IOrder = {
   id: Uuid;
   userId: Uuid;
+  paymentId: string | null;
+  txId: string | null;
   productType: ProductType;
   title: string;
   description: string | null;

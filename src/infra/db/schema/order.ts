@@ -9,6 +9,8 @@ import { ebookProductSnapshots } from './ebook';
 export const orders = pgTable('orders', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').notNull(),
+  txId: text('tx_id').unique(),
+  paymentId: text('payment_id').unique(),
   productType: productType('product_type').notNull(),
   title: text('title').notNull(),
   description: text('description'),
