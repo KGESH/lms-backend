@@ -48,7 +48,9 @@ describe('CourseOrderController (e2e)', () => {
         {
           userId: user.id,
           courseId: courseProduct.courseId,
-          paymentMethod: '신용카드',
+          paymentId: null,
+          txId: null,
+          paymentMethod: '프로모션 이벤트',
           amount: typia.random<Price>(),
         },
       );
@@ -74,7 +76,7 @@ describe('CourseOrderController (e2e)', () => {
       }
 
       const foundOrder = foundResponse.data;
-      expect(foundOrder.paymentMethod).toEqual('신용카드');
+      expect(foundOrder.paymentMethod).toEqual('프로모션 이벤트');
       // Order title is the same as the last snapshot title of the product
       expect(foundOrder.title).toEqual(courseProduct!.lastSnapshot!.title);
     });
@@ -98,7 +100,9 @@ describe('CourseOrderController (e2e)', () => {
         {
           userId: user.id,
           courseId: courseProduct.courseId,
-          paymentMethod: '신용카드',
+          paymentId: null,
+          txId: null,
+          paymentMethod: '프로모션 이벤트',
           amount: typia.random<Price>(),
         },
       );
@@ -109,7 +113,7 @@ describe('CourseOrderController (e2e)', () => {
 
       const order = response.data;
       expect(order).not.toBeNull();
-      expect(order.paymentMethod).toEqual('신용카드');
+      expect(order.paymentMethod).toEqual('프로모션 이벤트');
       expect(order.productType).toEqual('course');
     });
   });
