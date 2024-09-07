@@ -47,6 +47,8 @@ jobs:
           AWS_S3_SECRET: ${{secrets.AWS_S3_SECRET}}
           AWS_S3_BUCKET: ${{secrets.AWS_S3_BUCKET}}
           AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS: ${{secrets.AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS}}
+          PORTONE_API_BASE_URL: ${{secrets.PORTONE_API_BASE_URL}}
+          PORTONE_API_SECRET: ${{secrets.PORTONE_API_SECRET}}
 
       - name: Publish SDK
         run: npm run deploy
@@ -60,3 +62,5 @@ jobs:
           AWS_S3_SECRET: ${{secrets.AWS_S3_SECRET}}
           AWS_S3_BUCKET: ${{secrets.AWS_S3_BUCKET}}
           AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS: ${{secrets.AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS}}
+          PORTONE_API_BASE_URL: ${{secrets.PORTONE_API_BASE_URL}}
+          PORTONE_API_SECRET: ${{secrets.PORTONE_API_SECRET}}
