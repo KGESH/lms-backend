@@ -1,0 +1,1 @@
+ALTER TABLE "course_order_refunds" ADD COLUMN "reason" text NOT NULL;

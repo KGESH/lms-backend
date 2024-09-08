@@ -29,6 +29,8 @@ export class PaymentService {
 
       const data = await this.api.get(endpoint.href);
 
+      this.logger.log(`[Port One Payment Result]`, data);
+
       const paymentResult = typia.assert<PortonePaymentResult>(data);
 
       return paymentResult;

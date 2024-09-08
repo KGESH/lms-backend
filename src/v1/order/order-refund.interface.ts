@@ -5,6 +5,7 @@ export type IOrderRefund = {
   id: Uuid;
   orderId: Uuid;
   refundedAmount: Price;
+  reason: string;
   refundedAt: Date;
 };
 

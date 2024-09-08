@@ -25,7 +25,6 @@ import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
 import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
-import { DEFAULT_PAGINATION } from '@src/core/pagination.constant';
 import { Paginated } from '@src/shared/types/pagination';
 import { IErrorResponse } from '@src/shared/types/response';
 import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';

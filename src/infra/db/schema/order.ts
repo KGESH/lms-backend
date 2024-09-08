@@ -35,6 +35,7 @@ export const orderRefunds = pgTable('course_order_refunds', {
   id: uuid('id').primaryKey().defaultRandom(),
   orderId: uuid('order_id').notNull(),
   refundedAmount: decimal('refunded_amount').notNull(),
+  reason: text('reason').notNull(),
   refundedAt: timestamp('refunded_at', { mode: 'date', withTimezone: true }),
 });
 

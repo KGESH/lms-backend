@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { OrderQueryRepository } from '@src/v1/order/order-query.repository';
 import { IOrder } from '@src/v1/order/order.interface';
 import {
@@ -8,10 +8,13 @@ import {
 import { OrderRefundRepository } from '@src/v1/order/order-refund.repository';
 import * as date from '@src/shared/utils/date';
 import { IOrderRelations } from '@src/v1/order/order-relations.interface';
+import { PaymentService } from '@src/infra/payment/payment.service';
 
 @Injectable()
 export class OrderService {
+  private readonly logger = new Logger(OrderService.name);
   constructor(
+    private readonly paymentService: PaymentService,
     private readonly orderQueryRepository: OrderQueryRepository,
     private readonly orderRefundRepository: OrderRefundRepository,
   ) {}
@@ -42,9 +45,17 @@ export class OrderService {
   ): Promise<IOrderRefund> {
     const order = await this.orderQueryRepository.findOrderOrThrow(where);
 
-    // Todo: Impl payment refund
+    if (order.paymentId) {
+      const pgRefundResponse = await this.paymentService.refundPgPayment({
+        paymentId: order.paymentId,
+        reason: refundCreateParams.reason,
+        refundAmount: +refundCreateParams.refundedAmount,
+      });
+      this.logger.log(`[PG refund response]`, pgRefundResponse);
+    }
 
     const refundedAt = date.now('date');
+
     const orderRefund = await this.orderRefundRepository.create({
       ...refundCreateParams,
       orderId: order.id,

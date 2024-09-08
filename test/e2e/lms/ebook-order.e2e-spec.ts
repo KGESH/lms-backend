@@ -127,6 +127,7 @@ describe('EbookOrderController (e2e)', () => {
       const { order } = (await seedEbookOrders({ count: 1 }, drizzle.db))[0];
       const createOrderRefundDto: CreateOrderRefundDto = {
         amount: '10000',
+        reason: 'mock refund',
       };
 
       const response = await OrderAPI.refund.refundOrder(

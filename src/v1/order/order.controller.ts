@@ -1,4 +1,4 @@
-import { Controller, UseGuards } from '@nestjs/common';
+import { Controller, Logger, UseGuards } from '@nestjs/common';
 import { TypedBody, TypedHeaders, TypedParam, TypedRoute } from '@nestia/core';
 import { CourseOrderPurchaseService } from '@src/v1/order/course/course-order-purchase.service';
 import { CourseOrderPurchaseDto } from '@src/v1/order/course/course-order-purchase.dto';
@@ -22,9 +22,12 @@ import { EbookOrderPurchaseDto } from '@src/v1/order/ebook/ebook-order-purchase.
 import { EbookOrderPurchaseService } from '@src/v1/order/ebook/ebook-order-purchase.service';
 import * as typia from 'typia';
 import { courseRelationsToDto } from '@src/shared/helpers/transofrm/course';
+import { SessionUser } from '@src/core/decorators/session-user.decorator';
+import { ISessionWithUser } from '@src/v1/auth/session.interface';
 
 @Controller('v1/order')
 export class OrderController {
+  private readonly logger = new Logger(OrderController.name);
   constructor(
     private readonly orderService: OrderService,
     private readonly courseOrderPurchaseService: CourseOrderPurchaseService,
@@ -195,7 +198,7 @@ export class OrderController {
   }
 
   /**
-   * 강의 상품을 구매합니다. (PG 연동 미구현)
+   * 강의 상품을 구매합니다.
    *
    * PG사 결제 성공시 주문 내역을 반환합니다.
    *
@@ -210,9 +213,14 @@ export class OrderController {
   async purchaseCourseProduct(
     @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: CourseOrderPurchaseDto,
+    @SessionUser() session: ISessionWithUser,
   ): Promise<OrderCoursePurchasedDto> {
+    this.logger.log('[BODY]', body);
     const { order, courseProduct } =
-      await this.courseOrderPurchaseService.purchaseCourse(body);
+      await this.courseOrderPurchaseService.purchaseCourse({
+        ...body,
+        userId: session.userId,
+      });
 
     return {
       ...order,
@@ -261,6 +269,7 @@ export class OrderController {
       {
         orderId: id,
         refundedAmount: body.amount,
+        reason: body.reason,
       },
     );
 

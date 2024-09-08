@@ -6,6 +6,7 @@ export const orderRefundToDto = (orderRefund: IOrderRefund): OrderRefundDto => {
     id: orderRefund.id,
     orderId: orderRefund.orderId,
     amount: orderRefund.refundedAmount,
+    reason: orderRefund.reason,
     refundedAt: orderRefund.refundedAt,
   };
 };

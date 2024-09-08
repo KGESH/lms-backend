@@ -20,6 +20,8 @@ import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
 import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
+import { IErrorResponse } from '@src/shared/types/response';
+import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
 
 @Controller('v1/product/ebook')
 export class EbookProductController {
@@ -53,6 +55,10 @@ export class EbookProductController {
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   async getEbookProduct(
     @TypedHeaders() headers: ApiAuthHeaders,
@@ -104,6 +110,10 @@ export class EbookProductController {
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   async createProductEbook(
     @TypedHeaders() headers: AuthHeaders,
@@ -186,6 +196,10 @@ export class EbookProductController {
   @TypedException<TypeGuardError>({
     status: 404,
     description: 'Ebook product snapshot not found',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   async updateProductEbook(
     @TypedHeaders() headers: AuthHeaders,
