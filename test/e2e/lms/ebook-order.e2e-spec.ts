@@ -1,9 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 import * as EbookOrderAPI from '../../../src/api/functional/v1/order/ebook';
 import * as OrderAPI from '../../../src/api/functional/v1/order';
-import * as typia from 'typia';
 import { createTestingServer } from '../helpers/app.helper';
-import { Price, Uri } from '../../../src/shared/types/primitive';
+import { Uri } from '../../../src/shared/types/primitive';
 import { DrizzleService } from '../../../src/infra/db/drizzle.service';
 import { createRandomEbookProduct } from '../helpers/db/lms/ebook-product.helper';
 import { seedUsers } from '../helpers/db/lms/user.helper';
@@ -60,8 +59,6 @@ describe('EbookOrderController (e2e)', () => {
       }
 
       const order = response.data;
-
-      console.log('[Purchased]', order);
 
       const foundResponse = await OrderAPI.getOrder(
         {

@@ -12,6 +12,8 @@ export const createRandomCourseOrder = async (db: TransactionClient) => {
   const product = await createRandomCourseProduct(db);
   const orderCreateParams: IOrderCreate = {
     ...typia.random<IOrderCreate>(),
+    paymentId: null,
+    txId: null,
     userId: user.id,
     productType: 'course',
   };
@@ -43,6 +45,8 @@ export const createRandomEbookOrder = async (db: TransactionClient) => {
   const product = await createRandomEbookProduct(db);
   const orderCreateParams: IOrderCreate = {
     ...typia.random<IOrderCreate>(),
+    paymentId: null,
+    txId: null,
     userId: user.id,
     productType: 'ebook',
   };

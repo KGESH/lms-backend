@@ -130,9 +130,6 @@ export class OrderController {
         userId: session.userId,
       });
 
-    console.log('[ORDER]', order);
-    console.log('[COURSE PRODUCT]', courseProduct);
-
     return {
       ...order,
       paidAt: order.paidAt ? date.toISOString(order.paidAt) : null,
