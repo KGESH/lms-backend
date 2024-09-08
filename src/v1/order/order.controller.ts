@@ -4,10 +4,8 @@ import { CourseOrderPurchaseService } from '@src/v1/order/course/course-order-pu
 import { CourseOrderPurchaseDto } from '@src/v1/order/course/course-order-purchase.dto';
 import * as date from '@src/shared/utils/date';
 import {
-  OrderCourseDto,
   OrderCoursePurchasedDto,
   OrderDto,
-  OrderEbookDto,
   OrderEbookPurchasedDto,
 } from '@src/v1/order/order.dto';
 import { toISOString } from '@src/shared/utils/date';
@@ -20,10 +18,12 @@ import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
 import { EbookOrderPurchaseDto } from '@src/v1/order/ebook/ebook-order-purchase.dto';
 import { EbookOrderPurchaseService } from '@src/v1/order/ebook/ebook-order-purchase.service';
-import * as typia from 'typia';
 import { courseRelationsToDto } from '@src/shared/helpers/transofrm/course';
 import { SessionUser } from '@src/core/decorators/session-user.decorator';
 import { ISessionWithUser } from '@src/v1/auth/session.interface';
+import { ebookRelationsToDto } from '@src/shared/helpers/transofrm/ebook';
+import { courseOrderToDto } from '@src/shared/helpers/transofrm/course-order';
+import { ebookOrderToDto } from '@src/shared/helpers/transofrm/ebook-order';
 
 @Controller('v1/order')
 export class OrderController {
@@ -57,105 +57,9 @@ export class OrderController {
     }
 
     if (order.productType === 'course') {
-      return typia.assert<OrderCourseDto>({
-        id: order.id,
-        userId: order.userId,
-        productType: 'course',
-        title: order.title,
-        description: order.description,
-        product: {
-          ...order.productOrder.productSnapshot,
-          snapshotId: order.productOrder.productSnapshot.id,
-          title: order.productOrder.productSnapshot.title,
-          description: order.productOrder.productSnapshot.description,
-          announcement: {
-            ...order.productOrder.productSnapshot.announcement,
-          },
-          refundPolicy: {
-            ...order.productOrder.productSnapshot.refundPolicy,
-          },
-          content: {
-            ...order.productOrder.productSnapshot.content,
-          },
-          pricing: {
-            ...order.productOrder.productSnapshot.pricing,
-          },
-          discounts: order.productOrder.productSnapshot.discounts
-            ? {
-                ...order.productOrder.productSnapshot.discounts,
-                validTo: order.productOrder.productSnapshot.discounts.validTo
-                  ? date.toISOString(
-                      order.productOrder.productSnapshot.discounts.validTo,
-                    )
-                  : null,
-                validFrom: order.productOrder.productSnapshot.discounts
-                  .validFrom
-                  ? date.toISOString(
-                      order.productOrder.productSnapshot.discounts.validFrom,
-                    )
-                  : null,
-              }
-            : null,
-          createdAt: toISOString(order.productOrder.productSnapshot.createdAt),
-          updatedAt: toISOString(order.productOrder.productSnapshot.updatedAt),
-          deletedAt: order.productOrder.productSnapshot.deletedAt
-            ? toISOString(order.productOrder.productSnapshot.deletedAt)
-            : null,
-        },
-        paymentMethod: order.paymentMethod,
-        amount: order.amount,
-        paidAt: order.paidAt ? date.toISOString(order.paidAt) : null,
-      });
+      return courseOrderToDto(order);
     } else {
-      return typia.assert<OrderEbookDto>({
-        id: order.id,
-        userId: order.userId,
-        productType: 'ebook',
-        title: order.title,
-        description: order.description,
-        product: {
-          ...order.productOrder.productSnapshot,
-          snapshotId: order.productOrder.productSnapshot.id,
-          title: order.productOrder.productSnapshot.title,
-          description: order.productOrder.productSnapshot.description,
-          announcement: {
-            ...order.productOrder.productSnapshot.announcement,
-          },
-          refundPolicy: {
-            ...order.productOrder.productSnapshot.refundPolicy,
-          },
-          content: {
-            ...order.productOrder.productSnapshot.content,
-          },
-          pricing: {
-            ...order.productOrder.productSnapshot.pricing,
-          },
-          discounts: order.productOrder.productSnapshot.discounts
-            ? {
-                ...order.productOrder.productSnapshot.discounts,
-                validTo: order.productOrder.productSnapshot.discounts.validTo
-                  ? date.toISOString(
-                      order.productOrder.productSnapshot.discounts.validTo,
-                    )
-                  : null,
-                validFrom: order.productOrder.productSnapshot.discounts
-                  .validFrom
-                  ? date.toISOString(
-                      order.productOrder.productSnapshot.discounts.validFrom,
-                    )
-                  : null,
-              }
-            : null,
-          createdAt: toISOString(order.productOrder.productSnapshot.createdAt),
-          updatedAt: toISOString(order.productOrder.productSnapshot.updatedAt),
-          deletedAt: order.productOrder.productSnapshot.deletedAt
-            ? toISOString(order.productOrder.productSnapshot.deletedAt)
-            : null,
-        },
-        paymentMethod: order.paymentMethod,
-        amount: order.amount,
-        paidAt: order.paidAt ? date.toISOString(order.paidAt) : null,
-      });
+      return ebookOrderToDto(order);
     }
   }
 
@@ -175,15 +79,20 @@ export class OrderController {
   async purchaseEbookProduct(
     @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: EbookOrderPurchaseDto,
+    @SessionUser() session: ISessionWithUser,
   ): Promise<OrderEbookPurchasedDto> {
     const { order, ebookProduct } =
-      await this.ebookOrderPurchaseService.purchaseEbook(body);
+      await this.ebookOrderPurchaseService.purchaseEbook({
+        ...body,
+        userId: session.userId,
+      });
 
     return {
       ...order,
       paidAt: order.paidAt ? date.toISOString(order.paidAt) : null,
       productType: 'ebook',
       product: {
+        ebook: ebookRelationsToDto(ebookProduct.ebook),
         ebookId: ebookProduct.ebookId,
         snapshotId: ebookProduct.lastSnapshot.id,
         title: ebookProduct.lastSnapshot.title,
@@ -215,18 +124,21 @@ export class OrderController {
     @TypedBody() body: CourseOrderPurchaseDto,
     @SessionUser() session: ISessionWithUser,
   ): Promise<OrderCoursePurchasedDto> {
-    this.logger.log('[BODY]', body);
     const { order, courseProduct } =
       await this.courseOrderPurchaseService.purchaseCourse({
         ...body,
         userId: session.userId,
       });
 
+    console.log('[ORDER]', order);
+    console.log('[COURSE PRODUCT]', courseProduct);
+
     return {
       ...order,
       paidAt: order.paidAt ? date.toISOString(order.paidAt) : null,
       productType: 'course',
       product: {
+        course: courseRelationsToDto(courseProduct.course),
         courseId: courseProduct.courseId,
         snapshotId: courseProduct.lastSnapshot.id,
         title: courseProduct.lastSnapshot.title,
@@ -236,7 +148,6 @@ export class OrderController {
         deletedAt: courseProduct.lastSnapshot.deletedAt
           ? toISOString(courseProduct.lastSnapshot.deletedAt)
           : null,
-        course: courseRelationsToDto(courseProduct.course),
       },
     };
   }

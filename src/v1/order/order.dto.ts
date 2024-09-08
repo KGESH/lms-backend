@@ -32,13 +32,13 @@ export type OrderCoursePurchasedDto = Omit<OrderCourseDto, 'product'> & {
 
 export type OrderEbookDto = OrderBaseDto & {
   productType: Ebook;
-  product: EbookProductDto;
+  product: Omit<EbookProductDto, 'ebook'>;
 };
 
 export type OrderEbookPurchasedDto = Omit<OrderEbookDto, 'product'> & {
   product: Omit<
     EbookProductDto,
-    'content' | 'announcement' | 'refundPolicy' | 'pricing' | 'discounts' // Todo: Impl
+    'content' | 'announcement' | 'refundPolicy' | 'pricing' | 'discounts'
   >;
 };
 

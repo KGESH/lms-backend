@@ -12,6 +12,14 @@ export type IEbookProductWithLastSnapshot = IEbookProduct & {
   lastSnapshot: IProductSnapshot | null;
 };
 
+export type IEbookProductWithPricing = IEbookProduct & {
+  ebook: IEbookWithRelations;
+  lastSnapshot: IProductSnapshot & {
+    pricing: IProductSnapshotPricing;
+    discount: IProductSnapshotDiscount | null;
+  };
+};
+
 export type IEbookProductWithRelations = IEbookProduct & {
   ebook: IEbookWithRelations;
   lastSnapshot:

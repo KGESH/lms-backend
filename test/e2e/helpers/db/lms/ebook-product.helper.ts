@@ -26,6 +26,11 @@ import {
 } from '../../../../../src/v1/product/common/snapshot/content/product-snapshot-content.interface';
 import { IProductSnapshotAnnouncementCreate } from '../../../../../src/v1/product/common/snapshot/announcement/product-snapshot-announcement.interface';
 import { IProductSnapshotRefundPolicyCreate } from '../../../../../src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
+import {
+  generateRandomDiscount,
+  generateRandomPrice,
+} from '../../../../../src/shared/helpers/mocks/random-price.mock';
+import * as date from '../../../../../src/shared/utils/date';
 
 export const createEbookProduct = async (
   params: IEbookProductCreate,
@@ -130,41 +135,45 @@ export const createRandomEbookProduct = async (
     {
       ...typia.random<IProductSnapshotCreate>(),
       productId: product.id,
+      title: '테스트 온라인 전자책',
+      description: '테스트 온라인 전자책 상품입니다.',
     },
     db,
   );
   const announcement = await createEbookProductAnnouncement(
     {
-      ...typia.random<IProductSnapshotContentCreate>(),
       productSnapshotId: snapshot.id,
+      richTextContent: '테스트 공지사항입니다.',
     },
     db,
   );
   const refundPolicy = await createEbookProductSnapshotRefundPolicy(
     {
-      ...typia.random<IProductSnapshotRefundPolicyCreate>(),
       productSnapshotId: snapshot.id,
+      richTextContent: '테스트 환불 정책입니다.',
     },
     db,
   );
   const content = await createEbookProductSnapshotContent(
     {
-      ...typia.random<IProductSnapshotContentCreate>(),
       productSnapshotId: snapshot.id,
+      richTextContent: '테스트 전자책 상품 설명입니다.',
     },
     db,
   );
   const pricing = await createEbookProductSnapshotPricing(
     {
-      ...typia.random<IProductSnapshotPricingCreate>(),
       productSnapshotId: snapshot.id,
+      amount: generateRandomPrice(),
     },
     db,
   );
   const discounts = await createEbookProductSnapshotDiscount(
     {
-      ...typia.random<IProductSnapshotDiscountCreate>(),
+      ...generateRandomDiscount(),
       productSnapshotId: snapshot.id,
+      validFrom: date.now('date'),
+      validTo: date.addDate(date.now('date'), 1, 'month', 'date'),
     },
     db,
   );

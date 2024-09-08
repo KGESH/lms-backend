@@ -54,6 +54,9 @@ export const ebookContents = pgTable('ebook_contents', {
 export const ebookProducts = pgTable('ebook_products', {
   id: uuid('id').primaryKey().defaultRandom(),
   ebookId: uuid('ebook_id').notNull(),
+  createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });
 
 export const ebookProductSnapshots = pgTable('ebook_product_snapshots', {

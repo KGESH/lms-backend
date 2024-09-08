@@ -28,6 +28,7 @@ import { IProductSnapshotRefundPolicyCreate } from '@src/v1/product/common/snaps
 import { createUuid } from '@src/shared/utils/uuid';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
 import { CourseQueryService } from '@src/v1/course/course-query.service';
+import * as typia from 'typia';
 
 @Injectable()
 export class CourseProductService {

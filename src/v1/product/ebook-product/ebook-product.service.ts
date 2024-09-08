@@ -14,6 +14,7 @@ import { IProductSnapshotPricingCreate } from '@src/v1/product/common/snapshot/p
 import { IProductSnapshotDiscountCreate } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
 import {
   IEbookProductWithLastSnapshot,
+  IEbookProductWithPricing,
   IEbookProductWithRelations,
 } from '@src/v1/product/ebook-product/ebook-product-relations.interface';
 import { NonNullableInfer } from '@src/shared/types/non-nullable-infer';
@@ -25,6 +26,7 @@ import { EbookProductSnapshotRefundPolicyRepository } from '@src/v1/product/eboo
 import { IProductSnapshotAnnouncementCreate } from '@src/v1/product/common/snapshot/announcement/product-snapshot-announcement.interface';
 import { IProductSnapshotRefundPolicyCreate } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
 import { createUuid } from '@src/shared/utils/uuid';
+import { Paginated, Pagination } from '@src/shared/types/pagination';
 
 @Injectable()
 export class EbookProductService {
@@ -39,6 +41,14 @@ export class EbookProductService {
     private readonly ebookProductSnapshotRefundPolicyRepository: EbookProductSnapshotRefundPolicyRepository,
     private readonly drizzle: DrizzleService,
   ) {}
+
+  async findEbookProductsWithPricing(
+    pagination: Pagination,
+  ): Promise<Paginated<IEbookProductWithPricing[]>> {
+    return await this.ebookProductQueryRepository.findEbookProductsWithRelations(
+      pagination,
+    );
+  }
 
   async findEbookProductWithRelations(
     where: Pick<IEbookProduct, 'ebookId'>,

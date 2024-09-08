@@ -252,14 +252,14 @@ export class CourseProductQueryRepository {
       return null;
     }
 
-    return {
+    return typia.misc.clone<ICourseProductWithLastSnapshot>({
       ...product,
       course: {
         ...product.course,
         chapters: [],
       },
       lastSnapshot: product.snapshots[0] ?? null,
-    };
+    } satisfies ICourseProductWithLastSnapshot);
   }
 
   async findCourseProductWithLastSnapshotOrThrow({

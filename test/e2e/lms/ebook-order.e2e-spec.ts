@@ -51,7 +51,7 @@ describe('EbookOrderController (e2e)', () => {
           paymentMethod: '프로모션 이벤트',
           paymentId: null,
           txId: null,
-          amount: typia.random<Price>(),
+          amount: ebookProduct.lastSnapshot!.pricing!.amount,
         },
       );
       if (!response.success) {
@@ -60,6 +60,8 @@ describe('EbookOrderController (e2e)', () => {
       }
 
       const order = response.data;
+
+      console.log('[Purchased]', order);
 
       const foundResponse = await OrderAPI.getOrder(
         {
@@ -103,7 +105,7 @@ describe('EbookOrderController (e2e)', () => {
           paymentMethod: '프로모션 이벤트',
           paymentId: null,
           txId: null,
-          amount: typia.random<Price>(),
+          amount: ebookProduct!.lastSnapshot!.pricing.amount!,
         },
       );
       if (!response.success) {
@@ -127,7 +129,7 @@ describe('EbookOrderController (e2e)', () => {
       const { order } = (await seedEbookOrders({ count: 1 }, drizzle.db))[0];
       const createOrderRefundDto: CreateOrderRefundDto = {
         amount: '10000',
-        reason: 'mock refund',
+        reason: 'mock refund reason',
       };
 
       const response = await OrderAPI.refund.refundOrder(

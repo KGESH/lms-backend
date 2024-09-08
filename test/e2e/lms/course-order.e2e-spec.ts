@@ -51,7 +51,7 @@ describe('CourseOrderController (e2e)', () => {
           paymentId: null,
           txId: null,
           paymentMethod: '프로모션 이벤트',
-          amount: typia.random<Price>(),
+          amount: courseProduct.lastSnapshot!.pricing!.amount,
         },
       );
       if (!response.success) {
@@ -127,7 +127,7 @@ describe('CourseOrderController (e2e)', () => {
       const { order } = (await seedCourseOrders({ count: 1 }, drizzle.db))[0];
       const createOrderRefundDto: CreateOrderRefundDto = {
         amount: '10000',
-        reason: 'mock refund'
+        reason: 'mock refund',
       };
 
       const response = await OrderAPI.refund.refundOrder(

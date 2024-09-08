@@ -4,12 +4,15 @@ import { ProductSnapshotPricingDto } from '@src/v1/product/common/snapshot/prici
 import { ProductSnapshotContentDto } from '@src/v1/product/common/snapshot/content/product-snapshot-content.dto';
 import { ProductSnapshotAnnouncementDto } from '@src/v1/product/common/snapshot/announcement/product-snapshot-announcement.dto';
 import { ProductSnapshotRefundPolicyDto } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.dto';
+import { Pagination } from '@src/shared/types/pagination';
+import { EbookWithRelationsDto } from '@src/v1/ebook/ebook-with-relations.dto';
 
 export type EbookProductDto = {
   ebookId: Uuid;
   snapshotId: Uuid;
   title: string;
   description: string | null;
+  ebook: EbookWithRelationsDto;
   content: ProductSnapshotContentDto;
   announcement: ProductSnapshotAnnouncementDto;
   refundPolicy: ProductSnapshotRefundPolicyDto;
@@ -35,3 +38,5 @@ export type CreateEbookProductDto = Pick<
 };
 
 export type UpdateEbookProductDto = Partial<CreateEbookProductDto>;
+
+export type EbookProductQuery = Partial<Pagination>;
