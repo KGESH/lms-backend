@@ -68,14 +68,14 @@ async function seed() {
       db,
     );
     await seedPgUsers(db);
-    await seedCourseProducts({ count: 10 }, db);
-    await seedCourseReviews({ count: 10 }, db);
+    await seedCourseProducts({ count: 5 }, db);
+    await seedCourseReviews({ count: 5 }, db);
     await seedCourseOrders({ count: 5 }, db);
     await seedEbookOrders({ count: 5 }, db);
-    await seedEbooks({ count: 10 }, db);
-    await seedEbookProducts({ count: 10 }, db);
-    await seedEbookReviews({ count: 10 }, db);
-    await seedPosts({ count: 10 }, db);
+    await seedEbooks({ count: 5 }, db);
+    await seedEbookProducts({ count: 5 }, db);
+    await seedEbookReviews({ count: 5 }, db);
+    await seedPosts({ count: 5 }, db);
   } catch (e) {
     console.error(e);
     await clearDatabase(db);
