@@ -5,7 +5,6 @@ import { CourseOrderPurchaseDto } from '@src/v1/order/course/course-order-purcha
 import * as date from '@src/shared/utils/date';
 import {
   OrderCoursePurchasedDto,
-  OrderDto,
   OrderEbookPurchasedDto,
 } from '@src/v1/order/order.dto';
 import { toISOString } from '@src/shared/utils/date';
@@ -22,8 +21,11 @@ import { courseRelationsToDto } from '@src/shared/helpers/transofrm/course';
 import { SessionUser } from '@src/core/decorators/session-user.decorator';
 import { ISessionWithUser } from '@src/v1/auth/session.interface';
 import { ebookRelationsToDto } from '@src/shared/helpers/transofrm/ebook';
-import { courseOrderToDto } from '@src/shared/helpers/transofrm/course-order';
-import { ebookOrderToDto } from '@src/shared/helpers/transofrm/ebook-order';
+import { courseOrderRelationsToDto } from '@src/shared/helpers/transofrm/course-order';
+import { ebookOrderRelationsToDto } from '@src/shared/helpers/transofrm/ebook-order';
+import { CourseOrderDto } from '@src/v1/order/course/course-order.dto';
+import { EbookOrderDto } from '@src/v1/order/ebook/ebook-order.dto';
+import { OrdersDto } from '@src/v1/order/order-relations.dto';
 
 @Controller('v1/order')
 export class OrderController {
@@ -35,32 +37,110 @@ export class OrderController {
   ) {}
 
   /**
-   * 구매한 상품 주문 내역을 조회합니다. (미완성)
-   *
-   * 'course' 또는 'ebook' 주문 내역을 반환합니다.
-   *
-   * 현재 'course'만 조회 가능합니다.
+   * 구매한 강의와 전자책 상품 주문 내역 목록을 조회합니다.
    *
    * @tag order
-   * @summary 상품 주문 내역 조회
-   * @param id - 조회할 주문 내역의 id
+   * @summary 모든 상품 주문 내역 목록 조회
    */
-  @TypedRoute.Get('/:id')
-  async getOrder(
+  @TypedRoute.Get('/')
+  async getOrders(
     @TypedHeaders() headers: AuthHeaders,
-    @TypedParam('id') id: Uuid,
-  ): Promise<OrderDto | null> {
-    const order = await this.orderService.findOrderWithRelations({ id });
+    @SessionUser() session: ISessionWithUser,
+  ): Promise<OrdersDto> {
+    const courseOrders = await this.orderService.findCourseOrdersWithRelations({
+      userId: session.userId,
+    });
 
-    if (!order) {
+    const ebookOrders = await this.orderService.findEbookOrdersWithRelations({
+      userId: session.userId,
+    });
+
+    return {
+      courses: courseOrders.map(courseOrderRelationsToDto),
+      ebooks: ebookOrders.map(ebookOrderRelationsToDto),
+    };
+  }
+
+  /**
+   * 구매한 강의 상품 주문 내역 목록을 조회합니다.
+   *
+   * @tag order
+   * @summary 강의 상품 주문 내역 목록 조회
+   */
+  @TypedRoute.Get('/course')
+  async getCourseOrders(
+    @TypedHeaders() headers: AuthHeaders,
+    @SessionUser() session: ISessionWithUser,
+  ): Promise<CourseOrderDto[]> {
+    const courseOrders = await this.orderService.findCourseOrdersWithRelations({
+      userId: session.userId,
+    });
+
+    return courseOrders.map(courseOrderRelationsToDto);
+  }
+
+  /**
+   * 구매한 전자책 상품 주문 내역 목록을 조회합니다.
+   *
+   * @tag order
+   * @summary 전자책 상품 주문 내역 목록 조회
+   */
+  @TypedRoute.Get('/ebook')
+  async getEbookOrders(
+    @TypedHeaders() headers: AuthHeaders,
+    @SessionUser() session: ISessionWithUser,
+  ): Promise<EbookOrderDto[]> {
+    const ebookOrders = await this.orderService.findEbookOrdersWithRelations({
+      userId: session.userId,
+    });
+
+    return ebookOrders.map(ebookOrderRelationsToDto);
+  }
+
+  /**
+   * 구매한 강의 상품 주문 내역을 조회합니다. (미완성)
+   *
+   * @tag order
+   * @summary 강의 상품 주문 내역 조회
+   * @param orderId - 조회할 강의 상품 주문 내역의 id
+   */
+  @TypedRoute.Get('/course/:orderId')
+  async getCourseOrder(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedParam('orderId') orderId: Uuid,
+  ): Promise<CourseOrderDto | null> {
+    const courseOrder = await this.orderService.findCourseOrderWithRelations({
+      id: orderId,
+    });
+
+    if (!courseOrder) {
       return null;
     }
 
-    if (order.productType === 'course') {
-      return courseOrderToDto(order);
-    } else {
-      return ebookOrderToDto(order);
+    return courseOrderRelationsToDto(courseOrder);
+  }
+
+  /**
+   * 구매한 전자책 상품 주문 내역을 조회합니다. (미완성)
+   *
+   * @tag order
+   * @summary 전자책 상품 주문 내역 조회
+   * @param orderId - 조회할 전자책 상품 주문 내역의 id
+   */
+  @TypedRoute.Get('/ebook/:orderId')
+  async getEbookOrder(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedParam('orderId') orderId: Uuid,
+  ): Promise<EbookOrderDto | null> {
+    const ebookOrder = await this.orderService.findEbookOrderWithRelations({
+      id: orderId,
+    });
+
+    if (!ebookOrder) {
+      return null;
     }
+
+    return ebookOrderRelationsToDto(ebookOrder);
   }
 
   /**
@@ -150,7 +230,7 @@ export class OrderController {
   }
 
   /**
-   * 구매한 상품을 환불합니다. (미완성)
+   * 구매한 상품을 환불합니다.
    *
    * 주문 내역 금액 전체 환불과 부분 환불을 지원합니다.
    *
@@ -162,20 +242,19 @@ export class OrderController {
    *
    * @tag order
    * @summary 상품 환불 - Role('user')
-   * @param id - 환불할 주문 내역의 id
+   * @param orderId - 환불할 상품의 주문 id
    */
-  @TypedRoute.Post('/:id/refund')
+  @TypedRoute.Post('/:orderId/refund')
   @Roles('admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)
   async refundOrder(
     @TypedHeaders() headers: AuthHeaders,
-    @TypedParam('id') id: Uuid,
+    @TypedParam('orderId') orderId: Uuid,
     @TypedBody() body: CreateOrderRefundDto,
   ): Promise<OrderRefundDto> {
     const orderRefund = await this.orderService.refundOrder(
-      { id },
+      { id: orderId },
       {
-        orderId: id,
         refundedAmount: body.amount,
         reason: body.reason,
       },

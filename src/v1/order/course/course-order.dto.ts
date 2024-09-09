@@ -1,10 +1,6 @@
-import { ISO8601, Price, Uuid } from '@src/shared/types/primitive';
+import { OrderBaseDto } from '@src/v1/order/order.dto';
+import { CourseWithRelationsDto } from '@src/v1/course/course-with-relations.dto';
 
-export type CourseOrderDto = {
-  id: Uuid;
-  userId: Uuid;
-  productSnapshotId: Uuid;
-  paymentMethod: string;
-  amount: Price;
-  paidAt: ISO8601 | null;
+export type CourseOrderDto = OrderBaseDto & {
+  course: Omit<CourseWithRelationsDto, 'chapters'>;
 };

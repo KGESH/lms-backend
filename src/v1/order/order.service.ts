@@ -9,6 +9,8 @@ import { OrderRefundRepository } from '@src/v1/order/order-refund.repository';
 import * as date from '@src/shared/utils/date';
 import { IOrderRelations } from '@src/v1/order/order-relations.interface';
 import { PaymentService } from '@src/infra/payment/payment.service';
+import { ICourseOrderWithRelations } from '@src/v1/order/course/course-order.interface';
+import { IEbookOrderWithRelations } from '@src/v1/order/ebook/ebook-order.interface';
 
 @Injectable()
 export class OrderService {
@@ -18,6 +20,30 @@ export class OrderService {
     private readonly orderQueryRepository: OrderQueryRepository,
     private readonly orderRefundRepository: OrderRefundRepository,
   ) {}
+
+  async findCourseOrdersWithRelations(
+    where: Pick<IOrder, 'userId'>,
+  ): Promise<ICourseOrderWithRelations[]> {
+    return this.orderQueryRepository.findCourseOrdersWithRelations(where);
+  }
+
+  async findEbookOrdersWithRelations(
+    where: Pick<IOrder, 'userId'>,
+  ): Promise<IEbookOrderWithRelations[]> {
+    return this.orderQueryRepository.findEbookOrdersWithRelations(where);
+  }
+
+  async findCourseOrderWithRelations(
+    where: Pick<IOrder, 'id'>,
+  ): Promise<ICourseOrderWithRelations | null> {
+    return this.orderQueryRepository.findCourseOrderWithRelations(where);
+  }
+
+  async findEbookOrderWithRelations(
+    where: Pick<IOrder, 'id'>,
+  ): Promise<IEbookOrderWithRelations | null> {
+    return this.orderQueryRepository.findEbookOrderWithRelations(where);
+  }
 
   async findOrderWithRelations(
     where: Pick<IOrder, 'id'>,
@@ -41,7 +67,7 @@ export class OrderService {
 
   async refundOrder(
     where: Pick<IOrder, 'id'>,
-    refundCreateParams: Omit<IOrderRefundCreate, 'refundedAt'>,
+    refundCreateParams: Omit<IOrderRefundCreate, 'orderId' | 'refundedAt'>,
   ): Promise<IOrderRefund> {
     const order = await this.orderQueryRepository.findOrderOrThrow(where);
 

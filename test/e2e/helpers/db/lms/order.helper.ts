@@ -5,16 +5,21 @@ import { dbSchema } from '../../../../../src/infra/db/schema';
 import { IOrderCreate } from '../../../../../src/v1/order/order.interface';
 import * as typia from 'typia';
 import { createRandomEbookProduct } from './ebook-product.helper';
+import { IUser } from '@src/v1/user/user.interface';
+import { ISession } from '@src/v1/auth/session.interface';
 
-export const createRandomCourseOrder = async (db: TransactionClient) => {
-  const { user, userSession } = (await seedUsers({ count: 1 }, db))[0];
+export const createRandomCourseOrder = async (
+  db: TransactionClient,
+  seedUser?: { user: IUser; userSession: ISession },
+) => {
+  seedUser ??= (await seedUsers({ count: 1 }, db))[0];
 
   const product = await createRandomCourseProduct(db);
   const orderCreateParams: IOrderCreate = {
     ...typia.random<IOrderCreate>(),
     paymentId: null,
     txId: null,
-    userId: user.id,
+    userId: seedUser.user.id,
     productType: 'course',
   };
 
@@ -31,23 +36,26 @@ export const createRandomCourseOrder = async (db: TransactionClient) => {
     .returning();
 
   return {
-    user,
-    userSession,
+    user: seedUser.user,
+    userSession: seedUser.userSession,
     order,
     courseOrder,
     product,
   };
 };
 
-export const createRandomEbookOrder = async (db: TransactionClient) => {
-  const { user, userSession } = (await seedUsers({ count: 1 }, db))[0];
+export const createRandomEbookOrder = async (
+  db: TransactionClient,
+  seedUser?: { user: IUser; userSession: ISession },
+) => {
+  seedUser ??= (await seedUsers({ count: 1 }, db))[0];
 
   const product = await createRandomEbookProduct(db);
   const orderCreateParams: IOrderCreate = {
     ...typia.random<IOrderCreate>(),
     paymentId: null,
     txId: null,
-    userId: user.id,
+    userId: seedUser.user.id,
     productType: 'ebook',
   };
 
@@ -64,8 +72,8 @@ export const createRandomEbookOrder = async (db: TransactionClient) => {
     .returning();
 
   return {
-    user,
-    userSession,
+    user: seedUser.user,
+    userSession: seedUser.userSession,
     order,
     ebookOrder,
     product,
@@ -75,17 +83,23 @@ export const createRandomEbookOrder = async (db: TransactionClient) => {
 export const seedCourseOrders = async (
   { count }: { count: number },
   db: TransactionClient,
+  seedUser?: { user: IUser; userSession: ISession },
 ) => {
   return await Promise.all(
-    Array.from({ length: count }).map(() => createRandomCourseOrder(db)),
+    Array.from({ length: count }).map(() =>
+      createRandomCourseOrder(db, seedUser),
+    ),
   );
 };
 
 export const seedEbookOrders = async (
   { count }: { count: number },
   db: TransactionClient,
+  seedUser?: { user: IUser; userSession: ISession },
 ) => {
   return await Promise.all(
-    Array.from({ length: count }).map(() => createRandomEbookOrder(db)),
+    Array.from({ length: count }).map(() =>
+      createRandomEbookOrder(db, seedUser),
+    ),
   );
 };

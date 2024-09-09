@@ -1,10 +1,6 @@
-import { ISO8601, Price, Uuid } from '@src/shared/types/primitive';
+import { OrderBaseDto } from '@src/v1/order/order.dto';
+import { EbookWithRelationsDto } from '@src/v1/ebook/ebook-with-relations.dto';
 
-export type EbookOrderDto = {
-  id: Uuid;
-  userId: Uuid;
-  productSnapshotId: Uuid;
-  paymentMethod: string;
-  amount: Price;
-  paidAt: ISO8601 | null;
+export type EbookOrderDto = OrderBaseDto & {
+  ebook: Omit<EbookWithRelationsDto, 'contents'>;
 };

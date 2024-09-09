@@ -2,6 +2,8 @@ import { OrderEbookDto } from '@src/v1/order/order.dto';
 import { IEbookOrderRelations } from '@src/v1/order/ebook/ebook-order.interface';
 import * as typia from 'typia';
 import * as date from '@src/shared/utils/date';
+import { IEbookOrderWithRelations } from '@src/v1/order/ebook/ebook-order.interface';
+import { EbookOrderDto } from '@src/v1/order/ebook/ebook-order.dto';
 
 export const ebookOrderToDto = (ebookOrder: unknown): OrderEbookDto => {
   const order = ebookOrder as IEbookOrderRelations;
@@ -53,4 +55,53 @@ export const ebookOrderToDto = (ebookOrder: unknown): OrderEbookDto => {
     amount: order.amount,
     paidAt: order.paidAt ? date.toISOString(order.paidAt) : null,
   });
+};
+
+export const ebookOrderRelationsToDto = (
+  ebookOrderRelations: IEbookOrderWithRelations,
+): EbookOrderDto => {
+  return {
+    id: ebookOrderRelations.id,
+    userId: ebookOrderRelations.userId,
+    amount: ebookOrderRelations.amount,
+    title: ebookOrderRelations.title,
+    description: ebookOrderRelations.description,
+    paymentMethod: ebookOrderRelations.paymentMethod,
+    paidAt: ebookOrderRelations.paidAt
+      ? date.toISOString(ebookOrderRelations.paidAt)
+      : null,
+    ebook: {
+      id: ebookOrderRelations.ebook.id,
+      title: ebookOrderRelations.ebook.title,
+      teacherId: ebookOrderRelations.ebook.teacherId,
+      categoryId: ebookOrderRelations.ebook.categoryId,
+      description: ebookOrderRelations.ebook.description,
+      createdAt: date.toISOString(ebookOrderRelations.ebook.createdAt),
+      updatedAt: date.toISOString(ebookOrderRelations.ebook.updatedAt),
+      category: ebookOrderRelations.ebook.category,
+      teacher: {
+        id: ebookOrderRelations.ebook.teacher.id,
+        userId: ebookOrderRelations.ebook.teacher.userId,
+        account: {
+          ...ebookOrderRelations.ebook.teacher.account,
+          emailVerified: ebookOrderRelations.ebook.teacher.account.emailVerified
+            ? date.toISOString(
+                ebookOrderRelations.ebook.teacher.account.emailVerified,
+              )
+            : null,
+          createdAt: date.toISOString(
+            ebookOrderRelations.ebook.teacher.account.createdAt,
+          ),
+          updatedAt: date.toISOString(
+            ebookOrderRelations.ebook.teacher.account.updatedAt,
+          ),
+          deletedAt: ebookOrderRelations.ebook.teacher.account.deletedAt
+            ? date.toISOString(
+                ebookOrderRelations.ebook.teacher.account.deletedAt,
+              )
+            : null,
+        },
+      },
+    },
+  };
 };

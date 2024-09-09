@@ -1,18 +1,24 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { and, eq, isNotNull } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import * as typia from 'typia';
 import { IOrder } from '@src/v1/order/order.interface';
 import { DiscountValue, Price } from '@src/shared/types/primitive';
-import { ICourseOrderRelations } from '@src/v1/order/course/course-order.interface';
+import {
+  ICourseOrderRelations,
+  ICourseOrderWithRelations,
+} from '@src/v1/order/course/course-order.interface';
 import { IProductSnapshotPricing } from '@src/v1/product/common/snapshot/pricing/product-snapshot-pricing.interface';
 import { IProductSnapshotDiscount } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
 import { IProductSnapshotContent } from '@src/v1/product/common/snapshot/content/product-snapshot-content.interface';
 import { IReview } from '@src/v1/review/review.interface';
 import { IProductSnapshotRefundPolicy } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
 import { IProductSnapshotAnnouncement } from '@src/v1/product/common/snapshot/announcement/product-snapshot-announcement.interface';
-import { IEbookOrderRelations } from '@src/v1/order/ebook/ebook-order.interface';
+import {
+  IEbookOrderRelations,
+  IEbookOrderWithRelations,
+} from '@src/v1/order/ebook/ebook-order.interface';
 
 @Injectable()
 export class OrderQueryRepository {
@@ -34,6 +40,232 @@ export class OrderQueryRepository {
     }
 
     return order;
+  }
+
+  async findCourseOrderWithRelations(
+    where: Pick<IOrder, 'id'>,
+  ): Promise<ICourseOrderWithRelations | null> {
+    const order = await this.drizzle.db.query.orders.findFirst({
+      where: eq(dbSchema.orders.id, where.id),
+      with: {
+        courseOrder: {
+          with: {
+            productSnapshot: {
+              with: {
+                product: {
+                  with: {
+                    course: {
+                      with: {
+                        category: true,
+                        teacher: {
+                          with: {
+                            account: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!order?.courseOrder) {
+      return null;
+    }
+
+    return typia.misc.clone<ICourseOrderWithRelations>({
+      ...order,
+      amount: typia.assert<Price>(`${order.amount}`),
+      course: {
+        id: order.courseOrder.productSnapshot.product.course.id,
+        teacherId: order.courseOrder.productSnapshot.product.course.teacherId,
+        categoryId: order.courseOrder.productSnapshot.product.course.categoryId,
+        title: order.courseOrder.productSnapshot.product.course.title,
+        description:
+          order.courseOrder.productSnapshot.product.course.description,
+        createdAt: order.courseOrder.productSnapshot.product.course.createdAt,
+        updatedAt: order.courseOrder.productSnapshot.product.course.updatedAt,
+        teacher: order.courseOrder.productSnapshot.product.course.teacher,
+        category: order.courseOrder.productSnapshot.product.course.category,
+        chapters: [],
+      },
+    });
+  }
+  async findEbookOrdersWithRelations(
+    where: Pick<IOrder, 'userId'>,
+  ): Promise<IEbookOrderWithRelations[]> {
+    const orders = await this.drizzle.db.query.orders.findMany({
+      where: eq(dbSchema.orders.userId, where.userId),
+      with: {
+        ebookOrder: {
+          with: {
+            productSnapshot: {
+              with: {
+                product: {
+                  with: {
+                    ebook: {
+                      with: {
+                        category: true,
+                        teacher: {
+                          with: {
+                            account: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return orders
+      .filter((order) => order.ebookOrder)
+      .map((order) =>
+        typia.misc.clone<IEbookOrderWithRelations>({
+          ...order,
+          amount: typia.assert<Price>(`${order.amount}`),
+          ebook: {
+            id: order.ebookOrder!.productSnapshot.product.ebook.id,
+            teacherId:
+              order.ebookOrder!.productSnapshot.product.ebook.teacherId,
+            categoryId:
+              order.ebookOrder!.productSnapshot.product.ebook.categoryId,
+            title: order.ebookOrder!.productSnapshot.product.ebook.title,
+            description:
+              order.ebookOrder!.productSnapshot.product.ebook.description,
+            createdAt:
+              order.ebookOrder!.productSnapshot.product.ebook.createdAt,
+            updatedAt:
+              order.ebookOrder!.productSnapshot.product.ebook.updatedAt,
+            teacher: order.ebookOrder!.productSnapshot.product.ebook.teacher,
+            category: order.ebookOrder!.productSnapshot.product.ebook.category,
+            contents: [],
+          },
+        }),
+      );
+  }
+
+  async findEbookOrderWithRelations(
+    where: Pick<IOrder, 'id'>,
+  ): Promise<IEbookOrderWithRelations | null> {
+    const order = await this.drizzle.db.query.orders.findFirst({
+      where: eq(dbSchema.orders.id, where.id),
+      with: {
+        ebookOrder: {
+          with: {
+            productSnapshot: {
+              with: {
+                product: {
+                  with: {
+                    ebook: {
+                      with: {
+                        category: true,
+                        teacher: {
+                          with: {
+                            account: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!order?.ebookOrder) {
+      return null;
+    }
+
+    return typia.misc.clone<IEbookOrderWithRelations>({
+      ...order,
+      amount: typia.assert<Price>(`${order.amount}`),
+      ebook: {
+        id: order.ebookOrder.productSnapshot.product.ebook.id,
+        teacherId: order.ebookOrder.productSnapshot.product.ebook.teacherId,
+        categoryId: order.ebookOrder.productSnapshot.product.ebook.categoryId,
+        title: order.ebookOrder.productSnapshot.product.ebook.title,
+        description: order.ebookOrder.productSnapshot.product.ebook.description,
+        createdAt: order.ebookOrder.productSnapshot.product.ebook.createdAt,
+        updatedAt: order.ebookOrder.productSnapshot.product.ebook.updatedAt,
+        teacher: order.ebookOrder.productSnapshot.product.ebook.teacher,
+        category: order.ebookOrder.productSnapshot.product.ebook.category,
+        contents: [],
+      },
+    });
+  }
+
+  async findCourseOrdersWithRelations(
+    where: Pick<IOrder, 'userId'>,
+  ): Promise<ICourseOrderWithRelations[]> {
+    const orders = await this.drizzle.db.query.orders.findMany({
+      where: and(
+        eq(dbSchema.orders.userId, where.userId),
+        isNotNull(dbSchema.courseOrders.id),
+      ),
+      with: {
+        courseOrder: {
+          with: {
+            productSnapshot: {
+              with: {
+                product: {
+                  with: {
+                    course: {
+                      with: {
+                        category: true,
+                        teacher: {
+                          with: {
+                            account: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return orders
+      .filter((order) => order.courseOrder)
+      .map((order) =>
+        typia.misc.clone<ICourseOrderWithRelations>({
+          ...order,
+          amount: typia.assert<Price>(`${order.amount}`),
+          course: {
+            id: order.courseOrder!.productSnapshot.product.course.id,
+            teacherId:
+              order.courseOrder!.productSnapshot.product.course.teacherId,
+            categoryId:
+              order.courseOrder!.productSnapshot.product.course.categoryId,
+            title: order.courseOrder!.productSnapshot.product.course.title,
+            description:
+              order.courseOrder!.productSnapshot.product.course.description,
+            createdAt:
+              order.courseOrder!.productSnapshot.product.course.createdAt,
+            updatedAt:
+              order.courseOrder!.productSnapshot.product.course.updatedAt,
+            teacher: order.courseOrder!.productSnapshot.product.course.teacher,
+            category:
+              order.courseOrder!.productSnapshot.product.course.category,
+            chapters: [],
+          },
+        }),
+      );
   }
 
   // Todo: extract

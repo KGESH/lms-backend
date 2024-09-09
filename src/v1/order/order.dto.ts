@@ -41,5 +41,3 @@ export type OrderEbookPurchasedDto = Omit<OrderEbookDto, 'product'> & {
     'content' | 'announcement' | 'refundPolicy' | 'pricing' | 'discounts'
   >;
 };
-
-export type OrderDto = OrderCourseDto | OrderEbookDto;
