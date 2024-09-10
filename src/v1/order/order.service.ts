@@ -7,7 +7,6 @@ import {
 } from '@src/v1/order/order-refund.interface';
 import { OrderRefundRepository } from '@src/v1/order/order-refund.repository';
 import * as date from '@src/shared/utils/date';
-import { IOrderRelations } from '@src/v1/order/order-relations.interface';
 import { PaymentService } from '@src/infra/payment/payment.service';
 import { ICourseOrderWithRelations } from '@src/v1/order/course/course-order.interface';
 import { IEbookOrderWithRelations } from '@src/v1/order/ebook/ebook-order.interface';
@@ -43,26 +42,6 @@ export class OrderService {
     where: Pick<IOrder, 'id'>,
   ): Promise<IEbookOrderWithRelations | null> {
     return this.orderQueryRepository.findEbookOrderWithRelations(where);
-  }
-
-  async findOrderWithRelations(
-    where: Pick<IOrder, 'id'>,
-  ): Promise<IOrderRelations | null> {
-    const order = await this.orderQueryRepository.findOrder(where);
-
-    if (!order) {
-      return null;
-    }
-
-    if (order.productType === 'course') {
-      return await this.orderQueryRepository.findOrderWithCourseRelationsOrThrow(
-        where,
-      );
-    } else {
-      return await this.orderQueryRepository.findOrderWithEbookRelationsOrThrow(
-        where,
-      );
-    }
   }
 
   async refundOrder(
