@@ -13,7 +13,6 @@ import {
   PostCategoryDto,
   PostCategoryQuery,
   UpdatePostCategoryDto,
-  PostCategoryWithChildrenDto,
   PostCategoryWithChildrenQuery,
 } from '@src/v1/post/category/post-category.dto';
 import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
@@ -24,6 +23,7 @@ import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
 import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '@src/shared/types/response';
 import { withDefaultPagination } from '@src/core/pagination';
+import { PostCategoryWithAccessDto } from '@src/v1/post/category/post-category-relations.dto';
 
 @Controller('v1/post-category')
 export class PostCategoryController {
@@ -52,9 +52,9 @@ export class PostCategoryController {
   async getRootPostCategories(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedQuery() query: PostCategoryQuery,
-  ): Promise<PostCategoryWithChildrenDto[]> {
+  ): Promise<PostCategoryWithAccessDto[]> {
     if (query.withChildren) {
-      return await this.postCategoryService.getRootPostCategoriesWithChildren(
+      return await this.postCategoryService.getRootPostCategoriesWithRelations(
         withDefaultPagination(query),
       );
     }
@@ -88,14 +88,14 @@ export class PostCategoryController {
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('id') id: Uuid,
     @TypedQuery() query?: PostCategoryWithChildrenQuery,
-  ): Promise<PostCategoryWithChildrenDto | null> {
+  ): Promise<PostCategoryWithAccessDto | null> {
     if (query?.withChildren) {
-      return await this.postCategoryService.findPostCategoryWithChildren({
+      return await this.postCategoryService.findPostCategoryWithRelations({
         id,
       });
     }
 
-    return await this.postCategoryService.findPostCategory({ id });
+    return await this.postCategoryService.findPostCategoryWithRoles({ id });
   }
 
   /**

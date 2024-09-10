@@ -11,6 +11,14 @@ export class PostCategoryAccessQueryService {
     private readonly postCategoryAccessQueryRepository: PostCategoryAccessQueryRepository,
   ) {}
 
+  async findPostCategoriesAccesses(
+    categoryIds: IPostCategoryAccess['categoryId'][],
+  ): Promise<IPostCategoryAccessRoles[]> {
+    return await this.postCategoryAccessQueryRepository.findPostCategoriesAccesses(
+      categoryIds,
+    );
+  }
+
   async findPostCategoryAccesses(
     where: Pick<IPostCategoryAccess, 'categoryId'>,
   ): Promise<IPostCategoryAccessRoles> {

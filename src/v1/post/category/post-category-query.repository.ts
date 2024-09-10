@@ -10,6 +10,7 @@ import { asc, desc, eq, isNull, sql } from 'drizzle-orm';
 import { Uuid } from '@src/shared/types/primitive';
 import { Pagination } from '@src/shared/types/pagination';
 import * as typia from 'typia';
+import { IPostCategoryWithRoles } from '@src/v1/post/category/post-category-relations.interface';
 
 @Injectable()
 export class PostCategoryQueryRepository {
@@ -52,27 +53,32 @@ export class PostCategoryQueryRepository {
     return category;
   }
 
-  async findRootCategories(pagination: Pagination): Promise<IPostCategory[]> {
+  async findRootCategoriesWithRoles(
+    pagination: Pagination,
+  ): Promise<IPostCategoryWithRoles[]> {
     const roots = await this.drizzle.db.query.postCategories.findMany({
       where: isNull(dbSchema.postCategories.parentId),
+      with: {
+        readAccesses: true,
+        writeAccesses: true,
+      },
       orderBy: (category, { asc, desc }) =>
         pagination.orderBy === 'asc' ? asc(category.name) : desc(category.name),
       offset: (pagination.page - 1) * pagination.pageSize,
       limit: pagination.pageSize,
     });
 
-    return roots;
+    return roots.map((category) => ({
+      ...category,
+      readableRoles: category.readAccesses.map((access) => access.role),
+      writableRoles: category.writeAccesses.map((access) => access.role),
+    }));
   }
 
   async findRootCategoriesWithChildren(
     pagination: Pagination,
   ): Promise<IPostCategoryWithRelations[]> {
-    const rootCategories = await this._getRootPostCategoriesRawSql(
-      pagination,
-      this.drizzle.db,
-    );
-
-    return rootCategories;
+    return await this._getRootPostCategoriesRawSql(pagination, this.drizzle.db);
   }
 
   private async _getPostCategoryWithChildrenRawSql(
@@ -147,7 +153,13 @@ export class PostCategoryQueryRepository {
   private async _getRootPostCategoriesRawSql(
     pagination: Pagination,
     db: TransactionClient,
-  ): Promise<IPostCategoryWithRelations[]> {
+  ): Promise<
+    // {
+    IPostCategoryWithRelations[]
+    // roots: IPostCategoryWithRelations[];
+    // everyCategories: IPostCategoryWithRelations[];
+    // }
+  > {
     const rootCategorySQL = db
       .select({
         id: dbSchema.postCategories.id,
