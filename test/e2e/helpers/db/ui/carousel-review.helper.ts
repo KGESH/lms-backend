@@ -51,10 +51,12 @@ const createManyCarouselReview = async (
 export const seedCarouselReview = async (
   { count }: { count: number },
   db: TransactionClient,
+  path?: string,
 ) => {
   const createManyParams = Array.from({ length: count }).map(() => ({
     carouselParams: {
       ...typia.random<IUiCarouselComponentCreate<UiCarouselReview>>(),
+      path: path ? path : typia.random<string>(),
     },
     carouselItemParams: Array.from({ length: count }).map(() =>
       typia.random<IUiCarouselReviewCreate>(),

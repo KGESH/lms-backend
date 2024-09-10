@@ -30,9 +30,11 @@ export const createManyUiRepeatTimer = async (
 export const seedUiRepeatTimer = async (
   { count }: { count: number },
   db: TransactionClient,
+  path?: string,
 ) => {
   const createManyParams = Array.from({ length: count }).map(() => ({
     ...typia.random<IUiRepeatTimerComponentCreate>(),
+    path: path ? path : typia.random<string>(),
   }));
 
   await createManyUiRepeatTimer(createManyParams, db);

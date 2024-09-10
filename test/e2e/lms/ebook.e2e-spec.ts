@@ -10,7 +10,7 @@ import { IEbookCategoryCreate } from '@src/v1/ebook/category/ebook-category.inte
 import { createTeacher } from '../helpers/db/lms/teacher.helper';
 import { ITeacherSignUp } from '@src/v1/teacher/teacher.interface';
 import { EbookCreateDto, EbookUpdateDto } from '@src/v1/ebook/ebook.dto';
-import { IEbookCreate, IEbookUpdate } from '@src/v1/ebook/ebook.interface';
+import { IEbookCreate } from '@src/v1/ebook/ebook.interface';
 import { ConfigsService } from '@src/configs/configs.service';
 
 describe('EbookController (e2e)', () => {
