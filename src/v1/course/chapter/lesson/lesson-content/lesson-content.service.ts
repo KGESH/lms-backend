@@ -150,10 +150,15 @@ export class LessonContentService {
     }
 
     if (params.contentType || params.sequence) {
-      this.validateSequence(lessonContents, {
-        contentType: params.contentType ?? exist.contentType,
-        sequence: params.sequence ?? exist.sequence,
-      });
+      if (
+        params.contentType !== exist.contentType ||
+        params.sequence !== exist.sequence
+      ) {
+        this.validateSequence(lessonContents, {
+          contentType: params.contentType ?? exist.contentType,
+          sequence: params.sequence ?? exist.sequence,
+        });
+      }
     }
 
     return await this.lessonContentRepository.updateLessonContent(

@@ -21,13 +21,7 @@ export type LessonContentCreateDto = Pick<
   'title' | 'description' | 'contentType' | 'url' | 'metadata'
 >;
 
-export type LessonContentUpdateDto = Pick<
-  LessonContentDto,
-  | 'id'
-  | 'title'
-  | 'description'
-  | 'contentType'
-  | 'url'
-  | 'metadata'
-  | 'sequence'
+export type LessonContentUpdateDto = Omit<
+  Partial<LessonContentDto>,
+  'id' | 'lessonId'
 >;
