@@ -54,8 +54,8 @@ async function seed() {
   // Seed data
   try {
     await seedCourseCategoriesWithChildren({ count: 10 }, db);
-    await seedUiRepeatTimer({ count: 2 }, db);
-    await seedCarouselReview({ count: 4 }, db);
+    await seedUiRepeatTimer({ count: 2 }, db, '/');
+    await seedCarouselReview({ count: 4 }, db, '/');
     await seedTeachers({ count: 2 }, db);
     await seedUsers({ count: 3, role: 'user' }, db);
     await seedUsers({ count: 1, role: 'manager' }, db);
