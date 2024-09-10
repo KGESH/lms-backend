@@ -41,9 +41,8 @@ export class UiComponentQueryRepository {
       return acc;
     }, {} as IUiSectionGroupBase);
 
-    const repeatTimerUiComponentIds = groupedSections['repeat-timer'].map(
-      (ui) => ui.id,
-    );
+    const repeatTimerUiComponentIds =
+      groupedSections['repeat-timer']?.map((ui) => ui.id) ?? [];
     const repeatTimerUiPromises = this.drizzle.db.query.uiRepeatTimers.findMany(
       {
         where: inArray(
@@ -56,15 +55,14 @@ export class UiComponentQueryRepository {
       },
     );
 
-    const bannerUiComponentIds = groupedSections['banner'].map((ui) => ui.id);
+    const bannerUiComponentIds =
+      groupedSections['banner']?.map((ui) => ui.id) ?? [];
     // Todo: Impl
-    const marketingBannerUiComponentIds = groupedSections[
-      'marketing-banner'
-    ].map((ui) => ui.id);
+    const marketingBannerUiComponentIds =
+      groupedSections['marketing-banner']?.map((ui) => ui.id) ?? [];
     // Todo: Impl
-    const carouselUiComponentIds = groupedSections['carousel'].map(
-      (ui) => ui.id,
-    );
+    const carouselUiComponentIds =
+      groupedSections['carousel']?.map((ui) => ui.id) ?? [];
     const carouselUiPromises = this.drizzle.db.query.uiCarousels.findMany({
       where: inArray(
         dbSchema.uiCarousels.uiComponentId,

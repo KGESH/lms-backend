@@ -7,9 +7,16 @@ import { RolesGuard } from '@src/core/guards/roles.guard';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import {
   UiComponentBaseDto,
+  UiComponentGroupDto,
   UiComponentQuery,
 } from '@src/v1/ui/component/ui-component.dto';
 import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
+import {
+  UiCarouselType,
+  UiCategory,
+} from '@src/v1/ui/category/ui-category.interface';
+import { UiRepeatTimerDto } from '@src/v1/ui/component/repeat-timer/ui-repeat-timer.dto';
+import { CreateUiCarouselDto } from '@src/v1/ui/component/carousel/ui-carousel.dto';
 
 @Controller('v1/ui/component')
 export class UiComponentController {
@@ -20,7 +27,12 @@ export class UiComponentController {
   async getUiComponentsByPath(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedQuery() query: UiComponentQuery,
-  ): Promise<unknown> {
+  ): Promise<
+    UiComponentGroupDto<
+      UiCategory,
+      UiRepeatTimerDto[] | CreateUiCarouselDto<UiCarouselType>[]
+    >
+  > {
     const uiComponents = await this.uiComponentService.getUiComponentsByPath({
       path: query.path,
     });
