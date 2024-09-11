@@ -12,7 +12,7 @@ export class FileController {
   constructor(private readonly s3Service: S3Service) {}
 
   @TypedRoute.Post('/:key/pre-signed')
-  @Roles('admin', 'manager', 'teacher')
+  @Roles('user', 'admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)
   async createPreSignedUrl(
     @TypedHeaders() headers: AuthHeaders,
