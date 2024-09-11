@@ -36,8 +36,8 @@ describe('PostController (e2e)', () => {
 
   describe('[Get post]', () => {
     it('should be get a post success', async () => {
-      const [{ user: author }] = await seedUsers(
-        { count: 1, role: 'user' },
+      const [manager] = await seedUsers(
+        { count: 1, role: 'manager' },
         drizzle.db,
       );
       const category = await createPostCategory(
@@ -47,13 +47,13 @@ describe('PostController (e2e)', () => {
           parentId: null,
         },
         {
-          readableRoles: ['guest'],
+          readableRoles: ['manager'],
           writableRoles: ['user', 'teacher', 'manager', 'admin'],
         },
         drizzle.db,
       );
       const [post] = await seedPosts(
-        { count: 1, author, category },
+        { count: 1, author: manager.user, category },
         drizzle.db,
       );
       await createPostSnapshot(
@@ -68,7 +68,7 @@ describe('PostController (e2e)', () => {
       const response = await PostAPI.getPostById(
         {
           host,
-          headers: { LmsSecret },
+          headers: { LmsSecret, UserSessionId: manager.userSession.id },
         },
         post.id,
         {},
