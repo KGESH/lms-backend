@@ -103,12 +103,11 @@ export class PostQueryRepository {
                 ilike(dbSchema.postSnapshots.title, `%${where.title}%`),
                 ilike(dbSchema.postSnapshots.content, `%${where.content}%`),
               )
-            : (where.title
-                ? ilike(dbSchema.postSnapshots.title, `%${where.title}%`)
-                : undefined,
-              where.content
+            : where.title
+              ? ilike(dbSchema.postSnapshots.title, `%${where.title}%`)
+              : where.content
                 ? ilike(dbSchema.postSnapshots.content, `%${where.content}%`)
-                : undefined),
+                : undefined,
           isNull(dbSchema.posts.deletedAt),
         ),
       )
