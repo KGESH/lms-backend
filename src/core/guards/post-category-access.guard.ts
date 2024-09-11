@@ -4,7 +4,6 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
-  Logger,
 } from '@nestjs/common';
 import { PostCategoryAccessQueryService } from '@src/v1/post/category/access/post-category-access-query.service';
 import { PostQueryService } from '@src/v1/post/post-query.service';
@@ -16,8 +15,6 @@ import { IPostCategoryAccessRoles } from '@src/v1/post/category/access/post-cate
 
 @Injectable()
 export class PostCategoryAccessGuard implements CanActivate {
-  private readonly logger = new Logger(PostCategoryAccessGuard.name);
-
   constructor(
     private readonly postQueryService: PostQueryService,
     private readonly postCategoryAccessQueryService: PostCategoryAccessQueryService,

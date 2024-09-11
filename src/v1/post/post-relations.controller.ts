@@ -19,8 +19,7 @@ import {
   PostRelationsDto,
   PostWithCommentsDto,
 } from '@src/v1/post/post-relations.dto';
-import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
-import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
+import { AuthHeaders, GuestAuthHeaders } from '@src/v1/auth/auth.headers';
 import { Uuid } from '@src/shared/types/primitive';
 import { TypeGuardError } from 'typia';
 import { SessionUser } from '@src/core/decorators/session-user.decorator';
@@ -33,6 +32,7 @@ import {
 import { Paginated } from '@src/shared/types/pagination';
 import { withDefaultPagination } from '@src/core/pagination';
 import { PostCategoryAccessGuard } from '@src/core/guards/post-category-access.guard';
+import { GuestAccess } from '@src/core/decorators/guest-access.decorator';
 
 @Controller('v1/post')
 export class PostRelationsController {
@@ -61,7 +61,7 @@ export class PostRelationsController {
    * @summary 게시글 목록 조회 (public)
    */
   @TypedRoute.Get('/')
-  @SkipAuth()
+  @GuestAccess()
   @UseGuards(PostCategoryAccessGuard)
   @TypedException<TypeGuardError>({
     status: 400,
@@ -72,7 +72,7 @@ export class PostRelationsController {
     description: 'post category not found',
   })
   async getPostsByCategory(
-    @TypedHeaders() headers: ApiAuthHeaders,
+    @TypedHeaders() headers: GuestAuthHeaders,
     @TypedQuery() query: PostQuery,
   ): Promise<Paginated<PostRelationsDto[]>> {
     const { data: posts, ...paginated } =
@@ -104,14 +104,14 @@ export class PostRelationsController {
    * @summary 특정 게시글 조회 (public)
    */
   @TypedRoute.Get('/:id')
-  @SkipAuth()
+  @GuestAccess()
   @UseGuards(PostCategoryAccessGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
   })
   async getPostById(
-    @TypedHeaders() headers: ApiAuthHeaders,
+    @TypedHeaders() headers: GuestAuthHeaders,
     @TypedParam('id') id: Uuid,
     @TypedQuery() query: PostCommentQuery,
   ): Promise<PostWithCommentsDto | null> {

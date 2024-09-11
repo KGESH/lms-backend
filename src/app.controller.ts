@@ -1,7 +1,7 @@
 import { Controller, Get, Logger } from '@nestjs/common';
 import { AppService } from '@src/app.service';
 import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
-import { SkipApiGuard } from '@src/core/decorators/skip-api-guard';
+import { SkipApiGuard } from '@src/core/decorators/skip-api.decorator';
 
 @Controller()
 export class AppController {

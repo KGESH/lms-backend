@@ -13,3 +13,5 @@ export type ApiAuthHeaders = {
 };
 
 export type AuthHeaders = SessionHeaders & ApiAuthHeaders;
+
+export type GuestAuthHeaders = Partial<SessionHeaders> & ApiAuthHeaders;

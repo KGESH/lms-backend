@@ -12,6 +12,7 @@ import { Reflector } from '@nestjs/core';
 import * as typia from 'typia';
 import { ISessionWithUser } from '@src/v1/auth/session.interface';
 import { Request } from 'express';
+import { GUEST_ACCESS_KEY } from '@src/core/decorators/guest-access.decorator';
 
 @Injectable()
 export class SessionGuard implements CanActivate {
@@ -26,6 +27,11 @@ export class SessionGuard implements CanActivate {
       context.getClass(),
     ]);
 
+    const guestAccess = this.reflector.getAllAndOverride<boolean>(
+      GUEST_ACCESS_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+
     if (skipAuth) {
       return true;
     }
@@ -33,19 +39,26 @@ export class SessionGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     const sessionId = this._getUserSessionId(req);
 
-    if (!sessionId) {
+    console.log(`[SessionGuard] sessionId: ${sessionId}`);
+    console.log(`[SessionGuard] guestAccess: ${guestAccess}`);
+
+    if (!sessionId && !guestAccess) {
       throw new BadRequestException('Session id is required.');
     }
 
-    const userWithSession = await this.authService.validateSession({
-      sessionId,
-    });
+    const userWithSession = sessionId
+      ? await this.authService.validateSession({
+          sessionId,
+        })
+      : null;
 
-    if (!userWithSession) {
+    if (!userWithSession && !guestAccess) {
       throw new UnauthorizedException('Session user not found.');
     }
 
-    req['user'] = typia.assert<ISessionWithUser>(userWithSession);
+    if (userWithSession) {
+      req['user'] = typia.assert<ISessionWithUser>(userWithSession);
+    }
 
     return true;
   }
