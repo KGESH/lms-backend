@@ -37,15 +37,19 @@ export class PostCategoryAccessService {
     const accesses = await this.drizzle.db
       .transaction(async (tx) => {
         const readableAccesses =
-          await this.postCategoryAccessRepository.createPostCategoryReadAccesses(
-            createReadAccessParams,
-            tx,
-          );
+          createReadAccessParams.length > 0
+            ? await this.postCategoryAccessRepository.createPostCategoryReadAccesses(
+                createReadAccessParams,
+                tx,
+              )
+            : [];
         const writableAccesses =
-          await this.postCategoryAccessRepository.createPostCategoryWriteAccesses(
-            createWriteAccessParams,
-            tx,
-          );
+          createWriteAccessParams.length > 0
+            ? await this.postCategoryAccessRepository.createPostCategoryWriteAccesses(
+                createWriteAccessParams,
+                tx,
+              )
+            : [];
 
         return {
           categoryId: params.categoryId,
@@ -54,7 +58,7 @@ export class PostCategoryAccessService {
         } satisfies IPostCategoryAccessRoles;
       })
       .catch((e) => {
-        this.logger.verbose(`[Create post category access]`, e);
+        this.logger.error(`[Create post category access]`, e);
         if (e.code === UNIQUE_CONSTRAINT_ERROR_CODE) {
           throw new ConflictException(
             `[Category ID, Role] pair already exists.`,
@@ -71,13 +75,13 @@ export class PostCategoryAccessService {
     readableRoles,
     writableRoles,
   }: Pick<IPostCategoryAccessRoles, 'readableRoles' | 'writableRoles'>) {
-    if (writableRoles.includes('guest') && writableRoles.length > 2) {
+    if (writableRoles.includes('guest') && writableRoles.length > 1) {
       throw new ForbiddenException(
         'If guest role is included in writable roles, another role should not be included.',
       );
     }
 
-    if (readableRoles.includes('guest') && readableRoles.length > 2) {
+    if (readableRoles.includes('guest') && readableRoles.length > 1) {
       throw new ForbiddenException(
         'If guest role is included in readable roles, another role should not be included.',
       );
@@ -105,24 +109,35 @@ export class PostCategoryAccessService {
     const { deletedReadAccess, deletedWriteAccess } =
       await this.drizzle.db.transaction(async (tx) => {
         const deletedReadAccess =
-          await this.postCategoryAccessRepository.deletePostCategoryReadAccesses(
-            {
-              categoryId: params.categoryId,
-            },
-            params.readableRoles.map((role) => ({ role })),
-          );
+          params.readableRoles.length > 0
+            ? await this.postCategoryAccessRepository.deletePostCategoryReadAccesses(
+                {
+                  categoryId: params.categoryId,
+                },
+                params.readableRoles.map((role) => ({ role })),
+                tx,
+              )
+            : [];
         const deletedWriteAccess =
-          await this.postCategoryAccessRepository.deletePostCategoryWriteAccesses(
-            {
-              categoryId: params.categoryId,
-            },
-            params.writableRoles.map((role) => ({ role })),
-          );
+          params.writableRoles.length > 0
+            ? await this.postCategoryAccessRepository.deletePostCategoryWriteAccesses(
+                {
+                  categoryId: params.categoryId,
+                },
+                params.writableRoles.map((role) => ({ role })),
+                tx,
+              )
+            : [];
 
         return {
           deletedReadAccess,
           deletedWriteAccess,
         };
       });
+
+    this.logger.log('Deleted post category access', {
+      deletedReadAccess,
+      deletedWriteAccess,
+    });
   }
 }

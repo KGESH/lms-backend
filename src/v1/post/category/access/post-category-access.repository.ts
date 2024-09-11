@@ -15,9 +15,21 @@ export class PostCategoryAccessRepository {
   async createPostCategoryReadAccesses(
     params: IPostCategoryAccessCreate[],
     db = this.drizzle.db,
-  ) {
+  ): Promise<IPostCategoryAccess[]> {
     const accesses = await db
       .insert(dbSchema.postCategoryReadAccesses)
+      .values(params)
+      .returning();
+
+    return accesses;
+  }
+
+  async createPostCategoryWriteAccesses(
+    params: IPostCategoryAccessCreate[],
+    db = this.drizzle.db,
+  ): Promise<IPostCategoryAccess[]> {
+    const accesses = await db
+      .insert(dbSchema.postCategoryWriteAccesses)
       .values(params)
       .returning();
 
@@ -43,18 +55,6 @@ export class PostCategoryAccessRepository {
       .returning();
 
     return deleted;
-  }
-
-  async createPostCategoryWriteAccesses(
-    params: IPostCategoryAccessCreate[],
-    db = this.drizzle.db,
-  ) {
-    const accesses = await db
-      .insert(dbSchema.postCategoryWriteAccesses)
-      .values(params)
-      .returning();
-
-    return accesses;
   }
 
   async deletePostCategoryWriteAccesses(
