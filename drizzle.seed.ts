@@ -27,6 +27,7 @@ import { seedCourseCategoriesWithChildren } from './test/e2e/helpers/db/lms/cour
 import { seedEbooks } from './test/e2e/helpers/db/lms/ebook.helper';
 import { seedEbookProducts } from './test/e2e/helpers/db/lms/ebook-product.helper';
 import { seedPosts } from './test/e2e/helpers/db/lms/post.helper';
+import { seedNavbarCategories } from './test/e2e/helpers/db/lms/post-category.helper';
 
 const env = new ConfigService();
 
@@ -76,6 +77,7 @@ async function seed() {
     await seedEbookProducts({ count: 5 }, db);
     await seedEbookReviews({ count: 5 }, db);
     await seedPosts({ count: 5 }, db);
+    await seedNavbarCategories(db);
   } catch (e) {
     console.error(e);
     await clearDatabase(db);

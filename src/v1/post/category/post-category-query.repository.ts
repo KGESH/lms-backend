@@ -6,15 +6,31 @@ import {
 } from '@src/v1/post/category/post-category.interface';
 import { dbSchema } from '@src/infra/db/schema';
 import { TransactionClient } from '@src/infra/db/drizzle.types';
-import { asc, desc, eq, isNull, sql } from 'drizzle-orm';
+import { asc, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
 import { Uuid } from '@src/shared/types/primitive';
 import { Pagination } from '@src/shared/types/pagination';
 import * as typia from 'typia';
 import { IPostCategoryWithRoles } from '@src/v1/post/category/post-category-relations.interface';
+import { NAVBAR_CATEGORY } from '@src/core/navbar.constant';
 
 @Injectable()
 export class PostCategoryQueryRepository {
   constructor(private readonly drizzle: DrizzleService) {}
+
+  async findNavbarCategories() {
+    const navbarCategoryNames = [
+      NAVBAR_CATEGORY.ANNOUNCEMENT.name,
+      NAVBAR_CATEGORY.FAQ.name,
+      NAVBAR_CATEGORY.COLUMN.name,
+    ];
+
+    const navbarCategories =
+      await this.drizzle.db.query.postCategories.findMany({
+        where: inArray(dbSchema.postCategories.name, navbarCategoryNames),
+      });
+
+    return navbarCategories;
+  }
 
   async findPostCategory(
     where: Pick<IPostCategory, 'id'>,

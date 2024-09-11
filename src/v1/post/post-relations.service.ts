@@ -53,6 +53,14 @@ export class PostRelationsService {
         })
       : null;
 
+    if (where.displayName && !user) {
+      return {
+        data: [],
+        totalCount: 0,
+        pagination,
+      };
+    }
+
     return await this.postQueryRepository.findPostsByCategory(
       {
         categoryId: category.id,

@@ -63,12 +63,39 @@ export class PostQueryRepository {
     };
   }
 
+  /**
+   * If user id is undefined, it means that the query should not filter by user id.
+   * If user id is null, it means that the
+   */
   async findPostsByCategory(
     where: Pick<IPost, 'categoryId'> &
       OptionalPick<IPost, 'userId'> &
       OptionalPick<IPostSnapshot, 'title' | 'content'>,
     pagination: Pagination,
   ): Promise<Paginated<IPostRelationsWithCommentCount[]>> {
+    const whereCondition = () => {
+      if (where.userId) {
+        return eq(dbSchema.posts.userId, where.userId);
+      }
+
+      if (where.title && where.content) {
+        return or(
+          ilike(dbSchema.postSnapshots.title, `%${where.title}%`),
+          ilike(dbSchema.postSnapshots.content, `%${where.content}%`),
+        );
+      }
+
+      if (where.title) {
+        return ilike(dbSchema.postSnapshots.title, `%${where.title}%`);
+      }
+
+      if (where.content) {
+        return ilike(dbSchema.postSnapshots.content, `%${where.content}%`);
+      }
+
+      return undefined;
+    };
+
     const latestSnapshotQuery = this.drizzle.db
       .select({
         id: dbSchema.postSnapshots.id,
@@ -97,17 +124,7 @@ export class PostQueryRepository {
       .where(
         and(
           eq(dbSchema.posts.categoryId, where.categoryId),
-          where.userId ? eq(dbSchema.posts.userId, where.userId) : undefined,
-          where.title && where.content
-            ? or(
-                ilike(dbSchema.postSnapshots.title, `%${where.title}%`),
-                ilike(dbSchema.postSnapshots.content, `%${where.content}%`),
-              )
-            : where.title
-              ? ilike(dbSchema.postSnapshots.title, `%${where.title}%`)
-              : where.content
-                ? ilike(dbSchema.postSnapshots.content, `%${where.content}%`)
-                : undefined,
+          whereCondition(),
           isNull(dbSchema.posts.deletedAt),
         ),
       )

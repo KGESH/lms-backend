@@ -19,6 +19,32 @@ export class PostCategoryService {
     private readonly postCategoryQueryRepository: PostCategoryQueryRepository,
   ) {}
 
+  async getNavbarCategories(): Promise<IPostCategoryRelationsWithRoles[]> {
+    const navbarCategories =
+      await this.postCategoryQueryRepository.findNavbarCategories();
+
+    const categoryIds = navbarCategories.map((category) => category.id);
+
+    const accesses =
+      await this.postCategoryAccessQueryRepository.findPostCategoriesAccesses(
+        categoryIds,
+      );
+
+    return navbarCategories.map((category) => {
+      const access = accesses.find(
+        (access) => access.categoryId === category.id,
+      );
+
+      return {
+        ...category,
+        depth: 1,
+        children: [],
+        readableRoles: access?.readableRoles ?? [],
+        writableRoles: access?.writableRoles ?? [],
+      };
+    });
+  }
+
   async getRootPostCategories(
     pagination: Pagination,
   ): Promise<IPostCategoryRelationsWithRoles[]> {
@@ -43,6 +69,7 @@ export class PostCategoryService {
       );
 
     const categoryIds = categories.map((category) => category.id);
+
     const accesses =
       await this.postCategoryAccessQueryRepository.findPostCategoriesAccesses(
         categoryIds,
@@ -60,25 +87,6 @@ export class PostCategoryService {
           writableRoles: access?.writableRoles ?? [],
         };
       });
-
-    // // Build tree
-    // const categoryMap = new Map<Uuid, IPostCategoryRelationsWithRoles>();
-    // categoriesWithAccess.forEach((category) => {
-    //   categoryMap.set(category.id, category);
-    // });
-    //
-    // const rootsWithChildren: IPostCategoryRelationsWithRoles[] = [];
-    // categoryMap.forEach((category) => {
-    //   if (category.parentId) {
-    //     const parent = categoryMap.get(category.parentId);
-    //
-    //     if (parent) {
-    //       parent.children.push(category);
-    //     }
-    //   } else {
-    //     rootsWithChildren.push(category);
-    //   }
-    // });
 
     return categoriesWithAccess;
   }

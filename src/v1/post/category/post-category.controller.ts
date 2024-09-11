@@ -65,6 +65,32 @@ export class PostCategoryController {
   }
 
   /**
+   * 네비게이션 헤더의 카테고리 목록을 조회합니다.
+   *
+   * 로그인 없이 조회할 수 있습니다.
+   *
+   * - 공지사항
+   *
+   * - 컬럼
+   *
+   * - FAQ
+   *
+   * @tag post-category
+   * @summary 네비게이션 헤더 카테고리 목록 조회 (public)
+   */
+  @TypedRoute.Get('/core/navbar')
+  @SkipAuth()
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  async getNavbarCategories(
+    @TypedHeaders() headers: ApiAuthHeaders,
+  ): Promise<PostCategoryWithAccessDto[]> {
+    return await this.postCategoryService.getNavbarCategories();
+  }
+
+  /**
    * 특정 게시판 카테고리를 조회합니다.
    *
    * 로그인 없이 조회할 수 있습니다.

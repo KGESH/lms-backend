@@ -4,8 +4,9 @@ import {
   IPostCategory,
   IPostCategoryCreate,
 } from '../../../../../src/v1/post/category/post-category.interface';
-import { IPostCategoryAccessRoles } from '@src/v1/post/category/access/post-category-access.interface';
-import { OptionalPick } from '@src/shared/types/optional';
+import { IPostCategoryAccessRoles } from '../../../../../src/v1/post/category/access/post-category-access.interface';
+import { OptionalPick } from '../../../../../src/shared/types/optional';
+import { NAVBAR_CATEGORY } from '../../../../../src/core/navbar.constant';
 
 export const createPostCategory = async (
   params: IPostCategoryCreate,
@@ -155,5 +156,55 @@ export const seedPostCategoriesWithChildren = async (
     rootCategories,
     levelTwoCategories,
     levelThreeCategories,
+  };
+};
+
+/**
+ * 홈 페이지 네비게이션바 카테고리를 생성합니다.
+ */
+export const seedNavbarCategories = async (db: TransactionClient) => {
+  const announcementCategory = await createPostCategory(
+    {
+      name: NAVBAR_CATEGORY.ANNOUNCEMENT.name,
+      description: '공지사항 카테고리',
+      parentId: null,
+    },
+    {
+      readableRoles: ['guest'],
+      writableRoles: ['admin', 'manager'],
+    },
+    db,
+  );
+
+  const columnCategory = await createPostCategory(
+    {
+      name: NAVBAR_CATEGORY.COLUMN.name,
+      description: '칼럼 카테고리',
+      parentId: null,
+    },
+    {
+      readableRoles: ['guest'],
+      writableRoles: ['admin', 'manager'],
+    },
+    db,
+  );
+
+  const faqCategory = await createPostCategory(
+    {
+      name: NAVBAR_CATEGORY.FAQ.name,
+      description: 'FAQ 카테고리',
+      parentId: null,
+    },
+    {
+      readableRoles: ['guest'],
+      writableRoles: ['admin', 'manager'],
+    },
+    db,
+  );
+
+  return {
+    announcementCategory,
+    columnCategory,
+    faqCategory,
   };
 };
