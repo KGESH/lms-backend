@@ -20,7 +20,7 @@ import { courseRelationsToDto } from '@src/shared/helpers/transofrm/course';
 import { enrollmentToDto } from '@src/shared/helpers/transofrm/enrollment';
 import { certificateToDto } from '@src/shared/helpers/transofrm/certifacate';
 import * as date from '@src/shared/utils/date';
-import { CourseEnrollmentProgressDto } from '@src/v1/course/enrollment/progress/course-enrollment-progress.dto';
+import { CourseEnrollmentLessonCompleteDto } from '@src/v1/course/enrollment/progress/course-enrollment-progress.dto';
 import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '@src/shared/types/response';
 import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
@@ -133,6 +133,10 @@ export class UserCourseEnrollmentController {
    *
    * 레슨을 완료하면 해당 레슨의 진도가 저장되며, 이후에는 중복 완료가 불가능합니다.
    *
+   * 레슨 완료 성공 이후 100% 진도가 달성되면 응답의 certificate 필드가 null이 아닌 CourseCertificateDto로 반환됩니다.
+   *
+   * 레슨 완료 성공 이후 100% 진도가 달성되지 않으면 응답의 certificate 필드가 null입니다.
+   *
    * 현재 사용자의 세션 id를 헤더에 담아서 요청합니다.
    *
    * @tag user
@@ -165,8 +169,8 @@ export class UserCourseEnrollmentController {
     @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: CompleteLessonDto,
     @SessionUser() session: ISessionWithUser,
-  ): Promise<CourseEnrollmentProgressDto> {
-    const completed =
+  ): Promise<CourseEnrollmentLessonCompleteDto> {
+    const { completedProgress, courseCertificate } =
       await this.userCourseEnrollmentService.createEnrollmentProgress(
         {
           userId: session.userId,
@@ -178,8 +182,13 @@ export class UserCourseEnrollmentController {
       );
 
     return {
-      ...completed,
-      createdAt: date.toISOString(completed.createdAt),
+      completed: {
+        ...completedProgress,
+        createdAt: date.toISOString(completedProgress.createdAt),
+      },
+      certificate: courseCertificate
+        ? certificateToDto(courseCertificate)
+        : null,
     };
   }
 }

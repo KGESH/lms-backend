@@ -13,6 +13,9 @@ import {
   ICourseEnrollmentProgressCreate,
 } from '@src/v1/course/enrollment/progress/course-enrollment-progress.interface';
 import { CourseEnrollmentProgressQueryRepository } from '@src/v1/course/enrollment/progress/course-enrollment-progress-query.repository';
+import { CourseCertificateRepository } from '@src/v1/course/enrollment/certificate/course-certificate.repository';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { ICourseCertificate } from '@src/v1/course/enrollment/certificate/course-certificate.interface';
 
 @Injectable()
 export class UserCourseEnrollmentService {
@@ -21,6 +24,8 @@ export class UserCourseEnrollmentService {
     private readonly courseEnrollmentQueryRepository: CourseEnrollmentQueryRepository,
     private readonly courseEnrollmentProgressRepository: CourseEnrollmentProgressRepository,
     private readonly courseEnrollmentProgressQueryRepository: CourseEnrollmentProgressQueryRepository,
+    private readonly courseCertificateRepository: CourseCertificateRepository,
+    private readonly drizzle: DrizzleService,
   ) {}
 
   async findEnrolledCourses(
@@ -43,15 +48,17 @@ export class UserCourseEnrollmentService {
   async createEnrollmentProgress(
     enrollmentParams: Pick<ICourseEnrollment, 'userId' | 'courseId'>,
     { lessonId }: Pick<ICourseEnrollmentProgressCreate, 'lessonId'>,
-  ): Promise<ICourseEnrollmentProgress> {
-    const enrollment =
-      await this.courseEnrollmentQueryRepository.findCourseEnrollment(
-        enrollmentParams,
-      );
+  ): Promise<{
+    completedProgress: ICourseEnrollmentProgress;
+    courseCertificate: ICourseCertificate | null;
+  }> {
+    const enrolledCourse = await this.findEnrolledCourse(enrollmentParams);
 
-    if (!enrollment) {
+    if (!enrolledCourse) {
       throw new NotFoundException('Enrollment not found');
     }
+
+    const { enrollment, course, progresses, certificate } = enrolledCourse;
 
     const alreadyCompleted =
       await this.courseEnrollmentProgressQueryRepository.findCourseEnrollmentProgress(
@@ -65,14 +72,34 @@ export class UserCourseEnrollmentService {
       throw new ConflictException('Lesson already completed');
     }
 
-    const lessonCompleted =
-      await this.courseEnrollmentProgressRepository.createCourseEnrollmentProgress(
-        {
-          enrollmentId: enrollment.id,
-          lessonId,
-        },
-      );
+    const completedLessonCount = progresses.length;
+    const totalLessonCount = course.chapters.reduce(
+      (acc, chapter) => acc + chapter.lessons.length,
+      0,
+    );
 
-    return lessonCompleted;
+    // If complete 100% of lessons, create certificate.
+    return await this.drizzle.db.transaction(async (tx) => {
+      const courseCertificate =
+        !certificate && completedLessonCount + 1 >= totalLessonCount
+          ? await this.courseCertificateRepository.createCourseCertificate(
+              {
+                enrollmentId: enrollment.id,
+              },
+              tx,
+            )
+          : null;
+
+      const completedProgress =
+        await this.courseEnrollmentProgressRepository.createCourseEnrollmentProgress(
+          {
+            enrollmentId: enrollment.id,
+            lessonId,
+          },
+          tx,
+        );
+
+      return { completedProgress, courseCertificate };
+    });
   }
 }
