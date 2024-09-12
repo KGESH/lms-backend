@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { AppController } from '@src/app.controller';
 import { AppService } from '@src/app.service';
 import { DatabaseModule } from '@src/infra/db/db.module';
@@ -21,6 +21,7 @@ import { CourseDashboardModule } from '@src/v1/dashboard/course/course-dashboard
 import { CourseReviewModule } from '@src/v1/review/course-review/course-review.module';
 import { EbookReviewModule } from '@src/v1/review/ebook-review/ebook-review.module';
 import { PostRelationsModule } from '@src/v1/post/post-relations.module';
+import { LoggerMiddleware } from '@src/core/middlewares/logger.middleware';
 
 @Module({
   imports: [
@@ -48,4 +49,8 @@ import { PostRelationsModule } from '@src/v1/post/post-relations.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}
