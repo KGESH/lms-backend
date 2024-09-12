@@ -39,9 +39,6 @@ export class SessionGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     const sessionId = this._getUserSessionId(req);
 
-    console.log(`[SessionGuard] sessionId: ${sessionId}`);
-    console.log(`[SessionGuard] guestAccess: ${guestAccess}`);
-
     if (!sessionId && !guestAccess) {
       throw new BadRequestException('Session id is required.');
     }
