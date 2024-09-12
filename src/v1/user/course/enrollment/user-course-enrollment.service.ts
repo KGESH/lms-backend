@@ -31,6 +31,15 @@ export class UserCourseEnrollmentService {
     );
   }
 
+  async findEnrolledCourse(
+    where: Pick<ICourseEnrollment, 'userId' | 'courseId'>,
+  ): Promise<ICourseEnrollmentCertificate | null> {
+    return await this.userCourseEnrollmentQueryRepository.findEnrolledCourse(
+      where,
+    );
+  }
+
+  // Todo: Impl 100% complete progress
   async createEnrollmentProgress(
     enrollmentParams: Pick<ICourseEnrollment, 'userId' | 'courseId'>,
     { lessonId }: Pick<ICourseEnrollmentProgressCreate, 'lessonId'>,

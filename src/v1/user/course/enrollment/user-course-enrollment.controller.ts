@@ -3,6 +3,7 @@ import {
   TypedBody,
   TypedException,
   TypedHeaders,
+  TypedParam,
   TypedRoute,
 } from '@nestia/core';
 import { Roles } from '@src/core/decorators/roles.decorator';
@@ -15,7 +16,7 @@ import {
   CompleteLessonDto,
   CourseEnrollmentCertificateDto,
 } from '@src/v1/user/course/enrollment/user-course-enrollment.dto';
-import { courseToDto } from '@src/shared/helpers/transofrm/course';
+import { courseRelationsToDto } from '@src/shared/helpers/transofrm/course';
 import { enrollmentToDto } from '@src/shared/helpers/transofrm/enrollment';
 import { certificateToDto } from '@src/shared/helpers/transofrm/certifacate';
 import * as date from '@src/shared/utils/date';
@@ -23,8 +24,9 @@ import { CourseEnrollmentProgressDto } from '@src/v1/course/enrollment/progress/
 import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '@src/shared/types/response';
 import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
+import { Uuid } from '@src/shared/types/primitive';
 
-@Controller('v1/user/course/enrollment')
+@Controller('v1/user/enrollment/course')
 export class UserCourseEnrollmentController {
   constructor(
     private readonly userCourseEnrollmentService: UserCourseEnrollmentService,
@@ -36,7 +38,7 @@ export class UserCourseEnrollmentController {
    * 현재 사용자의 세션 id를 헤더에 담아서 요청합니다.
    *
    * @tag user
-   * @summary 사용자 수강 내역 목록 조회 - Role('user')
+   * @summary 수강 내역 목록 조회 - Role('user')
    */
   @TypedRoute.Get('/')
   @Roles('user')
@@ -57,14 +59,14 @@ export class UserCourseEnrollmentController {
     @TypedHeaders() headers: AuthHeaders,
     @SessionUser() session: ISessionWithUser,
   ): Promise<CourseEnrollmentCertificateDto[]> {
-    const enrollments =
+    const enrolledCourses =
       await this.userCourseEnrollmentService.findEnrolledCourses({
         userId: session.userId,
       });
 
-    return enrollments.map(
+    return enrolledCourses.map(
       ({ course, enrollment, certificate, progresses }) => ({
-        course: courseToDto(course),
+        course: courseRelationsToDto(course),
         enrollment: enrollmentToDto(enrollment),
         certificate: certificate ? certificateToDto(certificate) : null,
         progresses: progresses.map((p) => ({
@@ -73,6 +75,57 @@ export class UserCourseEnrollmentController {
         })),
       }),
     );
+  }
+
+  /**
+   * 현재 사용자의 특정 강의의 수강 내역을 조회합니다.
+   *
+   * 현재 사용자의 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag user
+   * @summary 특정 강의 수강 내역 목록 조회 - Role('user')
+   */
+  @TypedRoute.Get('/:courseId')
+  @Roles('user')
+  @UseGuards(RolesGuard)
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'Not enough [role] to access this resource.',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async getCourseEnrollment(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedParam('courseId') courseId: Uuid,
+    @SessionUser() session: ISessionWithUser,
+  ): Promise<CourseEnrollmentCertificateDto | null> {
+    const enrolledCourse =
+      await this.userCourseEnrollmentService.findEnrolledCourse({
+        userId: session.userId,
+        courseId,
+      });
+
+    if (!enrolledCourse) {
+      return null;
+    }
+
+    return {
+      course: courseRelationsToDto(enrolledCourse.course),
+      enrollment: enrollmentToDto(enrolledCourse.enrollment),
+      certificate: enrolledCourse.certificate
+        ? certificateToDto(enrolledCourse.certificate)
+        : null,
+      progresses: enrolledCourse.progresses.map((p) => ({
+        ...p,
+        createdAt: date.toISOString(p.createdAt),
+      })),
+    };
   }
 
   /**

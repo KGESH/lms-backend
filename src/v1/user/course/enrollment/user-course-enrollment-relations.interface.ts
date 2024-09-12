@@ -5,7 +5,6 @@ import { ICourseEnrollmentProgress } from '@src/v1/course/enrollment/progress/co
 
 export type ICourseEnrollmentCertificate = {
   course: ICourseWithRelations;
-  // course: ICourse;
   enrollment: ICourseEnrollment;
   certificate: ICourseCertificate | null;
   progresses: ICourseEnrollmentProgress[];
