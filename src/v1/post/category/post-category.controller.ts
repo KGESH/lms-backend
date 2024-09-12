@@ -116,9 +116,16 @@ export class PostCategoryController {
     @TypedQuery() query?: PostCategoryWithChildrenQuery,
   ): Promise<PostCategoryWithAccessDto | null> {
     if (query?.withChildren) {
-      return await this.postCategoryService.findPostCategoryWithRelations({
-        id,
-      });
+      const category =
+        await this.postCategoryService.findPostCategoryWithRelations({
+          id,
+        });
+
+      if (!category) {
+        return null;
+      }
+
+      return category;
     }
 
     return await this.postCategoryService.findPostCategoryWithRoles({ id });

@@ -68,49 +68,21 @@ export class PostCategoryService {
         pagination,
       );
 
-    const categoryIds = categories.map((category) => category.id);
-
-    const accesses =
-      await this.postCategoryAccessQueryRepository.findPostCategoriesAccesses(
-        categoryIds,
-      );
-
-    const categoriesWithAccess: IPostCategoryRelationsWithRoles[] =
-      categories.map((category) => {
-        const access = accesses.find(
-          (access) => access.categoryId === category.id,
-        );
-
-        return {
-          ...category,
-          readableRoles: access?.readableRoles ?? [],
-          writableRoles: access?.writableRoles ?? [],
-        };
-      });
-
-    return categoriesWithAccess;
+    return categories;
   }
 
   async findPostCategory(
     where: Pick<IPostCategory, 'id'>,
-  ): Promise<IPostCategoryWithRelations | null> {
+  ): Promise<IPostCategoryRelationsWithRoles | null> {
     const category =
       await this.postCategoryQueryRepository.findPostCategory(where);
 
-    if (!category) {
-      return null;
-    }
-
-    return {
-      ...category,
-      depth: 1,
-      children: [],
-    };
+    return category;
   }
 
   async findPostCategoryOrThrow(
     where: Pick<IPostCategory, 'id'>,
-  ): Promise<IPostCategoryWithRelations> {
+  ): Promise<IPostCategoryRelationsWithRoles> {
     const category = await this.findPostCategory(where);
 
     if (!category) {
@@ -126,22 +98,7 @@ export class PostCategoryService {
     const category =
       await this.postCategoryQueryRepository.findPostCategory(where);
 
-    if (!category) {
-      return null;
-    }
-
-    const accesses =
-      await this.postCategoryAccessQueryRepository.findPostCategoryAccesses({
-        categoryId: category.id,
-      });
-
-    return {
-      ...category,
-      depth: 1,
-      children: [],
-      readableRoles: accesses.readableRoles,
-      writableRoles: accesses.writableRoles,
-    };
+    return category;
   }
 
   async findPostCategoryWithRelations(
@@ -152,20 +109,7 @@ export class PostCategoryService {
         where,
       );
 
-    if (!category) {
-      return null;
-    }
-
-    const accesses =
-      await this.postCategoryAccessQueryRepository.findPostCategoryAccesses({
-        categoryId: category.id,
-      });
-
-    return {
-      ...category,
-      readableRoles: accesses.readableRoles,
-      writableRoles: accesses.writableRoles,
-    };
+    return category;
   }
 
   async findPostCategoryWithChildrenOrThrow(

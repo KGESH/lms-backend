@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import {
   IPostCategory,
@@ -7,10 +7,13 @@ import {
 import { dbSchema } from '@src/infra/db/schema';
 import { TransactionClient } from '@src/infra/db/drizzle.types';
 import { asc, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
-import { Uuid } from '@src/shared/types/primitive';
+import { UserRole, Uuid } from '@src/shared/types/primitive';
 import { Pagination } from '@src/shared/types/pagination';
 import * as typia from 'typia';
-import { IPostCategoryWithRoles } from '@src/v1/post/category/post-category-relations.interface';
+import {
+  IPostCategoryRelationsWithRoles,
+  IPostCategoryWithRoles,
+} from '@src/v1/post/category/post-category-relations.interface';
 import { NAVBAR_CATEGORY } from '@src/core/navbar.constant';
 
 @Injectable()
@@ -34,21 +37,16 @@ export class PostCategoryQueryRepository {
 
   async findPostCategory(
     where: Pick<IPostCategory, 'id'>,
-  ): Promise<IPostCategory | null> {
-    const category = await this._getPostCategoryWithChildrenRawSql(
+  ): Promise<IPostCategoryRelationsWithRoles | null> {
+    return await this._getPostCategoryWithChildrenRawSql(
       where,
       this.drizzle.db,
     );
-    if (!category) {
-      return null;
-    }
-
-    return category;
   }
 
   async findPostCategoryWithChildren(
     where: Pick<IPostCategory, 'id'>,
-  ): Promise<IPostCategoryWithRelations | null> {
+  ): Promise<IPostCategoryRelationsWithRoles | null> {
     const category = await this._getPostCategoryWithChildrenRawSql(
       where,
       this.drizzle.db,
@@ -93,14 +91,15 @@ export class PostCategoryQueryRepository {
 
   async findRootCategoriesWithChildren(
     pagination: Pagination,
-  ): Promise<IPostCategoryWithRelations[]> {
+  ): Promise<IPostCategoryRelationsWithRoles[]> {
     return await this._getRootPostCategoriesRawSql(pagination, this.drizzle.db);
   }
 
   private async _getPostCategoryWithChildrenRawSql(
     where: Pick<IPostCategory, 'id'>,
     db: TransactionClient,
-  ): Promise<IPostCategoryWithRelations | null> {
+  ): Promise<IPostCategoryRelationsWithRoles | null> {
+    // Base SQL for the category and its children
     const categorySQL = db
       .select({
         id: dbSchema.postCategories.id,
@@ -112,70 +111,110 @@ export class PostCategoryQueryRepository {
       .from(dbSchema.postCategories)
       .where(eq(dbSchema.postCategories.id, where.id));
 
+    // Recursive SQL to gather category hierarchy and access roles
     const rawSql = sql`
-      WITH RECURSIVE category_hierarchy AS (
-            (${categorySQL})
-            UNION ALL
-            (SELECT c.id,
-                    c.name,
-                    c.parent_id,
-                    c.description,
-                    ch.depth + 1
-             FROM ${dbSchema.postCategories} AS c
-                      INNER JOIN
-                  category_hierarchy AS ch ON c.parent_id = ch.id))
-      SELECT *
-      FROM category_hierarchy
-      ORDER BY depth ASC;
+    WITH RECURSIVE category_hierarchy AS (
+      (${categorySQL})
+      UNION ALL
+      SELECT c.id,
+             c.name,
+             c.parent_id,
+             c.description,
+             ch.depth + 1
+      FROM ${dbSchema.postCategories} AS c
+      INNER JOIN category_hierarchy AS ch ON c.parent_id = ch.id
+    ),
+    category_access AS (
+      SELECT 
+        pc.id AS category_id,
+        ARRAY_AGG(DISTINCT ra.role) FILTER (WHERE ra.role IS NOT NULL) AS readable_roles,
+        ARRAY_AGG(DISTINCT wa.role) FILTER (WHERE wa.role IS NOT NULL) AS writable_roles
+      FROM ${dbSchema.postCategories} AS pc
+      LEFT JOIN ${dbSchema.postCategoryReadAccesses} AS ra ON pc.id = ra.category_id
+      LEFT JOIN ${dbSchema.postCategoryWriteAccesses} AS wa ON pc.id = wa.category_id
+      GROUP BY pc.id
+    )
+    SELECT ch.*, ca.readable_roles, ca.writable_roles
+    FROM category_hierarchy AS ch
+    LEFT JOIN category_access AS ca ON ch.id = ca.category_id
+    ORDER BY ch.depth ASC;
   `;
 
     const result = await db.execute<{
       id: Uuid;
       name: string;
-      parent_id: Uuid;
-      description: string;
+      parent_id: Uuid | null;
+      description: string | null;
       depth: number;
+      readable_roles: string | null; // Postgres array type. Need to convert to JS array
+      writable_roles: string | null; // Postgres array type. Need to convert to JS array
     }>(rawSql);
 
-    // rows[0] is root category.
-    // because order by depth asc.
+    // Handle the case where no rows are returned
     if (!result.rows[0]) {
       return null;
     }
 
-    const root = result.rows[0];
-    const children: IPostCategoryWithRelations[] = result.rows
-      .slice(1)
-      .map((row) => ({
-        id: row.id,
-        parentId: row.parent_id,
-        name: row.name,
-        description: row.description,
-        depth: row.depth,
-        children: [],
-      }));
-    const rootCategory: IPostCategoryWithRelations = {
+    // Transform R/W roles from string to array
+    const rows = result.rows.map((row) => ({
+      ...row,
+      readable_roles: typia.assert<UserRole[]>(
+        row.readable_roles?.replace(/[{}]/g, '').split(',') ?? [],
+      ),
+      writable_roles: typia.assert<UserRole[]>(
+        row.writable_roles?.replace(/[{}]/g, '').split(',') ?? [],
+      ),
+    }));
+
+    // First row is the root category (order by depth asc)
+    const root = rows[0];
+    const rootCategory: IPostCategoryRelationsWithRoles = {
       id: root.id,
       parentId: root.parent_id,
       name: root.name,
       description: root.description,
       depth: root.depth,
-      children,
+      readableRoles: root.readable_roles,
+      writableRoles: root.writable_roles,
+      children: [],
     };
 
-    return rootCategory;
+    // Build the hierarchy for child categories
+    const map = new Map<string, IPostCategoryRelationsWithRoles>();
+    rows.forEach((row) => {
+      const category: IPostCategoryRelationsWithRoles = {
+        id: row.id,
+        name: row.name,
+        parentId: row.parent_id,
+        description: row.description,
+        depth: row.depth,
+        readableRoles: row.readable_roles,
+        writableRoles: row.writable_roles,
+        children: [],
+      };
+      map.set(category.id, category);
+    });
+
+    // Attach children to their respective parents
+    map.forEach((category) => {
+      if (category.parentId) {
+        const parent = map.get(category.parentId);
+        if (parent) {
+          parent.children.push(category);
+        }
+      }
+    });
+
+    // Return the root category with all its children
+    const rootWithChildren = map.get(rootCategory.id)!;
+    return rootWithChildren;
   }
 
   private async _getRootPostCategoriesRawSql(
     pagination: Pagination,
     db: TransactionClient,
-  ): Promise<
-    // {
-    IPostCategoryWithRelations[]
-    // roots: IPostCategoryWithRelations[];
-    // everyCategories: IPostCategoryWithRelations[];
-    // }
-  > {
+  ): Promise<IPostCategoryRelationsWithRoles[]> {
+    // Base SQL for root categories
     const rootCategorySQL = db
       .select({
         id: dbSchema.postCategories.id,
@@ -195,46 +234,73 @@ export class PostCategoryQueryRepository {
       .offset((pagination.page - 1) * pagination.pageSize)
       .limit(pagination.pageSize);
 
+    // Recursive SQL query to gather categories and access roles
     const rawSql = sql`
-      WITH RECURSIVE category_hierarchy AS (
-            (${rootCategorySQL})
-            UNION ALL
-            (SELECT c.id,
-                    c.name,
-                    c.parent_id,
-                    c.description,
-                    ch.depth + 1
-             FROM ${dbSchema.postCategories} AS c
-                      INNER JOIN
-                  category_hierarchy AS ch ON c.parent_id = ch.id))
-      SELECT *
-      FROM category_hierarchy
-      ORDER BY depth ASC;
+    WITH RECURSIVE category_hierarchy AS (
+      (${rootCategorySQL})
+      UNION ALL
+      SELECT c.id,
+             c.name,
+             c.parent_id,
+             c.description,
+             ch.depth + 1
+      FROM ${dbSchema.postCategories} AS c
+      INNER JOIN category_hierarchy AS ch ON c.parent_id = ch.id
+    ),
+    category_access AS (
+      SELECT 
+        pc.id AS category_id,
+        ARRAY_AGG(DISTINCT ra.role) FILTER (WHERE ra.role IS NOT NULL) AS readable_roles,
+        ARRAY_AGG(DISTINCT wa.role) FILTER (WHERE wa.role IS NOT NULL) AS writable_roles
+      FROM ${dbSchema.postCategories} AS pc
+      LEFT JOIN ${dbSchema.postCategoryReadAccesses} AS ra ON pc.id = ra.category_id
+      LEFT JOIN ${dbSchema.postCategoryWriteAccesses} AS wa ON pc.id = wa.category_id
+      GROUP BY pc.id
+    )
+    SELECT ch.*, ca.readable_roles, ca.writable_roles
+    FROM category_hierarchy AS ch
+    LEFT JOIN category_access AS ca ON ch.id = ca.category_id
+    ORDER BY ch.depth ASC;
   `;
 
     const result = await db.execute<{
       id: Uuid;
       name: string;
-      parent_id: Uuid;
-      description: string;
+      parent_id: Uuid | null;
+      description: string | null;
       depth: number;
+      readable_roles: string | null; // Postgres array type. Need to convert to JS array
+      writable_roles: string | null; // Postgres array type. Need to convert to JS array
     }>(rawSql);
 
-    const map = new Map<string, IPostCategoryWithRelations>();
-    result.rows.forEach((row) => {
-      const category: IPostCategoryWithRelations =
-        typia.assert<IPostCategoryWithRelations>({
-          id: row.id,
-          name: row.name,
-          parentId: row.parent_id,
-          description: row.description,
-          depth: row.depth,
-          children: [],
-        });
+    // Transform R/W roles from string to array
+    const rows = result.rows.map((row) => ({
+      ...row,
+      readable_roles: typia.assert<UserRole[]>(
+        row.readable_roles?.replace(/[{}]/g, '').split(',') ?? [],
+      ),
+      writable_roles: typia.assert<UserRole[]>(
+        row.writable_roles?.replace(/[{}]/g, '').split(',') ?? [],
+      ),
+    }));
+
+    const map = new Map<string, IPostCategoryRelationsWithRoles>();
+    rows.forEach((row) => {
+      const category: IPostCategoryRelationsWithRoles = {
+        id: row.id,
+        name: row.name,
+        parentId: row.parent_id,
+        description: row.description,
+        depth: row.depth,
+        readableRoles: row.readable_roles,
+        writableRoles: row.writable_roles,
+        children: [],
+      };
       map.set(category.id, category);
     });
 
-    const rootCategories: IPostCategoryWithRelations[] = [];
+    // Build children, parent tree
+    const rootCategories: IPostCategoryRelationsWithRoles[] = [];
     map.forEach((category) => {
       if (category.parentId) {
         const parent = map.get(category.parentId);
