@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import * as UserCourseEnrollmentAPI from '@src/api/functional/v1/user/course/enrollment';
+import * as UserCourseEnrollmentAPI from '@src/api/functional/v1/user/enrollment/course';
 import { createTestingServer } from '../helpers/app.helper';
 import { Uri } from '@src/shared/types/primitive';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
