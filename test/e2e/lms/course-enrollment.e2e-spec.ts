@@ -70,7 +70,7 @@ describe('UserCourseEnrollmentController (e2e)', () => {
     it('should be complete lesson success', async () => {
       const [student] = await seedUsers({ count: 1, role: 'user' }, drizzle.db);
       const { course, lessons } = await createRandomCourse(drizzle.db);
-      const enrollment = await createCourseEnrollment(
+      await createCourseEnrollment(
         {
           courseId: course.id,
           userId: student.user.id,
@@ -78,23 +78,46 @@ describe('UserCourseEnrollmentController (e2e)', () => {
         drizzle.db,
       );
 
-      const response = await UserCourseEnrollmentAPI.completeLesson(
+      const completeLessonResponse =
+        await UserCourseEnrollmentAPI.completeLesson(
+          {
+            host,
+            headers: { LmsSecret, UserSessionId: student.userSession.id },
+          },
+          {
+            courseId: course.id,
+            lessonId: lessons[0].id,
+          },
+        );
+      if (!completeLessonResponse.success) {
+        console.error(completeLessonResponse.data);
+        throw new Error(
+          `assert - ${JSON.stringify(completeLessonResponse.data, null, 4)}`,
+        );
+      }
+
+      const { completed, certificate } = completeLessonResponse.data;
+      expect(completed.lessonId).toEqual(completed.lessonId);
+
+      const getResponse = await UserCourseEnrollmentAPI.getCourseEnrollment(
         {
           host,
           headers: { LmsSecret, UserSessionId: student.userSession.id },
         },
-        {
-          courseId: course.id,
-          lessonId: lessons[0].id,
-        },
+        course.id,
       );
-      if (!response.success) {
-        console.error(response.data);
-        throw new Error(`assert - ${JSON.stringify(response.data, null, 4)}`);
+      if (!getResponse.success || !getResponse.data) {
+        console.error(getResponse.data);
+        throw new Error(
+          `assert - ${JSON.stringify(completeLessonResponse.data, null, 4)}`,
+        );
       }
 
-      const completedLesson = response.data;
-      expect(completedLesson.lessonId).toEqual(completedLesson.lessonId);
+      const { progresses } = getResponse.data;
+      expect(progresses.find((p) => p.id === completed.id)).toBeTruthy();
+      if (certificate) {
+        expect(lessons.length).toEqual(progresses.length);
+      }
     });
 
     it('should be already completed lesson then get 409 status code.', async () => {
