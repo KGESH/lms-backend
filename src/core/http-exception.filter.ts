@@ -22,9 +22,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const timestamp = date.now('iso');
     const path = request.url;
 
-    this.logger.log(request.url);
-    this.logger.log(statusCode);
-    this.logger.log(message);
+    this.logger.error(`${request.method} ${statusCode} ${request.url}`);
+    this.logger.error(`Error: ${message}`);
 
     response.status(statusCode).json({
       path,
