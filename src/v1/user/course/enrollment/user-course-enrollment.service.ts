@@ -7,7 +7,6 @@ import { UserCourseEnrollmentQueryRepository } from '@src/v1/user/course/enrollm
 import { ICourseEnrollment } from '@src/v1/course/enrollment/course-enrollment.interface';
 import { ICourseEnrollmentCertificate } from '@src/v1/user/course/enrollment/user-course-enrollment-relations.interface';
 import { CourseEnrollmentProgressRepository } from '@src/v1/course/enrollment/progress/course-enrollment-progress.repository';
-import { CourseEnrollmentQueryRepository } from '@src/v1/course/enrollment/course-enrollment-query.repository';
 import {
   ICourseEnrollmentProgress,
   ICourseEnrollmentProgressCreate,
@@ -21,7 +20,6 @@ import { ICourseCertificate } from '@src/v1/course/enrollment/certificate/course
 export class UserCourseEnrollmentService {
   constructor(
     private readonly userCourseEnrollmentQueryRepository: UserCourseEnrollmentQueryRepository,
-    private readonly courseEnrollmentQueryRepository: CourseEnrollmentQueryRepository,
     private readonly courseEnrollmentProgressRepository: CourseEnrollmentProgressRepository,
     private readonly courseEnrollmentProgressQueryRepository: CourseEnrollmentProgressQueryRepository,
     private readonly courseCertificateRepository: CourseCertificateRepository,
