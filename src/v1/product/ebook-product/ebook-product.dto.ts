@@ -6,6 +6,8 @@ import { ProductSnapshotAnnouncementDto } from '@src/v1/product/common/snapshot/
 import { ProductSnapshotRefundPolicyDto } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.dto';
 import { Pagination } from '@src/shared/types/pagination';
 import { EbookWithRelationsDto } from '@src/v1/ebook/ebook-with-relations.dto';
+import { ProductSnapshotUiContentDto } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.dto';
+import { RequiredField } from '@src/shared/types/required-field';
 
 export type EbookProductDto = {
   ebookId: Uuid;
@@ -18,6 +20,7 @@ export type EbookProductDto = {
   refundPolicy: ProductSnapshotRefundPolicyDto;
   pricing: ProductSnapshotPricingDto;
   discounts: ProductSnapshotDiscountDto | null;
+  uiContents: ProductSnapshotUiContentDto[];
   createdAt: ISO8601;
   updatedAt: ISO8601;
   deletedAt: ISO8601 | null;
@@ -35,8 +38,25 @@ export type CreateEbookProductDto = Pick<
     ProductSnapshotDiscountDto,
     'id' | 'productSnapshotId'
   > | null;
+  uiContents: Pick<
+    ProductSnapshotUiContentDto,
+    'type' | 'content' | 'description' | 'sequence' | 'metadata' | 'url'
+  >[];
 };
 
-export type UpdateEbookProductDto = Partial<CreateEbookProductDto>;
+export type UpdateEbookProductDto = Partial<
+  Omit<CreateEbookProductDto, 'uiContents'> & {
+    uiContents?: {
+      create: Pick<
+        ProductSnapshotUiContentDto,
+        'type' | 'content' | 'description' | 'sequence' | 'metadata' | 'url'
+      >[];
+      update: RequiredField<
+        Partial<Omit<ProductSnapshotUiContentDto, 'productSnapshotId'>>,
+        'id'
+      >[];
+    };
+  }
+>;
 
 export type EbookProductQuery = Partial<Pagination>;

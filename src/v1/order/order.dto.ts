@@ -26,7 +26,12 @@ export type OrderCourseDto = OrderBaseDto & {
 export type OrderCoursePurchasedDto = Omit<OrderCourseDto, 'product'> & {
   product: Omit<
     CourseProductDto,
-    'content' | 'announcement' | 'refundPolicy' | 'pricing' | 'discounts'
+    | 'content'
+    | 'announcement'
+    | 'refundPolicy'
+    | 'pricing'
+    | 'discounts'
+    | 'uiContents'
   >;
 };
 
@@ -38,6 +43,11 @@ export type OrderEbookDto = OrderBaseDto & {
 export type OrderEbookPurchasedDto = Omit<OrderEbookDto, 'product'> & {
   product: Omit<
     EbookProductDto,
-    'content' | 'announcement' | 'refundPolicy' | 'pricing' | 'discounts'
+    | 'content'
+    | 'announcement'
+    | 'refundPolicy'
+    | 'pricing'
+    | 'discounts'
+    | 'uiContents'
   >;
 };

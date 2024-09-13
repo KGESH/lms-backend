@@ -35,13 +35,17 @@ export const ebookProductToDto = (
             : null,
         }
       : null,
+    uiContents: product.lastSnapshot.uiContents,
     ebook: ebookRelationsToDto(product.ebook),
   };
 };
 
 export const ebookProductWithPricingToDto = (
   product: IEbookProductWithPricing,
-): Omit<EbookProductDto, 'announcement' | 'content' | 'refundPolicy'> => {
+): Omit<
+  EbookProductDto,
+  'announcement' | 'content' | 'refundPolicy' | 'uiContents'
+> => {
   return {
     ebookId: product.ebookId,
     snapshotId: product.lastSnapshot.id,

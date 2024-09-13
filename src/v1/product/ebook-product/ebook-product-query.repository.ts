@@ -142,6 +142,7 @@ export class EbookProductQueryRepository {
             content: true,
             pricing: true,
             discounts: true,
+            uiContents: true,
           },
         },
       },
@@ -183,6 +184,7 @@ export class EbookProductQueryRepository {
                   ),
                 }
               : null,
+            uiContents: lastSnapshot.uiContents ?? [],
           }
         : null,
     } satisfies IEbookProductWithRelations);

@@ -79,7 +79,10 @@ export class EbookProductController {
     @TypedQuery() query: EbookProductQuery,
   ): Promise<
     Paginated<
-      Omit<EbookProductDto, 'announcement' | 'content' | 'refundPolicy'>[]
+      Omit<
+        EbookProductDto,
+        'announcement' | 'content' | 'refundPolicy' | 'uiContents'
+      >[]
     >
   > {
     const { data: products, ...paginated } =
@@ -218,6 +221,7 @@ export class EbookProductController {
               : null,
           }
         : null,
+      ebookProductSnapshotUiContentCreateParams: body.uiContents,
     });
 
     return ebookProductToDto(product);
@@ -294,6 +298,10 @@ export class EbookProductController {
                 : null,
             }
           : null,
+        ebookProductSnapshotUiContentParams: {
+          create: body.uiContents?.create ?? [],
+          update: body.uiContents?.update ?? [],
+        },
       },
     );
 

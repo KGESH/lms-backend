@@ -27,6 +27,11 @@ import { IProductSnapshotAnnouncementCreate } from '@src/v1/product/common/snaps
 import { IProductSnapshotRefundPolicyCreate } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
 import { createUuid } from '@src/shared/utils/uuid';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
+import {
+  IProductSnapshotUiContentCreate,
+  IProductSnapshotUiContentUpdate,
+} from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
+import { EbookProductSnapshotUiContentRepository } from '@src/v1/product/ebook-product/ebook-product-snapshot-ui-content.repository';
 
 @Injectable()
 export class EbookProductService {
@@ -37,6 +42,7 @@ export class EbookProductService {
     private readonly ebookProductSnapshotPricingRepository: EbookProductSnapshotPricingRepository,
     private readonly ebookProductSnapshotDiscountRepository: EbookProductSnapshotDiscountRepository,
     private readonly ebookProductSnapshotContentRepository: EbookProductSnapshotContentRepository,
+    private readonly ebookProductSnapshotUiContentRepository: EbookProductSnapshotUiContentRepository,
     private readonly ebookProductSnapshotAnnouncementRepository: EbookProductSnapshotAnnouncementRepository,
     private readonly ebookProductSnapshotRefundPolicyRepository: EbookProductSnapshotRefundPolicyRepository,
     private readonly drizzle: DrizzleService,
@@ -99,6 +105,7 @@ export class EbookProductService {
     ebookProductSnapshotRefundPolicyCreateParams,
     ebookProductSnapshotPricingCreateParams,
     ebookProductSnapshotDiscountCreateParams,
+    ebookProductSnapshotUiContentCreateParams,
   }: {
     ebookProductCreateParams: IEbookProductCreate;
     ebookProductSnapshotCreateParams: Optional<
@@ -125,6 +132,10 @@ export class EbookProductService {
       IProductSnapshotDiscountCreate,
       'productSnapshotId'
     > | null;
+    ebookProductSnapshotUiContentCreateParams: Optional<
+      IProductSnapshotUiContentCreate,
+      'productSnapshotId'
+    >[];
   }): Promise<NonNullableInfer<IEbookProductWithRelations>> {
     const existProduct =
       await this.ebookProductQueryRepository.findEbookProductWithLastSnapshot({
@@ -183,6 +194,15 @@ export class EbookProductService {
               id: createUuid(),
             })
           : null;
+        const uiContents =
+          ebookProductSnapshotUiContentCreateParams.length > 0
+            ? await this.ebookProductSnapshotUiContentRepository.createMany(
+                ebookProductSnapshotUiContentCreateParams.map((params) => ({
+                  ...params,
+                  productSnapshotId: snapshot.id,
+                })),
+              )
+            : [];
 
         return {
           ...ebookProduct,
@@ -193,6 +213,7 @@ export class EbookProductService {
             refundPolicy,
             pricing,
             discounts: discount,
+            uiContents,
           },
         } satisfies NonNullableInfer<Omit<IEbookProductWithRelations, 'ebook'>>;
       });
@@ -226,6 +247,7 @@ export class EbookProductService {
       ebookProductSnapshotRefundPolicyCreateParams,
       ebookProductSnapshotPricingCreateParams,
       ebookProductSnapshotDiscountCreateParams,
+      ebookProductSnapshotUiContentParams,
     }: {
       ebookProductSnapshotCreateParams?: Partial<
         Omit<IProductSnapshotCreate, 'productId'>
@@ -250,6 +272,10 @@ export class EbookProductService {
         IProductSnapshotDiscountCreate,
         'productSnapshotId'
       > | null;
+      ebookProductSnapshotUiContentParams: {
+        create: Omit<IProductSnapshotUiContentCreate, 'productSnapshotId'>[];
+        update: IProductSnapshotUiContentUpdate[];
+      };
     },
   ): Promise<NonNullableInfer<IEbookProductWithRelations>> {
     const existProduct = await this.findEbookProductWithRelationsOrThrow(where);
@@ -319,6 +345,52 @@ export class EbookProductService {
               })
             : null;
 
+        const existUi = existProduct.lastSnapshot.uiContents;
+        const createUiParams: IProductSnapshotUiContentCreate[] =
+          ebookProductSnapshotUiContentParams?.create.map((params) => ({
+            ...params,
+            productSnapshotId: snapshot.id,
+            id: createUuid(),
+          })) ?? [];
+        const updateUiParams =
+          ebookProductSnapshotUiContentParams?.update ?? [];
+        const updateUiIds = updateUiParams.map((ui) => ui.id);
+        const existSameUiParams = existUi
+          .filter((ui) => !updateUiIds.includes(ui.id))
+          .map((ui) => ({
+            ...ui,
+            id: createUuid(),
+          }));
+        const updatedUiParams = existUi
+          .filter((ui) => updateUiIds.includes(ui.id))
+          .map((ui) => {
+            const updateTarget = updateUiParams.find(
+              (updateUi) => updateUi.id === ui.id,
+            );
+            return {
+              type: updateTarget?.type ?? ui.type,
+              content: updateTarget?.content ?? ui.content,
+              description: updateTarget?.description ?? ui.description,
+              sequence: updateTarget?.sequence ?? ui.sequence,
+              url: updateTarget?.url ?? ui.url,
+              metadata: updateTarget?.metadata ?? ui.metadata,
+              productSnapshotId: snapshot.id,
+              id: createUuid(),
+            };
+          });
+        const uiContentCreateParams = [
+          ...existSameUiParams,
+          ...updatedUiParams,
+          ...createUiParams,
+        ];
+        const uiContents =
+          uiContentCreateParams.length > 0
+            ? await this.ebookProductSnapshotUiContentRepository.createMany(
+                uiContentCreateParams,
+                tx,
+              )
+            : [];
+
         return {
           ...existProduct,
           lastSnapshot: {
@@ -328,6 +400,7 @@ export class EbookProductService {
             refundPolicy,
             pricing,
             discounts: discount,
+            uiContents,
           },
         } satisfies NonNullableInfer<IEbookProductWithRelations>;
       });

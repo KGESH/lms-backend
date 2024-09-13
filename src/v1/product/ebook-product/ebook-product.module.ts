@@ -11,6 +11,7 @@ import { UserModule } from '@src/v1/user/user.module';
 import { EbookProductSnapshotContentRepository } from '@src/v1/product/ebook-product/ebook-product-snapshot-content.repository';
 import { EbookProductSnapshotAnnouncementRepository } from '@src/v1/product/ebook-product/ebook-product-snapshot-announcement.repository';
 import { EbookProductSnapshotRefundPolicyRepository } from '@src/v1/product/ebook-product/ebook-product-snapshot-refund-policy.repository';
+import { EbookProductSnapshotUiContentRepository } from '@src/v1/product/ebook-product/ebook-product-snapshot-ui-content.repository';
 
 const modules = [EbookModule, UserModule];
 
@@ -24,6 +25,7 @@ const providers = [
   EbookProductSnapshotContentRepository,
   EbookProductSnapshotAnnouncementRepository,
   EbookProductSnapshotRefundPolicyRepository,
+  EbookProductSnapshotUiContentRepository,
 ];
 
 @Module({

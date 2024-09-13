@@ -217,7 +217,7 @@ export class CourseProductQueryRepository {
                   ),
                 }
               : null,
-            uiContents: lastSnapshot.uiContents,
+            uiContents: lastSnapshot.uiContents ?? [],
           }
         : null,
     };

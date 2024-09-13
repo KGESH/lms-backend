@@ -1,7 +1,7 @@
 import { relations } from 'drizzle-orm';
 import { AnyPgColumn, pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { decimal, integer, timestamp } from 'drizzle-orm/pg-core';
-import { discountType, lessonContentType } from './enum';
+import { discountType, lessonContentType, productUiContentType } from './enum';
 import { teachers } from './teacher';
 import { ebookOrders } from './order';
 import { users } from './user';
@@ -122,6 +122,20 @@ export const ebookProductSnapshotContents = pgTable(
   },
 );
 
+export const ebookProductSnapshotUiContents = pgTable(
+  'ebook_product_snapshot_ui_contents',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    productSnapshotId: uuid('product_snapshot_id').notNull(),
+    type: productUiContentType('type').notNull(),
+    content: text('content').notNull(),
+    description: text('description'),
+    sequence: integer('sequence'),
+    url: text('url'),
+    metadata: text('metadata'),
+  },
+);
+
 export const ebookEnrollments = pgTable('ebook_enrollments', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').notNull(),
@@ -183,7 +197,7 @@ export const ebookProductsRelations = relations(
 
 export const ebookProductSnapshotsRelations = relations(
   ebookProductSnapshots,
-  ({ one }) => ({
+  ({ one, many }) => ({
     product: one(ebookProducts, {
       fields: [ebookProductSnapshots.productId],
       references: [ebookProducts.id],
@@ -194,6 +208,7 @@ export const ebookProductSnapshotsRelations = relations(
     pricing: one(ebookProductSnapshotPricing),
     discounts: one(ebookProductSnapshotDiscounts),
     ebookOrder: one(ebookOrders),
+    uiContents: many(ebookProductSnapshotUiContents),
   }),
 );
 
@@ -261,6 +276,16 @@ export const ebookEnrollmentsRelations = relations(
   }),
 );
 
+export const ebookProductSnapshotUiContentsRelations = relations(
+  ebookProductSnapshotUiContents,
+  ({ one }) => ({
+    productSnapshot: one(ebookProductSnapshots, {
+      fields: [ebookProductSnapshotUiContents.productSnapshotId],
+      references: [ebookProductSnapshots.id],
+    }),
+  }),
+);
+
 export const ebookDbSchema = {
   // Entities
   ebookCategories,
@@ -273,6 +298,7 @@ export const ebookDbSchema = {
   ebookProductSnapshotAnnouncements,
   ebookProductSnapshotRefundPolicies,
   ebookProductSnapshotContents,
+  ebookProductSnapshotUiContents,
   ebookEnrollments,
 
   // Relations
@@ -286,5 +312,6 @@ export const ebookDbSchema = {
   ebookProductSnapshotAnnouncementsRelations,
   ebookProductSnapshotRefundPoliciesRelations,
   ebookProductSnapshotContentsRelations,
+  ebookProductSnapshotUiContentsRelations,
   ebookEnrollmentsRelations,
 };

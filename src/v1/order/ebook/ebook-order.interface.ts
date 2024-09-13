@@ -6,6 +6,7 @@ import { IProductSnapshotDiscount } from '@src/v1/product/common/snapshot/discou
 import { IProductSnapshotPricing } from '@src/v1/product/common/snapshot/pricing/product-snapshot-pricing.interface';
 import { IOrder } from '@src/v1/order/order.interface';
 import { IEbookWithRelations } from '@src/v1/ebook/ebook-with-relations.interface';
+import { IProductSnapshotUiContent } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
 
 export type IEbookOrder = {
   id: Uuid;
@@ -24,6 +25,7 @@ export type IEbookOrderRelations = IOrder & {
       refundPolicy: IProductSnapshotContent;
       pricing: IProductSnapshotPricing;
       discounts: IProductSnapshotDiscount | null;
+      uiContents: IProductSnapshotUiContent[];
     };
   };
 };
