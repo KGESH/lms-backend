@@ -154,7 +154,7 @@ export class OrderController {
    * @summary 전자책 상품 구매 - Role('user')
    */
   @TypedRoute.Post('/ebook')
-  @Roles('user')
+  @Roles('user', 'teacher', 'manager', 'admin')
   @UseGuards(RolesGuard)
   async purchaseEbookProduct(
     @TypedHeaders() headers: AuthHeaders,
@@ -197,7 +197,7 @@ export class OrderController {
    * @summary 강의 상품 구매 - Role('user')
    */
   @TypedRoute.Post('/course')
-  @Roles('user')
+  @Roles('user', 'teacher', 'manager', 'admin')
   @UseGuards(RolesGuard)
   async purchaseCourseProduct(
     @TypedHeaders() headers: AuthHeaders,
