@@ -3,6 +3,11 @@ node_modules
 .gitignore
 *.md
 dist
-packages
 local
 drizzle
+
+# Nestia build output
+packages
+
+# seed script
+drizzle.seed.ts
