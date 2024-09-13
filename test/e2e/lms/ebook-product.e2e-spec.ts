@@ -63,6 +63,42 @@ describe('EbookProductController (e2e)', () => {
       const createDto: CreateEbookProductDto = {
         ...typia.random<CreateEbookProductDto>(),
         title: 'mock-product',
+        description: null,
+        pricing: {
+          amount: '100000',
+        },
+        announcement: {
+          richTextContent: '테스트 공지사항',
+        },
+        refundPolicy: {
+          richTextContent: '테스트 환불정책',
+        },
+        uiContents: [
+          {
+            type: 'main-banner',
+            content: '테스트 비디오 배너',
+            metadata: null,
+            description: 'mock main banner',
+            sequence: 1,
+            url: 'https://www.youtube.com',
+          },
+          {
+            type: 'target-description',
+            content: '테스트 타겟 말풍선',
+            metadata: null,
+            description: null,
+            sequence: 1,
+            url: null,
+          },
+          {
+            type: 'tag',
+            content: '테스트 구매 대상 태그',
+            metadata: null,
+            description: null,
+            sequence: 1,
+            url: null,
+          },
+        ],
       };
 
       const admin = (
@@ -86,9 +122,22 @@ describe('EbookProductController (e2e)', () => {
       }
 
       const product = response.data;
-
       expect(product.title).toEqual('mock-product');
+      expect(product.description).toEqual(null);
       expect(product.ebookId).toEqual(ebook.id);
+      expect(product.pricing.amount).toEqual('100000');
+      expect(product.announcement.richTextContent).toEqual('테스트 공지사항');
+      expect(product.refundPolicy.richTextContent).toEqual('테스트 환불정책');
+      expect(
+        product.uiContents.find((ui) => ui.type === 'main-banner')!.url,
+      ).toEqual('https://www.youtube.com');
+      expect(
+        product.uiContents.find((ui) => ui.type === 'target-description')!
+          .content,
+      ).toEqual('테스트 타겟 말풍선');
+      expect(
+        product.uiContents.find((ui) => ui.type === 'tag')!.content,
+      ).toEqual('테스트 구매 대상 태그');
     });
   });
 
@@ -123,6 +172,19 @@ describe('EbookProductController (e2e)', () => {
           validTo: date.now('iso'),
           value: '33.33',
         },
+        uiContents: {
+          create: [
+            {
+              type: 'target-description',
+              content: 'mock new content',
+              description: null,
+              metadata: null,
+              sequence: 1,
+              url: null,
+            },
+          ],
+          update: [],
+        },
       };
 
       const response = await EbookProductAPI.updateProductEbook(
@@ -154,6 +216,9 @@ describe('EbookProductController (e2e)', () => {
         'updated refund policy',
       );
       expect(updated.discounts!.value).toEqual('33.33');
+      expect(
+        updated.uiContents.find((ui) => ui.content === 'mock new content'),
+      ).toBeDefined();
     });
   });
 });

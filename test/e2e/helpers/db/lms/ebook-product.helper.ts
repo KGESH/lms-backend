@@ -31,6 +31,10 @@ import {
   generateRandomPrice,
 } from '../../../../../src/shared/helpers/mocks/random-price.mock';
 import * as date from '../../../../../src/shared/utils/date';
+import {
+  IProductSnapshotUiContent,
+  IProductSnapshotUiContentCreate,
+} from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
 
 export const createEbookProduct = async (
   params: IEbookProductCreate,
@@ -90,6 +94,22 @@ export const createEbookProductSnapshotContent = async (
     .returning();
 
   return content;
+};
+
+export const createEbookProductSnapshotUiContent = async (
+  params: IProductSnapshotUiContentCreate[],
+  db: TransactionClient,
+): Promise<IProductSnapshotUiContent[]> => {
+  if (params.length === 0) {
+    return [];
+  }
+
+  const uiContents = await db
+    .insert(dbSchema.ebookProductSnapshotUiContents)
+    .values(params)
+    .returning();
+
+  return uiContents;
 };
 
 export const createEbookProductSnapshotPricing = async (
@@ -177,6 +197,13 @@ export const createRandomEbookProduct = async (
     },
     db,
   );
+  const uiContents = await createEbookProductSnapshotUiContent(
+    typia.random<IProductSnapshotUiContentCreate[]>().map((params) => ({
+      ...params,
+      productSnapshotId: snapshot.id,
+    })),
+    db,
+  );
 
   return {
     ...product,
@@ -196,6 +223,7 @@ export const createRandomEbookProduct = async (
       content,
       pricing,
       discounts,
+      uiContents,
     },
   };
 };

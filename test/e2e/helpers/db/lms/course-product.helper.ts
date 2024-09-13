@@ -111,6 +111,7 @@ export const createCourseProductSnapshotUiContent = async (
 
   return uiContents;
 };
+
 export const createCourseProductSnapshotPricing = async (
   params: IProductSnapshotPricingCreate,
   db: TransactionClient,
