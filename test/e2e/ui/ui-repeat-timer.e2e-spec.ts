@@ -51,7 +51,8 @@ describe('UiRepeatTimerController (e2e)', () => {
         createDto,
       );
       if (!response.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(response.data, null, 4);
+        throw new Error(`[assert] ${message}`);
       }
 
       const uiRepeatTimer = response.data;
@@ -79,7 +80,8 @@ describe('UiRepeatTimerController (e2e)', () => {
         createDto,
       );
       if (!createResponse.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(createResponse.data, null, 4);
+        throw new Error(`[assert] ${message}`);
       }
 
       const uiRepeatTimer = createResponse.data;
@@ -89,10 +91,11 @@ describe('UiRepeatTimerController (e2e)', () => {
           host,
           headers: { LmsSecret },
         },
-        uiRepeatTimer.ui.id,
+        uiRepeatTimer.ui.uiComponentId,
       );
       if (!getResponse.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(getResponse.data, null, 4);
+        throw new Error(`[assert] ${message}`);
       }
 
       const fetchedUiRepeatTimer = getResponse.data;
@@ -129,11 +132,11 @@ describe('UiRepeatTimerController (e2e)', () => {
         createDto,
       );
       if (!createResponse.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(createResponse.data, null, 4);
+        throw new Error(`[assert] ${message}`);
       }
 
       const uiRepeatTimer = createResponse.data;
-
       const updateDto: UpdateUiRepeatTimerDto = {
         ...uiRepeatTimer,
         ui: {
@@ -150,11 +153,12 @@ describe('UiRepeatTimerController (e2e)', () => {
             UserSessionId: admin.userSession.id,
           },
         },
-        uiRepeatTimer.ui.id,
+        uiRepeatTimer.ui.uiComponentId,
         updateDto,
       );
       if (!updateResponse.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(updateResponse.data, null, 4);
+        throw new Error(`[assert] ${message}`);
       }
 
       const updatedUiRepeatTimer = updateResponse.data;
@@ -184,7 +188,8 @@ describe('UiRepeatTimerController (e2e)', () => {
         createDto,
       );
       if (!createResponse.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(createResponse.data, null, 4);
+        throw new Error(`[assert] ${message}`);
       }
 
       const uiRepeatTimer = createResponse.data;
@@ -200,7 +205,8 @@ describe('UiRepeatTimerController (e2e)', () => {
         uiRepeatTimer.ui.uiComponentId,
       );
       if (!deleteResponse.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(deleteResponse.data, null, 4);
+        throw new Error(`[assert] ${message}`);
       }
 
       const deletedUiComponent = deleteResponse.data;
@@ -212,10 +218,11 @@ describe('UiRepeatTimerController (e2e)', () => {
           host,
           headers: { LmsSecret },
         },
-        uiRepeatTimer.ui.id,
+        uiRepeatTimer.ui.uiComponentId,
       );
       if (!afterDeleteResponse.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(afterDeleteResponse.data, null, 4);
+        throw new Error(`[assert] ${message}`);
       }
 
       expect(afterDeleteResponse.data).toBeNull();
