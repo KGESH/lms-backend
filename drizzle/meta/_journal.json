@@ -15,6 +15,13 @@
       "when": 1726218051049,
       "tag": "0001_optimal_blazing_skull",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1726225854663,
+      "tag": "0002_clean_celestials",
+      "breakpoints": true
     }
   ]
 }
