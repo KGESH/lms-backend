@@ -16,7 +16,7 @@ RUN --mount=type=cache,id=pnmcache,target=/var/pnpm/store \
 ############################################################
 ############################################################
 
-FROM base as builder
+FROM base AS builder
 
 COPY . .
 
