@@ -1,4 +1,4 @@
-import { Controller, Logger, UseGuards } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import {
   TypedBody,
   TypedException,
@@ -11,7 +11,6 @@ import { UiRepeatTimerService } from '@src/v1/ui/component/repeat-timer/ui-repea
 import { Uuid } from '@src/shared/types/primitive';
 import {
   CreateUiRepeatTimerDto,
-  DeletedUiRepeatTimerDto,
   UiRepeatTimerDto,
   UpdateUiRepeatTimerDto,
 } from '@src/v1/ui/component/repeat-timer/ui-repeat-timer.dto';
@@ -23,22 +22,34 @@ import { IErrorResponse } from '@src/shared/types/response';
 
 @Controller('v1/ui/component/repeat-timer')
 export class UiRepeatTimerController {
-  private readonly logger = new Logger(UiRepeatTimerController.name);
-
   constructor(private readonly uiRepeatTimerService: UiRepeatTimerService) {}
 
-  @TypedRoute.Get('/:id')
+  /**
+   * 타이머 UI를 조회합니다.
+   *
+   * @tag ui
+   * @summary 타이머 UI를 조회합니다.
+   */
+  @TypedRoute.Get('/:uiComponentId')
   @SkipAuth()
   async getUiRepeatTimer(
     @TypedHeaders() headers: ApiAuthHeaders,
-    @TypedParam('id') id: Uuid,
+    @TypedParam('uiComponentId') uiComponentId: Uuid,
   ): Promise<UiRepeatTimerDto | null> {
     const uiRepeatTimer = await this.uiRepeatTimerService.findUiRepeatTimer({
-      id,
+      uiComponentId,
     });
     return uiRepeatTimer;
   }
 
+  /**
+   * 타이머 UI를 생성합니다.
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag ui
+   * @summary 타이머 UI를 생성합니다.
+   */
   @TypedRoute.Post('/')
   @Roles('admin', 'manager')
   @UseGuards(RolesGuard)
@@ -63,7 +74,15 @@ export class UiRepeatTimerController {
     return uiRepeatTimer;
   }
 
-  @TypedRoute.Patch('/:id')
+  /**
+   * 타이머 UI를 수정합니다.
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag ui
+   * @summary 타이머 UI를 수정합니다.
+   */
+  @TypedRoute.Patch('/:uiComponentId')
   @Roles('admin', 'manager')
   @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
@@ -76,37 +95,13 @@ export class UiRepeatTimerController {
   })
   async updateUiRepeatTimer(
     @TypedHeaders() headers: AuthHeaders,
-    @TypedParam('id') id: Uuid,
+    @TypedParam('uiComponentId') uiComponentId: Uuid,
     @TypedBody() body: UpdateUiRepeatTimerDto,
   ): Promise<UiRepeatTimerDto> {
     const updated = await this.uiRepeatTimerService.updateUiRepeatTimer(
-      { id },
+      { uiComponentId },
       body,
     );
     return updated;
-  }
-
-  @TypedRoute.Delete('/:id')
-  @Roles('admin', 'manager')
-  @UseGuards(RolesGuard)
-  @TypedException<TypeGuardError>({
-    status: 400,
-    description: 'invalid request',
-  })
-  @TypedException<IErrorResponse<404>>({
-    status: 404,
-    description: 'user not found',
-  })
-  async deleteUiRepeatTimer(
-    @TypedHeaders() headers: AuthHeaders,
-    @TypedParam('id') id: Uuid,
-  ): Promise<DeletedUiRepeatTimerDto> {
-    const deletedId = await this.uiRepeatTimerService.deleteUiRepeatTimer({
-      id,
-    });
-
-    return {
-      id: deletedId,
-    };
   }
 }
