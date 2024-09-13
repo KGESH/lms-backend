@@ -5,6 +5,8 @@ import { UiCarouselReviewComponentRepository } from '@src/v1/ui/component/carous
 import { UiCarouselReviewService } from '@src/v1/ui/component/carousel/carousel-review/ui-carousel-review.service';
 import { UiCarouselReviewController } from '@src/v1/ui/component/carousel/carousel-review/ui-carousel-review.controller';
 
+const modules = [UiCarouselModule];
+
 const providers = [
   UiCarouselReviewService,
   UiCarouselReviewComponentRepository,
@@ -12,9 +14,9 @@ const providers = [
 ];
 
 @Module({
-  imports: [UiCarouselModule],
+  imports: [...modules],
   controllers: [UiCarouselReviewController],
   providers: [...providers],
-  exports: [...providers],
+  exports: [...modules, ...providers],
 })
 export class UiCarouselReviewModule {}

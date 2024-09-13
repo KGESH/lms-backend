@@ -14,7 +14,9 @@ export type IUiCarouselReview = {
 
 export type IUiCarouselReviewCreate = Optional<IUiCarouselReview, 'id'>;
 
-export type IUiCarouselReviewUpdate = Partial<IUiCarouselReview>;
+export type IUiCarouselReviewUpdate = Partial<
+  Omit<IUiCarouselReviewCreate, 'uiCarouselId'>
+>;
 
 export type IUiCarouselReviewWithItems = {
   uiCarousel: IUiCarouselComponent<UiCarouselReview>;

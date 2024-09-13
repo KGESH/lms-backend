@@ -4,6 +4,7 @@ import {
   UiCarouselDto,
 } from '@src/v1/ui/component/carousel/ui-carousel.dto';
 import { UiCarouselReview } from '@src/v1/ui/category/ui-category.interface';
+import { RequiredField } from '@src/shared/types/required-field';
 
 export type UiCarouselReviewItemDto = {
   id: Uuid;
@@ -14,10 +15,15 @@ export type UiCarouselReviewItemDto = {
   rating: number;
 };
 
-export type CreateUiCarouselReviewItemDto = Omit<UiCarouselReviewItemDto, 'id'>;
+export type CreateUiCarouselReviewItemDto = Omit<
+  UiCarouselReviewItemDto,
+  'id' | 'uiCarouselId'
+>;
 
-export type UpdateUiCarouselReviewItemDto =
-  Partial<CreateUiCarouselReviewItemDto>;
+export type UpdateUiCarouselReviewItemDto = RequiredField<
+  Partial<Omit<UiCarouselReviewItemDto, 'uiCarouselId'>>,
+  'id'
+>;
 
 export type CreateUiCarouselReviewDto = CreateUiCarouselDto<UiCarouselReview>;
 

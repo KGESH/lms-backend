@@ -14,70 +14,8 @@ import {
 import { createUuid } from '@src/shared/utils/uuid';
 
 @Injectable()
-// implements IRepository<IUiCarouselComponent<T>>
 export class UiCarouselComponentRepository<T extends UiCarouselType> {
   constructor(private readonly drizzle: DrizzleService) {}
-
-  // async findOne(
-  //   where: Pick<IUiCarouselComponent<T>['ui'], 'id'>,
-  // ): Promise<IUiCarouselComponent<T> | null> {
-  //   const uiCarousel = await this.drizzle.db.query.uiCarousels.findFirst({
-  //     where: eq(dbSchema.uiCarousels.id, where.id),
-  //     with: {
-  //       uiComponent: true,
-  //     },
-  //   });
-  //
-  //   if (!uiCarousel) {
-  //     return null;
-  //   }
-  //
-  //   return {
-  //     ...uiCarousel.uiComponent,
-  //     category: UI_CATEGORY.CAROUSEL,
-  //     ui: {
-  //       ...uiCarousel,
-  //       carouselType: uiCarousel.carouselType as T,
-  //     },
-  //   };
-  // }
-
-  // async findOneOrThrow(
-  //   where: Pick<IUiCarouselComponent<T>['ui'], 'id'>,
-  // ): Promise<IUiCarouselComponent<T>> {
-  //   const uiCarousel = await this.findOne(where);
-  //
-  //   if (!uiCarousel) {
-  //     throw new NotFoundException('UiCarousel not found');
-  //   }
-  //
-  //   return uiCarousel;
-  // }
-
-  // async findMany(pagination: Pagination): Promise<IUiCarouselComponent<T>[]> {
-  //   const uiCarousels = await this.drizzle.db.query.uiCarousels.findMany({
-  //     with: {
-  //       uiComponent: true,
-  //     },
-  //     where: pagination.page
-  //       ? gt(dbSchema.uiCarousels.id, pagination.page)
-  //       : undefined,
-  //     orderBy:
-  //       pagination.orderBy === 'asc'
-  //         ? asc(dbSchema.uiCarousels.id)
-  //         : desc(dbSchema.uiCarousels.id),
-  //     limit: pagination.pageSize,
-  //   });
-  //
-  //   return uiCarousels.map(({ uiComponent, ...uiCarousel }) => ({
-  //     ...uiComponent,
-  //     category: UI_CATEGORY.CAROUSEL,
-  //     ui: {
-  //       ...uiCarousel,
-  //       carouselType: uiCarousel.carouselType as T,
-  //     },
-  //   }));
-  // }
 
   async create(
     params: IUiCarouselComponentCreate<T>,
