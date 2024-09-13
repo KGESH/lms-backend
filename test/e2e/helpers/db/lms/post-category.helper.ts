@@ -91,19 +91,12 @@ export const seedPostCategoriesWithChildren = async (
   >,
   db: TransactionClient,
 ) => {
-  const readableRoles = params.readableRoles ?? [
-    'admin',
-    'manager',
-    'teacher',
-    'user',
-    'guest',
-  ];
+  const readableRoles = params.readableRoles ?? ['guest'];
   const writableRoles = params.writableRoles ?? [
     'admin',
     'manager',
     'teacher',
     'user',
-    'guest',
   ];
 
   const rootCreateParams = Array.from({ length: params.count }).map(
