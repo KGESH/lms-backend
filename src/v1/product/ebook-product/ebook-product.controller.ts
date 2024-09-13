@@ -109,6 +109,8 @@ export class EbookProductController {
    *
    * content: 상품 상세 페이지 rich text content.
    *
+   * uiContents: 상품 상세 페이지 UI 컨텐츠.
+   *
    * refundPolicy: 상품 상세 페이지 환불 정책 rich text content.
    *
    * pricing: 상품 가격 정보.
@@ -162,6 +164,8 @@ export class EbookProductController {
    * announcement: 상품 상세 페이지 공지사항 rich text content.
    *
    * content: 상품 상세 페이지 rich text content.
+   *
+   * uiContents: 상품 상세 페이지 UI 컨텐츠.
    *
    * refundPolicy: 상품 상세 페이지 환불 정책 rich text content.
    *
@@ -245,6 +249,8 @@ export class EbookProductController {
    * announcement: 상품 상세 페이지 공지사항 rich text content.
    *
    * content: 상품 상세 페이지 rich text content.
+   *
+   * uiContents: 상품 상세 페이지 UI 컨텐츠.
    *
    * refundPolicy: 상품 상세 페이지 환불 정책 rich text content.
    *
