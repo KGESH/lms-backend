@@ -80,7 +80,10 @@ export class CourseProductController {
     @TypedQuery() query: CourseProductQuery,
   ): Promise<
     Paginated<
-      Omit<CourseProductDto, 'announcement' | 'content' | 'refundPolicy'>[]
+      Omit<
+        CourseProductDto,
+        'announcement' | 'content' | 'refundPolicy' | 'uiContents'
+      >[]
     >
   > {
     const { data: products, ...paginated } =
@@ -225,6 +228,7 @@ export class CourseProductController {
               : null,
           }
         : null,
+      courseProductSnapshotUiContentCreateParams: body.uiContents,
     });
 
     return courseProductToDto(product);
@@ -280,9 +284,7 @@ export class CourseProductController {
     @TypedBody() body: UpdateCourseProductDto,
   ): Promise<CourseProductDto> {
     const updated = await this.courseProductService.updateCourseProduct(
-      {
-        courseId,
-      },
+      { courseId },
       {
         courseProductSnapshotCreateParams: { ...body },
         courseProductSnapshotAnnouncementCreateParams: body.announcement,
@@ -301,6 +303,10 @@ export class CourseProductController {
                 : null,
             }
           : null,
+        courseProductSnapshotUiContentParams: {
+          create: body.uiContents?.create ?? [],
+          update: body.uiContents?.update ?? [],
+        },
       },
     );
 

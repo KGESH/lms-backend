@@ -1,11 +1,4 @@
-import {
-  AnyPgColumn,
-  pgTable,
-  real,
-  text,
-  timestamp,
-  uuid,
-} from 'drizzle-orm/pg-core';
+import { pgTable, real, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { users } from './user';
 import { courses } from './course';
 import { productType } from './enum';

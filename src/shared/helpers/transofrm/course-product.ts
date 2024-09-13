@@ -35,13 +35,17 @@ export const courseProductToDto = (
             : null,
         }
       : null,
+    uiContents: product.lastSnapshot.uiContents,
     course: courseRelationsToDto(product.course),
   };
 };
 
 export const courseProductWithPricingToDto = (
   product: ICourseProductWithPricing,
-): Omit<CourseProductDto, 'announcement' | 'content' | 'refundPolicy'> => {
+): Omit<
+  CourseProductDto,
+  'announcement' | 'content' | 'refundPolicy' | 'uiContents'
+> => {
   return {
     courseId: product.courseId,
     snapshotId: product.lastSnapshot.id,

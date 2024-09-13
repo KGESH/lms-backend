@@ -28,7 +28,11 @@ import { IProductSnapshotRefundPolicyCreate } from '@src/v1/product/common/snaps
 import { createUuid } from '@src/shared/utils/uuid';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
 import { CourseQueryService } from '@src/v1/course/course-query.service';
-import * as typia from 'typia';
+import { CourseProductSnapshotUiContentRepository } from '@src/v1/product/course-product/course-product-snapshot-ui-content.repository';
+import {
+  IProductSnapshotUiContentCreate,
+  IProductSnapshotUiContentUpdate,
+} from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
 
 @Injectable()
 export class CourseProductService {
@@ -40,6 +44,7 @@ export class CourseProductService {
     private readonly courseProductSnapshotPricingRepository: CourseProductSnapshotPricingRepository,
     private readonly courseProductSnapshotDiscountRepository: CourseProductSnapshotDiscountRepository,
     private readonly courseProductSnapshotContentRepository: CourseProductSnapshotContentRepository,
+    private readonly courseProductSnapshotUiContentRepository: CourseProductSnapshotUiContentRepository,
     private readonly courseProductSnapshotAnnouncementRepository: CourseProductSnapshotAnnouncementRepository,
     private readonly courseProductSnapshotRefundPolicyRepository: CourseProductSnapshotRefundPolicyRepository,
     private readonly drizzle: DrizzleService,
@@ -102,6 +107,7 @@ export class CourseProductService {
     courseProductSnapshotRefundPolicyCreateParams,
     courseProductSnapshotPricingCreateParams,
     courseProductSnapshotDiscountCreateParams,
+    courseProductSnapshotUiContentCreateParams,
   }: {
     courseProductCreateParams: ICourseProductCreate;
     courseProductSnapshotCreateParams: Optional<
@@ -128,6 +134,10 @@ export class CourseProductService {
       IProductSnapshotDiscountCreate,
       'productSnapshotId'
     > | null;
+    courseProductSnapshotUiContentCreateParams: Optional<
+      IProductSnapshotUiContentCreate,
+      'productSnapshotId'
+    >[];
   }): Promise<NonNullableInfer<ICourseProductWithRelations>> {
     const course = await this.courseQueryService.findCourseByIdOrThrow({
       id: courseProductCreateParams.courseId,
@@ -189,6 +199,15 @@ export class CourseProductService {
             id: createUuid(),
           })
         : null;
+      const uiContents =
+        courseProductSnapshotUiContentCreateParams.length > 0
+          ? await this.courseProductSnapshotUiContentRepository.createMany(
+              courseProductSnapshotUiContentCreateParams.map((params) => ({
+                ...params,
+                productSnapshotId: snapshot.id,
+              })),
+            )
+          : [];
 
       return {
         ...courseProduct,
@@ -199,6 +218,7 @@ export class CourseProductService {
           refundPolicy,
           pricing,
           discounts: discount,
+          uiContents,
         },
       } satisfies NonNullableInfer<Omit<ICourseProductWithRelations, 'course'>>;
     });
@@ -232,6 +252,7 @@ export class CourseProductService {
       courseProductSnapshotRefundPolicyCreateParams,
       courseProductSnapshotPricingCreateParams,
       courseProductSnapshotDiscountCreateParams,
+      courseProductSnapshotUiContentParams,
     }: {
       courseProductSnapshotCreateParams?: Partial<
         Omit<IProductSnapshotCreate, 'productId'>
@@ -256,6 +277,10 @@ export class CourseProductService {
         IProductSnapshotDiscountCreate,
         'productSnapshotId'
       > | null;
+      courseProductSnapshotUiContentParams: {
+        create: Omit<IProductSnapshotUiContentCreate, 'productSnapshotId'>[];
+        update: IProductSnapshotUiContentUpdate[];
+      };
     },
   ): Promise<NonNullableInfer<ICourseProductWithRelations>> {
     const existProduct =
@@ -326,6 +351,52 @@ export class CourseProductService {
               })
             : null;
 
+        const existUi = existProduct.lastSnapshot.uiContents;
+        const createUiParams: IProductSnapshotUiContentCreate[] =
+          courseProductSnapshotUiContentParams?.create.map((params) => ({
+            ...params,
+            productSnapshotId: snapshot.id,
+            id: createUuid(),
+          })) ?? [];
+        const updateUiParams =
+          courseProductSnapshotUiContentParams?.update ?? [];
+        const updateUiIds = updateUiParams.map((ui) => ui.id);
+        const existSameUiParams = existUi
+          .filter((ui) => !updateUiIds.includes(ui.id))
+          .map((ui) => ({
+            ...ui,
+            id: createUuid(),
+          }));
+        const updatedUiParams = existUi
+          .filter((ui) => updateUiIds.includes(ui.id))
+          .map((ui) => {
+            const updateTarget = updateUiParams.find(
+              (updateUi) => updateUi.id === ui.id,
+            );
+            return {
+              type: updateTarget?.type ?? ui.type,
+              content: updateTarget?.content ?? ui.content,
+              description: updateTarget?.description ?? ui.description,
+              sequence: updateTarget?.sequence ?? ui.sequence,
+              url: updateTarget?.url ?? ui.url,
+              metadata: updateTarget?.metadata ?? ui.metadata,
+              productSnapshotId: snapshot.id,
+              id: createUuid(),
+            };
+          });
+        const uiContentCreateParams = [
+          ...existSameUiParams,
+          ...updatedUiParams,
+          ...createUiParams,
+        ];
+        const uiContents =
+          uiContentCreateParams.length > 0
+            ? await this.courseProductSnapshotUiContentRepository.createMany(
+                uiContentCreateParams,
+                tx,
+              )
+            : [];
+
         return {
           ...existProduct,
           lastSnapshot: {
@@ -335,6 +406,7 @@ export class CourseProductService {
             refundPolicy,
             pricing,
             discounts: discount,
+            uiContents,
           },
         } satisfies NonNullableInfer<ICourseProductWithRelations>;
       });

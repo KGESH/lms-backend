@@ -6,6 +6,7 @@ import { IProductSnapshotContent } from '@src/v1/product/common/snapshot/content
 import { IProductSnapshotAnnouncement } from '@src/v1/product/common/snapshot/announcement/product-snapshot-announcement.interface';
 import { IProductSnapshotRefundPolicy } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
 import { ICourseWithRelations } from '@src/v1/course/course-with-relations.interface';
+import { IProductSnapshotUiContent } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
 
 export type ICourseProductWithLastSnapshot = ICourseProduct & {
   course: ICourseWithRelations;
@@ -29,6 +30,7 @@ export type ICourseProductWithRelations = ICourseProduct & {
         pricing: IProductSnapshotPricing;
         discounts: IProductSnapshotDiscount | null;
         content: IProductSnapshotContent;
+        uiContents: IProductSnapshotUiContent[];
       })
     | null;
 };

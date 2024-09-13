@@ -169,6 +169,7 @@ export class CourseProductQueryRepository {
             content: true,
             pricing: true,
             discounts: true,
+            uiContents: true,
           },
         },
       },
@@ -216,6 +217,7 @@ export class CourseProductQueryRepository {
                   ),
                 }
               : null,
+            uiContents: lastSnapshot.uiContents,
           }
         : null,
     };

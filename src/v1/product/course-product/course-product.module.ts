@@ -11,6 +11,7 @@ import { UserModule } from '@src/v1/user/user.module';
 import { CourseProductSnapshotContentRepository } from '@src/v1/product/course-product/course-product-snapshot-content.repository';
 import { CourseProductSnapshotAnnouncementRepository } from '@src/v1/product/course-product/course-product-snapshot-announcement.repository';
 import { CourseProductSnapshotRefundPolicyRepository } from '@src/v1/product/course-product/course-product-snapshot-refund-policy.repository';
+import { CourseProductSnapshotUiContentRepository } from '@src/v1/product/course-product/course-product-snapshot-ui-content.repository';
 
 const modules = [CourseModule, UserModule];
 
@@ -24,6 +25,7 @@ const providers = [
   CourseProductSnapshotContentRepository,
   CourseProductSnapshotAnnouncementRepository,
   CourseProductSnapshotRefundPolicyRepository,
+  CourseProductSnapshotUiContentRepository,
 ];
 
 @Module({
