@@ -76,6 +76,8 @@ export class PaymentService {
 
       const data = await this.api.post(endpoint.href, body);
 
+      this.logger.log(`[Port One Payment Refund]`, data);
+
       const refundResult =
         typia.assert<PortoneSucceededPaymentCancellation>(data);
 
