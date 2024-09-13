@@ -91,6 +91,5 @@ export class EbookOrderPurchaseService {
       }
       throw e;
     }
-    // Verify payment amount mismatch
   }
 }
