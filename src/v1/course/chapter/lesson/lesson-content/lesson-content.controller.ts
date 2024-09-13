@@ -20,6 +20,10 @@ import { AuthHeaders } from '@src/v1/auth/auth.headers';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
 import { CourseAccessGuard } from '@src/core/guards/course-access.guard';
+import { SessionUser } from '@src/core/decorators/session-user.decorator';
+import { ISessionWithUser } from '@src/v1/auth/session.interface';
+import { LessonContentWithHistoryDto } from '@src/v1/course/chapter/lesson/lesson-content/history/lesson-content-history.dto';
+import * as date from '@src/shared/utils/date';
 
 @Controller(
   'v1/course/:courseId/chapter/:chapterId/lesson/:lessonId/lesson-content',
@@ -67,6 +71,10 @@ export class LessonContentController {
   /**
    * 특정 레슨 컨텐츠를 조회합니다.
    *
+   * API를 호출한 세션 사용자 id와 레슨 컨텐츠 id를 통해 해당 레슨 컨텐츠의 최초 조회 이력을 확인합니다.
+   *
+   * 조회 이력이 없다면 생성 이후 반환하며, 조회 이력이 있다면 조회 이력을 반환합니다.
+   *
    * 세션 사용자 role이 'user'라면 해당 'course'를 구매한 사용자만 조회할 수 있습니다.
    *
    * 제목, 설명, 컨텐츠 타입, 컨텐츠 URL, 메타데이터, 표기 순서 정보를 제공합니다.
@@ -93,13 +101,22 @@ export class LessonContentController {
     @TypedParam('courseId') courseId: Uuid,
     @TypedParam('chapterId') chapterId: Uuid,
     @TypedParam('lessonId') lessonId: Uuid,
-    @TypedParam('id') lessonContentId: Uuid,
-  ): Promise<LessonContentDto | null> {
+    @TypedParam('id') id: Uuid,
+    @SessionUser() session: ISessionWithUser,
+  ): Promise<LessonContentWithHistoryDto | null> {
     const lessonContent =
-      await this.lessonContentQueryService.findLessonContentById({
-        id: lessonContentId,
+      await this.lessonContentQueryService.getLessonContentWithHistory({
+        userId: session.userId,
+        lessonContentId: id,
       });
-    return lessonContent;
+
+    return {
+      ...lessonContent,
+      history: {
+        ...lessonContent.history,
+        createdAt: date.toISOString(lessonContent.history.createdAt),
+      },
+    };
   }
 
   /**

@@ -171,7 +171,9 @@ export class LessonContentService {
     where: Pick<ILessonContent, 'id'>,
     tx?: TransactionClient,
   ): Promise<ILessonContent> {
-    await this.lessonContentQueryRepository.findOneOrThrow({ id: where.id });
+    await this.lessonContentQueryRepository.findLessonContentOrThrow({
+      id: where.id,
+    });
     return await this.lessonContentRepository.deleteLessonContent(where, tx);
   }
 }

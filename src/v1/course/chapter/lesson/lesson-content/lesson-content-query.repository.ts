@@ -8,7 +8,7 @@ import { ILessonContent } from '@src/v1/course/chapter/lesson/lesson-content/les
 export class LessonContentQueryRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async findOne(
+  async findLessonContent(
     where: Pick<ILessonContent, 'id'>,
   ): Promise<ILessonContent | null> {
     const lessonContent = await this.drizzle.db.query.lessonContents.findFirst({
@@ -22,10 +22,10 @@ export class LessonContentQueryRepository {
     return lessonContent;
   }
 
-  async findOneOrThrow(
+  async findLessonContentOrThrow(
     where: Pick<ILessonContent, 'id'>,
   ): Promise<ILessonContent> {
-    const lessonContent = await this.findOne(where);
+    const lessonContent = await this.findLessonContent(where);
 
     if (!lessonContent) {
       throw new NotFoundException('LessonContent not found');

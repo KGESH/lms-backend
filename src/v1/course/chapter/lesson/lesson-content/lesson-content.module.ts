@@ -5,6 +5,8 @@ import { LessonContentService } from '@src/v1/course/chapter/lesson/lesson-conte
 import { LessonContentQueryService } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content-query.service';
 import { LessonContentRepository } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.repository';
 import { LessonContentQueryRepository } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content-query.repository';
+import { LessonContentHistoryRepository } from '@src/v1/course/chapter/lesson/lesson-content/history/lesson-content-history.repository';
+import { LessonContentHistoryQueryRepository } from '@src/v1/course/chapter/lesson/lesson-content/history/lesson-content-history-query.repository';
 
 const modules = [LessonModule];
 
@@ -13,6 +15,8 @@ const providers = [
   LessonContentQueryService,
   LessonContentRepository,
   LessonContentQueryRepository,
+  LessonContentHistoryRepository,
+  LessonContentHistoryQueryRepository,
 ];
 
 @Module({
