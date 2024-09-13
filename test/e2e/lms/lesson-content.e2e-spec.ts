@@ -52,17 +52,20 @@ describe('LessonContentController (e2e)', () => {
         lessonId,
         lessonContentId,
       );
-      if (!response.success) {
+      if (!response.success || !response.data) {
         const message = JSON.stringify(response.data, null, 4);
         throw new Error(`assert - ${message}`);
       }
 
-      const foundLessonContent = response.data;
+      const lessonContentWithHistory = response.data;
       expect(
         lessonContents.find(
-          (lessonContent) => lessonContent.id === foundLessonContent!.id,
+          (lessonContent) => lessonContent.id === lessonContentWithHistory.id,
         ),
       ).toBeDefined();
+      expect(lessonContentId).toEqual(
+        lessonContentWithHistory.history.lessonContentId,
+      );
     });
   });
 
