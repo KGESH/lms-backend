@@ -7,7 +7,7 @@ import {
   integer,
   timestamp,
 } from 'drizzle-orm/pg-core';
-import { userRole } from './enum';
+import { categoryAccessRole } from './enum';
 import { users } from './user';
 import { relations } from 'drizzle-orm';
 
@@ -27,7 +27,8 @@ export const postCategoryReadAccesses = pgTable(
     categoryId: uuid('category_id')
       .notNull()
       .references(() => postCategories.id, { onDelete: 'cascade' }),
-    role: userRole('role').notNull(),
+    role: categoryAccessRole('role').notNull(),
+    // role: userRole('role').notNull(),
   },
   (table) => ({
     access: unique().on(table.categoryId, table.role),
@@ -41,7 +42,8 @@ export const postCategoryWriteAccesses = pgTable(
     categoryId: uuid('category_id')
       .notNull()
       .references(() => postCategories.id, { onDelete: 'cascade' }),
-    role: userRole('role').notNull(),
+    role: categoryAccessRole('role').notNull(),
+    // role: userRole('role').notNull(),
   },
   (table) => ({
     access: unique().on(table.categoryId, table.role),

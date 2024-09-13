@@ -35,14 +35,22 @@ export type DiscountValue = Price | Percentage;
 export type ISO8601 = string & typia.tags.Format<'date-time'>;
 
 export const USER_ROLE = {
-  GUEST: 'guest',
   USER: 'user',
   TEACHER: 'teacher',
   MANAGER: 'manager',
   ADMIN: 'admin',
 } as const;
 
+export const CATEGORY_ACCESS_ROLE = {
+  ...USER_ROLE,
+  GUEST: 'guest',
+  PURCHASED_USER: 'purchased_user',
+} as const;
+
 export type UserRole = (typeof USER_ROLE)[keyof typeof USER_ROLE];
+
+export type CategoryAccessRole =
+  (typeof CATEGORY_ACCESS_ROLE)[keyof typeof CATEGORY_ACCESS_ROLE];
 
 export type AuthProvider = 'email' | 'kakao';
 
@@ -55,3 +63,5 @@ export type ProductType = Course | Ebook;
 export type LessonContentType = 'video' | 'image' | 'text' | 'file';
 
 export type EbookContentType = 'video' | 'image' | 'text' | 'file';
+
+export type ProductUiContentType = 'main-banner' | 'target-description' | 'tag';
