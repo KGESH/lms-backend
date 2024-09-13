@@ -13,6 +13,7 @@ import {
   CreateEbookProductDto,
   EbookProductDto,
   EbookProductQuery,
+  PaginatedEbookProducts,
   UpdateEbookProductDto,
 } from '@src/v1/product/ebook-product/ebook-product.dto';
 import * as date from '@src/shared/utils/date';
@@ -77,14 +78,7 @@ export class EbookProductController {
   async getEbookProducts(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedQuery() query: EbookProductQuery,
-  ): Promise<
-    Paginated<
-      Omit<
-        EbookProductDto,
-        'announcement' | 'content' | 'refundPolicy' | 'uiContents'
-      >[]
-    >
-  > {
+  ): Promise<PaginatedEbookProducts> {
     const { data: products, ...paginated } =
       await this.ebookProductService.findEbookProductsWithPricing(
         withDefaultPagination(query),

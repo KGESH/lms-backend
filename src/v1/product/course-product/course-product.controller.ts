@@ -14,6 +14,7 @@ import {
   CourseProductDto,
   UpdateCourseProductDto,
   CourseProductQuery,
+  PaginatedCourseProducts,
 } from '@src/v1/product/course-product/course-product.dto';
 import * as date from '@src/shared/utils/date';
 import { TypeGuardError } from 'typia';
@@ -25,7 +26,6 @@ import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
 import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
-import { Paginated } from '@src/shared/types/pagination';
 import { IErrorResponse } from '@src/shared/types/response';
 import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
 import { withDefaultPagination } from '@src/core/pagination';
@@ -78,14 +78,7 @@ export class CourseProductController {
   async getCourseProducts(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedQuery() query: CourseProductQuery,
-  ): Promise<
-    Paginated<
-      Omit<
-        CourseProductDto,
-        'announcement' | 'content' | 'refundPolicy' | 'uiContents'
-      >[]
-    >
-  > {
+  ): Promise<PaginatedCourseProducts> {
     const { data: products, ...paginated } =
       await this.courseProductService.findCourseProductsWithPricing(
         withDefaultPagination(query),

@@ -1,7 +1,6 @@
 import { Controller, Logger } from '@nestjs/common';
 import { TypedHeaders, TypedParam, TypedQuery, TypedRoute } from '@nestia/core';
 import { Uuid } from '@src/shared/types/primitive';
-import { DEFAULT_PAGINATION } from '@src/core/pagination.constant';
 import { TeacherService } from '@src/v1/teacher/teacher.service';
 import { TeacherDto, TeacherQuery } from '@src/v1/teacher/teacher.dto';
 import { teacherToDto } from '@src/shared/helpers/transofrm/teacher';
