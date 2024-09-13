@@ -26,10 +26,9 @@ export type EbookProductDto = {
   deletedAt: ISO8601 | null;
 };
 
-export type CreateEbookProductDto = Pick<
-  EbookProductDto,
-  'title' | 'description'
-> & {
+export type CreateEbookProductDto = {
+  title: EbookProductDto['title'];
+  description: EbookProductDto['description'];
   content: Pick<ProductSnapshotContentDto, 'richTextContent'>;
   announcement: Pick<ProductSnapshotAnnouncementDto, 'richTextContent'>;
   refundPolicy: Pick<ProductSnapshotRefundPolicyDto, 'richTextContent'>;
@@ -44,19 +43,27 @@ export type CreateEbookProductDto = Pick<
   >[];
 };
 
-export type UpdateEbookProductDto = Partial<
-  Omit<CreateEbookProductDto, 'uiContents'> & {
-    uiContents?: {
-      create: Pick<
-        ProductSnapshotUiContentDto,
-        'type' | 'content' | 'description' | 'sequence' | 'metadata' | 'url'
-      >[];
-      update: RequiredField<
-        Partial<Omit<ProductSnapshotUiContentDto, 'productSnapshotId'>>,
-        'id'
-      >[];
-    };
-  }
->;
+export type UpdateEbookProductDto = Partial<{
+  title: EbookProductDto['title'];
+  description: EbookProductDto['description'];
+  content: Pick<ProductSnapshotContentDto, 'richTextContent'>;
+  announcement: Pick<ProductSnapshotAnnouncementDto, 'richTextContent'>;
+  refundPolicy: Pick<ProductSnapshotRefundPolicyDto, 'richTextContent'>;
+  pricing: Pick<ProductSnapshotPricingDto, 'amount'>;
+  discounts: Omit<
+    ProductSnapshotDiscountDto,
+    'id' | 'productSnapshotId'
+  > | null;
+  uiContents: {
+    create: Pick<
+      ProductSnapshotUiContentDto,
+      'type' | 'content' | 'description' | 'sequence' | 'metadata' | 'url'
+    >[];
+    update: RequiredField<
+      Partial<Omit<ProductSnapshotUiContentDto, 'productSnapshotId'>>,
+      'id'
+    >[];
+  };
+}>;
 
 export type EbookProductQuery = Partial<Pagination>;

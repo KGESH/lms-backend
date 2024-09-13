@@ -26,10 +26,9 @@ export type CourseProductDto = {
   deletedAt: ISO8601 | null;
 };
 
-export type CreateCourseProductDto = Pick<
-  CourseProductDto,
-  'title' | 'description'
-> & {
+export type CreateCourseProductDto = {
+  title: CourseProductDto['title'];
+  description: CourseProductDto['description'];
   content: Pick<ProductSnapshotContentDto, 'richTextContent'>;
   announcement: Pick<ProductSnapshotAnnouncementDto, 'richTextContent'>;
   refundPolicy: Pick<ProductSnapshotRefundPolicyDto, 'richTextContent'>;
@@ -44,10 +43,18 @@ export type CreateCourseProductDto = Pick<
   >[];
 };
 
-export type UpdateCourseProductDto = Partial<
-  Omit<CreateCourseProductDto, 'uiContents'>
-> & {
-  uiContents?: {
+export type UpdateCourseProductDto = Partial<{
+  title: CourseProductDto['title'];
+  description: CourseProductDto['description'];
+  content: Pick<ProductSnapshotContentDto, 'richTextContent'>;
+  announcement: Pick<ProductSnapshotAnnouncementDto, 'richTextContent'>;
+  refundPolicy: Pick<ProductSnapshotRefundPolicyDto, 'richTextContent'>;
+  pricing: Pick<ProductSnapshotPricingDto, 'amount'>;
+  discounts: Omit<
+    ProductSnapshotDiscountDto,
+    'id' | 'productSnapshotId'
+  > | null;
+  uiContents: {
     create: Pick<
       ProductSnapshotUiContentDto,
       'type' | 'content' | 'description' | 'sequence' | 'metadata' | 'url'
@@ -57,6 +64,6 @@ export type UpdateCourseProductDto = Partial<
       'id'
     >[];
   };
-};
+}>;
 
 export type CourseProductQuery = Partial<Pagination>;
