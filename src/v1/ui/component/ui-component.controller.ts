@@ -22,6 +22,14 @@ import { CreateUiCarouselDto } from '@src/v1/ui/component/carousel/ui-carousel.d
 export class UiComponentController {
   constructor(private readonly uiComponentService: UiComponentService) {}
 
+  /**
+   * 특정 페이지 (path)에 속한 UI 컴포넌트 목록을 조회합니다. (e.g. 배너, 타이머 등)
+   *
+   * 응답받은 UI 컴포넌트 목록을 통해 해당 페이지의 UI를 구성할 수 있습니다.
+   *
+   * @tag ui
+   * @summary 특정 페이지 (path)에 속한 UI 컴포넌트 목록을 조회합니다.
+   */
   @SkipAuth()
   @TypedRoute.Get('/')
   async getUiComponentsByPath(
@@ -39,6 +47,16 @@ export class UiComponentController {
     return uiComponents;
   }
 
+  /**
+   * UI 컴포넌트를 삭제합니다.
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * Hard delete로 구현되어 있습니다.
+   *
+   * @tag ui
+   * @summary UI 컴포넌트를 삭제합니다.
+   */
   @Roles('admin', 'manager')
   @UseGuards(RolesGuard)
   @TypedRoute.Delete('/:id')

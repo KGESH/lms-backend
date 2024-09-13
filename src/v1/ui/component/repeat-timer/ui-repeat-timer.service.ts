@@ -8,20 +8,22 @@ import {
 } from '@src/v1/ui/component/repeat-timer/ui-repeat-timer.interface';
 import { TransactionClient } from '@src/infra/db/drizzle.types';
 import { UiRepeatTimerComponentRepository } from '@src/v1/ui/component/repeat-timer/ui-repeat-timer-component.repository';
+import { UiRepeatTimerComponentQueryRepository } from '@src/v1/ui/component/repeat-timer/ui-repeat-timer-component-query.repository';
 
 @Injectable()
 export class UiRepeatTimerService {
   constructor(
     private readonly uiComponentService: UiComponentService,
     private readonly uiRepeatTimerComponentRepository: UiRepeatTimerComponentRepository,
+    private readonly uiRepeatTimerComponentQueryRepository: UiRepeatTimerComponentQueryRepository,
   ) {}
 
   async findUiRepeatTimer(
-    where: Pick<IUiRepeatTimer, 'id'>,
+    where: Pick<IUiRepeatTimer, 'uiComponentId'>,
   ): Promise<IUiRepeatTimerComponent | null> {
-    return await this.uiRepeatTimerComponentRepository.findOne({
-      id: where.id,
-    });
+    return await this.uiRepeatTimerComponentQueryRepository.findUiRepeatTimer(
+      where,
+    );
   }
 
   async createUiRepeatTimer(
@@ -31,12 +33,13 @@ export class UiRepeatTimerService {
   }
 
   async updateUiRepeatTimer(
-    where: Pick<IUiRepeatTimerComponent['ui'], 'id'>,
+    where: Pick<IUiRepeatTimerComponent['ui'], 'uiComponentId'>,
     params: IUiRepeatTimerComponentUpdate,
   ): Promise<IUiRepeatTimerComponent> {
-    const { ui } = await this.uiRepeatTimerComponentRepository.findOneOrThrow({
-      id: where.id,
-    });
+    const { ui } =
+      await this.uiRepeatTimerComponentQueryRepository.findUiRepeatTimerOrThrow(
+        where,
+      );
 
     return await this.uiRepeatTimerComponentRepository.update(
       {
@@ -48,12 +51,13 @@ export class UiRepeatTimerService {
   }
 
   async deleteUiRepeatTimer(
-    where: Pick<IUiRepeatTimer, 'id'>,
+    where: Pick<IUiRepeatTimer, 'uiComponentId'>,
     tx?: TransactionClient,
   ): Promise<string> {
-    const { ui } = await this.uiRepeatTimerComponentRepository.findOneOrThrow({
-      id: where.id,
-    });
+    const { ui } =
+      await this.uiRepeatTimerComponentQueryRepository.findUiRepeatTimerOrThrow(
+        where,
+      );
 
     await this.uiComponentService.deleteUiComponent(
       { id: ui.uiComponentId },

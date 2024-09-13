@@ -1,7 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
-import { IRepository } from '@src/core/base.repository';
 import {
   IUiRepeatTimerComponent,
   IUiRepeatTimerComponentCreate,
@@ -12,63 +11,8 @@ import { UI_CATEGORY } from '@src/v1/ui/category/ui-category.interface';
 import { createUuid } from '@src/shared/utils/uuid';
 
 @Injectable()
-export class UiRepeatTimerComponentRepository
-  implements IRepository<IUiRepeatTimerComponent>
-{
+export class UiRepeatTimerComponentRepository {
   constructor(private readonly drizzle: DrizzleService) {}
-
-  async findOne(
-    where: Pick<IUiRepeatTimerComponent['ui'], 'id'>,
-  ): Promise<IUiRepeatTimerComponent | null> {
-    const uiRepeatTimer = await this.drizzle.db.query.uiRepeatTimers.findFirst({
-      where: eq(dbSchema.uiRepeatTimers.id, where.id),
-      with: {
-        uiComponent: true,
-      },
-    });
-
-    if (!uiRepeatTimer) {
-      return null;
-    }
-
-    return {
-      ...uiRepeatTimer.uiComponent,
-      category: UI_CATEGORY.REPEAT_TIMER,
-      ui: {
-        ...uiRepeatTimer,
-      },
-    } satisfies IUiRepeatTimerComponent;
-  }
-
-  async findOneOrThrow(
-    where: Pick<IUiRepeatTimerComponent['ui'], 'id'>,
-  ): Promise<IUiRepeatTimerComponent> {
-    const uiRepeatTimer = await this.findOne(where);
-
-    if (!uiRepeatTimer) {
-      throw new NotFoundException('UiRepeatTimer not found');
-    }
-
-    return uiRepeatTimer;
-  }
-
-  async findMany(): Promise<IUiRepeatTimerComponent[]> {
-    const uiRepeatTimers = await this.drizzle.db.query.uiRepeatTimers.findMany({
-      with: {
-        uiComponent: true,
-      },
-    });
-
-    return uiRepeatTimers.map(({ uiComponent, ...uiRepeatTimer }) => {
-      return {
-        ...uiComponent,
-        category: UI_CATEGORY.REPEAT_TIMER,
-        ui: {
-          ...uiRepeatTimer,
-        },
-      } satisfies IUiRepeatTimerComponent;
-    });
-  }
 
   async create(
     params: IUiRepeatTimerComponentCreate,
