@@ -1,6 +1,6 @@
 import { dbSchema } from '../../../../../src/infra/db/schema';
 import * as typia from 'typia';
-
+import * as date from '../../../../../src/shared/utils/date';
 import { createRandomCourse } from './course.helper';
 import {
   ICourseProduct,
@@ -31,7 +31,10 @@ import {
   generateRandomDiscount,
   generateRandomPrice,
 } from '../../../../../src/shared/helpers/mocks/random-price.mock';
-import * as date from '../../../../../src/shared/utils/date';
+import {
+  IProductSnapshotUiContent,
+  IProductSnapshotUiContentCreate,
+} from '../../../../../src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
 
 export const createCourseProduct = async (
   params: ICourseProductCreate,
@@ -93,6 +96,21 @@ export const createCourseProductSnapshotContent = async (
   return content;
 };
 
+export const createCourseProductSnapshotUiContent = async (
+  params: IProductSnapshotUiContentCreate[],
+  db: TransactionClient,
+): Promise<IProductSnapshotUiContent[]> => {
+  if (params.length === 0) {
+    return [];
+  }
+
+  const uiContents = await db
+    .insert(dbSchema.courseProductSnapshotUiContents)
+    .values(params)
+    .returning();
+
+  return uiContents;
+};
 export const createCourseProductSnapshotPricing = async (
   params: IProductSnapshotPricingCreate,
   db: TransactionClient,
@@ -186,6 +204,13 @@ export const createRandomCourseProduct = async (
     },
     db,
   );
+  const uiContents = await createCourseProductSnapshotUiContent(
+    typia.random<IProductSnapshotUiContentCreate[]>().map((params) => ({
+      ...params,
+      productSnapshotId: snapshot.id,
+    })),
+    db,
+  );
 
   return {
     ...product,
@@ -211,6 +236,7 @@ export const createRandomCourseProduct = async (
       content,
       pricing,
       discounts,
+      uiContents,
     },
   };
 };
