@@ -8,7 +8,10 @@ import {
   UI_CAROUSEL_TYPE,
   UiCarouselReview,
 } from '../../../src/v1/ui/category/ui-category.interface';
-import { CreateUiCarouselReviewItemDto } from '../../../src/v1/ui/component/carousel/carousel-review/ui-carousel-review.dto';
+import {
+  CreateUiCarouselReviewItemDto,
+  UpdateUiCarouselReviewItemDto,
+} from '../../../src/v1/ui/component/carousel/carousel-review/ui-carousel-review.dto';
 import { DrizzleService } from '../../../src/infra/db/drizzle.service';
 import { ConfigsService } from '../../../src/configs/configs.service';
 import { seedUsers } from '../helpers/db/lms/user.helper';
@@ -54,7 +57,8 @@ describe('UiCarouselReviewController (e2e)', () => {
         );
 
       if (!carouselCreateResponse.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(carouselCreateResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
       }
 
       const uiCarousel = carouselCreateResponse.data;
@@ -63,11 +67,9 @@ describe('UiCarouselReviewController (e2e)', () => {
       const createCarouselReviewItemDtos: CreateUiCarouselReviewItemDto[] = [
         {
           ...typia.random<CreateUiCarouselReviewItemDto>(),
-          uiCarouselId: uiCarousel.ui.id,
         },
         {
           ...typia.random<CreateUiCarouselReviewItemDto>(),
-          uiCarouselId: uiCarousel.ui.id,
         },
       ];
 
@@ -80,11 +82,13 @@ describe('UiCarouselReviewController (e2e)', () => {
               UserSessionId: admin.userSession.id,
             },
           },
+          uiCarousel.ui.uiComponentId,
           createCarouselReviewItemDtos,
         );
 
       if (!itemsCreateResponse.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(itemsCreateResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
       }
 
       const items = itemsCreateResponse.data;
@@ -115,7 +119,8 @@ describe('UiCarouselReviewController (e2e)', () => {
         );
 
       if (!carouselCreateResponse.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(carouselCreateResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
       }
 
       const uiCarousel = carouselCreateResponse.data;
@@ -124,11 +129,9 @@ describe('UiCarouselReviewController (e2e)', () => {
       const createCarouselReviewItemDtos: CreateUiCarouselReviewItemDto[] = [
         {
           ...typia.random<CreateUiCarouselReviewItemDto>(),
-          uiCarouselId: uiCarousel.ui.id,
         },
         {
           ...typia.random<CreateUiCarouselReviewItemDto>(),
-          uiCarouselId: uiCarousel.ui.id,
         },
       ];
 
@@ -141,11 +144,13 @@ describe('UiCarouselReviewController (e2e)', () => {
               UserSessionId: manager.userSession.id,
             },
           },
+          uiCarousel.ui.uiComponentId,
           createCarouselReviewItemDtos,
         );
 
       if (!itemsCreateResponse.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(itemsCreateResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
       }
 
       const items = itemsCreateResponse.data;
@@ -157,16 +162,18 @@ describe('UiCarouselReviewController (e2e)', () => {
           host,
           headers: { LmsSecret },
         },
-        uiCarousel.ui.id,
+        uiCarousel.ui.uiComponentId,
       );
 
       if (!carouselGetResponse.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(carouselGetResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
       }
 
       const carouselWithItems = carouselGetResponse.data;
       if (!carouselWithItems) {
-        throw new Error('assert');
+        const message = JSON.stringify(carouselGetResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
       }
 
       expect(carouselWithItems.uiCarousel.ui.id).toEqual(uiCarousel.ui.id);
@@ -176,6 +183,105 @@ describe('UiCarouselReviewController (e2e)', () => {
       expect(carouselWithItems.uiCarousel.ui.carouselType).toEqual(
         UI_CAROUSEL_TYPE.REVIEW,
       );
+    });
+  });
+
+  describe('Update UI review carousel items (review)', () => {
+    it('should be update UI review carousel items success', async () => {
+      const manager = (
+        await seedUsers({ count: 1, role: 'manager' }, drizzle.db)
+      )[0];
+
+      const createCarouselDto: CreateUiCarouselDto<UiCarouselReview> =
+        typia.random<CreateUiCarouselDto<UiCarouselReview>>();
+
+      const carouselCreateResponse =
+        await CarouselReviewAPI.createUiCarouselReview(
+          {
+            host,
+            headers: {
+              LmsSecret,
+              UserSessionId: manager.userSession.id,
+            },
+          },
+          createCarouselDto,
+        );
+
+      if (!carouselCreateResponse.success) {
+        const message = JSON.stringify(carouselCreateResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      const uiCarousel = carouselCreateResponse.data;
+      expect(uiCarousel.ui.carouselType).toEqual('carousel.review');
+
+      const createCarouselReviewItemDtos: CreateUiCarouselReviewItemDto[] = [
+        {
+          ...typia.random<CreateUiCarouselReviewItemDto>(),
+          title: 'First title',
+          rating: 1,
+        },
+        {
+          ...typia.random<CreateUiCarouselReviewItemDto>(),
+          title: 'Second title',
+          content: 'Second content',
+          rating: 2,
+        },
+      ];
+
+      const itemsCreateResponse =
+        await CarouselReviewAPI.item.createUiCarouselReviewItems(
+          {
+            host,
+            headers: {
+              LmsSecret,
+              UserSessionId: manager.userSession.id,
+            },
+          },
+          uiCarousel.ui.uiComponentId,
+          createCarouselReviewItemDtos,
+        );
+
+      if (!itemsCreateResponse.success) {
+        const message = JSON.stringify(itemsCreateResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      const items = itemsCreateResponse.data;
+      expect(items.length).toEqual(createCarouselReviewItemDtos.length);
+      expect(items[0].uiCarouselId).toEqual(uiCarousel.ui.id);
+
+      const updateDtos: UpdateUiCarouselReviewItemDto[] = [
+        {
+          id: items[0].id,
+          rating: 5,
+        },
+        {
+          id: items[1].id,
+          rating: 5,
+        },
+      ];
+
+      const updatedResponse =
+        await CarouselReviewAPI.item.updateUiCarouselReviewItems(
+          {
+            host,
+            headers: {
+              LmsSecret,
+              UserSessionId: manager.userSession.id,
+            },
+          },
+          updateDtos,
+        );
+      if (!updatedResponse.success) {
+        const message = JSON.stringify(updatedResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      const updatedItems = updatedResponse.data;
+      expect(updatedItems.length).toEqual(updateDtos.length);
+      expect(updatedItems[0].rating).toEqual(5);
+      expect(updatedItems[1].rating).toEqual(5);
     });
   });
 
@@ -201,7 +307,8 @@ describe('UiCarouselReviewController (e2e)', () => {
         );
 
       if (!carouselCreateResponse.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(carouselCreateResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
       }
 
       const uiCarousel = carouselCreateResponse.data;
@@ -210,11 +317,9 @@ describe('UiCarouselReviewController (e2e)', () => {
       const createCarouselReviewItemDtos: CreateUiCarouselReviewItemDto[] = [
         {
           ...typia.random<CreateUiCarouselReviewItemDto>(),
-          uiCarouselId: uiCarousel.ui.id,
         },
         {
           ...typia.random<CreateUiCarouselReviewItemDto>(),
-          uiCarouselId: uiCarousel.ui.id,
         },
       ];
 
@@ -227,11 +332,13 @@ describe('UiCarouselReviewController (e2e)', () => {
               UserSessionId: manager.userSession.id,
             },
           },
+          uiCarousel.ui.uiComponentId,
           createCarouselReviewItemDtos,
         );
 
       if (!itemsCreateResponse.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(itemsCreateResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
       }
 
       const items = itemsCreateResponse.data;
@@ -253,7 +360,8 @@ describe('UiCarouselReviewController (e2e)', () => {
         );
 
       if (!deleteItemsResponse.success) {
-        throw new Error('assert');
+        const message = JSON.stringify(deleteItemsResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
       }
 
       const deletedItems = deleteItemsResponse.data;
