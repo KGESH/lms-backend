@@ -11,6 +11,12 @@ export class FileController {
   private readonly logger = new Logger(FileController.name);
   constructor(private readonly s3Service: S3Service) {}
 
+  /**
+   * 파일 업로드를 위한 pre-signed URL을 생성합니다.
+   *
+   * @tag file
+   * @summary pre-signed URL 생성.
+   */
   @TypedRoute.Post('/:key/pre-signed')
   @Roles('user', 'admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)
