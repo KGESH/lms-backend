@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import {
   IPostCategory,
@@ -7,7 +7,7 @@ import {
 import { dbSchema } from '@src/infra/db/schema';
 import { TransactionClient } from '@src/infra/db/drizzle.types';
 import { asc, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
-import { UserRole, Uuid } from '@src/shared/types/primitive';
+import { CategoryAccessRole, Uuid } from '@src/shared/types/primitive';
 import { Pagination } from '@src/shared/types/pagination';
 import * as typia from 'typia';
 import {
@@ -158,10 +158,10 @@ export class PostCategoryQueryRepository {
     // Transform R/W roles from string to array
     const rows = result.rows.map((row) => ({
       ...row,
-      readable_roles: typia.assert<UserRole[]>(
+      readable_roles: typia.assert<CategoryAccessRole[]>(
         row.readable_roles?.replace(/[{}]/g, '').split(',') ?? [],
       ),
-      writable_roles: typia.assert<UserRole[]>(
+      writable_roles: typia.assert<CategoryAccessRole[]>(
         row.writable_roles?.replace(/[{}]/g, '').split(',') ?? [],
       ),
     }));
@@ -276,10 +276,10 @@ export class PostCategoryQueryRepository {
     // Transform R/W roles from string to array
     const rows = result.rows.map((row) => ({
       ...row,
-      readable_roles: typia.assert<UserRole[]>(
+      readable_roles: typia.assert<CategoryAccessRole[]>(
         row.readable_roles?.replace(/[{}]/g, '').split(',') ?? [],
       ),
-      writable_roles: typia.assert<UserRole[]>(
+      writable_roles: typia.assert<CategoryAccessRole[]>(
         row.writable_roles?.replace(/[{}]/g, '').split(',') ?? [],
       ),
     }));

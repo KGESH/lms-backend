@@ -1,1 +1,0 @@
-ALTER TYPE "lesson_content_type" ADD VALUE 'image';

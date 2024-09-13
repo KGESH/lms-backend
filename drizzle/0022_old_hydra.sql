@@ -1,1 +1,0 @@
-ALTER TABLE "ebook_products" ADD COLUMN "created_at" timestamp with time zone DEFAULT now() NOT NULL;

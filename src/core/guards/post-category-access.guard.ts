@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { PostCategoryAccessQueryService } from '@src/v1/post/category/access/post-category-access-query.service';
 import { PostQueryService } from '@src/v1/post/post-query.service';
@@ -15,6 +16,7 @@ import { IPostCategoryAccessRoles } from '@src/v1/post/category/access/post-cate
 
 @Injectable()
 export class PostCategoryAccessGuard implements CanActivate {
+  private readonly logger = new Logger(PostCategoryAccessGuard.name);
   constructor(
     private readonly postQueryService: PostQueryService,
     private readonly postCategoryAccessQueryService: PostCategoryAccessQueryService,
@@ -106,7 +108,7 @@ export class PostCategoryAccessGuard implements CanActivate {
     accesses: IPostCategoryAccessRoles[],
     action: 'read' | 'write',
   ) {
-    const role = session?.user.role;
+    const userRole = session?.user.role;
 
     for (const access of accesses) {
       const { categoryId, readableRoles, writableRoles } = access;
@@ -122,7 +124,13 @@ export class PostCategoryAccessGuard implements CanActivate {
           continue;
         }
 
-        if (role && readableRoles.includes(role)) {
+        if (userRole && readableRoles.includes(userRole)) {
+          continue;
+        }
+
+        if (readableRoles.includes('purchased_user')) {
+          // Todo: Check user is purchased user
+          this.logger.debug('Purchased user read access');
           continue;
         }
 
@@ -134,7 +142,13 @@ export class PostCategoryAccessGuard implements CanActivate {
           continue;
         }
 
-        if (role && writableRoles.includes(role)) {
+        if (userRole && writableRoles.includes(userRole)) {
+          continue;
+        }
+
+        if (readableRoles.includes('purchased_user')) {
+          // Todo: Check user is purchased user
+          this.logger.debug('Purchased user write access');
           continue;
         }
 

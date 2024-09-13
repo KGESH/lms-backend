@@ -1,22 +1,22 @@
-import { UserRole, Uuid } from '@src/shared/types/primitive';
+import { CategoryAccessRole, Uuid } from '@src/shared/types/primitive';
 
 export type PostCategoryAccessDto = {
   id: Uuid;
   categoryId: Uuid;
-  role: UserRole;
+  role: CategoryAccessRole;
 };
 
 export type CreatePostCategoryAccessDto = {
-  readableRoles: UserRole[];
-  writableRoles: UserRole[];
+  readableRoles: CategoryAccessRole[];
+  writableRoles: CategoryAccessRole[];
 };
 
 export type PostCategoryAccessRolesDto = Pick<
   PostCategoryAccessDto,
   'categoryId'
 > & {
-  readableRoles: UserRole[];
-  writableRoles: UserRole[];
+  readableRoles: CategoryAccessRole[];
+  writableRoles: CategoryAccessRole[];
 };
 
 export type DeletePostCategoryAccessDto = Omit<

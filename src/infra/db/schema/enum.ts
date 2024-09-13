@@ -6,11 +6,20 @@ export const discountType = pgEnum('discount_type', [
 ]);
 
 export const userRole = pgEnum('user_role', [
-  'guest',
   'user',
   'teacher',
   'manager',
   'admin',
+]);
+
+export const categoryAccessRole = pgEnum('category_access_role', [
+  'user',
+  'teacher',
+  'manager',
+  'admin',
+  // Extended from user role
+  'guest',
+  'purchased_user',
 ]);
 
 export const authProvider = pgEnum('auth_provider', ['email', 'kakao']);
@@ -35,4 +44,10 @@ export const lessonContentType = pgEnum('lesson_content_type', [
   'image',
   'text',
   'file',
+]);
+
+export const productUiContentType = pgEnum('product_ui_content_type', [
+  'main-banner',
+  'target-description',
+  'tag',
 ]);
