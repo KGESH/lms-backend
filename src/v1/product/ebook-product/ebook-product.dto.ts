@@ -12,10 +12,10 @@ import { ProductSnapshotRefundPolicyDto } from '@src/v1/product/common/snapshot/
 import { Paginated, Pagination } from '@src/shared/types/pagination';
 import { EbookWithRelationsDto } from '@src/v1/ebook/ebook-with-relations.dto';
 import {
-  ProductContentDto,
   ProductSnapshotUiContentDto,
   UpdateUiContentsDto,
 } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.dto';
+import { CreateProductContentDto } from "@src/v1/product/common/snapshot/course-product-snapshot.dto";
 
 export type EbookProductDto = {
   ebookId: Uuid;
@@ -38,7 +38,7 @@ export type CreateEbookProductDto = Pick<
   EbookProductDto,
   'title' | 'description'
 > &
-  ProductContentDto;
+  CreateProductContentDto;
 //   {
 //   content: Pick<ProductSnapshotContentDto, 'richTextContent'>;
 //   announcement: Pick<ProductSnapshotAnnouncementDto, 'richTextContent'>;

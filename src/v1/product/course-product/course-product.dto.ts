@@ -7,10 +7,10 @@ import { ProductSnapshotRefundPolicyDto } from '@src/v1/product/common/snapshot/
 import { Paginated, Pagination } from '@src/shared/types/pagination';
 import { CourseWithRelationsDto } from '@src/v1/course/course-with-relations.dto';
 import {
-  ProductContentDto,
   ProductSnapshotUiContentDto,
   UpdateUiContentsDto,
 } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.dto';
+import { CreateProductContentDto } from '@src/v1/product/common/snapshot/course-product-snapshot.dto';
 
 export type CourseProductDto = {
   courseId: Uuid;
@@ -33,7 +33,7 @@ export type CreateCourseProductDto = Pick<
   CourseProductDto,
   'title' | 'description'
 > &
-  ProductContentDto;
+  CreateProductContentDto;
 
 export type UpdateCourseProductDto = Partial<
   Omit<CreateCourseProductDto, 'uiContents'> & {
