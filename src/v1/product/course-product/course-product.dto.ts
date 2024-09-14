@@ -1,9 +1,4 @@
-import {
-  ISO8601,
-  ProductUiContentType,
-  UInt,
-  Uuid,
-} from '@src/shared/types/primitive';
+import { ISO8601, Uuid } from '@src/shared/types/primitive';
 import { ProductSnapshotDiscountDto } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.dto';
 import { ProductSnapshotPricingDto } from '@src/v1/product/common/snapshot/pricing/product-snapshot-pricing.dto';
 import { ProductSnapshotContentDto } from '@src/v1/product/common/snapshot/content/product-snapshot-content.dto';
@@ -11,7 +6,11 @@ import { ProductSnapshotAnnouncementDto } from '@src/v1/product/common/snapshot/
 import { ProductSnapshotRefundPolicyDto } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.dto';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
 import { CourseWithRelationsDto } from '@src/v1/course/course-with-relations.dto';
-import { ProductSnapshotUiContentDto } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.dto';
+import {
+  ProductContentDto,
+  ProductSnapshotUiContentDto,
+  UpdateUiContentsDto,
+} from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.dto';
 
 export type CourseProductDto = {
   courseId: Uuid;
@@ -33,32 +32,12 @@ export type CourseProductDto = {
 export type CreateCourseProductDto = Pick<
   CourseProductDto,
   'title' | 'description'
-> & {
-  content: Pick<ProductSnapshotContentDto, 'richTextContent'>;
-  announcement: Pick<ProductSnapshotAnnouncementDto, 'richTextContent'>;
-  refundPolicy: Pick<ProductSnapshotRefundPolicyDto, 'richTextContent'>;
-  pricing: Pick<ProductSnapshotPricingDto, 'amount'>;
-  discounts: Omit<
-    ProductSnapshotDiscountDto,
-    'id' | 'productSnapshotId'
-  > | null;
-  uiContents: Omit<ProductSnapshotUiContentDto, 'id' | 'productSnapshotId'>[];
-};
+> &
+  ProductContentDto;
 
 export type UpdateCourseProductDto = Partial<
   Omit<CreateCourseProductDto, 'uiContents'> & {
-    uiContents: {
-      create: Omit<ProductSnapshotUiContentDto, 'id' | 'productSnapshotId'>[];
-      update: {
-        id: Uuid;
-        type?: ProductUiContentType;
-        content?: string;
-        description?: string | null;
-        sequence?: UInt | null;
-        url?: string | null;
-        metadata?: string | null;
-      }[];
-    };
+    uiContents: UpdateUiContentsDto;
   }
 >;
 

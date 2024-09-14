@@ -11,7 +11,11 @@ import { ProductSnapshotAnnouncementDto } from '@src/v1/product/common/snapshot/
 import { ProductSnapshotRefundPolicyDto } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.dto';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
 import { EbookWithRelationsDto } from '@src/v1/ebook/ebook-with-relations.dto';
-import { ProductSnapshotUiContentDto } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.dto';
+import {
+  ProductContentDto,
+  ProductSnapshotUiContentDto,
+  UpdateUiContentsDto,
+} from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.dto';
 
 export type EbookProductDto = {
   ebookId: Uuid;
@@ -33,32 +37,35 @@ export type EbookProductDto = {
 export type CreateEbookProductDto = Pick<
   EbookProductDto,
   'title' | 'description'
-> & {
-  content: Pick<ProductSnapshotContentDto, 'richTextContent'>;
-  announcement: Pick<ProductSnapshotAnnouncementDto, 'richTextContent'>;
-  refundPolicy: Pick<ProductSnapshotRefundPolicyDto, 'richTextContent'>;
-  pricing: Pick<ProductSnapshotPricingDto, 'amount'>;
-  discounts: Omit<
-    ProductSnapshotDiscountDto,
-    'id' | 'productSnapshotId'
-  > | null;
-  uiContents: Omit<ProductSnapshotUiContentDto, 'id' | 'productSnapshotId'>[];
-};
+> &
+  ProductContentDto;
+//   {
+//   content: Pick<ProductSnapshotContentDto, 'richTextContent'>;
+//   announcement: Pick<ProductSnapshotAnnouncementDto, 'richTextContent'>;
+//   refundPolicy: Pick<ProductSnapshotRefundPolicyDto, 'richTextContent'>;
+//   pricing: Pick<ProductSnapshotPricingDto, 'amount'>;
+//   discounts: Omit<
+//     ProductSnapshotDiscountDto,
+//     'id' | 'productSnapshotId'
+//   > | null;
+//   uiContents: Omit<ProductSnapshotUiContentDto, 'id' | 'productSnapshotId'>[];
+// };
 
 export type UpdateEbookProductDto = Partial<
   Omit<CreateEbookProductDto, 'uiContents'> & {
-    uiContents: {
-      create: Omit<ProductSnapshotUiContentDto, 'id' | 'productSnapshotId'>[];
-      update: {
-        id: Uuid;
-        type?: ProductUiContentType;
-        content?: string;
-        description?: string | null;
-        sequence?: UInt | null;
-        url?: string | null;
-        metadata?: string | null;
-      }[];
-    };
+    uiContents: UpdateUiContentsDto;
+    //   {
+    //   create: Omit<ProductSnapshotUiContentDto, 'id' | 'productSnapshotId'>[];
+    //   update: {
+    //     id: Uuid;
+    //     type?: ProductUiContentType;
+    //     content?: string;
+    //     description?: string | null;
+    //     sequence?: UInt | null;
+    //     url?: string | null;
+    //     metadata?: string | null;
+    //   }[];
+    // };
   }
 >;
 
