@@ -84,8 +84,8 @@ export type ReviewWithRelationsDto = ReviewDto & {
    * 구매한 상품 정보.
    */
   product:
-    | Pick<EbookWithRelationsDto, 'contents'>
-    | Pick<CourseWithRelationsDto, 'chapters'>;
+    | Omit<EbookWithRelationsDto, 'contents'>
+    | Omit<CourseWithRelationsDto, 'chapters'>;
   /**
    * 구매자가 작성(수정)한 가장 최신 리뷰.
    */
