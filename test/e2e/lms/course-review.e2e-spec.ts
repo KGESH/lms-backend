@@ -32,7 +32,7 @@ describe('CourseReviewController (e2e)', () => {
 
   describe('[Get course review]', () => {
     it('should be get course review success', async () => {
-      const { order, product } = (
+      const { order, user, product } = (
         await seedCourseOrders({ count: 1 }, drizzle.db)
       )[0];
       const review = await createRandomCourseReview(
@@ -40,7 +40,7 @@ describe('CourseReviewController (e2e)', () => {
           courseId: product.courseId,
           orderId: order.id,
           productType: order.productType,
-          userId: order.userId,
+          reviewer: user,
         },
         drizzle.db,
       );
@@ -71,7 +71,11 @@ describe('CourseReviewController (e2e)', () => {
 
   describe('[Get course reviews]', () => {
     it('should be get many course reviews success', async () => {
-      const reviews = await seedCourseReviews({ count: 3 }, drizzle.db);
+      const SEED_REVIEW_COUNT = 3;
+      const reviews = await seedCourseReviews(
+        { count: SEED_REVIEW_COUNT },
+        drizzle.db,
+      );
 
       const response = await CourseReviewAPI.getCourseReviews(
         {
@@ -93,6 +97,9 @@ describe('CourseReviewController (e2e)', () => {
       expect(
         foundReviews.find((review) => review.id === reviews[0].id),
       ).toBeDefined();
+      expect(foundReviews.filter((review) => review.user).length).toEqual(
+        SEED_REVIEW_COUNT,
+      );
     });
   });
 
@@ -104,7 +111,6 @@ describe('CourseReviewController (e2e)', () => {
       const reviewCreateParams: CreateCourseReviewDto = {
         comment: 'Mock review comment',
         userId: order.userId,
-        orderId: order.id,
         courseId: product.courseId,
         rating: 5,
       };

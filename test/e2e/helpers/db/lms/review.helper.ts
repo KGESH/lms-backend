@@ -13,12 +13,21 @@ import { seedCourseOrders, seedEbookOrders } from './order.helper';
 import { createRandomEbook } from './ebook.helper';
 import { Uuid } from '@src/shared/types/primitive';
 import { and, desc, eq, isNull } from 'drizzle-orm';
+import { IUserWithoutPassword } from '@src/v1/user/user.interface';
 
 export const createReview = async (
-  params: IReviewCreate,
+  params: Omit<IReviewCreate, 'userId'> & { reviewer: IUserWithoutPassword },
   db: TransactionClient,
-): Promise<IReviewWithRelations> => {
-  const [review] = await db.insert(dbSchema.reviews).values(params).returning();
+): Promise<Omit<IReviewWithRelations, 'product'>> => {
+  const { reviewer, ...rest } = params;
+  const createReviewParams: IReviewCreate = {
+    ...rest,
+    userId: reviewer.id,
+  };
+  const [review] = await db
+    .insert(dbSchema.reviews)
+    .values(createReviewParams)
+    .returning();
   const [reviewSnapshot] = await db
     .insert(dbSchema.reviewSnapshots)
     .values({
@@ -30,16 +39,15 @@ export const createReview = async (
   const [parentReviewReply] = await db
     .insert(dbSchema.reviewReplies)
     .values({
-      userId: params.userId,
+      userId: params.reviewer.id,
       reviewId: review.id,
     })
     .returning();
   const [childReviewReply] = await db
     .insert(dbSchema.reviewReplies)
     .values({
-      userId: params.userId,
+      userId: params.reviewer.id,
       reviewId: review.id,
-      // parentId: parentReviewReply.id,
     })
     .returning();
   const [parentReviewReplySnapshot] = await db
@@ -59,6 +67,7 @@ export const createReview = async (
 
   return {
     ...review,
+    user: params.reviewer,
     snapshot: {
       ...reviewSnapshot,
     },
@@ -76,11 +85,12 @@ export const createReview = async (
 };
 
 export const createRandomCourseReview = async (
-  reviewCreateParams: IReviewCreate & {
+  reviewCreateParams: Omit<IReviewCreate, 'userId'> & {
     courseId?: Uuid;
+    reviewer: IUserWithoutPassword;
   },
   db: TransactionClient,
-): Promise<IReviewWithRelations> => {
+): Promise<Omit<IReviewWithRelations, 'product'>> => {
   const courseId =
     reviewCreateParams?.courseId ?? (await createRandomCourse(db)).course.id;
   const review = await createReview(reviewCreateParams, db);
@@ -96,11 +106,12 @@ export const createRandomCourseReview = async (
 };
 
 export const createRandomEbookReview = async (
-  reviewCreateParams: IReviewCreate & {
+  reviewCreateParams: Omit<IReviewCreate, 'userId'> & {
     ebookId?: Uuid;
+    reviewer: IUserWithoutPassword;
   },
   db: TransactionClient,
-): Promise<IReviewWithRelations> => {
+): Promise<Omit<IReviewWithRelations, 'product'>> => {
   const ebookId =
     reviewCreateParams?.ebookId ?? (await createRandomEbook(db)).ebook.id;
   const review = await createReview(reviewCreateParams, db);
@@ -163,18 +174,18 @@ export const findReviewRepliesByReviewId = async (
 export const seedCourseReviews = async (
   { count, replyCount }: { count: number; replyCount?: number },
   db: TransactionClient,
-): Promise<IReviewWithRelations[]> => {
+): Promise<Omit<IReviewWithRelations, 'product'>[]> => {
   const orders = await seedCourseOrders({ count: 1 }, db);
   const reviews = (
     await Promise.all(
       Array.from({ length: count }).map(() =>
         Promise.all(
-          orders.map(({ order, product }) =>
+          orders.map(({ user, order, product }) =>
             createRandomCourseReview(
               {
                 courseId: product.courseId,
                 orderId: order.id,
-                userId: order.userId,
+                reviewer: user,
                 productType: order.productType,
               },
               db,
@@ -191,18 +202,18 @@ export const seedCourseReviews = async (
 export const seedEbookReviews = async (
   { count }: { count: number },
   db: TransactionClient,
-): Promise<IReviewWithRelations[]> => {
+): Promise<Omit<IReviewWithRelations, 'product'>[]> => {
   const orders = await seedEbookOrders({ count: 1 }, db);
   const reviews = (
     await Promise.all(
       Array.from({ length: count }).map(() =>
         Promise.all(
-          orders.map(({ order, product }) =>
+          orders.map(({ user, order, product }) =>
             createRandomEbookReview(
               {
                 ebookId: product.ebookId,
                 orderId: order.id,
-                userId: order.userId,
+                reviewer: user,
                 productType: order.productType,
               },
               db,

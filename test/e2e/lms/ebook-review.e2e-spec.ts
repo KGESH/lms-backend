@@ -32,7 +32,7 @@ describe('EbookReviewController (e2e)', () => {
 
   describe('[Get ebook review]', () => {
     it('should be get ebook review success', async () => {
-      const { order, product } = (
+      const { user, order, product } = (
         await seedEbookOrders({ count: 1 }, drizzle.db)
       )[0];
       const review = await createRandomEbookReview(
@@ -40,7 +40,7 @@ describe('EbookReviewController (e2e)', () => {
           ebookId: product.ebookId,
           orderId: order.id,
           productType: order.productType,
-          userId: order.userId,
+          reviewer: user,
         },
         drizzle.db,
       );
@@ -71,7 +71,11 @@ describe('EbookReviewController (e2e)', () => {
 
   describe('[Get ebook reviews]', () => {
     it('should be get many ebook reviews success', async () => {
-      const reviews = await seedEbookReviews({ count: 3 }, drizzle.db);
+      const SEED_REVIEW_COUNT = 3;
+      const reviews = await seedEbookReviews(
+        { count: SEED_REVIEW_COUNT },
+        drizzle.db,
+      );
 
       const response = await EbookReviewAPI.getEbookReviews(
         {
@@ -93,6 +97,9 @@ describe('EbookReviewController (e2e)', () => {
       expect(
         foundReviews.find((review) => review.id === reviews[0].id),
       ).toBeDefined();
+      expect(foundReviews.filter((review) => review.user).length).toEqual(
+        SEED_REVIEW_COUNT,
+      );
     });
   });
 
@@ -104,7 +111,6 @@ describe('EbookReviewController (e2e)', () => {
       const reviewCreateParams: CreateEbookReviewDto = {
         comment: 'Mock review comment',
         userId: order.userId,
-        orderId: order.id,
         ebookId: product.ebookId,
         rating: 5,
       };
