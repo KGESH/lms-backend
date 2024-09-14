@@ -1,5 +1,8 @@
 import { ProductType, UFloat, Uuid } from '@src/shared/types/primitive';
 import { Optional } from '@src/shared/types/optional';
+import { IUserWithoutPassword } from '@src/v1/user/user.interface';
+import { ICourseWithRelations } from '@src/v1/course/course-with-relations.interface';
+import { IEbookWithRelations } from '@src/v1/ebook/ebook-with-relations.interface';
 
 export type IReview = {
   id: Uuid;
@@ -32,7 +35,6 @@ export type IReviewReply = {
   id: Uuid;
   reviewId: Uuid;
   userId: Uuid;
-  // parentId: Uuid | null;
   createdAt: Date;
   deletedAt: Date | null;
 };
@@ -59,6 +61,10 @@ export type IReviewReplyWithSnapshot = IReviewReply & {
 };
 
 export type IReviewWithRelations = IReview & {
+  user: IUserWithoutPassword;
   snapshot: IReviewSnapshot;
   replies: IReviewReplyWithSnapshot[];
+  product:
+    | Omit<ICourseWithRelations, 'chapters'>
+    | Omit<IEbookWithRelations, 'contents'>;
 };

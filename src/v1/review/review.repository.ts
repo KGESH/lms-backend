@@ -31,7 +31,7 @@ export class ReviewRepository {
     return review;
   }
 
-  async create(params: IReviewCreate, db = this.drizzle.db): Promise<IReview> {
+  async createReview(params: IReviewCreate, db = this.drizzle.db): Promise<IReview> {
     const [review] = await db
       .insert(dbSchema.reviews)
       .values(typia.misc.clone(params))

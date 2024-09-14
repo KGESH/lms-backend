@@ -35,7 +35,7 @@ export class OrderService {
   async findCourseOrderWithRelations(
     where: Pick<IOrder, 'id'>,
   ): Promise<ICourseOrderWithRelations | null> {
-    return this.orderQueryRepository.findCourseOrderWithRelations(where);
+    return this.orderQueryRepository.findCourseOrderWithRelationsByOrderId(where);
   }
 
   async findEbookOrderWithRelations(

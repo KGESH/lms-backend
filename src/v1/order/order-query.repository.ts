@@ -4,7 +4,7 @@ import { dbSchema } from '@src/infra/db/schema';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import * as typia from 'typia';
 import { IOrder } from '@src/v1/order/order.interface';
-import { Price } from '@src/shared/types/primitive';
+import { Price, Uuid } from '@src/shared/types/primitive';
 import { ICourseOrderWithRelations } from '@src/v1/order/course/course-order.interface';
 import { IReview } from '@src/v1/review/review.interface';
 import { IEbookOrderWithRelations } from '@src/v1/order/ebook/ebook-order.interface';
@@ -31,7 +31,160 @@ export class OrderQueryRepository {
     return order;
   }
 
-  async findCourseOrderWithRelations(
+  async findEbookOrderByEbookId(where: {
+    userId: Uuid;
+    ebookId: Uuid;
+  }): Promise<IEbookOrderWithRelations | null> {
+    const [order] = await this.drizzle.db
+      .select()
+      .from(dbSchema.orders)
+      .where(
+        and(
+          eq(dbSchema.orders.userId, where.userId),
+          eq(dbSchema.ebookProducts.ebookId, where.ebookId),
+        ),
+      )
+      .innerJoin(
+        dbSchema.ebookOrders,
+        eq(dbSchema.orders.id, dbSchema.ebookOrders.orderId),
+      )
+      .innerJoin(
+        dbSchema.ebookProductSnapshots,
+        eq(
+          dbSchema.ebookOrders.productSnapshotId,
+          dbSchema.ebookProductSnapshots.id,
+        ),
+      )
+      .innerJoin(
+        dbSchema.ebookProducts,
+        eq(dbSchema.ebookProductSnapshots.productId, dbSchema.ebookProducts.id),
+      );
+
+    if (!order) {
+      return null;
+    }
+
+    const ebook = await this.drizzle.db.query.ebooks.findFirst({
+      where: eq(dbSchema.ebooks.id, where.ebookId),
+      with: {
+        category: true,
+        teacher: {
+          with: {
+            account: true,
+          },
+        },
+      },
+    });
+
+    if (!ebook) {
+      throw new NotFoundException(`Ebook not found`);
+    }
+
+    return {
+      id: order.orders.id,
+      txId: order.orders.txId,
+      userId: order.orders.userId,
+      paymentId: order.orders.paymentId,
+      amount: typia.assert<Price>(order.orders.amount),
+      title: order.orders.title,
+      description: order.orders.description,
+      paidAt: order.orders.paidAt,
+      paymentMethod: order.orders.paymentMethod,
+      productType: order.orders.productType,
+      ebook: {
+        id: ebook.id,
+        teacherId: ebook.teacherId,
+        categoryId: ebook.categoryId,
+        title: ebook.title,
+        description: ebook.description,
+        createdAt: ebook.createdAt,
+        updatedAt: ebook.updatedAt,
+        teacher: ebook.teacher,
+        category: ebook.category,
+        contents: [],
+      },
+    };
+  }
+
+  async findCourseOrderByCourseId(where: {
+    userId: Uuid;
+    courseId: Uuid;
+  }): Promise<ICourseOrderWithRelations | null> {
+    const [order] = await this.drizzle.db
+      .select()
+      .from(dbSchema.orders)
+      .where(
+        and(
+          eq(dbSchema.orders.userId, where.userId),
+          eq(dbSchema.courseProducts.courseId, where.courseId),
+        ),
+      )
+      .innerJoin(
+        dbSchema.courseOrders,
+        eq(dbSchema.orders.id, dbSchema.courseOrders.orderId),
+      )
+      .innerJoin(
+        dbSchema.courseProductSnapshots,
+        eq(
+          dbSchema.courseOrders.productSnapshotId,
+          dbSchema.courseProductSnapshots.id,
+        ),
+      )
+      .innerJoin(
+        dbSchema.courseProducts,
+        eq(
+          dbSchema.courseProductSnapshots.productId,
+          dbSchema.courseProducts.id,
+        ),
+      );
+
+    if (!order) {
+      return null;
+    }
+
+    const course = await this.drizzle.db.query.courses.findFirst({
+      where: eq(dbSchema.courses.id, where.courseId),
+      with: {
+        category: true,
+        teacher: {
+          with: {
+            account: true,
+          },
+        },
+      },
+    });
+
+    if (!course) {
+      throw new NotFoundException(`Course not found`);
+    }
+
+    return {
+      id: order.orders.id,
+      txId: order.orders.txId,
+      userId: order.orders.userId,
+      paymentId: order.orders.paymentId,
+      amount: typia.assert<Price>(order.orders.amount),
+      title: order.orders.title,
+      description: order.orders.description,
+      paidAt: order.orders.paidAt,
+      paymentMethod: order.orders.paymentMethod,
+      productType: order.orders.productType,
+      course: {
+        id: course.id,
+        teacherId: course.teacherId,
+        categoryId: course.categoryId,
+        title: course.title,
+        description: course.description,
+        createdAt: course.createdAt,
+        updatedAt: course.updatedAt,
+        teacher: course.teacher,
+        category: course.category,
+        chapters: [],
+      },
+    };
+  }
+
+  async findCourseOrderWithRelationsByOrderId(
     where: Pick<IOrder, 'id'>,
   ): Promise<ICourseOrderWithRelations | null> {
     const order = await this.drizzle.db.query.orders.findFirst({
@@ -255,31 +408,5 @@ export class OrderQueryRepository {
           },
         }),
       );
-  }
-
-  async findOrderWithReview(
-    where: Pick<IOrder, 'id' | 'productType'>,
-  ): Promise<{
-    order: IOrder | null;
-    review: IReview | null;
-  }> {
-    const orderWithReview = await this.drizzle.db.query.orders.findFirst({
-      where: eq(dbSchema.orders.id, where.id),
-      with: {
-        review: true,
-        courseOrder: where.productType === 'course' ? true : undefined,
-        // ebookOrder: // Todo: Impl
-        //   where.productType === 'ebook' ? true : undefined,
-      },
-    });
-
-    const order = orderWithReview
-      ? typia.assert<IOrder>(orderWithReview)
-      : null;
-
-    return {
-      order,
-      review: orderWithReview?.review ?? null,
-    };
   }
 }

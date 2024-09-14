@@ -1,8 +1,4 @@
-import { Uuid } from '@src/shared/types/primitive';
-import {
-  IReviewCreate,
-  IReviewSnapshotCreate,
-} from '@src/v1/review/review.interface';
+import { UFloat, Uuid } from '@src/shared/types/primitive';
 import { Optional } from '@src/shared/types/optional';
 
 export type ICourseReview = {
@@ -20,6 +16,7 @@ export type ICourseReviewCreate = Pick<
 
 export type ICourseReviewRelationsCreate = {
   courseId: Uuid;
-  reviewCreateParams: IReviewCreate;
-  snapshotCreateParams: Omit<IReviewSnapshotCreate, 'reviewId'>;
+  userId: Uuid;
+  comment: string;
+  rating: UFloat;
 };

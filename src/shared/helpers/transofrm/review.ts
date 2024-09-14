@@ -7,6 +7,9 @@ import {
   ReviewReplyWithSnapshotDto,
   ReviewWithRelationsDto,
 } from '@src/v1/review/review.dto';
+import { userToDto } from '@src/shared/helpers/transofrm/user';
+import { ebookRelationsToDto } from '@src/shared/helpers/transofrm/ebook';
+import { courseRelationsToDto } from '@src/shared/helpers/transofrm/course';
 
 export const reviewToDto = (
   review: IReviewWithRelations,
@@ -15,6 +18,7 @@ export const reviewToDto = (
     ...review,
     createdAt: date.toISOString(review.createdAt),
     deletedAt: review.deletedAt ? date.toISOString(review.deletedAt) : null,
+    user: userToDto(review.user),
     snapshot: {
       ...review.snapshot,
       createdAt: date.toISOString(review.snapshot.createdAt),
@@ -28,6 +32,16 @@ export const reviewToDto = (
         createdAt: date.toISOString(reply.snapshot.createdAt),
       },
     })),
+    product:
+      review.productType === 'course'
+        ? courseRelationsToDto({
+            ...review.product,
+            chapters: [],
+          })
+        : ebookRelationsToDto({
+            ...review.product,
+            contents: [],
+          }),
   };
 };
 

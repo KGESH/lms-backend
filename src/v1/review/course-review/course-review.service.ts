@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
-import { UserService } from '@src/v1/user/user.service';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ReviewRepository } from '@src/v1/review/review.repository';
 import { ReviewSnapshotRepository } from '@src/v1/review/review-snapshot.repository';
 import { ReviewQueryRepository } from '@src/v1/review/review-query.repository';
@@ -13,21 +8,27 @@ import { ICourseReviewRelationsCreate } from '@src/v1/review/course-review/cours
 import { IReviewWithRelations } from '@src/v1/review/review.interface';
 import { Pagination } from '@src/shared/types/pagination';
 import { CourseReviewAdminService } from '@src/v1/review/course-review/course-review-admin.service';
+import { CourseReviewRepository } from '@src/v1/review/course-review/course-review.repository';
+import { IUserWithoutPassword } from '@src/v1/user/user.interface';
+import { Optional } from '@src/shared/types/optional';
 
 @Injectable()
 export class CourseReviewService {
   constructor(
     private readonly courseReviewAdminService: CourseReviewAdminService,
-    private readonly userService: UserService,
     private readonly reviewRepository: ReviewRepository,
     private readonly reviewSnapshotRepository: ReviewSnapshotRepository,
+    private readonly courseReviewRepository: CourseReviewRepository,
     private readonly reviewQueryRepository: ReviewQueryRepository,
     private readonly orderQueryRepository: OrderQueryRepository,
     private readonly drizzle: DrizzleService,
   ) {}
 
   async findCourseReviewsByCourseId(
-    where: Pick<ICourseReviewRelationsCreate, 'courseId'>,
+    where: Optional<
+      Pick<ICourseReviewRelationsCreate, 'courseId' | 'userId'>,
+      'userId'
+    >,
     pagination: Pagination,
   ): Promise<IReviewWithRelations[]> {
     const reviews = await this.reviewQueryRepository.findManyWithCourseReviews({
@@ -39,37 +40,58 @@ export class CourseReviewService {
   }
 
   async createCourseReviewByUser(
-    params: Omit<ICourseReviewRelationsCreate, 'courseId'>,
+    params: ICourseReviewRelationsCreate,
   ): Promise<IReviewWithRelations> {
-    const { reviewCreateParams, snapshotCreateParams } = params;
+    const courseReviewRelations =
+      await this.reviewQueryRepository.findCourseReview(params);
 
-    const orderWithReview = await this.orderQueryRepository.findOrderWithReview(
-      {
-        id: reviewCreateParams.orderId!,
-        productType: reviewCreateParams.productType,
-      },
-    );
-
-    let review = orderWithReview?.review;
+    const orderRelations =
+      await this.orderQueryRepository.findCourseOrderByCourseId(params);
 
     const reviewWithSnapshot = await this.drizzle.db.transaction(async (tx) => {
-      review ??= await this.reviewRepository.create(reviewCreateParams, tx);
+      const review =
+        courseReviewRelations?.review ??
+        (await this.reviewRepository.createReview(
+          {
+            userId: params.userId,
+            orderId: orderRelations?.id ?? null,
+            productType: 'course',
+          },
+          tx,
+        ));
+
+      const courseReview =
+        courseReviewRelations?.courseReview ??
+        (await this.courseReviewRepository.createCourseReview(
+          {
+            reviewId: review.id,
+            courseId: params.courseId,
+            createdAt: review.createdAt,
+          },
+          tx,
+        ));
+
       const snapshot = await this.reviewSnapshotRepository.create(
         {
-          ...snapshotCreateParams,
           reviewId: review.id,
+          comment: params.comment,
+          rating: params.rating,
         },
         tx,
       );
 
-      return { review, snapshot };
+      return { review, courseReview, snapshot };
     });
+
+    console.log('[DEBUG] reviewWithSnapshot:', reviewWithSnapshot);
 
     const reviewWithReplies =
       await this.reviewQueryRepository.findOneWithReplies({
         id: reviewWithSnapshot.review.id,
         productType: reviewWithSnapshot.review.productType,
       });
+
+    console.log('[DEBUG] reviewWithReplies:', reviewWithReplies);
 
     if (!reviewWithReplies) {
       throw new InternalServerErrorException('Failed to create review');
@@ -79,16 +101,9 @@ export class CourseReviewService {
   }
 
   async createCourseReview(
+    user: IUserWithoutPassword,
     params: ICourseReviewRelationsCreate,
   ): Promise<IReviewWithRelations> {
-    const user = await this.userService.findUserById({
-      id: params.reviewCreateParams.userId,
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
     if (user?.role === 'admin' || user?.role === 'manager') {
       const mockCourseReview =
         await this.courseReviewAdminService.createCourseReviewByAdmin(params);

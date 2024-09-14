@@ -5,6 +5,10 @@ import {
   Uuid,
 } from '@src/shared/types/primitive';
 import { Pagination } from '@src/shared/types/pagination';
+import { UserWithoutPasswordDto } from '@src/v1/user/user.dto';
+import { EbookWithRelationsDto } from '@src/v1/ebook/ebook-with-relations.dto';
+import { CourseWithRelationsDto } from '@src/v1/course/course-with-relations.dto';
+import { OptionalPick } from '@src/shared/types/optional';
 
 export type ReviewDto = {
   id: Uuid;
@@ -73,6 +77,16 @@ export type ReviewReplyWithSnapshotDto = ReviewReplyDto & {
 
 export type ReviewWithRelationsDto = ReviewDto & {
   /**
+   * 리뷰를 작성한 사용자.
+   */
+  user: UserWithoutPasswordDto;
+  /**
+   * 구매한 상품 정보.
+   */
+  product:
+    | Pick<EbookWithRelationsDto, 'contents'>
+    | Pick<CourseWithRelationsDto, 'chapters'>;
+  /**
    * 구매자가 작성(수정)한 가장 최신 리뷰.
    */
   snapshot: ReviewSnapshotDto;
@@ -82,4 +96,5 @@ export type ReviewWithRelationsDto = ReviewDto & {
   replies: ReviewReplyWithSnapshotDto[];
 };
 
-export type ReviewQuery = Partial<Pagination>;
+export type ReviewQuery = Partial<Pagination> &
+  OptionalPick<ReviewDto, 'userId'>;
