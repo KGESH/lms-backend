@@ -28,7 +28,6 @@ import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
 import { IErrorResponse } from '@src/shared/types/response';
 import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
-import { Paginated } from '@src/shared/types/pagination';
 import { withDefaultPagination } from '@src/core/pagination';
 
 @Controller('v1/product/ebook')

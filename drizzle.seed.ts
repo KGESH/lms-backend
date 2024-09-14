@@ -54,7 +54,7 @@ async function seed() {
 
   // Seed data
   try {
-    await seedCourseCategoriesWithChildren({ count: 10 }, db);
+    await seedCourseCategoriesWithChildren({ count: 3 }, db);
     await seedUiRepeatTimer({ count: 2 }, db, '/');
     await seedCarouselReview({ count: 4 }, db, '/');
     await seedTeachers({ count: 2 }, db);
@@ -69,14 +69,14 @@ async function seed() {
       db,
     );
     await seedPgUsers(db);
-    await seedCourseProducts({ count: 5 }, db);
-    await seedCourseReviews({ count: 5 }, db);
-    await seedCourseOrders({ count: 5 }, db);
-    await seedEbookOrders({ count: 5 }, db);
-    await seedEbooks({ count: 5 }, db);
-    await seedEbookProducts({ count: 5 }, db);
-    await seedEbookReviews({ count: 5 }, db);
-    await seedPosts({ count: 5 }, db);
+    await seedCourseProducts({ count: 3 }, db);
+    await seedCourseReviews({ count: 3 }, db);
+    await seedCourseOrders({ count: 3 }, db);
+    await seedEbookOrders({ count: 3 }, db);
+    await seedEbooks({ count: 3 }, db);
+    await seedEbookProducts({ count: 3 }, db);
+    await seedEbookReviews({ count: 3 }, db);
+    await seedPosts({ count: 3 }, db);
     await seedNavbarCategories(db);
   } catch (e) {
     console.error(e);
