@@ -4,6 +4,7 @@ import { AuthService } from '../../../src/v1/auth/auth.service';
 import { KakaoAuthService } from '../../../src/v1/auth/kakao-auth.service';
 import { SessionRepository } from '../../../src/v1/auth/session.repository';
 import { AuthController } from '../../../src/v1/auth/auth.controller';
+import { AuthAdminController } from '@src/v1/auth/admin/auth-admin.controller';
 
 const modules = [UserModule];
 const providers = [AuthService, KakaoAuthService, SessionRepository];
@@ -23,7 +24,7 @@ const providers = [AuthService, KakaoAuthService, SessionRepository];
 
 @Module({
   imports: [...modules],
-  controllers: [AuthController],
+  controllers: [AuthController, AuthAdminController],
   providers: [...providers],
   exports: [...modules, ...providers],
 })

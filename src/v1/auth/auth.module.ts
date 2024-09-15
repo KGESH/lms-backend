@@ -8,6 +8,7 @@ import { SessionGuard } from '@src/core/guards/session.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { ApiGuard } from '@src/core/guards/api.guard';
 import { AuthAdminService } from '@src/v1/auth/auth-admin.service';
+import { AuthAdminController } from '@src/v1/auth/admin/auth-admin.controller';
 
 const modules = [UserModule];
 
@@ -33,7 +34,7 @@ const guards = [
 
 @Module({
   imports: [...modules],
-  controllers: [AuthController],
+  controllers: [AuthController, AuthAdminController],
   providers: [...providers, ...guards],
   exports: [...modules, ...providers],
 })
