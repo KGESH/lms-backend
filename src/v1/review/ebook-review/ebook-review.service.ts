@@ -8,14 +8,12 @@ import { IEbookReviewRelationsCreate } from '@src/v1/review/ebook-review/ebook-r
 import { IReviewWithRelations } from '@src/v1/review/review.interface';
 import { Pagination } from '@src/shared/types/pagination';
 import { EbookReviewRepository } from '@src/v1/review/ebook-review/ebook-review.repository';
-import { EbookReviewAdminService } from '@src/v1/review/ebook-review/ebook-review-admin.service';
 import { Optional } from '@src/shared/types/optional';
 import { IUserWithoutPassword } from '@src/v1/user/user.interface';
 
 @Injectable()
 export class EbookReviewService {
   constructor(
-    private readonly ebookReviewAdminService: EbookReviewAdminService,
     private readonly reviewRepository: ReviewRepository,
     private readonly ebookReviewRepository: EbookReviewRepository,
     private readonly reviewSnapshotRepository: ReviewSnapshotRepository,
@@ -96,16 +94,13 @@ export class EbookReviewService {
     return reviewWithReplies;
   }
 
-  async createEbookReviewWithSnapshot(
+  async createEbookReview(
     user: IUserWithoutPassword,
-    params: IEbookReviewRelationsCreate,
+    params: Omit<IEbookReviewRelationsCreate, 'userId'>,
   ): Promise<IReviewWithRelations> {
-    if (user?.role === 'admin' || user?.role === 'manager') {
-      const mockEbookReview =
-        await this.ebookReviewAdminService.createEbookReviewByAdmin(params);
-      return mockEbookReview;
-    }
-
-    return await this.createEbookReviewByUser(params);
+    return await this.createEbookReviewByUser({
+      ...params,
+      userId: user.id,
+    });
   }
 }

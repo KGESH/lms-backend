@@ -7,7 +7,6 @@ import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { ICourseReviewRelationsCreate } from '@src/v1/review/course-review/course-review.interface';
 import { IReviewWithRelations } from '@src/v1/review/review.interface';
 import { Pagination } from '@src/shared/types/pagination';
-import { CourseReviewAdminService } from '@src/v1/review/course-review/course-review-admin.service';
 import { CourseReviewRepository } from '@src/v1/review/course-review/course-review.repository';
 import { IUserWithoutPassword } from '@src/v1/user/user.interface';
 import { Optional } from '@src/shared/types/optional';
@@ -15,7 +14,6 @@ import { Optional } from '@src/shared/types/optional';
 @Injectable()
 export class CourseReviewService {
   constructor(
-    private readonly courseReviewAdminService: CourseReviewAdminService,
     private readonly reviewRepository: ReviewRepository,
     private readonly reviewSnapshotRepository: ReviewSnapshotRepository,
     private readonly courseReviewRepository: CourseReviewRepository,
@@ -83,15 +81,11 @@ export class CourseReviewService {
       return { review, courseReview, snapshot };
     });
 
-    console.log('[DEBUG] reviewWithSnapshot:', reviewWithSnapshot);
-
     const reviewWithReplies =
       await this.reviewQueryRepository.findOneWithReplies({
         id: reviewWithSnapshot.review.id,
         productType: reviewWithSnapshot.review.productType,
       });
-
-    console.log('[DEBUG] reviewWithReplies:', reviewWithReplies);
 
     if (!reviewWithReplies) {
       throw new InternalServerErrorException('Failed to create review');
@@ -102,14 +96,11 @@ export class CourseReviewService {
 
   async createCourseReview(
     user: IUserWithoutPassword,
-    params: ICourseReviewRelationsCreate,
+    params: Omit<ICourseReviewRelationsCreate, 'userId'>,
   ): Promise<IReviewWithRelations> {
-    if (user?.role === 'admin' || user?.role === 'manager') {
-      const mockCourseReview =
-        await this.courseReviewAdminService.createCourseReviewByAdmin(params);
-      return mockCourseReview;
-    }
-
-    return await this.createCourseReviewByUser(params);
+    return await this.createCourseReviewByUser({
+      ...params,
+      userId: user.id,
+    });
   }
 }

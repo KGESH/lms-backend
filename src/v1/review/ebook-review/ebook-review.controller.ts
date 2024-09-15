@@ -32,7 +32,7 @@ export class EbookReviewController {
    *
    * Query parameter 'userId'를 설정하면 0개 또는 N개의 리뷰가 배열에 담겨 반환됩니다.
    *
-   * @tag review-ebook
+   * @tag review
    * @summary 전자책 리뷰 목록 조회
    */
   @TypedRoute.Get('/')
@@ -60,7 +60,7 @@ export class EbookReviewController {
    *
    * Query parameter 'userId'를 설정하면 0개 또는 1개의 리뷰가 배열에 담겨 반환됩니다.
    *
-   * @tag review-ebook
+   * @tag review
    * @summary 특정 전자책 리뷰 목록 조회
    * @param ebookId - 조회할 전자책 id
    */
@@ -85,7 +85,7 @@ export class EbookReviewController {
   /**
    * 전자책 리뷰를 생성합니다.
    *
-   * @tag review-ebook
+   * @tag review
    * @summary 전자책 리뷰 생성
    */
   @TypedRoute.Post('/')
@@ -94,7 +94,7 @@ export class EbookReviewController {
     @TypedBody() body: CreateEbookReviewDto,
     @SessionUser() session: ISessionWithUser,
   ): Promise<ReviewWithRelationsDto> {
-    const review = await this.ebookReviewService.createEbookReviewWithSnapshot(
+    const review = await this.ebookReviewService.createEbookReview(
       session.user,
       body,
     );

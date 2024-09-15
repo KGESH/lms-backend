@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { date, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { authProvider, userRole } from './enum';
 import { teachers } from './teacher';
 import { reviewReplies, reviews } from './review';

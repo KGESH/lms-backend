@@ -11,6 +11,7 @@ import { ReviewReplyService } from '@src/v1/review/review-reply.service';
 import { ReviewReplyRepository } from '@src/v1/review/review-reply.repository';
 import { ReviewReplySnapshotRepository } from '@src/v1/review/review-reply-snapshot.repository';
 import { ReviewController } from '@src/v1/review/review.controller';
+import { MockReviewUserRepository } from '@src/v1/review/mock-review/mock-review-user.repository';
 
 const modules = [ProductModule, OrderModule, UserModule];
 
@@ -23,6 +24,7 @@ const providers = [
   ReviewSnapshotQueryRepository,
   ReviewReplyRepository,
   ReviewReplySnapshotRepository,
+  MockReviewUserRepository,
 ];
 
 @Module({

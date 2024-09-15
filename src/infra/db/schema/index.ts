@@ -6,12 +6,13 @@ import { reviewDbSchema } from './review';
 import { teacherDbSchema } from './teacher';
 import { ebookDbSchema } from './ebook';
 import { postDbSchemas } from './post';
+import { mockReviewDbSchema } from './mock-review';
 
 export const dbSchema = {
   // 사용자 (일반 사용자, 관리자(매니저), 최고 관리자)
   ...userDbSchemas,
 
-  //   // 강사 (강의, 전자책 판매자)
+  // 강사 (강의, 전자책 판매자)
   ...teacherDbSchema,
 
   // 동영상 강의
@@ -31,4 +32,7 @@ export const dbSchema = {
 
   // UI 빌더
   ...uiDbSchemas,
+
+  // Mock 리뷰
+  ...mockReviewDbSchema,
 };

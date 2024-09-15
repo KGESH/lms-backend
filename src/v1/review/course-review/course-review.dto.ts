@@ -3,7 +3,7 @@ import { Uuid } from '@src/shared/types/primitive';
 
 export type CreateCourseReviewDto = Pick<
   CreateReviewDto,
-  'rating' | 'comment' | 'userId'
+  'rating' | 'comment'
 > & {
   courseId: Uuid;
 };
