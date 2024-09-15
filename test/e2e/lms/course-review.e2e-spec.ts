@@ -110,7 +110,7 @@ describe('CourseReviewController (e2e)', () => {
       )[0];
       const reviewCreateParams: CreateCourseReviewDto = {
         comment: 'Mock review comment',
-        userId: order.userId,
+        // userId: order.userId,
         courseId: product.courseId,
         rating: 5,
       };

@@ -11,9 +11,93 @@ import { dbSchema } from '../../../../../src/infra/db/schema';
 import { createRandomCourse } from './course.helper';
 import { seedCourseOrders, seedEbookOrders } from './order.helper';
 import { createRandomEbook } from './ebook.helper';
-import { Uuid } from '@src/shared/types/primitive';
+import { Uuid } from '../../../../../src/shared/types/primitive';
 import { and, desc, eq, isNull } from 'drizzle-orm';
-import { IUserWithoutPassword } from '@src/v1/user/user.interface';
+import {
+  IUserCreate,
+  IUserWithoutPassword,
+} from '../../../../../src/v1/user/user.interface';
+import {
+  IMockReviewUser,
+  IMockReviewUserCreate,
+} from '../../../../../src/v1/review/mock-review/mock-review-user.interface';
+
+export const createMockReviewUser = async (
+  params: IMockReviewUserCreate,
+  db: TransactionClient,
+): Promise<IMockReviewUser> => {
+  const [mockReviewUser] = await db
+    .insert(dbSchema.mockReviewUsers)
+    .values(params)
+    .returning();
+  return mockReviewUser;
+};
+
+export const createMockEbookReview = async (
+  params: Omit<IReviewCreate, 'userId'> & {
+    ebookId?: Uuid;
+    adminUser: IUserWithoutPassword;
+    mockReviewUser: Omit<IMockReviewUserCreate, 'reviewId'>;
+  },
+  db: TransactionClient,
+): Promise<Omit<IReviewWithRelations, 'product'>> => {
+  const reviewRelations = await createRandomEbookReview(
+    {
+      ...params,
+      reviewer: params.adminUser,
+    },
+    db,
+  );
+
+  const mockReviewUser = await createMockReviewUser(
+    {
+      displayName: params.mockReviewUser.displayName,
+      email: params.mockReviewUser.email,
+      image: params.mockReviewUser.image,
+      reviewId: reviewRelations.id,
+    },
+    db,
+  );
+
+  return {
+    ...reviewRelations,
+    user: mockReviewUser,
+  };
+};
+
+
+export const createMockCourseReview = async (
+  params: Omit<IReviewCreate, 'userId'> & {
+    courseId?: Uuid;
+    adminUser: IUserWithoutPassword;
+    mockReviewUser: Omit<IMockReviewUserCreate, 'reviewId'>;
+  },
+  db: TransactionClient,
+): Promise<Omit<IReviewWithRelations, 'product'>> => {
+  const reviewRelations = await createRandomCourseReview(
+    {
+      ...params,
+      reviewer: params.adminUser,
+    },
+    db,
+  );
+
+  const mockReviewUser = await createMockReviewUser(
+    {
+      displayName: params.mockReviewUser.displayName,
+      email: params.mockReviewUser.email,
+      image: params.mockReviewUser.image,
+      reviewId: reviewRelations.id,
+    },
+    db,
+  );
+
+  return {
+    ...reviewRelations,
+    user: mockReviewUser,
+  };
+};
+
 
 export const createReview = async (
   params: Omit<IReviewCreate, 'userId'> & { reviewer: IUserWithoutPassword },
@@ -195,6 +279,74 @@ export const seedCourseReviews = async (
       ),
     )
   ).flat();
+
+  return reviews;
+};
+
+export const seedMockCourseReviews = async (
+  {
+    courseId,
+    adminUser,
+    mockReviewUsers,
+  }: {
+    courseId?: Uuid;
+    adminUser: IUserWithoutPassword;
+    mockReviewUsers: Omit<IMockReviewUserCreate, 'reviewId'>[];
+  },
+  db: TransactionClient,
+) => {
+  if (mockReviewUsers.length === 0) {
+    throw new Error('mockReviewUsers must have at least one user');
+  }
+
+  const reviews = await Promise.all(
+    mockReviewUsers.map((mockReviewUser) =>
+      createMockCourseReview(
+        {
+          courseId,
+          adminUser,
+          mockReviewUser,
+          orderId: null,
+          productType: 'course',
+        },
+        db,
+      ),
+    ),
+  );
+
+  return reviews;
+};
+
+export const seedMockEbookReviews = async (
+  {
+    ebookId,
+    adminUser,
+    mockReviewUsers,
+  }: {
+    ebookId?: Uuid;
+    adminUser: IUserWithoutPassword;
+    mockReviewUsers: Omit<IMockReviewUserCreate, 'reviewId'>[];
+  },
+  db: TransactionClient,
+) => {
+  if (mockReviewUsers.length === 0) {
+    throw new Error('mockReviewUsers must have at least one user');
+  }
+
+  const reviews = await Promise.all(
+    mockReviewUsers.map((mockReviewUser) =>
+      createMockEbookReview(
+        {
+          ebookId,
+          adminUser,
+          mockReviewUser,
+          orderId: null,
+          productType: 'ebook',
+        },
+        db,
+      ),
+    ),
+  );
 
   return reviews;
 };

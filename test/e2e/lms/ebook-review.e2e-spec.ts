@@ -110,7 +110,7 @@ describe('EbookReviewController (e2e)', () => {
       )[0];
       const reviewCreateParams: CreateEbookReviewDto = {
         comment: 'Mock review comment',
-        userId: order.userId,
+        // userId: order.userId,
         ebookId: product.ebookId,
         rating: 5,
       };
