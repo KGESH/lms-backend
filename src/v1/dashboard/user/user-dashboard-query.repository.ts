@@ -37,6 +37,7 @@ export class UserDashboardQueryRepository {
         id: history.id,
         lessonContentId: history.lessonContentId,
         createdAt: history.createdAt,
+        lessonContent: history.lessonContent,
       },
     }));
   }

@@ -1,4 +1,5 @@
 import { ISO8601, Uuid } from '@src/shared/types/primitive';
+import { LessonContentDto } from "@src/v1/course/chapter/lesson/lesson-content/lesson-content.dto";
 
 export type UserCourseResourceHistoryDto = {
   courseId: Uuid;
@@ -6,5 +7,6 @@ export type UserCourseResourceHistoryDto = {
     id: Uuid;
     lessonContentId: Uuid;
     createdAt: ISO8601;
+    lessonContent: LessonContentDto
   };
 };
