@@ -34,6 +34,13 @@ export const createRandomCourseOrder = async (
       productSnapshotId: product.lastSnapshot!.id,
     })
     .returning();
+  const [enrollment] = await db
+    .insert(dbSchema.courseEnrollments)
+    .values({
+      courseId: product.course.id,
+      userId: seedUser.user.id,
+    })
+    .returning();
 
   return {
     user: seedUser.user,
@@ -41,6 +48,7 @@ export const createRandomCourseOrder = async (
     order,
     courseOrder,
     product,
+    enrollment,
   };
 };
 
@@ -70,6 +78,13 @@ export const createRandomEbookOrder = async (
       productSnapshotId: product.lastSnapshot!.id,
     })
     .returning();
+  const [enrollment] = await db
+    .insert(dbSchema.ebookEnrollments)
+    .values({
+      ebookId: product.ebook.id,
+      userId: seedUser.user.id,
+    })
+    .returning();
 
   return {
     user: seedUser.user,
@@ -77,6 +92,7 @@ export const createRandomEbookOrder = async (
     order,
     ebookOrder,
     product,
+    enrollment,
   };
 };
 
