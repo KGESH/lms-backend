@@ -64,7 +64,7 @@ describe('LessonContentController (e2e)', () => {
         ),
       ).toBeDefined();
       expect(lessonContentId).toEqual(
-        lessonContentWithHistory.history.lessonContentId,
+        lessonContentWithHistory.history!.lessonContentId,
       );
     });
   });
