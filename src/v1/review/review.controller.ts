@@ -38,6 +38,10 @@ export class ReviewController {
     status: 403,
     description: 'Not enough [role] to access this resource.',
   })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'Reply user not found.',
+  })
   async createReviewReply(
     @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: CreateReviewReplyDto,

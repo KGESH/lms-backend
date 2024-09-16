@@ -46,57 +46,7 @@ export class CourseReviewService {
     return reviews;
   }
 
-  async deleteCourseReview(
-    user: IUserWithoutPassword,
-    where: Pick<IReview, 'id' | 'productType'>,
-  ): Promise<Pick<IReview, 'id'>> {
-    const review = await this.reviewQueryRepository.findOneWithReplies(where);
-
-    // Review not found or user is not the owner of the review
-    if (!review || (user.role === 'user' && review.userId !== user.id)) {
-      throw new NotFoundException('Review not found');
-    }
-
-    if (user.role === 'user') {
-      return await this.reviewRepository.deleteReview(review);
-    }
-
-    const metadata: IDeleteEntityMetadata = {
-      deletedBy: user.id,
-      deletedReason: `Deleted by [${user.id}]`,
-    };
-
-    return await this.reviewRepository.deleteReview(review, metadata);
-  }
-
-  async updateCourseReview(
-    user: IUserWithoutPassword,
-    where: Pick<IReview, 'id' | 'productType'>,
-    params: OptionalPick<IReviewSnapshot, 'comment' | 'rating'>,
-  ): Promise<IReviewWithRelations> {
-    const reviewWithReplies =
-      await this.reviewQueryRepository.findOneWithReplies(where);
-
-    if (!reviewWithReplies || reviewWithReplies.userId !== user.id) {
-      throw new NotFoundException('Review not found');
-    }
-
-    await this.reviewSnapshotRepository.create({
-      reviewId: reviewWithReplies.id,
-      comment: params.comment ?? reviewWithReplies.snapshot.comment,
-      rating: params.rating ?? reviewWithReplies.snapshot.rating,
-    });
-
-    const updated = await this.reviewQueryRepository.findOneWithReplies(where);
-
-    if (!updated) {
-      throw new InternalServerErrorException('Failed to update review');
-    }
-
-    return updated;
-  }
-
-  async createCourseReviewByUser(
+  async createCourseReview(
     params: ICourseReviewRelationsCreate,
   ): Promise<IReviewWithRelations> {
     const courseReviewRelations =
@@ -156,13 +106,53 @@ export class CourseReviewService {
     return reviewWithReplies;
   }
 
-  async createCourseReview(
+  async updateCourseReview(
     user: IUserWithoutPassword,
-    params: Omit<ICourseReviewRelationsCreate, 'userId'>,
+    where: Pick<IReview, 'id' | 'productType'>,
+    params: OptionalPick<IReviewSnapshot, 'comment' | 'rating'>,
   ): Promise<IReviewWithRelations> {
-    return await this.createCourseReviewByUser({
-      ...params,
-      userId: user.id,
+    const reviewWithReplies =
+      await this.reviewQueryRepository.findOneWithReplies(where);
+
+    if (!reviewWithReplies || reviewWithReplies.userId !== user.id) {
+      throw new NotFoundException('Review not found');
+    }
+
+    await this.reviewSnapshotRepository.create({
+      reviewId: reviewWithReplies.id,
+      comment: params.comment ?? reviewWithReplies.snapshot.comment,
+      rating: params.rating ?? reviewWithReplies.snapshot.rating,
     });
+
+    const updated = await this.reviewQueryRepository.findOneWithReplies(where);
+
+    if (!updated) {
+      throw new InternalServerErrorException('Failed to update review');
+    }
+
+    return updated;
+  }
+
+  async deleteCourseReview(
+    user: IUserWithoutPassword,
+    where: Pick<IReview, 'id' | 'productType'>,
+  ): Promise<Pick<IReview, 'id'>> {
+    const review = await this.reviewQueryRepository.findOneWithReplies(where);
+
+    // Review not found or user is not the owner of the review
+    if (!review || (user.role === 'user' && review.userId !== user.id)) {
+      throw new NotFoundException('Review not found');
+    }
+
+    if (user.role === 'user') {
+      return await this.reviewRepository.deleteReview(review);
+    }
+
+    const metadata: IDeleteEntityMetadata = {
+      deletedBy: user.id,
+      deletedReason: `Deleted by [${user.id}]`,
+    };
+
+    return await this.reviewRepository.deleteReview(review, metadata);
   }
 }

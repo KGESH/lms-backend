@@ -23,8 +23,8 @@ export class MockReviewQueryRepository {
   async findMockEbookReview(where: {
     reviewId: IMockReview['review']['id'];
   }): Promise<IReviewWithRelations | null> {
-    const mockReviewUser = await this.drizzle.db.query.mockReviewUsers.findFirst(
-      {
+    const mockReviewUser =
+      await this.drizzle.db.query.mockReviewUsers.findFirst({
         where: eq(dbSchema.mockReviewUsers.reviewId, where.reviewId),
         with: {
           review: {
@@ -51,6 +51,7 @@ export class MockReviewQueryRepository {
                 where: isNull(dbSchema.reviewReplies.deletedAt),
                 orderBy: asc(dbSchema.reviewReplies.createdAt),
                 with: {
+                  user: true,
                   snapshots: {
                     orderBy: desc(dbSchema.reviewReplySnapshots.createdAt),
                     limit: 1,
@@ -60,8 +61,7 @@ export class MockReviewQueryRepository {
             },
           },
         },
-      },
-    );
+      });
 
     if (!mockReviewUser?.review?.ebookReview) {
       return null;
@@ -77,6 +77,7 @@ export class MockReviewQueryRepository {
       snapshot: mockReviewUser.review.snapshots[0],
       replies: mockReviewUser.review.replies.map((reply) => ({
         ...reply,
+        user: reply.user,
         snapshot: reply.snapshots[0],
       })),
       product: {
@@ -90,8 +91,8 @@ export class MockReviewQueryRepository {
   async findMockCourseReview(where: {
     reviewId: IMockReview['review']['id'];
   }): Promise<IReviewWithRelations | null> {
-    const mockReviewUser = await this.drizzle.db.query.mockReviewUsers.findFirst(
-      {
+    const mockReviewUser =
+      await this.drizzle.db.query.mockReviewUsers.findFirst({
         where: eq(dbSchema.mockReviewUsers.reviewId, where.reviewId),
         with: {
           review: {
@@ -118,6 +119,7 @@ export class MockReviewQueryRepository {
                 where: isNull(dbSchema.reviewReplies.deletedAt),
                 orderBy: asc(dbSchema.reviewReplies.createdAt),
                 with: {
+                  user: true,
                   snapshots: {
                     orderBy: desc(dbSchema.reviewReplySnapshots.createdAt),
                     limit: 1,
@@ -127,8 +129,7 @@ export class MockReviewQueryRepository {
             },
           },
         },
-      },
-    );
+      });
 
     if (!mockReviewUser?.review?.courseReview) {
       return null;
@@ -144,6 +145,7 @@ export class MockReviewQueryRepository {
       snapshot: mockReviewUser.review.snapshots[0],
       replies: mockReviewUser.review.replies.map((reply) => ({
         ...reply,
+        user: reply.user,
         snapshot: reply.snapshots[0],
       })),
       product: {

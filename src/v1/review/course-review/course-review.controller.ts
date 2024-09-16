@@ -11,16 +11,14 @@ import {
 import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
 import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
 import {
+  CreateReviewDto,
   DeleteReviewDto,
   ReviewQuery,
   ReviewWithRelationsDto,
+  UpdateReviewDto,
 } from '@src/v1/review/review.dto';
 import { reviewToDto } from '@src/shared/helpers/transofrm/review';
 import { Uuid } from '@src/shared/types/primitive';
-import {
-  CreateCourseReviewDto,
-  UpdateCourseReviewDto,
-} from '@src/v1/review/course-review/course-review.dto';
 import { CourseReviewService } from '@src/v1/review/course-review/course-review.service';
 import { withDefaultPagination } from '@src/core/pagination';
 import { SessionUser } from '@src/core/decorators/session-user.decorator';
@@ -110,13 +108,14 @@ export class CourseReviewController {
   async createCourseReview(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
-    @TypedBody() body: CreateCourseReviewDto,
+    @TypedBody() body: CreateReviewDto,
     @SessionUser() session: ISessionWithUser,
   ): Promise<ReviewWithRelationsDto> {
-    const review = await this.courseReviewService.createCourseReview(
-      session.user,
-      { ...body, courseId },
-    );
+    const review = await this.courseReviewService.createCourseReview({
+      ...body,
+      courseId,
+      userId: session.userId,
+    });
 
     return reviewToDto(review);
   }
@@ -143,7 +142,7 @@ export class CourseReviewController {
   async updateCourseReview(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
-    @TypedBody() body: UpdateCourseReviewDto,
+    @TypedBody() body: UpdateReviewDto,
     @SessionUser() session: ISessionWithUser,
   ): Promise<ReviewWithRelationsDto> {
     const review = await this.courseReviewService.updateCourseReview(

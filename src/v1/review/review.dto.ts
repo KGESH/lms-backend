@@ -8,7 +8,7 @@ import { Pagination } from '@src/shared/types/pagination';
 import { UserWithoutPasswordDto } from '@src/v1/user/user.dto';
 import { EbookWithRelationsDto } from '@src/v1/ebook/ebook-with-relations.dto';
 import { CourseWithRelationsDto } from '@src/v1/course/course-with-relations.dto';
-import { OptionalPick } from '@src/shared/types/optional';
+import { Optional, OptionalPick } from '@src/shared/types/optional';
 
 export type ReviewDto = {
   id: Uuid;
@@ -22,7 +22,7 @@ export type ReviewDto = {
   deletedAt: ISO8601 | null;
 };
 
-export type CreateReviewDto = Pick<ReviewDto, 'userId' | 'orderId'> & {
+export type CreateReviewDto = {
   /**
    * 리뷰 내용.
    */
@@ -32,6 +32,13 @@ export type CreateReviewDto = Pick<ReviewDto, 'userId' | 'orderId'> & {
    * 리뷰 평점.
    */
   rating: UFloat;
+};
+
+export type UpdateReviewDto = Partial<CreateReviewDto> & {
+  /**
+   * 리뷰 ID.
+   */
+  reviewId: Uuid;
 };
 
 export type DeleteReviewDto = { reviewId: Uuid };
@@ -81,6 +88,11 @@ export type ReviewReplyWithSnapshotDto = ReviewReplyDto & {
    * 리뷰에 달린 댓글.
    */
   snapshot: ReviewReplySnapshotDto;
+
+  /**
+   * 댓글 작성자.
+   */
+  user: UserWithoutPasswordDto;
 };
 
 export type ReviewWithRelationsDto = ReviewDto & {

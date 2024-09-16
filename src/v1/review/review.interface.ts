@@ -56,14 +56,15 @@ export type IReviewReplySnapshotCreate = Pick<
   'id' | 'reviewReplyId' | 'comment'
 >;
 
-export type IReviewReplyWithSnapshot = IReviewReply & {
+export type IReviewReplyWithRelations = IReviewReply & {
+  user: IUserWithoutPassword;
   snapshot: IReviewReplySnapshot;
 };
 
 export type IReviewWithRelations = IReview & {
   user: IUserWithoutPassword;
   snapshot: IReviewSnapshot;
-  replies: IReviewReplyWithSnapshot[];
+  replies: IReviewReplyWithRelations[];
   product:
     | Omit<ICourseWithRelations, 'chapters'>
     | Omit<IEbookWithRelations, 'contents'>;

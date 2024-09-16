@@ -3,10 +3,9 @@ import {
   IReviewCreate,
   IReviewReply,
   IReviewReplyCreate,
-  IReviewReplySnapshotCreate,
-  IReviewReplyWithSnapshot,
-  IReviewWithRelations,
-} from '../../../../../src/v1/review/review.interface';
+  IReviewReplySnapshotCreate, IReviewReplyWithRelations,
+  IReviewWithRelations
+} from "../../../../../src/v1/review/review.interface";
 import { dbSchema } from '../../../../../src/infra/db/schema';
 import { createRandomCourse } from './course.helper';
 import { seedCourseOrders, seedEbookOrders } from './order.helper';
@@ -14,7 +13,6 @@ import { createRandomEbook } from './ebook.helper';
 import { Uuid } from '../../../../../src/shared/types/primitive';
 import { and, desc, eq, isNull } from 'drizzle-orm';
 import {
-  IUserCreate,
   IUserWithoutPassword,
 } from '../../../../../src/v1/user/user.interface';
 import {
@@ -65,7 +63,6 @@ export const createMockEbookReview = async (
   };
 };
 
-
 export const createMockCourseReview = async (
   params: Omit<IReviewCreate, 'userId'> & {
     courseId?: Uuid;
@@ -97,7 +94,6 @@ export const createMockCourseReview = async (
     user: mockReviewUser,
   };
 };
-
 
 export const createReview = async (
   params: Omit<IReviewCreate, 'userId'> & { reviewer: IUserWithoutPassword },
@@ -158,10 +154,12 @@ export const createReview = async (
     replies: [
       {
         ...parentReviewReply,
+        user: params.reviewer,
         snapshot: parentReviewReplySnapshot,
       },
       {
         ...childReviewReply,
+        user: params.reviewer,
         snapshot: childReviewReplySnapshot,
       },
     ],
@@ -235,13 +233,14 @@ export const createReviewReplySnapshot = async (
 export const findReviewRepliesByReviewId = async (
   where: Pick<IReviewReply, 'reviewId'>,
   db: TransactionClient,
-): Promise<IReviewReplyWithSnapshot[]> => {
+): Promise<IReviewReplyWithRelations[]> => {
   const repliesWithLatestSnapshot = await db.query.reviewReplies.findMany({
     where: and(
       eq(dbSchema.reviewReplies.reviewId, where.reviewId),
       isNull(dbSchema.reviewReplies.deletedAt),
     ),
     with: {
+      user: true,
       snapshots: {
         orderBy: desc(dbSchema.reviewReplySnapshots.createdAt),
         limit: 1,
@@ -251,6 +250,7 @@ export const findReviewRepliesByReviewId = async (
 
   return repliesWithLatestSnapshot.map((reply) => ({
     ...reply,
+    user: reply.user,
     snapshot: reply.snapshots[0],
   }));
 };
@@ -260,6 +260,7 @@ export const seedCourseReviews = async (
   db: TransactionClient,
 ): Promise<Omit<IReviewWithRelations, 'product'>[]> => {
   const orders = await seedCourseOrders({ count: 1 }, db);
+
   const reviews = (
     await Promise.all(
       Array.from({ length: count }).map(() =>

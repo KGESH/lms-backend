@@ -8,8 +8,8 @@ import {
 } from '../helpers/db/lms/review.helper';
 import { seedCourseOrders } from '../helpers/db/lms/order.helper';
 import * as CourseReviewAPI from '../../../src/api/functional/v1/review/course';
-import { CreateCourseReviewDto } from '../../../src/v1/review/course-review/course-review.dto';
 import { ConfigsService } from '../../../src/configs/configs.service';
+import { CreateReviewDto } from '@src/v1/review/review.dto';
 
 describe('CourseReviewController (e2e)', () => {
   let host: Uri;
@@ -108,7 +108,7 @@ describe('CourseReviewController (e2e)', () => {
       const { order, product, userSession } = (
         await seedCourseOrders({ count: 1 }, drizzle.db)
       )[0];
-      const reviewCreateParams: CreateCourseReviewDto = {
+      const reviewCreateParams: CreateReviewDto = {
         comment: 'Mock review comment',
         rating: 5,
       };

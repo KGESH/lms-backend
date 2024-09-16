@@ -50,6 +50,7 @@ export class MockCourseReviewQueryRepository {
               where: isNull(dbSchema.reviewReplies.deletedAt),
               orderBy: asc(dbSchema.reviewReplies.createdAt),
               with: {
+                user: true,
                 snapshots: {
                   orderBy: desc(dbSchema.reviewReplySnapshots.createdAt),
                   limit: 1,
@@ -67,6 +68,7 @@ export class MockCourseReviewQueryRepository {
       snapshot: courseReview.review.snapshots[0],
       replies: courseReview.review.replies.map((reply) => ({
         ...reply,
+        user: reply.user,
         snapshot: reply.snapshots[0],
       })),
       product: {
@@ -102,6 +104,7 @@ export class MockCourseReviewQueryRepository {
           where: isNull(dbSchema.reviewReplies.deletedAt),
           orderBy: asc(dbSchema.reviewReplies.createdAt),
           with: {
+            user: true,
             snapshots: {
               orderBy: desc(dbSchema.reviewReplySnapshots.createdAt),
               limit: 1,
@@ -129,6 +132,7 @@ export class MockCourseReviewQueryRepository {
       snapshot: review.snapshots[0],
       replies: review.replies.map((reply) => ({
         ...reply,
+        user: reply.user,
         snapshot: reply.snapshots[0],
       })),
       product: {

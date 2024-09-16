@@ -1,6 +1,6 @@
 import * as date from '@src/shared/utils/date';
 import {
-  IReviewReplyWithSnapshot,
+  IReviewReplyWithRelations,
   IReviewWithRelations,
 } from '@src/v1/review/review.interface';
 import {
@@ -27,6 +27,7 @@ export const reviewToDto = (
       ...reply,
       createdAt: date.toISOString(reply.createdAt),
       deletedAt: reply.deletedAt ? date.toISOString(reply.deletedAt) : null,
+      user: userToDto(reply.user),
       snapshot: {
         ...reply.snapshot,
         createdAt: date.toISOString(reply.snapshot.createdAt),
@@ -46,12 +47,13 @@ export const reviewToDto = (
 };
 
 export const reviewReplyToDto = (
-  reply: IReviewReplyWithSnapshot,
+  reply: IReviewReplyWithRelations,
 ): ReviewReplyWithSnapshotDto => {
   return {
     ...reply,
     createdAt: date.toISOString(reply.createdAt),
     deletedAt: reply.deletedAt ? date.toISOString(reply.deletedAt) : null,
+    user: userToDto(reply.user),
     snapshot: {
       ...reply.snapshot,
       createdAt: date.toISOString(reply.snapshot.createdAt),

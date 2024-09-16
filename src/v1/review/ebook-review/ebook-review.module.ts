@@ -6,6 +6,7 @@ import { EbookReviewRepository } from '@src/v1/review/ebook-review/ebook-review.
 import { EbookReviewAdminService } from '@src/v1/review/admin/ebook/ebook-review-admin.service';
 import { MockEbookReviewQueryRepository } from '@src/v1/review/mock-review/mock-ebook-review-query.repository';
 import { EbookReviewAdminController } from '@src/v1/review/admin/ebook/ebook-review-admin.controller';
+import { MockReviewRepository } from '@src/v1/review/mock-review/mock-review.repository';
 
 const modules = [ReviewModule];
 
@@ -13,6 +14,7 @@ const providers = [
   EbookReviewService,
   EbookReviewAdminService,
   EbookReviewRepository,
+  MockReviewRepository,
   MockEbookReviewQueryRepository,
 ];
 

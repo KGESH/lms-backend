@@ -1,14 +1,22 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { ReviewRepository } from '@src/v1/review/review.repository';
 import { ReviewSnapshotRepository } from '@src/v1/review/review-snapshot.repository';
 import { EbookReviewRepository } from '@src/v1/review/ebook-review/ebook-review.repository';
 import { MockReviewUserRepository } from '@src/v1/review/mock-review/mock-review-user.repository';
 import { MockEbookReviewQueryRepository } from '@src/v1/review/mock-review/mock-ebook-review-query.repository';
-import { IMockReviewCreate } from '@src/v1/review/mock-review/mock-review.interface';
+import {
+  IMockReviewCreate,
+  IMockReviewUpdate,
+} from '@src/v1/review/mock-review/mock-review.interface';
 import { Uuid } from '@src/shared/types/primitive';
 import { Pagination } from '@src/shared/types/pagination';
 import { IReviewWithRelations } from '@src/v1/review/review.interface';
+import { MockReviewRepository } from '@src/v1/review/mock-review/mock-review.repository';
 
 @Injectable()
 export class EbookReviewAdminService {
@@ -17,6 +25,7 @@ export class EbookReviewAdminService {
     private readonly ebookReviewRepository: EbookReviewRepository,
     private readonly mockEbookReviewQueryRepository: MockEbookReviewQueryRepository,
     private readonly reviewSnapshotRepository: ReviewSnapshotRepository,
+    private readonly mockReviewRepository: MockReviewRepository,
     private readonly mockReviewUserRepository: MockReviewUserRepository,
     private readonly drizzle: DrizzleService,
   ) {}
@@ -87,5 +96,75 @@ export class EbookReviewAdminService {
     }
 
     return mockReviewWithReplies;
+  }
+
+  async updateEbookReviewByAdmin({
+    reviewId,
+    reviewSnapshotUpdateParams,
+    mockUserCreateParams,
+  }: IMockReviewUpdate): Promise<IReviewWithRelations> {
+    const mockReviewWithReplies =
+      await this.mockEbookReviewQueryRepository.findMockEbookReview({
+        id: reviewId,
+      });
+
+    if (!mockReviewWithReplies) {
+      throw new NotFoundException('Review not found');
+    }
+
+    await this.drizzle.db.transaction(async (tx) => {
+      if (mockUserCreateParams) {
+        await this.mockReviewUserRepository.updateMockReviewUser(
+          { id: mockReviewWithReplies.user.id },
+          {
+            displayName:
+              mockUserCreateParams?.displayName ??
+              mockReviewWithReplies.user.displayName,
+            email:
+              mockUserCreateParams?.email ?? mockReviewWithReplies.user.email,
+            image:
+              mockUserCreateParams?.image ?? mockReviewWithReplies.user.image,
+          },
+          tx,
+        );
+      }
+
+      if (reviewSnapshotUpdateParams) {
+        await this.reviewSnapshotRepository.create(
+          {
+            reviewId,
+            comment:
+              reviewSnapshotUpdateParams?.comment ??
+              mockReviewWithReplies.snapshot.comment,
+            rating:
+              reviewSnapshotUpdateParams?.rating ??
+              mockReviewWithReplies.snapshot.rating,
+          },
+          tx,
+        );
+      }
+    });
+
+    const updated =
+      await this.mockEbookReviewQueryRepository.findMockEbookReview({
+        id: reviewId,
+      });
+
+    if (!updated) {
+      throw new InternalServerErrorException('Failed to update review');
+    }
+
+    return updated;
+  }
+
+  async deleteEbookReviewByAdmin(reviewId: Uuid): Promise<Uuid> {
+    const deletedReviewId = await this.drizzle.db.transaction(async (tx) => {
+      return await this.mockReviewRepository.deleteMockReview(
+        { id: reviewId },
+        tx,
+      );
+    });
+
+    return deletedReviewId;
   }
 }

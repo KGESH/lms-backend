@@ -8,8 +8,8 @@ import {
 } from '../helpers/db/lms/review.helper';
 import { seedEbookOrders } from '../helpers/db/lms/order.helper';
 import * as EbookReviewAPI from '../../../src/api/functional/v1/review/ebook';
-import { CreateEbookReviewDto } from '../../../src/v1/review/ebook-review/ebook-review.dto';
 import { ConfigsService } from '../../../src/configs/configs.service';
+import { CreateReviewDto } from '@src/v1/review/review.dto';
 
 describe('EbookReviewController (e2e)', () => {
   let host: Uri;
@@ -108,10 +108,8 @@ describe('EbookReviewController (e2e)', () => {
       const { order, product, userSession } = (
         await seedEbookOrders({ count: 1 }, drizzle.db)
       )[0];
-      const reviewCreateParams: CreateEbookReviewDto = {
+      const reviewCreateParams: CreateReviewDto = {
         comment: 'Mock review comment',
-        // userId: order.userId,
-        ebookId: product.ebookId,
         rating: 5,
       };
 
@@ -123,6 +121,7 @@ describe('EbookReviewController (e2e)', () => {
             UserSessionId: userSession.id,
           },
         },
+        product.ebookId,
         reviewCreateParams,
       );
       if (!response.success) {
