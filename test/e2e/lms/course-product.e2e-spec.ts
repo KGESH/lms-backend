@@ -243,7 +243,6 @@ describe('CourseProductController (e2e)', () => {
       }
 
       const updated = response.data;
-
       expect(updated.title).toEqual('updated product title');
       expect(updated.description).toEqual('updated description');
       expect(updated.pricing.amount).toEqual('10000');
@@ -254,7 +253,7 @@ describe('CourseProductController (e2e)', () => {
       expect(updated.refundPolicy.richTextContent).toEqual(
         'updated refund policy',
       );
-      expect(updated.discount!.value).toEqual('33.33');
+      expect(updated.discount.value).toEqual('33.33');
       expect(
         updated.uiContents.find((ui) => ui.content === 'mock new content'),
       ).toBeDefined();
