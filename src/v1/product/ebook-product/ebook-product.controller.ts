@@ -59,7 +59,7 @@ export class EbookProductController {
    *
    * pricing: 상품 가격 정보.
    *
-   * discounts: 상품 할인 정보.
+   * discount: 상품 할인 정보.
    *
    * @tag product-ebook
    * @summary 전자책 상품 목록 조회 (public)
@@ -108,7 +108,7 @@ export class EbookProductController {
    *
    * pricing: 상품 가격 정보.
    *
-   * discounts: 상품 할인 정보.
+   * discount: 상품 할인 정보.
    *
    * @tag product-ebook
    * @summary 특정 전자책 상품 조회 (public)
@@ -164,7 +164,7 @@ export class EbookProductController {
    *
    * pricing: 상품 가격 정보.
    *
-   * discounts: 상품 할인 정보.
+   * discount: 상품 할인 정보.
    *
    * @tag product-ebook
    * @summary 전자책 상품 생성 - Role('admin', 'manager')
@@ -206,18 +206,15 @@ export class EbookProductController {
       ebookProductSnapshotPricingCreateParams: {
         amount: body.pricing.amount,
       },
-      ebookProductSnapshotDiscountCreateParams: body.discounts
-        ? {
-            discountType: body.discounts.discountType,
-            value: body.discounts.value,
-            validFrom: body.discounts.validFrom
-              ? date.toDate(body.discounts.validFrom)
-              : null,
-            validTo: body.discounts.validTo
-              ? date.toDate(body.discounts.validTo)
-              : null,
-          }
-        : null,
+      ebookProductSnapshotDiscountCreateParams: {
+        ...body.discount,
+        validFrom: body.discount.validFrom
+          ? date.toDate(body.discount.validFrom)
+          : null,
+        validTo: body.discount.validTo
+          ? date.toDate(body.discount.validTo)
+          : null,
+      },
       ebookProductSnapshotUiContentCreateParams: body.uiContents,
     });
 
@@ -249,7 +246,7 @@ export class EbookProductController {
    *
    * pricing: 상품 가격 정보.
    *
-   * discounts: 상품 할인 정보.
+   * discount: 상품 할인 정보.
    *
    * @tag product-ebook
    * @summary 전자책 상품 생성 - Role('admin', 'manager')
@@ -285,18 +282,17 @@ export class EbookProductController {
         ebookProductSnapshotContentCreateParams: body.content,
         ebookProductSnapshotRefundPolicyCreateParams: body.refundPolicy,
         ebookProductSnapshotPricingCreateParams: body.pricing,
-        ebookProductSnapshotDiscountCreateParams: body.discounts
+        ebookProductSnapshotDiscountCreateParams: body.discount
           ? {
-              discountType: body.discounts.discountType,
-              value: body.discounts.value,
-              validFrom: body.discounts.validFrom
-                ? date.toDate(body.discounts.validFrom)
+              ...body.discount,
+              validFrom: body.discount.validFrom
+                ? date.toDate(body.discount.validFrom)
                 : null,
-              validTo: body.discounts.validTo
-                ? date.toDate(body.discounts.validTo)
+              validTo: body.discount.validTo
+                ? date.toDate(body.discount.validTo)
                 : null,
             }
-          : null,
+          : undefined,
         ebookProductSnapshotUiContentParams: {
           create: body.uiContents?.create ?? [],
           update: body.uiContents?.update ?? [],

@@ -24,7 +24,7 @@ export type IEbookOrderRelations = IOrder & {
       announcement: IProductSnapshotContent;
       refundPolicy: IProductSnapshotContent;
       pricing: IProductSnapshotPricing;
-      discounts: IProductSnapshotDiscount | null;
+      discount: IProductSnapshotDiscount | null;
       uiContents: IProductSnapshotUiContent[];
     };
   };

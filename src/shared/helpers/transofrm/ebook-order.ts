@@ -30,17 +30,17 @@ export const ebookOrderToDto = (ebookOrder: unknown): OrderEbookDto => {
       pricing: {
         ...order.productOrder.productSnapshot.pricing,
       },
-      discounts: order.productOrder.productSnapshot.discounts
+      discount: order.productOrder.productSnapshot.discount
         ? {
-            ...order.productOrder.productSnapshot.discounts,
-            validTo: order.productOrder.productSnapshot.discounts.validTo
+            ...order.productOrder.productSnapshot.discount,
+            validTo: order.productOrder.productSnapshot.discount.validTo
               ? date.toISOString(
-                  order.productOrder.productSnapshot.discounts.validTo,
+                  order.productOrder.productSnapshot.discount.validTo,
                 )
               : null,
-            validFrom: order.productOrder.productSnapshot.discounts.validFrom
+            validFrom: order.productOrder.productSnapshot.discount.validFrom
               ? date.toISOString(
-                  order.productOrder.productSnapshot.discounts.validFrom,
+                  order.productOrder.productSnapshot.discount.validFrom,
                 )
               : null,
           }

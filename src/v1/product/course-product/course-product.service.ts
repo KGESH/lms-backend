@@ -133,7 +133,7 @@ export class CourseProductService {
     courseProductSnapshotDiscountCreateParams: Optional<
       IProductSnapshotDiscountCreate,
       'productSnapshotId'
-    > | null;
+    >;
     courseProductSnapshotUiContentCreateParams: Optional<
       IProductSnapshotUiContentCreate,
       'productSnapshotId'
@@ -192,13 +192,12 @@ export class CourseProductService {
         productSnapshotId: snapshot.id,
         id: createUuid(),
       });
-      const discount = courseProductSnapshotDiscountCreateParams
-        ? await this.courseProductSnapshotDiscountRepository.create({
-            ...courseProductSnapshotDiscountCreateParams,
-            productSnapshotId: snapshot.id,
-            id: createUuid(),
-          })
-        : null;
+      const discount =
+        await this.courseProductSnapshotDiscountRepository.create({
+          ...courseProductSnapshotDiscountCreateParams,
+          productSnapshotId: snapshot.id,
+          id: createUuid(),
+        });
       const uiContents =
         courseProductSnapshotUiContentCreateParams.length > 0
           ? await this.courseProductSnapshotUiContentRepository.createMany(
@@ -217,7 +216,7 @@ export class CourseProductService {
           content,
           refundPolicy,
           pricing,
-          discounts: discount,
+          discount,
           uiContents,
         },
       } satisfies NonNullableInfer<Omit<ICourseProductWithRelations, 'course'>>;
@@ -336,20 +335,13 @@ export class CourseProductService {
             productSnapshotId: snapshot.id,
             id: createUuid(),
           });
-        const discount = existProduct.lastSnapshot.discounts
-          ? await this.courseProductSnapshotDiscountRepository.create({
-              ...existProduct.lastSnapshot.discounts,
-              ...courseProductSnapshotDiscountCreateParams,
-              productSnapshotId: snapshot.id,
-              id: createUuid(),
-            })
-          : courseProductSnapshotDiscountCreateParams
-            ? await this.courseProductSnapshotDiscountRepository.create({
-                ...courseProductSnapshotDiscountCreateParams,
-                productSnapshotId: snapshot.id,
-                id: createUuid(),
-              })
-            : null;
+        const discount =
+          await this.courseProductSnapshotDiscountRepository.create({
+            ...existProduct.lastSnapshot.discount,
+            ...courseProductSnapshotDiscountCreateParams,
+            productSnapshotId: snapshot.id,
+            id: createUuid(),
+          });
 
         const existUi = existProduct.lastSnapshot.uiContents;
         const createUiParams: IProductSnapshotUiContentCreate[] =
@@ -406,7 +398,7 @@ export class CourseProductService {
             content,
             refundPolicy,
             pricing,
-            discounts: discount,
+            discount: discount,
             uiContents,
           },
         } satisfies NonNullableInfer<ICourseProductWithRelations>;

@@ -17,7 +17,7 @@ export type IEbookProductWithPricing = IEbookProduct & {
   ebook: IEbookWithRelations;
   lastSnapshot: IProductSnapshot & {
     pricing: IProductSnapshotPricing;
-    discount: IProductSnapshotDiscount | null;
+    discount: IProductSnapshotDiscount;
   };
 };
 
@@ -28,7 +28,7 @@ export type IEbookProductWithRelations = IEbookProduct & {
         announcement: IProductSnapshotAnnouncement;
         refundPolicy: IProductSnapshotRefundPolicy;
         pricing: IProductSnapshotPricing;
-        discounts: IProductSnapshotDiscount | null;
+        discount: IProductSnapshotDiscount;
         content: IProductSnapshotContent;
         uiContents: IProductSnapshotUiContent[];
       })

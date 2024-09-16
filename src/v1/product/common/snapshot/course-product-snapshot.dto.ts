@@ -10,9 +10,6 @@ export type CreateProductContentDto = {
   announcement: Pick<ProductSnapshotAnnouncementDto, 'richTextContent'>;
   refundPolicy: Pick<ProductSnapshotRefundPolicyDto, 'richTextContent'>;
   pricing: Pick<ProductSnapshotPricingDto, 'amount'>;
-  discounts: Omit<
-    ProductSnapshotDiscountDto,
-    'id' | 'productSnapshotId'
-  > | null;
+  discount: Omit<ProductSnapshotDiscountDto, 'id' | 'productSnapshotId'>;
   uiContents: Omit<ProductSnapshotUiContentDto, 'id' | 'productSnapshotId'>[];
 };

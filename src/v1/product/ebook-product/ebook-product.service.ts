@@ -131,7 +131,7 @@ export class EbookProductService {
     ebookProductSnapshotDiscountCreateParams: Optional<
       IProductSnapshotDiscountCreate,
       'productSnapshotId'
-    > | null;
+    >;
     ebookProductSnapshotUiContentCreateParams: Optional<
       IProductSnapshotUiContentCreate,
       'productSnapshotId'
@@ -187,13 +187,12 @@ export class EbookProductService {
             id: createUuid(),
           },
         );
-        const discount = ebookProductSnapshotDiscountCreateParams
-          ? await this.ebookProductSnapshotDiscountRepository.create({
-              ...ebookProductSnapshotDiscountCreateParams,
-              productSnapshotId: snapshot.id,
-              id: createUuid(),
-            })
-          : null;
+        const discount =
+          await this.ebookProductSnapshotDiscountRepository.create({
+            ...ebookProductSnapshotDiscountCreateParams,
+            productSnapshotId: snapshot.id,
+            id: createUuid(),
+          });
         const uiContents =
           ebookProductSnapshotUiContentCreateParams.length > 0
             ? await this.ebookProductSnapshotUiContentRepository.createMany(
@@ -212,7 +211,7 @@ export class EbookProductService {
             content,
             refundPolicy,
             pricing,
-            discounts: discount,
+            discount,
             uiContents,
           },
         } satisfies NonNullableInfer<Omit<IEbookProductWithRelations, 'ebook'>>;
@@ -271,7 +270,7 @@ export class EbookProductService {
       ebookProductSnapshotDiscountCreateParams?: Omit<
         IProductSnapshotDiscountCreate,
         'productSnapshotId'
-      > | null;
+      >;
       ebookProductSnapshotUiContentParams: {
         create: Omit<IProductSnapshotUiContentCreate, 'productSnapshotId'>[];
         update: IProductSnapshotUiContentUpdate[];
@@ -330,20 +329,13 @@ export class EbookProductService {
             id: createUuid(),
           },
         );
-        const discount = existProduct.lastSnapshot.discounts
-          ? await this.ebookProductSnapshotDiscountRepository.create({
-              ...existProduct.lastSnapshot.discounts,
-              ...ebookProductSnapshotDiscountCreateParams,
-              productSnapshotId: snapshot.id,
-              id: createUuid(),
-            })
-          : ebookProductSnapshotDiscountCreateParams
-            ? await this.ebookProductSnapshotDiscountRepository.create({
-                ...ebookProductSnapshotDiscountCreateParams,
-                productSnapshotId: snapshot.id,
-                id: createUuid(),
-              })
-            : null;
+        const discount =
+          await this.ebookProductSnapshotDiscountRepository.create({
+            ...existProduct.lastSnapshot.discount,
+            ...ebookProductSnapshotDiscountCreateParams,
+            productSnapshotId: snapshot.id,
+            id: createUuid(),
+          });
 
         const existUi = existProduct.lastSnapshot.uiContents;
         const createUiParams: IProductSnapshotUiContentCreate[] =
@@ -399,7 +391,7 @@ export class EbookProductService {
             content,
             refundPolicy,
             pricing,
-            discounts: discount,
+            discount,
             uiContents,
           },
         } satisfies NonNullableInfer<IEbookProductWithRelations>;

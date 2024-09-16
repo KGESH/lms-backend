@@ -22,7 +22,7 @@ export type EbookProductDto = {
   announcement: ProductSnapshotAnnouncementDto;
   refundPolicy: ProductSnapshotRefundPolicyDto;
   pricing: ProductSnapshotPricingDto;
-  discounts: ProductSnapshotDiscountDto | null;
+  discount: ProductSnapshotDiscountDto;
   uiContents: ProductSnapshotUiContentDto[];
   createdAt: ISO8601;
   updatedAt: ISO8601;

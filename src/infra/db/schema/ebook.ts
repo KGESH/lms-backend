@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { AnyPgColumn, pgTable, text, uuid } from 'drizzle-orm/pg-core';
+import { AnyPgColumn, pgTable, text, uuid, boolean } from 'drizzle-orm/pg-core';
 import { decimal, integer, timestamp } from 'drizzle-orm/pg-core';
 import { discountType, lessonContentType, productUiContentType } from './enum';
 import { teachers } from './teacher';
@@ -88,6 +88,7 @@ export const ebookProductSnapshotDiscounts = pgTable(
   {
     id: uuid('id').primaryKey().defaultRandom(),
     productSnapshotId: uuid('product_snapshot_id').notNull(),
+    enabled: boolean('enabled').notNull(),
     discountType: discountType('discount_type').notNull(),
     value: decimal('value').notNull(),
     validFrom: timestamp('valid_from', { mode: 'date', withTimezone: true }),
@@ -206,7 +207,7 @@ export const ebookProductSnapshotsRelations = relations(
     refundPolicy: one(ebookProductSnapshotRefundPolicies),
     content: one(ebookProductSnapshotContents),
     pricing: one(ebookProductSnapshotPricing),
-    discounts: one(ebookProductSnapshotDiscounts),
+    discount: one(ebookProductSnapshotDiscounts),
     ebookOrder: one(ebookOrders),
     uiContents: many(ebookProductSnapshotUiContents),
   }),

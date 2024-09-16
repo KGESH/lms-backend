@@ -23,7 +23,7 @@ export type ICourseOrderRelations = IOrder & {
       announcement: IProductSnapshotContent;
       refundPolicy: IProductSnapshotContent;
       pricing: IProductSnapshotPricing;
-      discounts: IProductSnapshotDiscount | null;
+      discount: IProductSnapshotDiscount;
     };
   };
 };

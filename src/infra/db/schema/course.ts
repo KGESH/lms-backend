@@ -1,5 +1,6 @@
 import {
   AnyPgColumn,
+  boolean,
   decimal,
   integer,
   pgTable,
@@ -117,6 +118,7 @@ export const courseProductSnapshotDiscounts = pgTable(
     id: uuid('id').primaryKey().defaultRandom(),
     productSnapshotId: uuid('product_snapshot_id').notNull(),
     discountType: discountType('discount_type').notNull(),
+    enabled: boolean('enabled').notNull(),
     value: decimal('value').notNull(),
     validFrom: timestamp('valid_from', { mode: 'date', withTimezone: true }),
     validTo: timestamp('valid_to', { mode: 'date', withTimezone: true }),
@@ -257,7 +259,7 @@ export const courseProductSnapshotsRelations = relations(
     refundPolicy: one(courseProductSnapshotRefundPolicies),
     content: one(courseProductSnapshotContents),
     pricing: one(courseProductSnapshotPricing),
-    discounts: one(courseProductSnapshotDiscounts),
+    discount: one(courseProductSnapshotDiscounts),
     courseOrder: one(courseOrders),
     uiContents: many(courseProductSnapshotUiContents),
   }),

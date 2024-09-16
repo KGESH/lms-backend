@@ -60,7 +60,7 @@ export class CourseProductController {
    *
    * pricing: 상품 가격 정보.
    *
-   * discounts: 상품 할인 정보.
+   * discount: 상품 할인 정보.
    *
    * @tag product-course
    * @summary 강의 상품 목록 조회 (public)
@@ -111,7 +111,7 @@ export class CourseProductController {
    *
    * pricing: 상품 가격 정보.
    *
-   * discounts: 상품 할인 정보.
+   * discount: 상품 할인 정보.
    *
    * @tag product-course
    * @summary 특정 강의 상품 조회 (public)
@@ -167,7 +167,7 @@ export class CourseProductController {
    *
    * pricing: 상품 가격 정보.
    *
-   * discounts: 상품 할인 정보.
+   * discount: 상품 할인 정보.
    *
    * @tag product-course
    * @summary 강의 상품 생성 - Role('admin', 'manager')
@@ -213,18 +213,15 @@ export class CourseProductController {
       courseProductSnapshotPricingCreateParams: {
         amount: body.pricing.amount,
       },
-      courseProductSnapshotDiscountCreateParams: body.discounts
-        ? {
-            discountType: body.discounts.discountType,
-            value: body.discounts.value,
-            validFrom: body.discounts.validFrom
-              ? date.toDate(body.discounts.validFrom)
-              : null,
-            validTo: body.discounts.validTo
-              ? date.toDate(body.discounts.validTo)
-              : null,
-          }
-        : null,
+      courseProductSnapshotDiscountCreateParams: {
+        ...body.discount,
+        validFrom: body.discount.validFrom
+          ? date.toDate(body.discount.validFrom)
+          : null,
+        validTo: body.discount.validTo
+          ? date.toDate(body.discount.validTo)
+          : null,
+      },
       courseProductSnapshotUiContentCreateParams: body.uiContents,
     });
 
@@ -256,7 +253,7 @@ export class CourseProductController {
    *
    * pricing: 상품 가격 정보.
    *
-   * discounts: 상품 할인 정보.
+   * discount: 상품 할인 정보.
    *
    * @tag product-course
    * @summary 강의 상품 생성 - Role('admin', 'manager')
@@ -290,15 +287,14 @@ export class CourseProductController {
         courseProductSnapshotContentCreateParams: body.content,
         courseProductSnapshotRefundPolicyCreateParams: body.refundPolicy,
         courseProductSnapshotPricingCreateParams: body.pricing,
-        courseProductSnapshotDiscountCreateParams: body.discounts
+        courseProductSnapshotDiscountCreateParams: body.discount
           ? {
-              discountType: body.discounts.discountType,
-              value: body.discounts.value,
-              validFrom: body.discounts.validFrom
-                ? date.toDate(body.discounts.validFrom)
+              ...body.discount,
+              validFrom: body.discount.validFrom
+                ? date.toDate(body.discount.validFrom)
                 : null,
-              validTo: body.discounts.validTo
-                ? date.toDate(body.discounts.validTo)
+              validTo: body.discount.validTo
+                ? date.toDate(body.discount.validTo)
                 : null,
             }
           : null,

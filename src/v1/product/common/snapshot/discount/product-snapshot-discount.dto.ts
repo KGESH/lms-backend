@@ -21,6 +21,7 @@ export type ProductSnapshotPercentDiscount = {
 export type ProductSnapshotDiscountDto = {
   id: Uuid;
   productSnapshotId: Uuid;
+  enabled: boolean;
   validFrom: ISO8601 | null;
   validTo: ISO8601 | null;
 } & (ProductSnapshotFixedAmountDiscount | ProductSnapshotPercentDiscount);

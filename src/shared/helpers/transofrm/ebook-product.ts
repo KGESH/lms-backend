@@ -24,17 +24,15 @@ export const ebookProductToDto = (
     content: product.lastSnapshot.content,
     refundPolicy: product.lastSnapshot.refundPolicy,
     pricing: product.lastSnapshot.pricing,
-    discounts: product.lastSnapshot.discounts
-      ? {
-          ...product.lastSnapshot.discounts,
-          validFrom: product.lastSnapshot.discounts?.validFrom
-            ? date.toISOString(product.lastSnapshot.discounts.validFrom)
-            : null,
-          validTo: product.lastSnapshot.discounts?.validTo
-            ? date.toISOString(product.lastSnapshot.discounts.validTo)
-            : null,
-        }
-      : null,
+    discount: {
+      ...product.lastSnapshot.discount,
+      validFrom: product.lastSnapshot.discount?.validFrom
+        ? date.toISOString(product.lastSnapshot.discount.validFrom)
+        : null,
+      validTo: product.lastSnapshot.discount?.validTo
+        ? date.toISOString(product.lastSnapshot.discount.validTo)
+        : null,
+    },
     uiContents: product.lastSnapshot.uiContents,
     ebook: ebookRelationsToDto(product.ebook),
   };
@@ -57,17 +55,15 @@ export const ebookProductWithPricingToDto = (
       ? date.toISOString(product.lastSnapshot.deletedAt)
       : null,
     pricing: product.lastSnapshot.pricing,
-    discounts: product.lastSnapshot.discount
-      ? {
-          ...product.lastSnapshot.discount,
-          validFrom: product.lastSnapshot.discount.validFrom
-            ? date.toISOString(product.lastSnapshot.discount.validFrom)
-            : null,
-          validTo: product.lastSnapshot.discount.validTo
-            ? date.toISOString(product.lastSnapshot.discount.validTo)
-            : null,
-        }
-      : null,
+    discount: {
+      ...product.lastSnapshot.discount,
+      validFrom: product.lastSnapshot.discount.validFrom
+        ? date.toISOString(product.lastSnapshot.discount.validFrom)
+        : null,
+      validTo: product.lastSnapshot.discount.validTo
+        ? date.toISOString(product.lastSnapshot.discount.validTo)
+        : null,
+    },
     ebook: ebookRelationsToDto(product.ebook),
   };
 };

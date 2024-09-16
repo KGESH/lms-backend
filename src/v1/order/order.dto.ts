@@ -30,7 +30,7 @@ export type OrderCoursePurchasedDto = Omit<OrderCourseDto, 'product'> & {
     | 'announcement'
     | 'refundPolicy'
     | 'pricing'
-    | 'discounts'
+    | 'discount'
     | 'uiContents'
   >;
 };
@@ -47,7 +47,7 @@ export type OrderEbookPurchasedDto = Omit<OrderEbookDto, 'product'> & {
     | 'announcement'
     | 'refundPolicy'
     | 'pricing'
-    | 'discounts'
+    | 'discount'
     | 'uiContents'
   >;
 };
