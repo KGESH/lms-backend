@@ -6,6 +6,7 @@ import { CourseReviewRepository } from '@src/v1/review/course-review/course-revi
 import { MockCourseReviewQueryRepository } from '@src/v1/review/mock-review/mock-course-review-query.repository';
 import { CourseReviewAdminController } from '@src/v1/review/admin/course/course-review-admin.controller';
 import { CourseReviewAdminService } from '@src/v1/review/admin/course/course-review-admin.service';
+import { MockReviewRepository } from '@src/v1/review/mock-review/mock-review.repository';
 
 const modules = [ReviewModule];
 
@@ -13,6 +14,7 @@ const providers = [
   CourseReviewService,
   CourseReviewAdminService,
   CourseReviewRepository,
+  MockReviewRepository,
   MockCourseReviewQueryRepository,
 ];
 

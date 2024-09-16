@@ -1,15 +1,24 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { ReviewRepository } from '@src/v1/review/review.repository';
 import { ReviewSnapshotRepository } from '@src/v1/review/review-snapshot.repository';
 import { ReviewQueryRepository } from '@src/v1/review/review-query.repository';
 import { OrderQueryRepository } from '@src/v1/order/order-query.repository';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { ICourseReviewRelationsCreate } from '@src/v1/review/course-review/course-review.interface';
-import { IReviewWithRelations } from '@src/v1/review/review.interface';
+import {
+  IReview,
+  IReviewSnapshot,
+  IReviewWithRelations,
+} from '@src/v1/review/review.interface';
 import { Pagination } from '@src/shared/types/pagination';
 import { CourseReviewRepository } from '@src/v1/review/course-review/course-review.repository';
 import { IUserWithoutPassword } from '@src/v1/user/user.interface';
-import { Optional } from '@src/shared/types/optional';
+import { Optional, OptionalPick } from '@src/shared/types/optional';
+import { IDeleteEntityMetadata } from '@src/core/delete-entity-metadata.interface';
 
 @Injectable()
 export class CourseReviewService {
@@ -37,11 +46,64 @@ export class CourseReviewService {
     return reviews;
   }
 
+  async deleteCourseReview(
+    user: IUserWithoutPassword,
+    where: Pick<IReview, 'id' | 'productType'>,
+  ): Promise<Pick<IReview, 'id'>> {
+    const review = await this.reviewQueryRepository.findOneWithReplies(where);
+
+    // Review not found or user is not the owner of the review
+    if (!review || (user.role === 'user' && review.userId !== user.id)) {
+      throw new NotFoundException('Review not found');
+    }
+
+    if (user.role === 'user') {
+      return await this.reviewRepository.deleteReview(review);
+    }
+
+    const metadata: IDeleteEntityMetadata = {
+      deletedBy: user.id,
+      deletedReason: `Deleted by [${user.id}]`,
+    };
+
+    return await this.reviewRepository.deleteReview(review, metadata);
+  }
+
+  async updateCourseReview(
+    user: IUserWithoutPassword,
+    where: Pick<IReview, 'id' | 'productType'>,
+    params: OptionalPick<IReviewSnapshot, 'comment' | 'rating'>,
+  ): Promise<IReviewWithRelations> {
+    const reviewWithReplies =
+      await this.reviewQueryRepository.findOneWithReplies(where);
+
+    if (!reviewWithReplies || reviewWithReplies.userId !== user.id) {
+      throw new NotFoundException('Review not found');
+    }
+
+    await this.reviewSnapshotRepository.create({
+      reviewId: reviewWithReplies.id,
+      comment: params.comment ?? reviewWithReplies.snapshot.comment,
+      rating: params.rating ?? reviewWithReplies.snapshot.rating,
+    });
+
+    const updated = await this.reviewQueryRepository.findOneWithReplies(where);
+
+    if (!updated) {
+      throw new InternalServerErrorException('Failed to update review');
+    }
+
+    return updated;
+  }
+
   async createCourseReviewByUser(
     params: ICourseReviewRelationsCreate,
   ): Promise<IReviewWithRelations> {
     const courseReviewRelations =
-      await this.reviewQueryRepository.findCourseReview(params);
+      await this.reviewQueryRepository.findCourseReview({
+        userId: params.userId,
+        courseId: params.courseId,
+      });
 
     const orderRelations =
       await this.orderQueryRepository.findCourseOrderByCourseId(params);

@@ -27,19 +27,24 @@ export type CreateReviewDto = Pick<ReviewDto, 'userId' | 'orderId'> & {
    * 리뷰 내용.
    */
   comment: string;
+
   /**
    * 리뷰 평점.
    */
   rating: UFloat;
 };
 
+export type DeleteReviewDto = { reviewId: Uuid };
+
 export type ReviewSnapshotDto = {
   id: Uuid;
+
   reviewId: Uuid;
   /**
    * 리뷰 내용.
    */
   comment: string;
+
   /**
    * 리뷰 평점.
    */
@@ -57,11 +62,14 @@ export type ReviewReplyDto = {
 
 export type ReviewReplySnapshotDto = {
   id: Uuid;
+
   reviewReplyId: Uuid;
+
   /**
    * 리뷰 댓글 내용.
    */
   comment: string;
+
   createdAt: ISO8601;
 };
 
@@ -80,16 +88,19 @@ export type ReviewWithRelationsDto = ReviewDto & {
    * 리뷰를 작성한 사용자.
    */
   user: UserWithoutPasswordDto;
+
   /**
    * 구매한 상품 정보.
    */
   product:
     | Omit<EbookWithRelationsDto, 'contents'>
     | Omit<CourseWithRelationsDto, 'chapters'>;
+
   /**
    * 구매자가 작성(수정)한 가장 최신 리뷰.
    */
   snapshot: ReviewSnapshotDto;
+
   /**
    * 구매자가 작성한 리뷰에 달린 댓글 목록.
    */

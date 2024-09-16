@@ -18,6 +18,8 @@ export const reviews = pgTable('reviews', {
     .notNull()
     .defaultNow(),
   deletedAt: timestamp('deleted_at', { mode: 'date', withTimezone: true }),
+  deletedBy: uuid('deleted_by'),
+  deletedReason: text('deleted_reason'),
 });
 
 export const reviewSnapshots = pgTable('review_snapshots', {

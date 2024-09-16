@@ -1,5 +1,10 @@
-import { Controller } from '@nestjs/common';
-import { TypedBody, TypedHeaders, TypedRoute } from '@nestia/core';
+import { Controller, UseGuards } from '@nestjs/common';
+import {
+  TypedBody,
+  TypedException,
+  TypedHeaders,
+  TypedRoute,
+} from '@nestia/core';
 import { AuthHeaders } from '@src/v1/auth/auth.headers';
 import {
   CreateReviewReplyDto,
@@ -7,6 +12,10 @@ import {
 } from '@src/v1/review/review.dto';
 import { reviewReplyToDto } from '@src/shared/helpers/transofrm/review';
 import { ReviewReplyService } from '@src/v1/review/review-reply.service';
+import { Roles } from '@src/core/decorators/roles.decorator';
+import { RolesGuard } from '@src/core/guards/roles.guard';
+import { TypeGuardError } from 'typia';
+import { IErrorResponse } from '@src/shared/types/response';
 
 @Controller('v1/review')
 export class ReviewController {
@@ -19,6 +28,16 @@ export class ReviewController {
    * @summary 리뷰 답글 생성
    */
   @TypedRoute.Post('/reply')
+  @Roles('admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'Not enough [role] to access this resource.',
+  })
   async createReviewReply(
     @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: CreateReviewReplyDto,
