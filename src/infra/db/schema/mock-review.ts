@@ -1,7 +1,7 @@
 import { timestamp, pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { reviews } from '@src/infra/db/schema/review';
-import { userRole } from '@src/infra/db/schema/enum';
+import { reviews } from './review';
+import { userRole } from './enum';
 
 export const mockReviewUsers = pgTable('mock_review_users', {
   id: uuid('id').primaryKey().defaultRandom(),
