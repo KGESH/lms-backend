@@ -197,8 +197,9 @@ describe('CourseProductController (e2e)', () => {
         refundPolicy: {
           richTextContent: 'updated refund policy',
         },
-        discounts: {
+        discount: {
           discountType: 'percent',
+          enabled: true,
           validFrom: date.now('iso'),
           validTo: date.now('iso'),
           value: '33.33',
@@ -253,7 +254,7 @@ describe('CourseProductController (e2e)', () => {
       expect(updated.refundPolicy.richTextContent).toEqual(
         'updated refund policy',
       );
-      expect(updated.discounts!.value).toEqual('33.33');
+      expect(updated.discount!.value).toEqual('33.33');
       expect(
         updated.uiContents.find((ui) => ui.content === 'mock new content'),
       ).toBeDefined();

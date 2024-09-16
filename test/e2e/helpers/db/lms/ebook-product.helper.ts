@@ -34,7 +34,7 @@ import * as date from '../../../../../src/shared/utils/date';
 import {
   IProductSnapshotUiContent,
   IProductSnapshotUiContentCreate,
-} from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
+} from '../../../../../src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
 
 export const createEbookProduct = async (
   params: IEbookProductCreate,
@@ -188,9 +188,10 @@ export const createRandomEbookProduct = async (
     },
     db,
   );
-  const discounts = await createEbookProductSnapshotDiscount(
+  const discount = await createEbookProductSnapshotDiscount(
     {
       ...generateRandomDiscount(),
+      enabled: true,
       productSnapshotId: snapshot.id,
       validFrom: date.now('date'),
       validTo: date.addDate(date.now('date'), 1, 'month', 'date'),
@@ -222,7 +223,7 @@ export const createRandomEbookProduct = async (
       refundPolicy,
       content,
       pricing,
-      discounts,
+      discount,
       uiContents,
     },
   };

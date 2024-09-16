@@ -196,9 +196,10 @@ export const createRandomCourseProduct = async (
     },
     db,
   );
-  const discounts = await createCourseProductSnapshotDiscount(
+  const discount = await createCourseProductSnapshotDiscount(
     {
       ...generateRandomDiscount(),
+      enabled: true,
       productSnapshotId: snapshot.id,
       validFrom: date.now('date'),
       validTo: date.addDate(date.now('date'), 1, 'month', 'date'),
@@ -236,7 +237,7 @@ export const createRandomCourseProduct = async (
       refundPolicy,
       content,
       pricing,
-      discounts,
+      discount,
       uiContents,
     },
   };
