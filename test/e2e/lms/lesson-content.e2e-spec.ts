@@ -63,9 +63,8 @@ describe('LessonContentController (e2e)', () => {
           (lessonContent) => lessonContent.id === lessonContentWithHistory.id,
         ),
       ).toBeDefined();
-      expect(lessonContentId).toEqual(
-        lessonContentWithHistory.history!.lessonContentId,
-      );
+      // 'admin', 'manager', 'teacher' role should not have history
+      expect(lessonContentWithHistory.history).toBeNull();
     });
   });
 
