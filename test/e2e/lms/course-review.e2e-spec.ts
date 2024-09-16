@@ -110,8 +110,6 @@ describe('CourseReviewController (e2e)', () => {
       )[0];
       const reviewCreateParams: CreateCourseReviewDto = {
         comment: 'Mock review comment',
-        // userId: order.userId,
-        courseId: product.courseId,
         rating: 5,
       };
 
@@ -123,6 +121,7 @@ describe('CourseReviewController (e2e)', () => {
             UserSessionId: userSession.id,
           },
         },
+        product.courseId,
         reviewCreateParams,
       );
       if (!response.success) {
