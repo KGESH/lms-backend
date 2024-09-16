@@ -75,6 +75,10 @@ export class LessonContentController {
    *
    * 조회 이력이 없다면 생성 이후 반환하며, 조회 이력이 있다면 조회 이력을 반환합니다.
    *
+   * API를 호출한 세션 사용자가 'admin', 'manager', 'teacher'라면 조회 이력이 생성되지 않습니다.
+   *
+   * API를 호출한 세션 사용자가 'admin', 'manager', 'teacher'라면 조회 이력이 null로 반환됩니다.
+   *
    * 세션 사용자 role이 'user'라면 해당 'course'를 구매한 사용자만 조회할 수 있습니다.
    *
    * 제목, 설명, 컨텐츠 타입, 컨텐츠 URL, 메타데이터, 표기 순서 정보를 제공합니다.
@@ -105,17 +109,19 @@ export class LessonContentController {
     @SessionUser() session: ISessionWithUser,
   ): Promise<LessonContentWithHistoryDto | null> {
     const lessonContent =
-      await this.lessonContentQueryService.getLessonContentWithHistory({
-        userId: session.userId,
-        lessonContentId: id,
-      });
+      await this.lessonContentQueryService.getLessonContentWithHistory(
+        session.user,
+        { lessonContentId: id },
+      );
 
     return {
       ...lessonContent,
-      history: {
-        ...lessonContent.history,
-        createdAt: date.toISOString(lessonContent.history.createdAt),
-      },
+      history: lessonContent.history
+        ? {
+            ...lessonContent.history,
+            createdAt: date.toISOString(lessonContent.history.createdAt),
+          }
+        : null,
     };
   }
 

@@ -32,7 +32,7 @@ export class CourseDashboardController {
    *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
    *
-   * @tag dashboard-course
+   * @tag dashboard
    * @summary 챕터, 레슨 순서 변경 - Role('admin', 'manager', 'teacher')
    * @param courseId - 강의 id
    */
@@ -67,7 +67,7 @@ export class CourseDashboardController {
    *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
    *
-   * @tag dashboard-course
+   * @tag dashboard
    * @summary 레슨 컨텐츠 순서 변경 - Role('admin', 'manager', 'teacher')
    * @param courseId - 강의 id
    * @param chapterId - 챕터 id

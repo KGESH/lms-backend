@@ -9,5 +9,5 @@ export type LessonContentHistoryDto = {
 };
 
 export type LessonContentWithHistoryDto = LessonContentDto & {
-  history: LessonContentHistoryDto;
+  history: LessonContentHistoryDto | null;
 };

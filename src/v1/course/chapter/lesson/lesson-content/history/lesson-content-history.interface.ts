@@ -14,5 +14,5 @@ export type ILessonContentHistoryCreate = Pick<
 >;
 
 export type ILessonContentWithHistory = ILessonContent & {
-  history: ILessonContentHistory;
+  history: ILessonContentHistory | null;
 };
