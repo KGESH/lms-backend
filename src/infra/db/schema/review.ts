@@ -5,7 +5,7 @@ import { productType } from './enum';
 import { relations } from 'drizzle-orm';
 import { orders } from './order';
 import { ebooks } from './ebook';
-import { mockReviewUsers } from '@src/infra/db/schema/mock-review';
+import { mockReviewUsers } from './mock-review';
 
 export const reviews = pgTable('reviews', {
   id: uuid('id').primaryKey().defaultRandom(),
