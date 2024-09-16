@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { and, asc, desc, eq, isNull } from 'drizzle-orm';
+import { and, asc, desc, eq, isNull, inArray } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
-import { IReview, IReviewWithRelations } from '@src/v1/review/review.interface';
+import {
+  IReview,
+  IReviewReplyWithRelations,
+  IReviewWithRelations,
+} from '@src/v1/review/review.interface';
 import { Pagination } from '@src/shared/types/pagination';
 import {
   IEbookReview,
@@ -13,6 +17,7 @@ import {
   ICourseReviewRelationsCreate,
 } from '@src/v1/review/course-review/course-review.interface';
 import { Optional, OptionalPick } from '@src/shared/types/optional';
+import { alias } from 'drizzle-orm/pg-core';
 
 @Injectable()
 export class ReviewQueryRepository {
@@ -107,6 +112,7 @@ export class ReviewQueryRepository {
           where: isNull(dbSchema.reviewReplies.deletedAt),
           orderBy: asc(dbSchema.reviewReplies.createdAt),
           with: {
+            user: true,
             snapshots: {
               orderBy: desc(dbSchema.reviewReplySnapshots.createdAt),
               limit: 1,
@@ -130,6 +136,7 @@ export class ReviewQueryRepository {
       snapshot: review.snapshots[0],
       replies: review.replies.map((reply) => ({
         ...reply,
+        user: reply.user,
         snapshot: reply.snapshots[0],
       })),
       product: {
@@ -165,6 +172,7 @@ export class ReviewQueryRepository {
           where: isNull(dbSchema.reviewReplies.deletedAt),
           orderBy: asc(dbSchema.reviewReplies.createdAt),
           with: {
+            user: true,
             snapshots: {
               orderBy: desc(dbSchema.reviewReplySnapshots.createdAt),
               limit: 1,
@@ -188,6 +196,7 @@ export class ReviewQueryRepository {
       snapshot: review.snapshots[0],
       replies: review.replies.map((reply) => ({
         ...reply,
+        user: reply.user,
         snapshot: reply.snapshots[0],
       })),
       product: {
@@ -226,67 +235,158 @@ export class ReviewQueryRepository {
     where: OptionalPick<ICourseReviewRelationsCreate, 'courseId' | 'userId'>;
     pagination: Pagination;
   }): Promise<IReviewWithRelations[]> {
-    const courseReviews = await this.drizzle.db.query.courseReviews.findMany({
-      where: and(
-        where.courseId
-          ? eq(dbSchema.courseReviews.courseId, where.courseId)
-          : undefined,
-        where.userId ? eq(dbSchema.reviews.userId, where.userId) : undefined,
-        isNull(dbSchema.courseReviews.deletedAt),
-      ),
-      orderBy: (courseReviews, { asc, desc }) =>
+    const { db } = this.drizzle;
+    // Alias the users table for the teacher's account
+    const teacherAccountAlias = alias(dbSchema.users, 'teacherAccount');
+
+    const latestReviewSnapshotSQL = db
+      .select({ id: dbSchema.reviewSnapshots.id })
+      .from(dbSchema.reviewSnapshots)
+      .where(eq(dbSchema.reviewSnapshots.reviewId, dbSchema.reviews.id))
+      .orderBy(desc(dbSchema.reviewSnapshots.createdAt))
+      .limit(1);
+
+    // Fetch the main data
+    const courseReviews = await db
+      .select({
+        review: dbSchema.reviews,
+        user: dbSchema.users, // Reviewer
+        courseReview: dbSchema.courseReviews,
+        course: dbSchema.courses,
+        category: dbSchema.courseCategories,
+        teacher: dbSchema.teachers,
+        teacherAccount: teacherAccountAlias,
+        latestSnapshot: dbSchema.reviewSnapshots,
+      })
+      .from(dbSchema.courseReviews)
+      .innerJoin(
+        dbSchema.reviews,
+        eq(dbSchema.courseReviews.reviewId, dbSchema.reviews.id),
+      )
+      .innerJoin(
+        dbSchema.reviewSnapshots,
+        eq(dbSchema.reviewSnapshots.id, latestReviewSnapshotSQL),
+      )
+      .innerJoin(
+        dbSchema.users, // Reviewer
+        eq(dbSchema.reviews.userId, dbSchema.users.id),
+      )
+      .innerJoin(
+        dbSchema.courses,
+        eq(dbSchema.courseReviews.courseId, dbSchema.courses.id),
+      )
+      .innerJoin(
+        dbSchema.courseCategories,
+        eq(dbSchema.courses.categoryId, dbSchema.courseCategories.id),
+      )
+      .innerJoin(
+        dbSchema.teachers,
+        eq(dbSchema.courses.teacherId, dbSchema.teachers.id),
+      )
+      .innerJoin(
+        teacherAccountAlias,
+        eq(dbSchema.teachers.userId, teacherAccountAlias.id),
+      )
+      .where(
+        and(
+          where.courseId
+            ? eq(dbSchema.courseReviews.courseId, where.courseId)
+            : undefined,
+          where.userId ? eq(dbSchema.reviews.userId, where.userId) : undefined,
+          isNull(dbSchema.reviews.deletedAt),
+        ),
+      )
+      .orderBy(
         pagination.orderBy === 'asc'
-          ? asc(courseReviews.createdAt)
-          : desc(courseReviews.createdAt),
-      limit: pagination.pageSize,
-      offset: (pagination.page - 1) * pagination.pageSize,
-      with: {
-        course: {
-          with: {
-            category: true,
-            teacher: {
-              with: {
-                account: true,
-              },
-            },
-          },
+          ? asc(dbSchema.reviews.createdAt)
+          : desc(dbSchema.reviews.createdAt),
+      )
+      .offset((pagination.page - 1) * pagination.pageSize)
+      .limit(pagination.pageSize);
+
+    const latestReplySnapshotSQL = db
+      .select({ id: dbSchema.reviewReplySnapshots.id })
+      .from(dbSchema.reviewReplySnapshots)
+      .where(
+        eq(
+          dbSchema.reviewReplySnapshots.reviewReplyId,
+          dbSchema.reviewReplies.id,
+        ),
+      )
+      .orderBy(desc(dbSchema.reviewReplySnapshots.createdAt))
+      .limit(1);
+
+    // Collect all review IDs
+    const reviewIds = courseReviews.map((result) => result.review.id);
+    const replyUserAlias = alias(dbSchema.users, 'replyUser');
+    // Fetch all replies for these reviews
+    const replies = await db
+      .select({
+        reply: dbSchema.reviewReplies,
+        user: replyUserAlias,
+        latestReplySnapshot: dbSchema.reviewReplySnapshots,
+      })
+      .from(dbSchema.reviewReplies)
+      .innerJoin(
+        replyUserAlias,
+        eq(dbSchema.reviewReplies.userId, replyUserAlias.id),
+      )
+      .innerJoin(
+        dbSchema.reviewReplySnapshots,
+        eq(dbSchema.reviewReplySnapshots.id, latestReplySnapshotSQL),
+      )
+      .where(
+        and(
+          inArray(dbSchema.reviewReplies.reviewId, reviewIds),
+          isNull(dbSchema.reviewReplies.deletedAt),
+        ),
+      );
+
+    // Group replies by reviewId
+    const repliesByReviewId = new Map<string, IReviewReplyWithRelations[]>();
+    for (const replyRelations of replies) {
+      const { reviewId } = replyRelations.reply;
+      if (!repliesByReviewId.has(reviewId)) {
+        repliesByReviewId.set(reviewId, []);
+      }
+      repliesByReviewId.get(reviewId)!.push({
+        ...replyRelations.reply,
+        user: replyRelations.user,
+        snapshot: replyRelations.latestReplySnapshot,
+      });
+    }
+
+    // Assemble the final results
+    const reviewsWithRelations: IReviewWithRelations[] = [];
+
+    courseReviews.forEach((reviewRelations) => {
+      const {
+        review,
+        latestSnapshot,
+        user,
+        course,
+        category,
+        teacher,
+        teacherAccount,
+      } = reviewRelations;
+
+      const repliesWithSnapshots: IReviewReplyWithRelations[] =
+        repliesByReviewId.get(review.id) ?? [];
+
+      reviewsWithRelations.push({
+        ...review,
+        user,
+        snapshot: latestSnapshot,
+        replies: repliesWithSnapshots,
+        product: {
+          ...course,
+          category,
+          teacher: { ...teacher, account: teacherAccount },
         },
-        review: {
-          with: {
-            user: true,
-            snapshots: {
-              orderBy: desc(dbSchema.reviewSnapshots.createdAt),
-              limit: 1,
-            },
-            replies: {
-              where: isNull(dbSchema.reviewReplies.deletedAt),
-              orderBy: asc(dbSchema.reviewReplies.createdAt),
-              with: {
-                snapshots: {
-                  orderBy: desc(dbSchema.reviewReplySnapshots.createdAt),
-                  limit: 1,
-                },
-              },
-            },
-          },
-        },
-      },
+      } satisfies IReviewWithRelations);
     });
 
-    return courseReviews.map((courseReview) => ({
-      ...courseReview.review,
-      user: courseReview.review.user,
-      snapshot: courseReview.review.snapshots[0],
-      replies: courseReview.review.replies.map((reply) => ({
-        ...reply,
-        snapshot: reply.snapshots[0],
-      })),
-      product: {
-        ...courseReview.course,
-        category: courseReview.course.category,
-        teacher: courseReview.course.teacher,
-      },
-    }));
+    return reviewsWithRelations;
   }
 
   async findManyWithEbookReviews({
@@ -296,66 +396,157 @@ export class ReviewQueryRepository {
     where: OptionalPick<IEbookReviewRelationsCreate, 'ebookId' | 'userId'>;
     pagination: Pagination;
   }): Promise<IReviewWithRelations[]> {
-    const ebookReviews = await this.drizzle.db.query.ebookReviews.findMany({
-      where: and(
-        where.ebookId
-          ? eq(dbSchema.ebookReviews.ebookId, where.ebookId)
-          : undefined,
-        where.userId ? eq(dbSchema.reviews.userId, where.userId) : undefined,
-        isNull(dbSchema.ebookReviews.deletedAt),
-      ),
-      orderBy: (ebookReviews, { asc, desc }) =>
+    const { db } = this.drizzle;
+
+    // Alias the users table for the teacher's account
+    const teacherAccountAlias = alias(dbSchema.users, 'teacherAccount');
+
+    const latestReviewSnapshotSQL = db
+      .select({ id: dbSchema.reviewSnapshots.id })
+      .from(dbSchema.reviewSnapshots)
+      .where(eq(dbSchema.reviewSnapshots.reviewId, dbSchema.reviews.id))
+      .orderBy(desc(dbSchema.reviewSnapshots.createdAt))
+      .limit(1);
+
+    const ebookReviews = await db
+      .select({
+        review: dbSchema.reviews,
+        user: dbSchema.users, // Reviewer
+        ebookReview: dbSchema.ebookReviews,
+        ebook: dbSchema.ebooks,
+        category: dbSchema.ebookCategories,
+        teacher: dbSchema.teachers,
+        teacherAccount: teacherAccountAlias,
+        latestSnapshot: dbSchema.reviewSnapshots,
+      })
+      .from(dbSchema.ebookReviews)
+      .innerJoin(
+        dbSchema.reviews,
+        eq(dbSchema.ebookReviews.reviewId, dbSchema.reviews.id),
+      )
+      .innerJoin(
+        dbSchema.reviewSnapshots,
+        eq(dbSchema.reviewSnapshots.id, latestReviewSnapshotSQL),
+      )
+      .innerJoin(
+        dbSchema.users, // Reviewer
+        eq(dbSchema.reviews.userId, dbSchema.users.id),
+      )
+      .innerJoin(
+        dbSchema.ebooks,
+        eq(dbSchema.ebookReviews.ebookId, dbSchema.ebooks.id),
+      )
+      .innerJoin(
+        dbSchema.ebookCategories,
+        eq(dbSchema.ebooks.categoryId, dbSchema.ebookCategories.id),
+      )
+      .innerJoin(
+        dbSchema.teachers,
+        eq(dbSchema.ebooks.teacherId, dbSchema.teachers.id),
+      )
+      .innerJoin(
+        teacherAccountAlias,
+        eq(dbSchema.teachers.userId, teacherAccountAlias.id),
+      )
+      .where(
+        and(
+          where.ebookId
+            ? eq(dbSchema.ebookReviews.ebookId, where.ebookId)
+            : undefined,
+          where.userId ? eq(dbSchema.reviews.userId, where.userId) : undefined,
+          isNull(dbSchema.reviews.deletedAt),
+        ),
+      )
+      .orderBy(
         pagination.orderBy === 'asc'
-          ? asc(ebookReviews.createdAt)
-          : desc(ebookReviews.createdAt),
-      limit: pagination.pageSize,
-      offset: (pagination.page - 1) * pagination.pageSize,
-      with: {
-        ebook: {
-          with: {
-            category: true,
-            teacher: {
-              with: {
-                account: true,
-              },
-            },
-          },
+          ? asc(dbSchema.reviews.createdAt)
+          : desc(dbSchema.reviews.createdAt),
+      )
+      .offset((pagination.page - 1) * pagination.pageSize)
+      .limit(pagination.pageSize);
+
+    const latestReplySnapshotSQL = db
+      .select({ id: dbSchema.reviewReplySnapshots.id })
+      .from(dbSchema.reviewReplySnapshots)
+      .where(
+        eq(
+          dbSchema.reviewReplySnapshots.reviewReplyId,
+          dbSchema.reviewReplies.id,
+        ),
+      )
+      .orderBy(desc(dbSchema.reviewReplySnapshots.createdAt))
+      .limit(1);
+
+    // Collect all review IDs
+    const reviewIds = ebookReviews.map((result) => result.review.id);
+    const replyUserAlias = alias(dbSchema.users, 'replyUser');
+    // Fetch all replies for these reviews
+    const replies = await db
+      .select({
+        reply: dbSchema.reviewReplies,
+        user: replyUserAlias,
+        latestReplySnapshot: dbSchema.reviewReplySnapshots,
+      })
+      .from(dbSchema.reviewReplies)
+      .innerJoin(
+        replyUserAlias,
+        eq(dbSchema.reviewReplies.userId, replyUserAlias.id),
+      )
+      .innerJoin(
+        dbSchema.reviewReplySnapshots,
+        eq(dbSchema.reviewReplySnapshots.id, latestReplySnapshotSQL),
+      )
+      .where(
+        and(
+          inArray(dbSchema.reviewReplies.reviewId, reviewIds),
+          isNull(dbSchema.reviewReplies.deletedAt),
+        ),
+      );
+
+    // Group replies by reviewId
+    const repliesByReviewId = new Map<string, IReviewReplyWithRelations[]>();
+    for (const replyRelations of replies) {
+      const { reviewId } = replyRelations.reply;
+      if (!repliesByReviewId.has(reviewId)) {
+        repliesByReviewId.set(reviewId, []);
+      }
+      repliesByReviewId.get(reviewId)!.push({
+        ...replyRelations.reply,
+        user: replyRelations.user,
+        snapshot: replyRelations.latestReplySnapshot,
+      });
+    }
+
+    // Assemble the final results
+    const reviewsWithRelations: IReviewWithRelations[] = [];
+
+    ebookReviews.forEach((reviewRelations) => {
+      const {
+        review,
+        latestSnapshot,
+        user,
+        ebook,
+        category,
+        teacher,
+        teacherAccount,
+      } = reviewRelations;
+
+      const repliesWithSnapshots: IReviewReplyWithRelations[] =
+        repliesByReviewId.get(review.id) ?? [];
+
+      reviewsWithRelations.push({
+        ...review,
+        user,
+        snapshot: latestSnapshot,
+        replies: repliesWithSnapshots,
+        product: {
+          ...ebook,
+          category,
+          teacher: { ...teacher, account: teacherAccount },
         },
-        review: {
-          with: {
-            user: true,
-            snapshots: {
-              orderBy: desc(dbSchema.reviewSnapshots.createdAt),
-              limit: 1,
-            },
-            replies: {
-              where: isNull(dbSchema.reviewReplies.deletedAt),
-              orderBy: asc(dbSchema.reviewReplies.createdAt),
-              with: {
-                snapshots: {
-                  orderBy: desc(dbSchema.reviewReplySnapshots.createdAt),
-                  limit: 1,
-                },
-              },
-            },
-          },
-        },
-      },
+      } satisfies IReviewWithRelations);
     });
 
-    return ebookReviews.map((ebookReview) => ({
-      ...ebookReview.review,
-      user: ebookReview.review.user,
-      snapshot: ebookReview.review.snapshots[0],
-      replies: ebookReview.review.replies.map((reply) => ({
-        ...reply,
-        snapshot: reply.snapshots[0],
-      })),
-      product: {
-        ...ebookReview.ebook,
-        category: ebookReview.ebook.category,
-        teacher: ebookReview.ebook.teacher,
-      },
-    }));
+    return reviewsWithRelations;
   }
 }
