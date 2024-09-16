@@ -17,11 +17,11 @@ import { ReviewModule } from '@src/v1/review/review.module';
 import { UserCourseEnrollmentModule } from '@src/v1/user/course/enrollment/user-course-enrollment.module';
 import { EbookCategoryModule } from '@src/v1/ebook/category/ebook-category.module';
 import { EbookContentModule } from '@src/v1/ebook/ebook-content/ebook-content.module';
-import { CourseDashboardModule } from '@src/v1/dashboard/course/course-dashboard.module';
 import { CourseReviewModule } from '@src/v1/review/course-review/course-review.module';
 import { EbookReviewModule } from '@src/v1/review/ebook-review/ebook-review.module';
 import { PostRelationsModule } from '@src/v1/post/post-relations.module';
 import { LoggerMiddleware } from '@src/core/middlewares/logger.middleware';
+import { DashboardModule } from '@src/v1/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -41,7 +41,7 @@ import { LoggerMiddleware } from '@src/core/middlewares/logger.middleware';
     OrderModule,
     ReviewModule,
     UserCourseEnrollmentModule,
-    CourseDashboardModule,
+    DashboardModule,
     CourseReviewModule,
     EbookReviewModule,
     PostRelationsModule,
