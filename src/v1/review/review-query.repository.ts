@@ -293,6 +293,7 @@ export class ReviewQueryRepository {
             ? eq(dbSchema.courseReviews.courseId, where.courseId)
             : undefined,
           where.userId ? eq(dbSchema.reviews.userId, where.userId) : undefined,
+          isNull(dbSchema.reviews.orderId), // Mock review filter
           isNull(dbSchema.reviews.deletedAt),
         ),
       )
