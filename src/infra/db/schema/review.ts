@@ -11,7 +11,7 @@ export const reviews = pgTable('reviews', {
   id: uuid('id').primaryKey().defaultRandom(),
   orderId: uuid('order_id'),
   userId: uuid('user_id')
-    .references(() => users.id)
+    .references(() => users.id, { onDelete: 'cascade' })
     .notNull(),
   productType: productType('product_type').notNull(),
   createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
@@ -25,7 +25,7 @@ export const reviews = pgTable('reviews', {
 export const reviewSnapshots = pgTable('review_snapshots', {
   id: uuid('id').primaryKey().defaultRandom(),
   reviewId: uuid('review_id')
-    .references(() => reviews.id)
+    .references(() => reviews.id, { onDelete: 'cascade' })
     .notNull(),
   comment: text('comment').notNull(),
   rating: real('rating').notNull(),
@@ -37,7 +37,7 @@ export const reviewSnapshots = pgTable('review_snapshots', {
 export const reviewReplies = pgTable('review_replies', {
   id: uuid('id').primaryKey().defaultRandom(),
   reviewId: uuid('review_id')
-    .references(() => reviews.id)
+    .references(() => reviews.id, { onDelete: 'cascade' })
     .notNull(),
   userId: uuid('user_id')
     .references(() => users.id)
@@ -51,7 +51,7 @@ export const reviewReplies = pgTable('review_replies', {
 export const reviewReplySnapshots = pgTable('review_reply_snapshots', {
   id: uuid('id').primaryKey().defaultRandom(),
   reviewReplyId: uuid('review_reply_id')
-    .references(() => reviewReplies.id)
+    .references(() => reviewReplies.id, { onDelete: 'cascade' })
     .notNull(),
   comment: text('comment').notNull(),
   createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
@@ -62,7 +62,7 @@ export const reviewReplySnapshots = pgTable('review_reply_snapshots', {
 export const courseReviews = pgTable('course_reviews', {
   id: uuid('id').primaryKey().defaultRandom(),
   reviewId: uuid('review_id')
-    .references(() => reviews.id)
+    .references(() => reviews.id, { onDelete: 'cascade' })
     .notNull(),
   courseId: uuid('course_id')
     .references(() => courses.id)
@@ -82,7 +82,7 @@ export const courseReviews = pgTable('course_reviews', {
 export const ebookReviews = pgTable('ebook_reviews', {
   id: uuid('id').primaryKey().defaultRandom(),
   reviewId: uuid('review_id')
-    .references(() => reviews.id)
+    .references(() => reviews.id, { onDelete: 'cascade' })
     .notNull(),
   ebookId: uuid('ebook_id')
     .references(() => ebooks.id)

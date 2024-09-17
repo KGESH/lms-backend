@@ -43,6 +43,20 @@
       "when": 1726477292579,
       "tag": "0005_smiling_hammerhead",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1726567221706,
+      "tag": "0006_naive_magdalene",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1726582809311,
+      "tag": "0007_dizzy_manta",
+      "breakpoints": true
     }
   ]
 }
