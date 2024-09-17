@@ -61,6 +61,13 @@ export const couponTicketPayments = pgTable('coupon_ticket_payments', {
   deletedAt: timestamp('deleted_at', { mode: 'date', withTimezone: true }),
 });
 
+export const couponAllCriteria = pgTable('coupon_all_criteria', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  couponId: uuid('coupon_id').notNull(),
+  type: couponCriteriaType('type').notNull(),
+  direction: couponDirection('direction').notNull(),
+});
+
 export const couponCategoryCriteria = pgTable('coupon_category_criteria', {
   id: uuid('id').primaryKey().defaultRandom(),
   couponId: uuid('coupon_id').notNull(),
@@ -96,6 +103,7 @@ export const couponEbookCriteria = pgTable('coupon_ebook_criteria', {
 export const couponsRelations = relations(coupons, ({ one, many }) => ({
   couponDisposables: many(couponDisposables),
   couponTickets: many(couponTickets),
+  couponAllCriteria: many(couponAllCriteria),
   couponCategoryCriteria: many(couponCategoryCriteria),
   couponTeacherCriteria: many(couponTeacherCriteria),
   couponCourseCriteria: many(couponCourseCriteria),
@@ -129,6 +137,7 @@ export const couponDbSchema = {
   couponDisposables,
   couponTickets,
   couponTicketPayments,
+  couponAllCriteria,
   couponCategoryCriteria,
   couponTeacherCriteria,
   couponCourseCriteria,
