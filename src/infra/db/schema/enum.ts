@@ -51,3 +51,16 @@ export const productUiContentType = pgEnum('product_ui_content_type', [
   'target-description',
   'tag',
 ]);
+
+export const couponCriteriaType = pgEnum('coupon_criteria_type', [
+  'all',
+  'category',
+  'teacher',
+  'course',
+  'ebook',
+]);
+
+export const couponDirection = pgEnum('coupon_direction', [
+  'include',
+  'exclude',
+]);

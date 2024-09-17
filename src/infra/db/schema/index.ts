@@ -7,6 +7,7 @@ import { teacherDbSchema } from './teacher';
 import { ebookDbSchema } from './ebook';
 import { postDbSchemas } from './post';
 import { mockReviewDbSchema } from './mock-review';
+import { couponDbSchema } from './coupon';
 
 export const dbSchema = {
   // 사용자 (일반 사용자, 관리자(매니저), 최고 관리자)
@@ -35,4 +36,7 @@ export const dbSchema = {
 
   // Mock 리뷰
   ...mockReviewDbSchema,
+
+  // 쿠폰
+  ...couponDbSchema,
 };
