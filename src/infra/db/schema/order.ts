@@ -5,6 +5,7 @@ import { courseProductSnapshots } from './course';
 import { users } from './user';
 import { reviews } from './review';
 import { ebookProductSnapshots } from './ebook';
+import { couponTicketPayments } from './coupon';
 
 export const orders = pgTable('orders', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -48,6 +49,7 @@ export const ordersRelations = relations(orders, ({ one, many }) => ({
   ebookOrder: one(ebookOrders),
   refunds: many(orderRefunds),
   review: one(reviews),
+  couponTicketPayments: many(couponTicketPayments),
 }));
 
 export const courseOrdersRelations = relations(courseOrders, ({ one }) => ({
