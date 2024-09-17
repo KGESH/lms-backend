@@ -73,3 +73,7 @@ export type CouponDto = {
    */
   volumePerCitizen: number | null;
 };
+
+export type CouponRelationsDto = CouponDto & {
+  // Todo: Impl
+};

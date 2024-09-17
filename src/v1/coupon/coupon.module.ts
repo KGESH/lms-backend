@@ -5,6 +5,7 @@ import { CouponTicketRepository } from '@src/v1/coupon/ticket/coupon-ticket.repo
 import { CouponQueryRepository } from '@src/v1/coupon/coupon-query.repository';
 import { CouponTicketPaymentRepository } from '@src/v1/coupon/ticket/payment/coupon-ticket-payment.repository';
 import { CouponDisposableRepository } from '@src/v1/coupon/disposable/coupon-disposable.repository';
+import { CouponController } from '@src/v1/coupon/coupon.controller';
 
 const modules = [];
 
@@ -19,7 +20,7 @@ const providers = [
 
 @Module({
   imports: [...modules],
-  controllers: [],
+  controllers: [CouponController],
   providers: [...providers],
   exports: [...modules, ...providers],
 })
