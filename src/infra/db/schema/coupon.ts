@@ -19,12 +19,12 @@ export const coupons = pgTable('coupons', {
   value: decimal('value').notNull(),
   threshold: decimal('threshold'),
   limit: decimal('limit'),
+  volume: integer('volume'),
+  volumePerCitizen: integer('volume_per_citizen'),
   expiredIn: timestamp('expired_in', { mode: 'date', withTimezone: true }),
   expiredAt: timestamp('expired_at', { mode: 'date', withTimezone: true }),
   openedAt: timestamp('opened_at', { mode: 'date', withTimezone: true }),
   closedAt: timestamp('closed_at', { mode: 'date', withTimezone: true }),
-  volume: integer('volume'),
-  volumePerCitizen: integer('volume_per_citizen'),
 });
 
 export const couponDisposables = pgTable('coupon_disposables', {
