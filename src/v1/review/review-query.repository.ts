@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { and, asc, desc, eq, isNull, inArray } from 'drizzle-orm';
+import { and, asc, desc, eq, isNull, inArray, isNotNull } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import {
@@ -293,7 +293,7 @@ export class ReviewQueryRepository {
             ? eq(dbSchema.courseReviews.courseId, where.courseId)
             : undefined,
           where.userId ? eq(dbSchema.reviews.userId, where.userId) : undefined,
-          isNull(dbSchema.reviews.orderId), // Mock review filter
+          isNotNull(dbSchema.reviews.orderId), // filter mock reviews
           isNull(dbSchema.reviews.deletedAt),
         ),
       )
@@ -455,6 +455,7 @@ export class ReviewQueryRepository {
             ? eq(dbSchema.ebookReviews.ebookId, where.ebookId)
             : undefined,
           where.userId ? eq(dbSchema.reviews.userId, where.userId) : undefined,
+          isNotNull(dbSchema.reviews.orderId), // filter mock reviews
           isNull(dbSchema.reviews.deletedAt),
         ),
       )
