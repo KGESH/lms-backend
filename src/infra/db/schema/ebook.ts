@@ -208,7 +208,7 @@ export const ebookProductSnapshotsRelations = relations(
     content: one(ebookProductSnapshotContents),
     pricing: one(ebookProductSnapshotPricing),
     discount: one(ebookProductSnapshotDiscounts),
-    ebookOrder: one(ebookOrders),
+    ebookOrders: many(ebookOrders),
     uiContents: many(ebookProductSnapshotUiContents),
   }),
 );

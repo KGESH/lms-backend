@@ -4,8 +4,8 @@ import { Uuid } from '@src/shared/types/primitive';
 import { eq } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import { IUserWithoutPassword } from '@src/v1/user/user.interface';
-import typia from 'typia';
 import { IUserCourseResourceHistory } from '@src/v1/dashboard/user/user-dashboard.interface';
+import * as typia from 'typia';
 
 @Injectable()
 export class UserDashboardQueryRepository {
@@ -50,7 +50,7 @@ export class UserDashboardQueryRepository {
       with: {
         snapshots: {
           with: {
-            courseOrder: {
+            courseOrders: {
               with: {
                 order: {
                   with: {
@@ -66,7 +66,7 @@ export class UserDashboardQueryRepository {
 
     return courseProducts
       .flatMap((courseProduct) => courseProduct.snapshots)
-      .flatMap((snapshot) => snapshot.courseOrder)
+      .flatMap((snapshot) => snapshot.courseOrders)
       .filter((courseOrder) => !!courseOrder?.order)
       .map((courseOrder) =>
         typia.misc.clone<IUserWithoutPassword>(courseOrder!.order.user),
