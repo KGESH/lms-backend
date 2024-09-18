@@ -260,7 +260,7 @@ export const courseProductSnapshotsRelations = relations(
     content: one(courseProductSnapshotContents),
     pricing: one(courseProductSnapshotPricing),
     discount: one(courseProductSnapshotDiscounts),
-    courseOrder: one(courseOrders),
+    courseOrder: many(courseOrders),
     uiContents: many(courseProductSnapshotUiContents),
   }),
 );
