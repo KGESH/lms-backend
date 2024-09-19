@@ -27,7 +27,12 @@ export type CourseOrderPurchaseDto = {
   paymentMethod: string;
 
   /**
-   * 결제 금액.
+   * PG사 결제 완료 금액.
    */
   amount: Price;
+
+  /**
+   * 결제시 사용한 쿠폰 티켓 ID 목록.
+   */
+  couponTicketId: Uuid | null;
 };

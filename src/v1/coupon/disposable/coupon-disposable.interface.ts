@@ -28,7 +28,10 @@ export type ICouponDisposable = {
   /**
    * 만료 일자
    */
-  expiredAt: Date;
+  expiredAt: Date | null;
 };
 
-export type ICouponDisposableCreate = Optional<ICouponDisposable, 'id'>;
+export type ICouponDisposableCreate = Pick<
+  ICouponDisposable,
+  'couponId' | 'code' | 'expiredAt'
+>;

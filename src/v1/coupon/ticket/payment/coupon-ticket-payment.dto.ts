@@ -1,10 +1,9 @@
-import { Uuid } from '@src/shared/types/primitive';
-import { Optional } from '@src/shared/types/optional';
+import { ISO8601, Uuid } from '@src/shared/types/primitive';
 
 /**
  * 결제시 발급되는 쿠폰 티켓 사용 내역
  */
-export type ICouponTicketPayment = {
+export type CouponTicketPaymentDto = {
   /**
    * 사용한 쿠폰 티켓 ID
    */
@@ -23,15 +22,10 @@ export type ICouponTicketPayment = {
   /**
    * 사용 일자
    */
-  createdAt: Date;
+  createdAt: ISO8601;
 
   /**
    * 삭제 일자 (결제 취소 또는 실패시 설정될 수 있음)
    */
-  deletedAt: Date | null;
+  deletedAt: ISO8601 | null;
 };
-
-export type ICouponTicketPaymentCreate = Optional<
-  ICouponTicketPayment,
-  'id' | 'deletedAt'
->;

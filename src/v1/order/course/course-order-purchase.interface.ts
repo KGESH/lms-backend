@@ -6,4 +6,9 @@ export type ICourseOrderPurchase = Pick<
   'userId' | 'paymentId' | 'txId' | 'amount' | 'paymentMethod' | 'paidAt'
 > & {
   courseId: Uuid;
+
+  /**
+   * 결제시 사용한 쿠폰 티켓 ID.
+   */
+  couponTicketId: Uuid | null;
 };

@@ -18,7 +18,6 @@ import {
 } from '@src/v1/ebook/category/ebook-category.dto';
 import { Uuid } from '@src/shared/types/primitive';
 import { IErrorResponse } from '@src/shared/types/response';
-import { DEFAULT_PAGINATION } from '@src/core/pagination.constant';
 import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
 import { Roles } from '@src/core/decorators/roles.decorator';

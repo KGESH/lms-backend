@@ -37,7 +37,8 @@ export class EbookOrderPurchaseService {
         );
         this.paymentService.verifyPaymentOrThrow({
           pgAmount: pgPaymentResult.amount.total,
-          appAmount: params.amount,
+          frontendAmount: params.amount,
+          calculatedBackendAmount: pgPaymentResult.amount.total, // Todo: Impl
         });
       }
 

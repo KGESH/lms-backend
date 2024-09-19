@@ -11,6 +11,18 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ CREATE TYPE "public"."coupon_criteria_type" AS ENUM('all', 'category', 'teacher', 'course', 'ebook');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."coupon_direction" AS ENUM('include', 'exclude');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  CREATE TYPE "public"."discount_type" AS ENUM('fixed_amount', 'percent');
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -51,6 +63,87 @@ DO $$ BEGIN
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "coupon_all_criteria" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"coupon_id" uuid NOT NULL,
+	"type" "coupon_criteria_type" NOT NULL,
+	"direction" "coupon_direction" NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "coupon_category_criteria" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"coupon_id" uuid NOT NULL,
+	"type" "coupon_criteria_type" NOT NULL,
+	"direction" "coupon_direction" NOT NULL,
+	"category_id" uuid NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "coupon_course_criteria" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"coupon_id" uuid NOT NULL,
+	"type" "coupon_criteria_type" NOT NULL,
+	"direction" "coupon_direction" NOT NULL,
+	"course_id" uuid NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "coupon_disposables" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"coupon_id" uuid NOT NULL,
+	"code" text NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"expired_at" timestamp with time zone NOT NULL,
+	CONSTRAINT "coupon_disposables_code_unique" UNIQUE("code")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "coupon_ebook_criteria" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"coupon_id" uuid NOT NULL,
+	"type" "coupon_criteria_type" NOT NULL,
+	"direction" "coupon_direction" NOT NULL,
+	"ebook_id" uuid NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "coupon_teacher_criteria" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"coupon_id" uuid NOT NULL,
+	"type" "coupon_criteria_type" NOT NULL,
+	"direction" "coupon_direction" NOT NULL,
+	"teacher_id" uuid NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "coupon_ticket_payments" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"coupon_ticket_id" uuid NOT NULL,
+	"order_id" uuid NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"deleted_at" timestamp with time zone
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "coupon_tickets" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"coupon_id" uuid NOT NULL,
+	"user_id" uuid NOT NULL,
+	"coupon_disposable_id" uuid,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"expired_at" timestamp with time zone
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "coupons" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" text NOT NULL,
+	"description" text,
+	"discount_type" "discount_type" NOT NULL,
+	"value" numeric NOT NULL,
+	"threshold" numeric,
+	"limit" numeric,
+	"volume" integer,
+	"volume_per_citizen" integer,
+	"expired_in" integer,
+	"expired_at" timestamp with time zone,
+	"opened_at" timestamp with time zone,
+	"closed_at" timestamp with time zone
+);
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "chapters" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
@@ -103,6 +196,7 @@ CREATE TABLE IF NOT EXISTS "course_product_snapshot_discounts" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"product_snapshot_id" uuid NOT NULL,
 	"discount_type" "discount_type" NOT NULL,
+	"enabled" boolean NOT NULL,
 	"value" numeric NOT NULL,
 	"valid_from" timestamp with time zone,
 	"valid_to" timestamp with time zone
@@ -155,6 +249,13 @@ CREATE TABLE IF NOT EXISTS "courses" (
 	"description" text NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "lesson_content_access_history" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid NOT NULL,
+	"lesson_content_id" uuid NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "lesson_contents" (
@@ -218,6 +319,7 @@ CREATE TABLE IF NOT EXISTS "ebook_product_snapshot_contents" (
 CREATE TABLE IF NOT EXISTS "ebook_product_snapshot_discounts" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"product_snapshot_id" uuid NOT NULL,
+	"enabled" boolean NOT NULL,
 	"discount_type" "discount_type" NOT NULL,
 	"value" numeric NOT NULL,
 	"valid_from" timestamp with time zone,
@@ -234,6 +336,17 @@ CREATE TABLE IF NOT EXISTS "ebook_product_snapshot_refund_policies" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"product_snapshot_id" uuid NOT NULL,
 	"rich_text_content" text NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "ebook_product_snapshot_ui_contents" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"product_snapshot_id" uuid NOT NULL,
+	"type" "product_ui_content_type" NOT NULL,
+	"content" text NOT NULL,
+	"description" text,
+	"sequence" integer,
+	"url" text,
+	"metadata" text
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "ebook_product_snapshots" (
@@ -260,6 +373,20 @@ CREATE TABLE IF NOT EXISTS "ebooks" (
 	"description" text NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "mock_review_users" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"review_id" uuid NOT NULL,
+	"display_name" text NOT NULL,
+	"email" text NOT NULL,
+	"image" text,
+	"emailVerified" timestamp with time zone,
+	"role" "user_role" DEFAULT 'user' NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"deleted_at" timestamp with time zone,
+	CONSTRAINT "mock_review_users_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "course_orders" (
@@ -410,7 +537,9 @@ CREATE TABLE IF NOT EXISTS "reviews" (
 	"user_id" uuid NOT NULL,
 	"product_type" "product_type" NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"deleted_at" timestamp with time zone
+	"deleted_at" timestamp with time zone,
+	"deleted_by" uuid,
+	"deleted_reason" text
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "teachers" (
@@ -521,6 +650,12 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ ALTER TABLE "mock_review_users" ADD CONSTRAINT "mock_review_users_review_id_reviews_id_fk" FOREIGN KEY ("review_id") REFERENCES "public"."reviews"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  ALTER TABLE "post_categories" ADD CONSTRAINT "post_categories_parent_id_post_categories_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."post_categories"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -605,7 +740,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "course_reviews" ADD CONSTRAINT "course_reviews_review_id_reviews_id_fk" FOREIGN KEY ("review_id") REFERENCES "public"."reviews"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "course_reviews" ADD CONSTRAINT "course_reviews_review_id_reviews_id_fk" FOREIGN KEY ("review_id") REFERENCES "public"."reviews"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -617,7 +752,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "ebook_reviews" ADD CONSTRAINT "ebook_reviews_review_id_reviews_id_fk" FOREIGN KEY ("review_id") REFERENCES "public"."reviews"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "ebook_reviews" ADD CONSTRAINT "ebook_reviews_review_id_reviews_id_fk" FOREIGN KEY ("review_id") REFERENCES "public"."reviews"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -629,7 +764,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "review_replies" ADD CONSTRAINT "review_replies_review_id_reviews_id_fk" FOREIGN KEY ("review_id") REFERENCES "public"."reviews"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "review_replies" ADD CONSTRAINT "review_replies_review_id_reviews_id_fk" FOREIGN KEY ("review_id") REFERENCES "public"."reviews"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -641,19 +776,19 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "review_reply_snapshots" ADD CONSTRAINT "review_reply_snapshots_review_reply_id_review_replies_id_fk" FOREIGN KEY ("review_reply_id") REFERENCES "public"."review_replies"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "review_reply_snapshots" ADD CONSTRAINT "review_reply_snapshots_review_reply_id_review_replies_id_fk" FOREIGN KEY ("review_reply_id") REFERENCES "public"."review_replies"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "review_snapshots" ADD CONSTRAINT "review_snapshots_review_id_reviews_id_fk" FOREIGN KEY ("review_id") REFERENCES "public"."reviews"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "review_snapshots" ADD CONSTRAINT "review_snapshots_review_id_reviews_id_fk" FOREIGN KEY ("review_id") REFERENCES "public"."reviews"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "reviews" ADD CONSTRAINT "reviews_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "reviews" ADD CONSTRAINT "reviews_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

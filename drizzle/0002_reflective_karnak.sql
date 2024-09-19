@@ -1,0 +1,1 @@
+ALTER TABLE "coupon_ticket_payments" ADD CONSTRAINT "coupon_ticket_payments_coupon_ticket_id_unique" UNIQUE("coupon_ticket_id");

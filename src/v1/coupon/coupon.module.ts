@@ -6,21 +6,48 @@ import { CouponQueryRepository } from '@src/v1/coupon/coupon-query.repository';
 import { CouponTicketPaymentRepository } from '@src/v1/coupon/ticket/payment/coupon-ticket-payment.repository';
 import { CouponDisposableRepository } from '@src/v1/coupon/disposable/coupon-disposable.repository';
 import { CouponController } from '@src/v1/coupon/coupon.controller';
+import { CouponService } from '@src/v1/coupon/coupon.service';
+import { CouponTicketController } from '@src/v1/coupon/ticket/coupon-ticket.controller';
+import { CouponDisposableController } from '@src/v1/coupon/disposable/coupon-disposable.controller';
+import { CouponTicketQueryRepository } from '@src/v1/coupon/ticket/coupon-ticket-query.repository';
+import { CouponTicketService } from '@src/v1/coupon/ticket/coupon-ticket.service';
+import { CouponTicketQueryService } from '@src/v1/coupon/ticket/coupon-ticket-query.service';
+import { CouponDisposableQueryService } from '@src/v1/coupon/disposable/coupon-disposable-query.service';
+import { CouponDisposableQueryRepository } from '@src/v1/coupon/disposable/coupon-disposable-query.repository';
+import { UserModule } from '@src/v1/user/user.module';
+import { CouponQueryService } from '@src/v1/coupon/coupon-query.service';
+import { CouponDisposableService } from '@src/v1/coupon/disposable/coupon-disposable.service';
+import { CouponTicketPaymentService } from '@src/v1/coupon/ticket/payment/coupon-ticket-payment.service';
+import { CouponTicketPaymentQueryRepository } from '@src/v1/coupon/ticket/payment/coupon-ticket-payment-query.repository';
 
-const modules = [];
+const modules = [UserModule];
 
 const providers = [
+  CouponService,
   CouponRepository,
+  CouponQueryService,
   CouponQueryRepository,
+  CouponDisposableService,
+  CouponDisposableQueryService,
   CouponDisposableRepository,
+  CouponDisposableQueryRepository,
+  CouponTicketService,
+  CouponTicketQueryService,
   CouponTicketRepository,
+  CouponTicketQueryRepository,
+  CouponTicketPaymentService,
   CouponTicketPaymentRepository,
+  CouponTicketPaymentQueryRepository,
   CouponCriteriaRepository,
 ];
 
 @Module({
   imports: [...modules],
-  controllers: [CouponController],
+  controllers: [
+    CouponController,
+    CouponTicketController,
+    CouponDisposableController,
+  ],
   providers: [...providers],
   exports: [...modules, ...providers],
 })

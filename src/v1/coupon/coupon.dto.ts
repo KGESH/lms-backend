@@ -2,8 +2,11 @@ import {
   DiscountType,
   DiscountValue,
   ISO8601,
+  Price,
+  UInt,
   Uuid,
 } from '@src/shared/types/primitive';
+import { Pagination } from '@src/shared/types/pagination';
 
 export type CouponDto = {
   /**
@@ -34,17 +37,17 @@ export type CouponDto = {
   /**
    * 구매 최소 금액. ex) 1000원 미만으로는 할인 적용 불가
    */
-  threshold: number | null;
+  threshold: Price | null;
 
   /**
    * 쿠폰 최대 할인 금액. ex) 최대 할인 금액 20000원.
    */
-  limit: number | null;
+  limit: Price | null;
 
   /**
-   * 쿠폰 만료 기간 ex) 발급일로부터 7일후 만료.
+   * 쿠폰 만료 기간(일) ex) 발급일로부터 7일후 만료.
    */
-  expiredIn: ISO8601 | null;
+  expiredIn: UInt | null;
 
   /**
    * 쿠폰 만료 날짜 ex) 2024-01-01 23:59:59 만료.
@@ -66,14 +69,29 @@ export type CouponDto = {
    * 수량 제한 발행 수량에 제한이 있으면 이 값을 초과하는 티켓 발행이 불가능해집니다.
    * 즉, 선착순으로 N개의 쿠폰이 발행되는 개념이 만들어집니다.
    */
-  volume: number | null;
+  volume: UInt | null;
 
   /**
    * 1인당 발급 수량. ex) 1인당 N개 발급. null이면 무제한.
    */
-  volumePerCitizen: number | null;
+  volumePerCitizen: UInt | null;
 };
+
+export type CreateCouponDto = Omit<CouponDto, 'id'>;
+
+export type UpdateCouponDto = Partial<CreateCouponDto>;
+
+export type DeleteCouponDto = Pick<CouponDto, 'id'>;
 
 export type CouponRelationsDto = CouponDto & {
   // Todo: Impl
 };
+
+export type CouponQuery = Partial<
+  Pagination & {
+    orderByColumn: keyof Pick<
+      CouponDto,
+      'name' | 'openedAt' | 'closedAt' | 'expiredAt' | 'volume'
+    >;
+  }
+>;

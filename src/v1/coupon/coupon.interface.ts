@@ -2,9 +2,11 @@ import {
   DiscountType,
   DiscountValue,
   Price,
+  UInt,
   Uuid,
 } from '@src/shared/types/primitive';
 import { Optional } from '@src/shared/types/optional';
+import { Pagination } from '@src/shared/types/pagination';
 
 /**
  * 쿠폰 Base
@@ -48,7 +50,7 @@ export type ICoupon = {
   /**
    * 쿠폰 만료 기간 ex) 발급일로부터 7일후 만료.
    */
-  expiredIn: Date | null;
+  expiredIn: UInt | null;
 
   /**
    * 쿠폰 만료 날짜 ex) 2024-01-01 23:59:59 만료.
@@ -70,12 +72,21 @@ export type ICoupon = {
    * 수량 제한 발행 수량에 제한이 있으면 이 값을 초과하는 티켓 발행이 불가능해집니다.
    * 즉, 선착순으로 N개의 쿠폰이 발행되는 개념이 만들어집니다.
    */
-  volume: number | null;
+  volume: UInt | null;
 
   /**
    * 1인당 발급 수량. ex) 1인당 N개 발급. null이면 무제한.
    */
-  volumePerCitizen: number | null;
+  volumePerCitizen: UInt | null;
 };
 
 export type ICouponCreate = Optional<ICoupon, 'id'>;
+
+export type ICouponUpdate = Partial<Omit<ICoupon, 'id'>>;
+
+export type ICouponPagination = Pagination & {
+  orderByColumn: keyof Pick<
+    ICoupon,
+    'name' | 'openedAt' | 'closedAt' | 'expiredAt' | 'volume'
+  >;
+};

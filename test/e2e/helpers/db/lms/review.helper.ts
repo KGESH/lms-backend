@@ -3,18 +3,17 @@ import {
   IReviewCreate,
   IReviewReply,
   IReviewReplyCreate,
-  IReviewReplySnapshotCreate, IReviewReplyWithRelations,
-  IReviewWithRelations
-} from "../../../../../src/v1/review/review.interface";
+  IReviewReplySnapshotCreate,
+  IReviewReplyWithRelations,
+  IReviewWithRelations,
+} from '../../../../../src/v1/review/review.interface';
 import { dbSchema } from '../../../../../src/infra/db/schema';
 import { createRandomCourse } from './course.helper';
 import { seedCourseOrders, seedEbookOrders } from './order.helper';
 import { createRandomEbook } from './ebook.helper';
 import { Uuid } from '../../../../../src/shared/types/primitive';
 import { and, desc, eq, isNull } from 'drizzle-orm';
-import {
-  IUserWithoutPassword,
-} from '../../../../../src/v1/user/user.interface';
+import { IUserWithoutPassword } from '../../../../../src/v1/user/user.interface';
 import {
   IMockReviewUser,
   IMockReviewUserCreate,

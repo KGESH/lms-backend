@@ -14,11 +14,11 @@ export class CouponTicketPaymentRepository {
     params: ICouponTicketPaymentCreate,
     db = this.drizzle.db,
   ): Promise<ICouponTicketPayment> {
-    const [couponTicketPayment] = await db
+    const [couponTicketPayments] = await db
       .insert(dbSchema.couponTicketPayments)
       .values(params)
       .returning();
 
-    return couponTicketPayment;
+    return couponTicketPayments;
   }
 }

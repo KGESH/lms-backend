@@ -23,6 +23,7 @@ import { PostRelationsModule } from '@src/v1/post/post-relations.module';
 import { LoggerMiddleware } from '@src/core/middlewares/logger.middleware';
 import { DashboardModule } from '@src/v1/dashboard/dashboard.module';
 import { CouponModule } from '@src/v1/coupon/coupon.module';
+import { UserCouponModule } from '@src/v1/user/coupon/user-coupon.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { CouponModule } from '@src/v1/coupon/coupon.module';
     EbookReviewModule,
     PostRelationsModule,
     CouponModule,
+    UserCouponModule,
   ],
   controllers: [AppController],
   providers: [AppService],

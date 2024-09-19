@@ -42,14 +42,22 @@ export class PaymentService {
 
   verifyPaymentOrThrow({
     pgAmount,
-    appAmount,
+    frontendAmount,
+    calculatedBackendAmount,
   }: {
     pgAmount: number | string;
-    appAmount: number | string;
-  }) {
-    if (!decimal.isSame(pgAmount, appAmount)) {
+    frontendAmount: number | string;
+    calculatedBackendAmount: number | string;
+  }): void {
+    if (!decimal.isSame(pgAmount, frontendAmount)) {
       throw new Error(
-        `Payment amount mismatch. Reserved: ${appAmount} | Amount: ${pgAmount}`,
+        `Payment amount mismatch. Reserved: ${frontendAmount} | Amount: ${pgAmount}`,
+      );
+    }
+
+    if (!decimal.isSame(frontendAmount, calculatedBackendAmount)) {
+      throw new Error(
+        `Payment amount mismatch. Frontend: ${frontendAmount} | Backend: ${calculatedBackendAmount}`,
       );
     }
   }

@@ -21,7 +21,7 @@ import { IProductSnapshotDiscount } from '@src/v1/product/common/snapshot/discou
 export class CourseProductQueryRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async findCourseProductsWithRelations(
+  async findCourseProductsWithPricing(
     // orderByColumn  Todo: Impl
     pagination: Pagination,
   ): Promise<Paginated<ICourseProductWithPricing[]>> {
@@ -73,27 +73,6 @@ export class CourseProductQueryRepository {
         dbSchema.courseProductSnapshots,
         eq(dbSchema.courseProductSnapshots.id, productLatestSnapshotQuery),
       )
-      // .innerJoin(
-      //   dbSchema.courseProductSnapshotAnnouncements,
-      //   eq(
-      //     dbSchema.courseProductSnapshotAnnouncements.productSnapshotId,
-      //     dbSchema.courseProductSnapshots.id,
-      //   ),
-      // )
-      // .innerJoin(
-      //   dbSchema.courseProductSnapshotRefundPolicies,
-      //   eq(
-      //     dbSchema.courseProductSnapshotRefundPolicies.productSnapshotId,
-      //     dbSchema.courseProductSnapshots.id,
-      //   ),
-      // )
-      // .innerJoin(
-      //   dbSchema.courseProductSnapshotContents,
-      //   eq(
-      //     dbSchema.courseProductSnapshotContents.productSnapshotId,
-      //     dbSchema.courseProductSnapshots.id,
-      //   ),
-      // )
       .innerJoin(
         dbSchema.courseProductSnapshotPricing,
         eq(
@@ -137,6 +116,63 @@ export class CourseProductQueryRepository {
         },
       })),
     });
+  }
+
+  async findCourseProductWithPricing(
+    where: Pick<ICourseProduct, 'courseId'>,
+  ): Promise<ICourseProductWithPricing | null> {
+    const product = await this.drizzle.db.query.courseProducts.findFirst({
+      where: eq(dbSchema.courseProducts.courseId, where.courseId),
+      with: {
+        course: {
+          with: {
+            category: true,
+            teacher: {
+              with: {
+                account: true,
+              },
+            },
+          },
+        },
+        snapshots: {
+          where: isNull(dbSchema.courseProductSnapshots.deletedAt),
+          orderBy: desc(dbSchema.courseProductSnapshots.createdAt),
+          limit: 1,
+          with: {
+            pricing: true,
+            discount: true,
+          },
+        },
+      },
+    });
+
+    if (!product?.snapshots[0]) {
+      return null;
+    }
+
+    return {
+      ...product,
+      course: {
+        ...product.course,
+        teacher: product.course.teacher,
+        chapters: [],
+      },
+      lastSnapshot: {
+        ...product.snapshots[0],
+        pricing: typia.assert<IProductSnapshotPricing>({
+          ...product.snapshots[0].pricing,
+          amount: typia.assert<Price>(
+            `${product.snapshots[0].pricing!.amount}`,
+          ),
+        }),
+        discount: typia.assert<IProductSnapshotDiscount>({
+          ...product.snapshots[0].discount,
+          value: typia.assert<DiscountValue>(
+            `${product.snapshots[0].discount!.value}`,
+          ),
+        }),
+      },
+    };
   }
 
   async findCourseProductWithRelations(

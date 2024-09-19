@@ -21,7 +21,7 @@ export const coupons = pgTable('coupons', {
   limit: decimal('limit'),
   volume: integer('volume'),
   volumePerCitizen: integer('volume_per_citizen'),
-  expiredIn: timestamp('expired_in', { mode: 'date', withTimezone: true }),
+  expiredIn: integer('expired_in'),
   expiredAt: timestamp('expired_at', { mode: 'date', withTimezone: true }),
   openedAt: timestamp('opened_at', { mode: 'date', withTimezone: true }),
   closedAt: timestamp('closed_at', { mode: 'date', withTimezone: true }),
@@ -37,7 +37,7 @@ export const couponDisposables = pgTable('coupon_disposables', {
   expiredAt: timestamp('expired_at', {
     mode: 'date',
     withTimezone: true,
-  }).notNull(),
+  }),
 });
 
 export const couponTickets = pgTable('coupon_tickets', {
@@ -53,7 +53,7 @@ export const couponTickets = pgTable('coupon_tickets', {
 
 export const couponTicketPayments = pgTable('coupon_ticket_payments', {
   id: uuid('id').primaryKey().defaultRandom(),
-  couponTicketId: uuid('coupon_ticket_id').notNull(),
+  couponTicketId: uuid('coupon_ticket_id').notNull().unique(),
   orderId: uuid('order_id').notNull(),
   createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
     .notNull()
@@ -100,7 +100,7 @@ export const couponEbookCriteria = pgTable('coupon_ebook_criteria', {
   ebookId: uuid('ebook_id').notNull(),
 });
 
-export const couponsRelations = relations(coupons, ({ one, many }) => ({
+export const couponsRelations = relations(coupons, ({ many }) => ({
   couponDisposables: many(couponDisposables),
   couponTickets: many(couponTickets),
   couponAllCriteria: many(couponAllCriteria),
@@ -113,21 +113,37 @@ export const couponsRelations = relations(coupons, ({ one, many }) => ({
 export const couponDisposablesRelations = relations(
   couponDisposables,
   ({ one }) => ({
-    coupon: one(coupons),
+    coupon: one(coupons, {
+      fields: [couponDisposables.couponId],
+      references: [coupons.id],
+    }),
   }),
 );
 
 export const couponTicketsRelations = relations(couponTickets, ({ one }) => ({
-  coupon: one(coupons),
+  user: one(users, {
+    fields: [couponTickets.userId],
+    references: [users.id],
+  }),
+  coupon: one(coupons, {
+    fields: [couponTickets.couponId],
+    references: [coupons.id],
+  }),
   couponDisposable: one(couponDisposables),
-  user: one(users),
+  couponTicketPayment: one(couponTicketPayments),
 }));
 
 export const couponTicketPaymentsRelations = relations(
   couponTicketPayments,
   ({ one }) => ({
-    couponTicket: one(couponTickets),
-    order: one(orders),
+    couponTicket: one(couponTickets, {
+      fields: [couponTicketPayments.couponTicketId],
+      references: [couponTickets.id],
+    }),
+    order: one(orders, {
+      fields: [couponTicketPayments.orderId],
+      references: [orders.id],
+    }),
   }),
 );
 

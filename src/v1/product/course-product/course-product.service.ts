@@ -53,9 +53,24 @@ export class CourseProductService {
   async findCourseProductsWithPricing(
     pagination: Pagination,
   ): Promise<Paginated<ICourseProductWithPricing[]>> {
-    return await this.courseProductQueryRepository.findCourseProductsWithRelations(
+    return await this.courseProductQueryRepository.findCourseProductsWithPricing(
       pagination,
     );
+  }
+
+  async findCourseProductWithPricingOrThrow(
+    where: Pick<ICourseProduct, 'courseId'>,
+  ): Promise<ICourseProductWithPricing> {
+    const courseProduct =
+      await this.courseProductQueryRepository.findCourseProductWithPricing(
+        where,
+      );
+
+    if (!courseProduct) {
+      throw new NotFoundException('Course product not found');
+    }
+
+    return courseProduct;
   }
 
   async findCourseProductWithRelations(

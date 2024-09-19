@@ -1,5 +1,14 @@
 import { Uuid } from '@src/shared/types/primitive';
 import { Optional } from '@src/shared/types/optional';
+import { ICoupon } from '@src/v1/coupon/coupon.interface';
+import {
+  ICouponAllCriteria,
+  ICouponCategoryCriteria,
+  ICouponCourseCriteria,
+  ICouponEbookCriteria,
+  ICouponTeacherCriteria,
+} from '@src/v1/coupon/criteria/coupon-criteria.interface';
+import { ICouponTicketPayment } from '@src/v1/coupon/ticket/payment/coupon-ticket-payment.interface';
 
 /**
  * 발급된 쿠폰
@@ -36,4 +45,26 @@ export type ICouponTicket = {
   expiredAt: Date | null;
 };
 
-export type ICouponTicketCreate = Optional<ICouponTicket, 'id'>;
+export type ICouponTicketCreate = Optional<ICouponTicket, 'id' | 'createdAt'>;
+
+export type IPublicCouponTicketCreate = {
+  type: 'public';
+} & Pick<ICouponTicketCreate, 'couponId' | 'userId'>;
+
+export type IDisposableCouponTicketCreate = {
+  type: 'private';
+  code: string;
+} & Pick<ICouponTicketCreate, 'couponId' | 'userId'>;
+
+export type ICouponTicketRelations = ICoupon & {
+  ticket: ICouponTicket;
+  couponAllCriteria: ICouponAllCriteria[];
+  couponCategoryCriteria: ICouponCategoryCriteria[];
+  couponTeacherCriteria: ICouponTeacherCriteria[];
+  couponCourseCriteria: ICouponCourseCriteria[];
+  couponEbookCriteria: ICouponEbookCriteria[];
+};
+
+export type ICouponTicketPaymentRelations = ICouponTicket & {
+  payment: ICouponTicketPayment | null;
+};

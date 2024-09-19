@@ -6,8 +6,9 @@ import { CourseOrderPurchaseService } from '@src/v1/order/course/course-order-pu
 import { OrderRepository } from '@src/v1/order/order.repository';
 import { OrderQueryRepository } from '@src/v1/order/order-query.repository';
 import { PaymentModule } from '@src/infra/payment/payment.module';
+import { CouponModule } from '@src/v1/coupon/coupon.module';
 
-const modules = [CourseProductModule, PaymentModule];
+const modules = [CourseProductModule, PaymentModule, CouponModule];
 
 const providers = [
   CourseOrderService,

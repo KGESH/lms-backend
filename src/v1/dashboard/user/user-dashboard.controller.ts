@@ -28,6 +28,7 @@ export class UserDashboardController {
    *
    * @tag dashboard
    * @summary 특정 사용자의 특정 강의 리소스 접근 기록 조회 - Role('admin', 'manager')
+   * @param userId - 조회할 사용자 id
    * @param courseId - 강의 id
    */
   @TypedRoute.Get('/:userId/history/course/:courseId')

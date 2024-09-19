@@ -11,14 +11,16 @@ export class CouponDisposableRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
   async createCouponDisposable(
-    params: ICouponDisposableCreate,
+    params: ICouponDisposableCreate | ICouponDisposableCreate[],
     db = this.drizzle.db,
-  ): Promise<ICouponDisposable> {
-    const [couponDisposable] = await db
+  ): Promise<ICouponDisposable[]> {
+    const createManyParams = Array.isArray(params) ? params : [params];
+
+    const couponDisposables = await db
       .insert(dbSchema.couponDisposables)
-      .values(params)
+      .values(createManyParams)
       .returning();
 
-    return couponDisposable;
+    return couponDisposables;
   }
 }
