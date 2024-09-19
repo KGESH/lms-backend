@@ -112,7 +112,7 @@ export class CouponTicketController {
    * @tag coupon
    * @summary 쿠폰 발급 - Role('admin', 'manager')
    */
-  @TypedRoute.Post('/public')
+  @TypedRoute.Post('/')
   @Roles('user', 'admin', 'manager')
   @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
@@ -176,7 +176,7 @@ export class CouponTicketController {
    * @tag coupon
    * @summary 비공개 쿠폰 발급 - Role('admin', 'manager')
    */
-  @TypedRoute.Post('/private')
+  @TypedRoute.Post('/disposable')
   @Roles('user', 'admin', 'manager')
   @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
