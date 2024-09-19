@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, NotFoundException } from '@nestjs/common';
 import {
   TypedBody,
   TypedException,
@@ -82,7 +82,7 @@ export class UserCouponController {
     status: 400,
     description: 'invalid request',
   })
-  @TypedException<IErrorResponse<403>>({
+  @TypedException<IErrorResponse<404>>({
     status: 404,
     description: 'invalid coupon code',
   })
@@ -136,7 +136,7 @@ export class UserCouponController {
     status: 400,
     description: 'invalid request',
   })
-  @TypedException<IErrorResponse<403>>({
+  @TypedException<IErrorResponse<404>>({
     status: 404,
     description: 'invalid coupon code',
   })
@@ -150,12 +150,22 @@ export class UserCouponController {
   })
   async issuePrivateCouponTicket(
     @TypedHeaders() headers: AuthHeaders,
-    @TypedBody() body: Omit<CreatePrivateCouponTicketDto, 'userId'>,
+    @TypedBody()
+    body: Omit<CreatePrivateCouponTicketDto, 'userId' | 'couponId'>,
     @SessionUser() session: ISessionWithUser,
   ): Promise<CouponTicketDto> {
+    const disposable = await this.userCouponService.findCouponDisposableByCode({
+      code: body.code,
+    });
+
+    if (!disposable) {
+      throw new NotFoundException('Invalid coupon code');
+    }
+
     const couponTicket = await this.userCouponService.issueCouponTicket({
       ...body,
       userId: session.userId,
+      couponId: disposable.couponId,
     });
 
     return couponTicketToDto(couponTicket);

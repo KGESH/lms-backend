@@ -123,7 +123,7 @@ export class CouponTicketController {
     status: 403,
     description: 'Not enough [role] to access this resource.',
   })
-  @TypedException<IErrorResponse<403>>({
+  @TypedException<IErrorResponse<404>>({
     status: 404,
     description: 'invalid coupon code',
   })
@@ -187,7 +187,7 @@ export class CouponTicketController {
     status: 403,
     description: 'Not enough [role] to access this resource.',
   })
-  @TypedException<IErrorResponse<403>>({
+  @TypedException<IErrorResponse<404>>({
     status: 404,
     description: 'invalid coupon code',
   })

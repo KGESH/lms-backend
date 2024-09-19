@@ -6,13 +6,24 @@ import {
   ICouponTicketCreateParams,
 } from '@src/v1/coupon/ticket/coupon-ticket.interface';
 import { CouponTicketService } from '@src/v1/coupon/ticket/coupon-ticket.service';
+import { CouponDisposableQueryService } from '@src/v1/coupon/disposable/coupon-disposable-query.service';
+import { ICouponDisposable } from '@src/v1/coupon/disposable/coupon-disposable.interface';
 
 @Injectable()
 export class UserCouponService {
   constructor(
     private readonly couponTicketService: CouponTicketService,
     private readonly couponTicketQueryService: CouponTicketQueryService,
+    private readonly couponDisposableQueryService: CouponDisposableQueryService,
   ) {}
+
+  async findCouponDisposableByCode(
+    where: Pick<ICouponDisposable, 'code'>,
+  ): Promise<ICouponDisposable | null> {
+    return await this.couponDisposableQueryService.findCouponDisposableByCode(
+      where,
+    );
+  }
 
   async issueCouponTicket(
     params: ICouponTicketCreateParams,
