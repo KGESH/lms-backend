@@ -12,13 +12,14 @@ import { ISessionWithUser } from '@src/v1/auth/session.interface';
 import {
   CouponTicketDto,
   CouponTicketWithPaymentHistoryDto,
-  CreateCouponTicketDto,
+  CreatePrivateCouponTicketDto,
+  CreatePublicCouponTicketDto,
 } from '@src/v1/coupon/ticket/coupon-ticket.dto';
 import {
   couponTicketPaymentHistoryToDto,
   couponTicketToDto,
 } from '@src/shared/helpers/transofrm/coupon';
-import typia, { TypeGuardError } from 'typia';
+import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '@src/shared/types/response';
 import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
 
@@ -59,6 +60,58 @@ export class UserCouponController {
    *
    * - type: 'public' - 공개 쿠폰 (쿠폰 코드 미입력. 클릭만으로 발급)
    *
+   * 응답 결과로 받은 쿠폰은 실제 사용 가능한 쿠폰의 정보입니다.
+   *
+   * 발급된 쿠폰의 사용 기한은 쿠폰 정보의 만료 날짜(expiredAt)와 쿠폰의 만료 기간(expiredIn) 중 빠른 것을 선택합니다.
+   *
+   * ex) 현재 날짜: 2020-01-01 쿠폰 정보의 만료 날짜(expiredAt): 2020-01-31, 쿠폰의 만료 기간(expiredIn): 7일
+   *
+   * - 발급된 쿠폰의 사용 기한은 '2020-01-08'이 됩니다.
+   *
+   * - expiredAt과 expiredIn 둘 중 하나가 null인 경우, null이 아닌 값이 사용됩니다.
+   *
+   * - expiredAt과 expiredIn 둘 다 null인 경우, 쿠폰의 만료 기간은 무제한입니다.
+   *
+   * 쿠폰이 최대 발행수 이상 발행되면 409 예외를 반환합니다. (volume, volumePerCitizen)
+   *
+   * @tag user
+   * @summary 사용 가능한 쿠폰 발급
+   */
+  @TypedRoute.Post('/public')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 404,
+    description: 'invalid coupon code',
+  })
+  @TypedException<IErrorResponse<409>>({
+    status: 409,
+    description: 'Coupon limit exceeded',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async issuePublicCouponTicket(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedBody() body: Omit<CreatePublicCouponTicketDto, 'userId'>,
+    @SessionUser() session: ISessionWithUser,
+  ): Promise<CouponTicketDto> {
+    const couponTicket = await this.userCouponService.issueCouponTicket({
+      ...body,
+      userId: session.userId,
+    });
+
+    return couponTicketToDto(couponTicket);
+  }
+
+  /**
+   * 현재 세션 사용자에게 비공개 쿠폰을 발급합니다. (쿠폰 코드 필요)
+   *
+   * Request Body의 type에 따라 발급되는 쿠폰의 종류가 결정됩니다.
+   *
    * - type: 'private' - 비공개 쿠폰 (쿠폰 번호 입력. 올바른 쿠폰 번호를 입력해야 발급)
    *
    * 응답 결과로 받은 쿠폰은 실제 사용 가능한 쿠폰의 정보입니다.
@@ -78,7 +131,7 @@ export class UserCouponController {
    * @tag user
    * @summary 사용 가능한 쿠폰 발급
    */
-  @TypedRoute.Post('/')
+  @TypedRoute.Post('/private')
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -95,17 +148,15 @@ export class UserCouponController {
     status: INVALID_LMS_SECRET,
     description: 'invalid LMS api secret',
   })
-  async issueCouponTicket(
+  async issuePrivateCouponTicket(
     @TypedHeaders() headers: AuthHeaders,
-    @TypedBody() body: Omit<CreateCouponTicketDto, 'userId'>,
+    @TypedBody() body: Omit<CreatePrivateCouponTicketDto, 'userId'>,
     @SessionUser() session: ISessionWithUser,
   ): Promise<CouponTicketDto> {
-    const couponTicket = await this.userCouponService.issueCouponTicket(
-      typia.assert<CreateCouponTicketDto>({
-        ...body,
-        userId: session.userId,
-      }),
-    );
+    const couponTicket = await this.userCouponService.issueCouponTicket({
+      ...body,
+      userId: session.userId,
+    });
 
     return couponTicketToDto(couponTicket);
   }

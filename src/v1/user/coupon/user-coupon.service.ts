@@ -3,8 +3,7 @@ import { CouponTicketQueryService } from '@src/v1/coupon/ticket/coupon-ticket-qu
 import {
   ICouponTicket,
   ICouponTicketPaymentRelations,
-  IDisposableCouponTicketCreate,
-  IPublicCouponTicketCreate,
+  ICouponTicketCreateParams,
 } from '@src/v1/coupon/ticket/coupon-ticket.interface';
 import { CouponTicketService } from '@src/v1/coupon/ticket/coupon-ticket.service';
 
@@ -16,7 +15,7 @@ export class UserCouponService {
   ) {}
 
   async issueCouponTicket(
-    params: IPublicCouponTicketCreate | IDisposableCouponTicketCreate,
+    params: ICouponTicketCreateParams,
   ): Promise<ICouponTicket> {
     return await this.couponTicketService.createCouponTicket(params);
   }

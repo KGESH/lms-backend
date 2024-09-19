@@ -49,12 +49,20 @@ export type ICouponTicketCreate = Optional<ICouponTicket, 'id' | 'createdAt'>;
 
 export type IPublicCouponTicketCreate = {
   type: 'public';
-} & Pick<ICouponTicketCreate, 'couponId' | 'userId'>;
+  couponId: Uuid;
+  userId: Uuid;
+};
 
-export type IDisposableCouponTicketCreate = {
+export type IPrivateCouponTicketCreate = {
   type: 'private';
   code: string;
-} & Pick<ICouponTicketCreate, 'couponId' | 'userId'>;
+  couponId: Uuid;
+  userId: Uuid;
+};
+
+export type ICouponTicketCreateParams =
+  | IPublicCouponTicketCreate
+  | IPrivateCouponTicketCreate;
 
 export type ICouponTicketRelations = ICoupon & {
   ticket: ICouponTicket;

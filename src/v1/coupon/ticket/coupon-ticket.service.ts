@@ -2,8 +2,7 @@ import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { CouponTicketRepository } from '@src/v1/coupon/ticket/coupon-ticket.repository';
 import {
   ICouponTicket,
-  IDisposableCouponTicketCreate,
-  IPublicCouponTicketCreate,
+  ICouponTicketCreateParams,
 } from '@src/v1/coupon/ticket/coupon-ticket.interface';
 import { CouponQueryService } from '@src/v1/coupon/coupon-query.service';
 import { UserService } from '@src/v1/user/user.service';
@@ -11,6 +10,7 @@ import * as date from '@src/shared/utils/date';
 import { CouponDisposableQueryService } from '@src/v1/coupon/disposable/coupon-disposable-query.service';
 import { ICoupon } from '@src/v1/coupon/coupon.interface';
 import { CouponTicketQueryService } from '@src/v1/coupon/ticket/coupon-ticket-query.service';
+import { ICouponDisposable } from '@src/v1/coupon/disposable/coupon-disposable.interface';
 
 @Injectable()
 export class CouponTicketService {
@@ -24,7 +24,7 @@ export class CouponTicketService {
   ) {}
 
   async createCouponTicket(
-    params: IPublicCouponTicketCreate | IDisposableCouponTicketCreate,
+    params: ICouponTicketCreateParams,
   ): Promise<ICouponTicket> {
     const user = await this.userService.findUserByIdOrThrow({
       id: params.userId,
@@ -98,7 +98,7 @@ export class CouponTicketService {
 
   private async _createPublicCouponTicket(
     coupon: ICoupon,
-    params: IPublicCouponTicketCreate,
+    params: ICouponTicketCreateParams,
   ): Promise<ICouponTicket> {
     const now = date.now('date');
 
@@ -117,7 +117,7 @@ export class CouponTicketService {
 
   private async _createDisposableCouponTicket(
     coupon: ICoupon,
-    params: IDisposableCouponTicketCreate,
+    params: ICouponTicketCreateParams & Pick<ICouponDisposable, 'code'>,
   ): Promise<ICouponTicket> {
     const couponDisposable =
       await this.couponDisposableQueryService.findCouponDisposableByCodeOrThrow(

@@ -39,16 +39,29 @@ export type CouponTicketDto = {
 
 export type CreatePublicCouponTicketDto = {
   type: 'public';
-} & Pick<CouponTicketDto, 'couponId' | 'userId'>;
+  couponId: Uuid;
+  userId: Uuid;
+};
 
-export type CreateDisposableCouponTicketDto = {
+export type CreatePrivateCouponTicketDto = {
   type: 'private';
-  code: CouponDisposableDto['code'];
-} & Pick<CouponTicketDto, 'couponId' | 'userId'>;
+  code: string;
+  couponId: Uuid;
+  userId: Uuid;
+};
 
 export type CreateCouponTicketDto =
-  | CreatePublicCouponTicketDto
-  | CreateDisposableCouponTicketDto;
+  | {
+      type: 'public';
+      couponId: Uuid;
+      userId: Uuid;
+    }
+  | {
+      type: 'private';
+      code: string;
+      couponId: Uuid;
+      userId: Uuid;
+    };
 
 export type CouponTicketWithPaymentHistoryDto = CouponTicketDto & {
   payment: CouponTicketPaymentDto | null;

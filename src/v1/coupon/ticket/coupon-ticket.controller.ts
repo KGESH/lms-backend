@@ -8,7 +8,7 @@ import {
 } from '@nestia/core';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
-import typia, { TypeGuardError } from 'typia';
+import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '@src/shared/types/response';
 import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
 import { AuthHeaders } from '@src/v1/auth/auth.headers';
@@ -16,7 +16,8 @@ import { Uuid } from '@src/shared/types/primitive';
 import { couponTicketToDto } from '@src/shared/helpers/transofrm/coupon';
 import {
   CouponTicketDto,
-  CreateCouponTicketDto,
+  CreatePrivateCouponTicketDto,
+  CreatePublicCouponTicketDto,
 } from '@src/v1/coupon/ticket/coupon-ticket.dto';
 import { CouponTicketService } from '@src/v1/coupon/ticket/coupon-ticket.service';
 
@@ -84,7 +85,7 @@ export class CouponTicketController {
   }
 
   /**
-   * 특정 사용자에게 쿠폰을 발급합니다.
+   * 특정 사용자에게 공개 쿠폰을 발급합니다.
    *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
    *
@@ -93,8 +94,6 @@ export class CouponTicketController {
    * Request Body의 type에 따라 발급되는 쿠폰의 종류가 결정됩니다.
    *
    * - type: 'public' - 공개 쿠폰 (쿠폰 코드 미입력. 클릭만으로 발급)
-   *
-   * - type: 'private' - 비공개 쿠폰 (쿠폰 번호 입력. 올바른 쿠폰 번호를 입력해야 발급)
    *
    * 응답 결과로 받은 쿠폰은 실제 사용 가능한 쿠폰의 정보입니다.
    *
@@ -113,7 +112,7 @@ export class CouponTicketController {
    * @tag coupon
    * @summary 쿠폰 발급 - Role('admin', 'manager')
    */
-  @TypedRoute.Post('/')
+  @TypedRoute.Post('/public')
   @Roles('user', 'admin', 'manager')
   @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
@@ -136,17 +135,79 @@ export class CouponTicketController {
     status: INVALID_LMS_SECRET,
     description: 'invalid LMS api secret',
   })
-  async createCouponTicket(
+  async createPublicCouponTicket(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('couponId') couponId: Uuid,
-    @TypedBody() body: Omit<CreateCouponTicketDto, 'couponId'>,
+    @TypedBody() body: Omit<CreatePublicCouponTicketDto, 'couponId'>,
   ): Promise<CouponTicketDto> {
-    const couponTicket = await this.couponTicketService.createCouponTicket(
-      typia.assert<CreateCouponTicketDto>({
-        ...body,
-        couponId,
-      }),
-    );
+    const couponTicket = await this.couponTicketService.createCouponTicket({
+      ...body,
+      couponId,
+    });
+
+    return couponTicketToDto(couponTicket);
+  }
+
+  /**
+   * 특정 사용자에게 비공개 쿠폰을 발급합니다. (쿠폰 코드 필요)
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * 현재 사용자에게 쿠폰 발급을 원하면 v1/user/coupon/ticket 엔드포인트를 사용하세요.
+   *
+   * Request Body의 type에 따라 발급되는 쿠폰의 종류가 결정됩니다.
+   *
+   * - type: 'private' - 비공개 쿠폰 (쿠폰 번호 입력. 올바른 쿠폰 번호를 입력해야 발급)
+   *
+   * 응답 결과로 받은 쿠폰은 실제 사용 가능한 쿠폰의 정보입니다.
+   *
+   * 발급된 쿠폰의 사용 기한은 쿠폰 정보의 만료 날짜(expiredAt)와 쿠폰의 만료 기간(expiredIn) 중 빠른 것을 선택합니다.
+   *
+   * ex) 현재 날짜: 2020-01-01 쿠폰 정보의 만료 날짜(expiredAt): 2020-01-31, 쿠폰의 만료 기간(expiredIn): 7일
+   *
+   * - 발급된 쿠폰의 사용 기한은 '2020-01-08'이 됩니다.
+   *
+   * - expiredAt과 expiredIn 둘 중 하나가 null인 경우, null이 아닌 값이 사용됩니다.
+   *
+   * - expiredAt과 expiredIn 둘 다 null인 경우, 쿠폰의 만료 기간은 무제한입니다.
+   *
+   * 쿠폰이 최대 발행수 이상 발행되면 409 예외를 반환합니다. (volume, volumePerCitizen)
+   *
+   * @tag coupon
+   * @summary 비공개 쿠폰 발급 - Role('admin', 'manager')
+   */
+  @TypedRoute.Post('/private')
+  @Roles('user', 'admin', 'manager')
+  @UseGuards(RolesGuard)
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'Not enough [role] to access this resource.',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 404,
+    description: 'invalid coupon code',
+  })
+  @TypedException<IErrorResponse<409>>({
+    status: 409,
+    description: 'Coupon limit exceeded',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async createPrivateCouponTicket(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedParam('couponId') couponId: Uuid,
+    @TypedBody() body: Omit<CreatePrivateCouponTicketDto, 'couponId'>,
+  ): Promise<CouponTicketDto> {
+    const couponTicket = await this.couponTicketService.createCouponTicket({
+      ...body,
+      couponId,
+    });
 
     return couponTicketToDto(couponTicket);
   }
