@@ -77,7 +77,7 @@ export class UserCouponController {
    * @tag user
    * @summary 사용 가능한 쿠폰 발급
    */
-  @TypedRoute.Post('/public')
+  @TypedRoute.Post('/')
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -131,7 +131,7 @@ export class UserCouponController {
    * @tag user
    * @summary 사용 가능한 쿠폰 발급
    */
-  @TypedRoute.Post('/private')
+  @TypedRoute.Post('/disposable')
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
