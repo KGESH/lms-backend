@@ -13,9 +13,10 @@ import { IErrorResponse } from '@src/shared/types/response';
 import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
 import { AuthHeaders } from '@src/v1/auth/auth.headers';
 import { Uuid } from '@src/shared/types/primitive';
-import { couponTicketToDto } from '@src/shared/helpers/transofrm/coupon';
+import { couponTicketRelationsToDto } from '@src/shared/helpers/transofrm/coupon';
 import {
   CouponTicketDto,
+  CouponTicketRelationsDto,
   CreatePrivateCouponTicketDto,
   CreatePublicCouponTicketDto,
 } from '@src/v1/coupon/ticket/coupon-ticket.dto';
@@ -139,13 +140,13 @@ export class CouponTicketController {
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('couponId') couponId: Uuid,
     @TypedBody() body: Omit<CreatePublicCouponTicketDto, 'couponId'>,
-  ): Promise<CouponTicketDto> {
+  ): Promise<CouponTicketRelationsDto> {
     const couponTicket = await this.couponTicketService.createCouponTicket({
       ...body,
       couponId,
     });
 
-    return couponTicketToDto(couponTicket);
+    return couponTicketRelationsToDto(couponTicket);
   }
 
   /**
@@ -203,12 +204,12 @@ export class CouponTicketController {
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('couponId') couponId: Uuid,
     @TypedBody() body: Omit<CreatePrivateCouponTicketDto, 'couponId'>,
-  ): Promise<CouponTicketDto> {
+  ): Promise<CouponTicketRelationsDto> {
     const couponTicket = await this.couponTicketService.createCouponTicket({
       ...body,
       couponId,
     });
 
-    return couponTicketToDto(couponTicket);
+    return couponTicketRelationsToDto(couponTicket);
   }
 }

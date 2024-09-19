@@ -3,6 +3,7 @@ import { CouponTicketRepository } from '@src/v1/coupon/ticket/coupon-ticket.repo
 import {
   ICouponTicket,
   ICouponTicketCreateParams,
+  ICouponTicketRelations,
 } from '@src/v1/coupon/ticket/coupon-ticket.interface';
 import { CouponQueryService } from '@src/v1/coupon/coupon-query.service';
 import { UserService } from '@src/v1/user/user.service';
@@ -25,12 +26,12 @@ export class CouponTicketService {
 
   async createCouponTicket(
     params: ICouponTicketCreateParams,
-  ): Promise<ICouponTicket> {
+  ): Promise<ICouponTicketRelations> {
     const user = await this.userService.findUserByIdOrThrow({
       id: params.userId,
     });
 
-    const coupon = await this.couponQueryService.findCouponOrThrow({
+    const coupon = await this.couponQueryService.findCouponWithCriteriaOrThrow({
       id: params.couponId,
     });
 
@@ -66,7 +67,10 @@ export class CouponTicketService {
 
     this.logger.log('[CreateCouponTicket]', couponTicket);
 
-    return couponTicket;
+    return {
+      ...coupon,
+      ticket: couponTicket,
+    };
   }
 
   // Calculate coupon ticket expired date.

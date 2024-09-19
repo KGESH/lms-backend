@@ -11,12 +11,14 @@ import { SessionUser } from '@src/core/decorators/session-user.decorator';
 import { ISessionWithUser } from '@src/v1/auth/session.interface';
 import {
   CouponTicketDto,
+  CouponTicketRelationsDto,
   CouponTicketWithPaymentHistoryDto,
   CreatePrivateCouponTicketDto,
   CreatePublicCouponTicketDto,
 } from '@src/v1/coupon/ticket/coupon-ticket.dto';
 import {
   couponTicketPaymentHistoryToDto,
+  couponTicketRelationsToDto,
   couponTicketToDto,
 } from '@src/shared/helpers/transofrm/coupon';
 import { TypeGuardError } from 'typia';
@@ -98,13 +100,13 @@ export class UserCouponController {
     @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: Omit<CreatePublicCouponTicketDto, 'userId'>,
     @SessionUser() session: ISessionWithUser,
-  ): Promise<CouponTicketDto> {
+  ): Promise<CouponTicketRelationsDto> {
     const couponTicket = await this.userCouponService.issueCouponTicket({
       ...body,
       userId: session.userId,
     });
 
-    return couponTicketToDto(couponTicket);
+    return couponTicketRelationsToDto(couponTicket);
   }
 
   /**
@@ -153,7 +155,7 @@ export class UserCouponController {
     @TypedBody()
     body: Omit<CreatePrivateCouponTicketDto, 'userId' | 'couponId'>,
     @SessionUser() session: ISessionWithUser,
-  ): Promise<CouponTicketDto> {
+  ): Promise<CouponTicketRelationsDto> {
     const disposable = await this.userCouponService.findCouponDisposableByCode({
       code: body.code,
     });
@@ -168,6 +170,6 @@ export class UserCouponController {
       couponId: disposable.couponId,
     });
 
-    return couponTicketToDto(couponTicket);
+    return couponTicketRelationsToDto(couponTicket);
   }
 }

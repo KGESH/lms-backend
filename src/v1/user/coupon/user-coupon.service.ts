@@ -4,6 +4,7 @@ import {
   ICouponTicket,
   ICouponTicketPaymentRelations,
   ICouponTicketCreateParams,
+  ICouponTicketRelations,
 } from '@src/v1/coupon/ticket/coupon-ticket.interface';
 import { CouponTicketService } from '@src/v1/coupon/ticket/coupon-ticket.service';
 import { CouponDisposableQueryService } from '@src/v1/coupon/disposable/coupon-disposable-query.service';
@@ -27,7 +28,7 @@ export class UserCouponService {
 
   async issueCouponTicket(
     params: ICouponTicketCreateParams,
-  ): Promise<ICouponTicket> {
+  ): Promise<ICouponTicketRelations> {
     return await this.couponTicketService.createCouponTicket(params);
   }
 

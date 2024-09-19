@@ -1,5 +1,6 @@
 import { Uuid } from '@src/shared/types/primitive';
 import { Optional } from '@src/shared/types/optional';
+import { ICoupon } from '@src/v1/coupon/coupon.interface';
 
 /**
  * 쿠폰 적용 조건 Base
@@ -89,3 +90,11 @@ export type ICouponCriteriaCreate =
   | ICouponTeacherCriteriaCreate
   | ICouponCourseCriteriaCreate
   | ICouponEbookCriteriaCreate;
+
+export type ICouponWithCriteria = ICoupon & {
+  couponAllCriteria: ICouponAllCriteria[];
+  couponCategoryCriteria: ICouponCategoryCriteria[];
+  couponTeacherCriteria: ICouponTeacherCriteria[];
+  couponCourseCriteria: ICouponCourseCriteria[];
+  couponEbookCriteria: ICouponEbookCriteria[];
+};

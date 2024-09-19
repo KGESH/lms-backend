@@ -1,6 +1,13 @@
 import { ISO8601, Uuid } from '@src/shared/types/primitive';
-import { CouponDisposableDto } from '@src/v1/coupon/disposable/coupon-disposable.dto';
 import { CouponTicketPaymentDto } from '@src/v1/coupon/ticket/payment/coupon-ticket-payment.dto';
+import { CouponDto } from '@src/v1/coupon/coupon.dto';
+import {
+  CouponAllCriteriaDto,
+  CouponCategoryCriteriaDto,
+  CouponCourseCriteriaDto,
+  CouponEbookCriteriaDto,
+  CouponTeacherCriteriaDto,
+} from '@src/v1/coupon/criteria/coupon-criteria.dto';
 
 /**
  * 발급된 쿠폰
@@ -65,4 +72,13 @@ export type CreateCouponTicketDto =
 
 export type CouponTicketWithPaymentHistoryDto = CouponTicketDto & {
   payment: CouponTicketPaymentDto | null;
+};
+
+export type CouponTicketRelationsDto = CouponDto & {
+  ticket: CouponTicketDto;
+  couponAllCriteria: CouponAllCriteriaDto[];
+  couponCategoryCriteria: CouponCategoryCriteriaDto[];
+  couponTeacherCriteria: CouponTeacherCriteriaDto[];
+  couponCourseCriteria: CouponCourseCriteriaDto[];
+  couponEbookCriteria: CouponEbookCriteriaDto[];
 };

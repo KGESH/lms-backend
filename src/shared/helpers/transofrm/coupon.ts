@@ -4,9 +4,11 @@ import { CouponDto } from '@src/v1/coupon/coupon.dto';
 import {
   ICouponTicket,
   ICouponTicketPaymentRelations,
+  ICouponTicketRelations,
 } from '@src/v1/coupon/ticket/coupon-ticket.interface';
 import {
   CouponTicketDto,
+  CouponTicketRelationsDto,
   CouponTicketWithPaymentHistoryDto,
 } from '@src/v1/coupon/ticket/coupon-ticket.dto';
 import { ICouponDisposable } from '@src/v1/coupon/disposable/coupon-disposable.interface';
@@ -67,5 +69,19 @@ export const couponTicketPaymentHistoryToDto = (
     payment: couponTicketPaymentRelations.payment
       ? couponTicketPaymentToDto(couponTicketPaymentRelations.payment)
       : null,
+  };
+};
+
+export const couponTicketRelationsToDto = (
+  couponRelations: ICouponTicketRelations,
+): CouponTicketRelationsDto => {
+  return {
+    ...couponToDto(couponRelations),
+    ticket: couponTicketToDto(couponRelations.ticket),
+    couponAllCriteria: couponRelations.couponAllCriteria,
+    couponCategoryCriteria: couponRelations.couponCategoryCriteria,
+    couponTeacherCriteria: couponRelations.couponTeacherCriteria,
+    couponCourseCriteria: couponRelations.couponCourseCriteria,
+    couponEbookCriteria: couponRelations.couponEbookCriteria,
   };
 };
