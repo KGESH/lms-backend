@@ -49,6 +49,11 @@ export class PaymentService {
     frontendAmount: number | string;
     calculatedBackendAmount: number | string;
   }): void {
+    this.logger.log(`[Payment Verification]`, {
+      pgAmount,
+      frontendAmount,
+      calculatedBackendAmount,
+    });
     if (!decimal.isSame(pgAmount, frontendAmount)) {
       throw new Error(
         `Payment amount mismatch. Reserved: ${frontendAmount} | Amount: ${pgAmount}`,

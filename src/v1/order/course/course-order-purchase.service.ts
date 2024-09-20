@@ -168,6 +168,7 @@ export class CourseOrderPurchaseService {
       'pricing' | 'discount'
     >,
     coupon: ICoupon | null,
+    rounding: 'floor' | 'ceil' = 'floor',
   ): Price {
     const { pricing, discount } = product;
     let calculatedAmount = pricing.amount;
@@ -186,6 +187,13 @@ export class CourseOrderPurchaseService {
     }
 
     if (!coupon) {
+      // Apply rounding if necessary
+      if (rounding === 'floor') {
+        calculatedAmount = decimal.floor(calculatedAmount);
+      } else if (rounding === 'ceil') {
+        calculatedAmount = decimal.ceil(calculatedAmount);
+      }
+
       return calculatedAmount;
     }
 
@@ -221,6 +229,13 @@ export class CourseOrderPurchaseService {
     // Ensure calculatedAmount does not go below zero
     if (decimal.lt(calculatedAmount, 0)) {
       calculatedAmount = '0';
+    }
+
+    // Apply rounding if necessary
+    if (rounding === 'floor') {
+      calculatedAmount = decimal.floor(calculatedAmount);
+    } else if (rounding === 'ceil') {
+      calculatedAmount = decimal.ceil(calculatedAmount);
     }
 
     return calculatedAmount;

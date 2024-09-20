@@ -47,3 +47,13 @@ export const divide = (a: number | string, b: number | string): Price => {
   const y = new BigNumber(b);
   return typia.assert<Price>(x.dividedBy(y).toString());
 };
+
+export const floor = (a: number | string): Price => {
+  const x = new BigNumber(a);
+  return typia.assert<Price>(x.integerValue(BigNumber.ROUND_FLOOR).toString());
+};
+
+export const ceil = (a: number | string): Price => {
+  const x = new BigNumber(a);
+  return typia.assert<Price>(x.integerValue(BigNumber.ROUND_CEIL).toString());
+};
