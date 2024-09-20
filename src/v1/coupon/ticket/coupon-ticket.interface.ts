@@ -73,6 +73,6 @@ export type ICouponTicketRelations = ICoupon & {
   couponEbookCriteria: ICouponEbookCriteria[];
 };
 
-export type ICouponTicketPaymentRelations = ICouponTicket & {
+export type ICouponTicketPaymentRelations = ICouponTicketRelations & {
   payment: ICouponTicketPayment | null;
 };

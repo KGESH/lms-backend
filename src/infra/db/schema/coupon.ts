@@ -13,15 +13,16 @@ import { orders } from './order';
 import { courseCategories, courses } from './course';
 import { teachers } from './teacher';
 import { ebooks } from './ebook';
+import { Price } from '@src/shared/types/primitive';
 
 export const coupons = pgTable('coupons', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
   description: text('description'),
   discountType: discountType('discount_type').notNull(),
-  value: decimal('value').notNull(),
-  threshold: decimal('threshold'),
-  limit: decimal('limit'),
+  value: decimal('value').$type<Price>().notNull(),
+  threshold: decimal('threshold').$type<Price>(),
+  limit: decimal('limit').$type<Price>(),
   volume: integer('volume'),
   volumePerCitizen: integer('volume_per_citizen'),
   expiredIn: integer('expired_in'),

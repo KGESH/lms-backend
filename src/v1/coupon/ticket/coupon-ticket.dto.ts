@@ -70,10 +70,6 @@ export type CreateCouponTicketDto =
       userId: Uuid;
     };
 
-export type CouponTicketWithPaymentHistoryDto = CouponTicketDto & {
-  payment: CouponTicketPaymentDto | null;
-};
-
 export type CouponTicketRelationsDto = CouponDto & {
   ticket: CouponTicketDto;
   couponAllCriteria: CouponAllCriteriaDto[];
@@ -81,4 +77,8 @@ export type CouponTicketRelationsDto = CouponDto & {
   couponTeacherCriteria: CouponTeacherCriteriaDto[];
   couponCourseCriteria: CouponCourseCriteriaDto[];
   couponEbookCriteria: CouponEbookCriteriaDto[];
+};
+
+export type CouponTicketPaymentRelationsDto = CouponTicketRelationsDto & {
+  payment: CouponTicketPaymentDto | null;
 };

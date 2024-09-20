@@ -52,7 +52,7 @@ describe('UserCouponController (e2e)', () => {
 
       const foundUserCoupons = response.data;
       expect(foundUserCoupons.length).toEqual(SEED_COUNT);
-      expect(foundUserCoupons[0].userId).toEqual(couponOwner.user.id);
+      expect(foundUserCoupons[0].ticket.userId).toEqual(couponOwner.user.id);
     });
   });
 

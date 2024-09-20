@@ -12,6 +12,7 @@ import {
   ICouponTeacherCriteria,
   ICouponWithCriteria,
 } from '@src/v1/coupon/criteria/coupon-criteria.interface';
+import { assertCoupon } from '@src/shared/helpers/assert/coupon';
 
 @Injectable()
 export class CouponQueryRepository {
@@ -26,23 +27,7 @@ export class CouponQueryRepository {
       limit: pagination.pageSize,
     });
 
-    return coupons.map((coupon) =>
-      typia.assert<ICoupon>({
-        id: coupon.id,
-        name: coupon.name,
-        description: coupon.description,
-        closedAt: coupon.closedAt,
-        discountType: coupon.discountType,
-        expiredAt: coupon.expiredAt,
-        expiredIn: coupon.expiredIn,
-        limit: coupon.limit,
-        openedAt: coupon.openedAt,
-        threshold: coupon.threshold,
-        value: coupon.value,
-        volume: coupon.volume,
-        volumePerCitizen: coupon.volumePerCitizen,
-      }),
-    );
+    return coupons.map((coupon) => assertCoupon(coupon));
   }
 
   async findCoupon(where: Pick<ICoupon, 'id'>): Promise<ICoupon | null> {
@@ -54,21 +39,7 @@ export class CouponQueryRepository {
       return null;
     }
 
-    return typia.assert<ICoupon>({
-      id: coupon.id,
-      name: coupon.name,
-      description: coupon.description,
-      closedAt: coupon.closedAt,
-      discountType: coupon.discountType,
-      expiredAt: coupon.expiredAt,
-      expiredIn: coupon.expiredIn,
-      limit: coupon.limit,
-      openedAt: coupon.openedAt,
-      threshold: coupon.threshold,
-      value: coupon.value,
-      volume: coupon.volume,
-      volumePerCitizen: coupon.volumePerCitizen,
-    });
+    return assertCoupon(coupon);
   }
 
   async findCouponWithCriteria(
@@ -90,21 +61,7 @@ export class CouponQueryRepository {
     }
 
     return {
-      ...typia.assert<ICoupon>({
-        id: coupon.id,
-        name: coupon.name,
-        description: coupon.description,
-        closedAt: coupon.closedAt,
-        discountType: coupon.discountType,
-        expiredAt: coupon.expiredAt,
-        expiredIn: coupon.expiredIn,
-        limit: coupon.limit,
-        openedAt: coupon.openedAt,
-        threshold: coupon.threshold,
-        value: coupon.value,
-        volume: coupon.volume,
-        volumePerCitizen: coupon.volumePerCitizen,
-      }),
+      ...assertCoupon(coupon),
       couponAllCriteria: typia.assert<ICouponAllCriteria[]>(
         coupon.couponAllCriteria,
       ),

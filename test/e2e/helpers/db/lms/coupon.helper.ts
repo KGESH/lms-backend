@@ -29,28 +29,14 @@ import {
   ICouponEbookCriteria,
   ICouponTeacherCriteria,
 } from '../../../../../src/v1/coupon/criteria/coupon-criteria.interface';
+import { assertCoupon } from '@src/shared/helpers/assert/coupon';
 
 export const createCoupon = async (
   params: ICouponCreate,
   db: TransactionClient,
 ): Promise<ICoupon> => {
   const [coupon] = await db.insert(dbSchema.coupons).values(params).returning();
-
-  return typia.assert<ICoupon>({
-    id: coupon.id,
-    name: coupon.name,
-    description: coupon.description,
-    closedAt: coupon.closedAt,
-    discountType: coupon.discountType,
-    expiredAt: coupon.expiredAt,
-    expiredIn: coupon.expiredIn,
-    limit: coupon.limit,
-    openedAt: coupon.openedAt,
-    threshold: coupon.threshold,
-    value: coupon.value,
-    volume: coupon.volume,
-    volumePerCitizen: coupon.volumePerCitizen,
-  });
+  return assertCoupon(coupon);
 };
 
 export const createManyCoupons = async (
@@ -58,23 +44,7 @@ export const createManyCoupons = async (
   db: TransactionClient,
 ): Promise<ICoupon[]> => {
   const coupons = await db.insert(dbSchema.coupons).values(params).returning();
-  return coupons.map((coupon) =>
-    typia.assert<ICoupon>({
-      id: coupon.id,
-      name: coupon.name,
-      description: coupon.description,
-      closedAt: coupon.closedAt,
-      discountType: coupon.discountType,
-      expiredAt: coupon.expiredAt,
-      expiredIn: coupon.expiredIn,
-      limit: coupon.limit,
-      openedAt: coupon.openedAt,
-      threshold: coupon.threshold,
-      value: coupon.value,
-      volume: coupon.volume,
-      volumePerCitizen: coupon.volumePerCitizen,
-    }),
-  );
+  return coupons.map((coupon) => assertCoupon(coupon));
 };
 
 export const createCouponTicket = async (

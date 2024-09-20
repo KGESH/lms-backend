@@ -6,9 +6,9 @@ import {
   ICouponUpdate,
 } from '@src/v1/coupon/coupon.interface';
 import { dbSchema } from '@src/infra/db/schema';
-import * as typia from 'typia';
 import { eq } from 'drizzle-orm';
 import { Uuid } from '@src/shared/types/primitive';
+import { assertCoupon } from '@src/shared/helpers/assert/coupon';
 
 @Injectable()
 export class CouponRepository {
@@ -23,21 +23,7 @@ export class CouponRepository {
       .values(params)
       .returning();
 
-    return typia.assert<ICoupon>({
-      id: coupon.id,
-      name: coupon.name,
-      description: coupon.description,
-      closedAt: coupon.closedAt,
-      discountType: coupon.discountType,
-      expiredAt: coupon.expiredAt,
-      expiredIn: coupon.expiredIn,
-      limit: coupon.limit,
-      openedAt: coupon.openedAt,
-      threshold: coupon.threshold,
-      value: coupon.value,
-      volume: coupon.volume,
-      volumePerCitizen: coupon.volumePerCitizen,
-    });
+    return assertCoupon(coupon);
   }
 
   async updateCoupon(
@@ -51,21 +37,7 @@ export class CouponRepository {
       .where(eq(dbSchema.coupons.id, where.id))
       .returning();
 
-    return typia.assert<ICoupon>({
-      id: updated.id,
-      name: updated.name,
-      description: updated.description,
-      closedAt: updated.closedAt,
-      discountType: updated.discountType,
-      expiredAt: updated.expiredAt,
-      expiredIn: updated.expiredIn,
-      limit: updated.limit,
-      openedAt: updated.openedAt,
-      threshold: updated.threshold,
-      value: updated.value,
-      volume: updated.volume,
-      volumePerCitizen: updated.volumePerCitizen,
-    });
+    return assertCoupon(updated);
   }
 
   // Cascade delete

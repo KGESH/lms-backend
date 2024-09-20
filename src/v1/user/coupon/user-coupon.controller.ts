@@ -11,12 +11,12 @@ import { SessionUser } from '@src/core/decorators/session-user.decorator';
 import { ISessionWithUser } from '@src/v1/auth/session.interface';
 import {
   CouponTicketRelationsDto,
-  CouponTicketWithPaymentHistoryDto,
+  CouponTicketPaymentRelationsDto,
   CreatePrivateCouponTicketDto,
   CreatePublicCouponTicketDto,
 } from '@src/v1/coupon/ticket/coupon-ticket.dto';
 import {
-  couponTicketPaymentHistoryToDto,
+  couponTicketPaymentRelationsToDto,
   couponTicketRelationsToDto,
 } from '@src/shared/helpers/transofrm/coupon';
 import { TypeGuardError } from 'typia';
@@ -45,12 +45,12 @@ export class UserCouponController {
   async getUserCoupons(
     @TypedHeaders() headers: AuthHeaders,
     @SessionUser() session: ISessionWithUser,
-  ): Promise<CouponTicketWithPaymentHistoryDto[]> {
+  ): Promise<CouponTicketPaymentRelationsDto[]> {
     const couponTickets = await this.userCouponService.getUserCoupons({
       userId: session.userId,
     });
 
-    return couponTickets.map(couponTicketPaymentHistoryToDto);
+    return couponTickets.map(couponTicketPaymentRelationsToDto);
   }
 
   /**

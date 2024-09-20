@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import {
-  ICouponTicket, ICouponTicketPaymentRelations,
-  ICouponTicketRelations
-} from "@src/v1/coupon/ticket/coupon-ticket.interface";
+  ICouponTicket,
+  ICouponTicketPaymentRelations,
+  ICouponTicketRelations,
+} from '@src/v1/coupon/ticket/coupon-ticket.interface';
 import { eq, count, and } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import { UInt } from '@src/shared/types/primitive';
 import { Optional } from '@src/shared/types/optional';
 import * as typia from 'typia';
-import { ICoupon } from '@src/v1/coupon/coupon.interface';
 import {
   ICouponAllCriteria,
   ICouponCategoryCriteria,
@@ -17,6 +17,7 @@ import {
   ICouponEbookCriteria,
   ICouponTeacherCriteria,
 } from '@src/v1/coupon/criteria/coupon-criteria.interface';
+import { assertCoupon } from '@src/shared/helpers/assert/coupon';
 
 @Injectable()
 export class CouponTicketQueryRepository {
@@ -46,21 +47,7 @@ export class CouponTicketQueryRepository {
 
     const { coupon, ...ticket } = couponTicket;
     return {
-      ...typia.assert<ICoupon>({
-        id: coupon.id,
-        name: coupon.name,
-        description: coupon.description,
-        closedAt: coupon.closedAt,
-        discountType: coupon.discountType,
-        expiredAt: coupon.expiredAt,
-        expiredIn: coupon.expiredIn,
-        limit: coupon.limit,
-        openedAt: coupon.openedAt,
-        threshold: coupon.threshold,
-        value: coupon.value,
-        volume: coupon.volume,
-        volumePerCitizen: coupon.volumePerCitizen,
-      }),
+      ...assertCoupon(coupon),
       ticket,
       couponAllCriteria: typia.assert<ICouponAllCriteria[]>(
         coupon.couponAllCriteria,
@@ -87,12 +74,39 @@ export class CouponTicketQueryRepository {
       where: eq(dbSchema.couponTickets.userId, where.userId),
       with: {
         couponTicketPayment: true,
+        coupon: {
+          with: {
+            couponAllCriteria: true,
+            couponCategoryCriteria: true,
+            couponTeacherCriteria: true,
+            couponCourseCriteria: true,
+            couponEbookCriteria: true,
+          },
+        },
       },
     });
 
-    return couponTickets.map((couponTicket) => ({
-      ...couponTicket,
+    console.log(`[DEBUG]`, JSON.stringify(couponTickets, null, 4));
+
+    return couponTickets.map(({ coupon, ...couponTicket }) => ({
+      ...assertCoupon(coupon),
+      ticket: couponTicket,
       payment: couponTicket.couponTicketPayment ?? null,
+      couponAllCriteria: typia.assert<ICouponAllCriteria[]>(
+        coupon.couponAllCriteria,
+      ),
+      couponCategoryCriteria: typia.assert<ICouponCategoryCriteria[]>(
+        coupon.couponCategoryCriteria,
+      ),
+      couponTeacherCriteria: typia.assert<ICouponTeacherCriteria[]>(
+        coupon.couponTeacherCriteria,
+      ),
+      couponCourseCriteria: typia.assert<ICouponCourseCriteria[]>(
+        coupon.couponCourseCriteria,
+      ),
+      couponEbookCriteria: typia.assert<ICouponEbookCriteria[]>(
+        coupon.couponEbookCriteria,
+      ),
     }));
   }
 
