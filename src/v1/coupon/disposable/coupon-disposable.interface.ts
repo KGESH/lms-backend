@@ -1,5 +1,5 @@
 import { Uuid } from '@src/shared/types/primitive';
-import { Optional } from '@src/shared/types/optional';
+import { ICouponTicket } from '@src/v1/coupon/ticket/coupon-ticket.interface';
 
 /**
  * 일회용 쿠폰 코드
@@ -35,3 +35,7 @@ export type ICouponDisposableCreate = Pick<
   ICouponDisposable,
   'couponId' | 'code' | 'expiredAt'
 >;
+
+export type ICouponDisposableWithUsedTicket = ICouponDisposable & {
+  usedTicket: ICouponTicket | null;
+};

@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
-import { ICouponDisposable } from '@src/v1/coupon/disposable/coupon-disposable.interface';
+import {
+  ICouponDisposable,
+  ICouponDisposableWithUsedTicket,
+} from '@src/v1/coupon/disposable/coupon-disposable.interface';
 import { and, eq, inArray } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import { OptionalPick } from '@src/shared/types/optional';
@@ -59,12 +62,19 @@ export class CouponDisposableQueryRepository {
 
   async findCouponDisposableByCode(
     where: Pick<ICouponDisposable, 'code'>,
-  ): Promise<ICouponDisposable | null> {
+  ): Promise<ICouponDisposableWithUsedTicket | null> {
     const couponDisposable =
       await this.drizzle.db.query.couponDisposables.findFirst({
         where: eq(dbSchema.couponDisposables.code, where.code),
+        with: {
+          ticket: true,
+        },
       });
 
-    return couponDisposable ?? null;
+    if (!couponDisposable) {
+      return null;
+    }
+
+    return { ...couponDisposable, usedTicket: couponDisposable.ticket ?? null };
   }
 }

@@ -10,6 +10,9 @@ import {
 import { relations } from 'drizzle-orm';
 import { users } from './user';
 import { orders } from './order';
+import { courseCategories, courses } from './course';
+import { teachers } from './teacher';
+import { ebooks } from './ebook';
 
 export const coupons = pgTable('coupons', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -110,6 +113,72 @@ export const couponsRelations = relations(coupons, ({ many }) => ({
   couponEbookCriteria: many(couponEbookCriteria),
 }));
 
+export const couponAllCriteriaRelations = relations(
+  couponAllCriteria,
+  ({ one }) => ({
+    coupon: one(coupons, {
+      fields: [couponAllCriteria.couponId],
+      references: [coupons.id],
+    }),
+  }),
+);
+
+export const couponCategoryCriteriaRelations = relations(
+  couponCategoryCriteria,
+  ({ one }) => ({
+    coupon: one(coupons, {
+      fields: [couponCategoryCriteria.couponId],
+      references: [coupons.id],
+    }),
+    category: one(courseCategories, {
+      fields: [couponCategoryCriteria.categoryId],
+      references: [courseCategories.id],
+    }),
+  }),
+);
+
+export const couponTeacherCriteriaRelations = relations(
+  couponTeacherCriteria,
+  ({ one }) => ({
+    coupon: one(coupons, {
+      fields: [couponTeacherCriteria.couponId],
+      references: [coupons.id],
+    }),
+    teacher: one(teachers, {
+      fields: [couponTeacherCriteria.teacherId],
+      references: [teachers.id],
+    }),
+  }),
+);
+
+export const couponCourseCriteriaRelations = relations(
+  couponCourseCriteria,
+  ({ one }) => ({
+    coupon: one(coupons, {
+      fields: [couponCourseCriteria.couponId],
+      references: [coupons.id],
+    }),
+    course: one(courses, {
+      fields: [couponCourseCriteria.courseId],
+      references: [courses.id],
+    }),
+  }),
+);
+
+export const couponEbookCriteriaRelations = relations(
+  couponEbookCriteria,
+  ({ one }) => ({
+    coupon: one(coupons, {
+      fields: [couponEbookCriteria.couponId],
+      references: [coupons.id],
+    }),
+    ebook: one(ebooks, {
+      fields: [couponEbookCriteria.ebookId],
+      references: [ebooks.id],
+    }),
+  }),
+);
+
 export const couponDisposablesRelations = relations(
   couponDisposables,
   ({ one }) => ({
@@ -117,6 +186,7 @@ export const couponDisposablesRelations = relations(
       fields: [couponDisposables.couponId],
       references: [coupons.id],
     }),
+    ticket: one(couponTickets),
   }),
 );
 
@@ -129,7 +199,10 @@ export const couponTicketsRelations = relations(couponTickets, ({ one }) => ({
     fields: [couponTickets.couponId],
     references: [coupons.id],
   }),
-  couponDisposable: one(couponDisposables),
+  couponDisposable: one(couponDisposables, {
+    fields: [couponTickets.couponDisposableId],
+    references: [couponDisposables.id],
+  }),
   couponTicketPayment: one(couponTicketPayments),
 }));
 
@@ -161,6 +234,11 @@ export const couponDbSchema = {
 
   // Relations
   couponsRelations,
+  couponAllCriteriaRelations,
+  couponCategoryCriteriaRelations,
+  couponTeacherCriteriaRelations,
+  couponCourseCriteriaRelations,
+  couponEbookCriteriaRelations,
   couponDisposablesRelations,
   couponTicketsRelations,
   couponTicketPaymentsRelations,

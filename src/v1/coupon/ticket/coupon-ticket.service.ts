@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, Logger } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { CouponTicketRepository } from '@src/v1/coupon/ticket/coupon-ticket.repository';
 import {
   ICouponTicket,
@@ -80,6 +85,10 @@ export class CouponTicketService {
     now: Date,
     { expiredAt, expiredIn }: Pick<ICoupon, 'expiredAt' | 'expiredIn'>,
   ): Date | null {
+    if (expiredAt && expiredAt < now) {
+      throw new ForbiddenException('Coupon expired');
+    }
+
     if (!expiredAt && !expiredIn) {
       return null;
     }
@@ -127,6 +136,10 @@ export class CouponTicketService {
       await this.couponDisposableQueryService.findCouponDisposableByCodeOrThrow(
         { code: params.code },
       );
+
+    if (couponDisposable.usedTicket) {
+      throw new ConflictException('Coupon code already used');
+    }
 
     const now = date.now('date');
 

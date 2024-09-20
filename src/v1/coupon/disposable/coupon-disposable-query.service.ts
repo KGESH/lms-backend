@@ -3,7 +3,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ICouponDisposable } from '@src/v1/coupon/disposable/coupon-disposable.interface';
+import {
+  ICouponDisposable,
+  ICouponDisposableWithUsedTicket,
+} from '@src/v1/coupon/disposable/coupon-disposable.interface';
 import { CouponDisposableQueryRepository } from '@src/v1/coupon/disposable/coupon-disposable-query.repository';
 import { OptionalPick } from '@src/shared/types/optional';
 import { Pagination } from '@src/shared/types/pagination';
@@ -50,7 +53,7 @@ export class CouponDisposableQueryService {
 
   async findCouponDisposableByCode(
     where: Pick<ICouponDisposable, 'code'>,
-  ): Promise<ICouponDisposable | null> {
+  ): Promise<ICouponDisposableWithUsedTicket | null> {
     return await this.couponDisposableQueryRepository.findCouponDisposableByCode(
       where,
     );
@@ -58,7 +61,7 @@ export class CouponDisposableQueryService {
 
   async findCouponDisposableByCodeOrThrow(
     where: Pick<ICouponDisposable, 'code'>,
-  ): Promise<ICouponDisposable> {
+  ): Promise<ICouponDisposableWithUsedTicket> {
     const couponDisposable =
       await this.couponDisposableQueryRepository.findCouponDisposableByCode(
         where,

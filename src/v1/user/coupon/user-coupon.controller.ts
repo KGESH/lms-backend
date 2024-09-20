@@ -10,7 +10,6 @@ import { UserCouponService } from '@src/v1/user/coupon/user-coupon.service';
 import { SessionUser } from '@src/core/decorators/session-user.decorator';
 import { ISessionWithUser } from '@src/v1/auth/session.interface';
 import {
-  CouponTicketDto,
   CouponTicketRelationsDto,
   CouponTicketWithPaymentHistoryDto,
   CreatePrivateCouponTicketDto,
@@ -19,7 +18,6 @@ import {
 import {
   couponTicketPaymentHistoryToDto,
   couponTicketRelationsToDto,
-  couponTicketToDto,
 } from '@src/shared/helpers/transofrm/coupon';
 import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '@src/shared/types/response';
@@ -84,6 +82,10 @@ export class UserCouponController {
     status: 400,
     description: 'invalid request',
   })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'coupon expired',
+  })
   @TypedException<IErrorResponse<404>>({
     status: 404,
     description: 'invalid coupon code',
@@ -131,12 +133,16 @@ export class UserCouponController {
    * 쿠폰이 최대 발행수 이상 발행되면 409 예외를 반환합니다. (volume, volumePerCitizen)
    *
    * @tag user
-   * @summary 사용 가능한 쿠폰 발급
+   * @summary 올바른 쿠폰 코드 입력시, 사용 가능한 쿠폰 발급
    */
   @TypedRoute.Post('/disposable')
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'coupon expired',
   })
   @TypedException<IErrorResponse<404>>({
     status: 404,
