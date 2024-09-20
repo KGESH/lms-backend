@@ -6,7 +6,6 @@ import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { ConfigsService } from '@src/configs/configs.service';
 import { seedUsers } from '../helpers/db/lms/user.helper';
 import { seedCoupons } from '../helpers/db/lms/coupon.helper';
-import { CreateCouponTicketDto } from '@src/v1/coupon/ticket/coupon-ticket.dto';
 
 describe('UserCouponController (e2e)', () => {
   let host: Uri;
@@ -69,12 +68,7 @@ describe('UserCouponController (e2e)', () => {
         drizzle.db,
       );
 
-      const createUserCouponTicketDto: Omit<CreateCouponTicketDto, 'userId'> = {
-        type: 'public',
-        couponId: couponRelations.id,
-      };
-
-      const response = await UserCouponAPI.issueCouponTicket(
+      const response = await UserCouponAPI.issuePublicCouponTicket(
         {
           host,
           headers: {
@@ -82,7 +76,10 @@ describe('UserCouponController (e2e)', () => {
             UserSessionId: couponOwner.userSession.id,
           },
         },
-        createUserCouponTicketDto,
+        {
+          type: 'public',
+          couponId: couponRelations.id,
+        },
       );
       if (!response.success) {
         const message = JSON.stringify(response.data, null, 4);
@@ -90,7 +87,8 @@ describe('UserCouponController (e2e)', () => {
       }
 
       const issuedCoupon = response.data;
-      expect(issuedCoupon.couponId).toEqual(couponRelations.id);
+      expect(issuedCoupon.id).toEqual(couponRelations.id);
+      expect(issuedCoupon.ticket.userId).toEqual(couponOwner.user.id);
     });
   });
 });

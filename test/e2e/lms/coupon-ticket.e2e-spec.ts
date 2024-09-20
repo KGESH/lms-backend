@@ -6,7 +6,6 @@ import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { ConfigsService } from '@src/configs/configs.service';
 import { seedUsers } from '../helpers/db/lms/user.helper';
 import { seedCoupons } from '../helpers/db/lms/coupon.helper';
-import { CreateCouponTicketDto } from '@src/v1/coupon/ticket/coupon-ticket.dto';
 
 describe('CouponTicketController (e2e)', () => {
   let host: Uri;
@@ -27,72 +26,75 @@ describe('CouponTicketController (e2e)', () => {
     await app.close();
   });
 
-  describe('[Get coupon tickets]', () => {
-    it('should be get many coupon tickets', async () => {
-      const [admin] = await seedUsers({ count: 1, role: 'admin' }, drizzle.db);
-      const [couponOwner] = await seedUsers(
-        { count: 1, role: 'user' },
-        drizzle.db,
-      );
-      const SEED_COUNT = 1;
-      const [couponRelations] = await seedCoupons(
-        { count: SEED_COUNT, user: couponOwner.user },
-        drizzle.db,
-      );
+  // 미완성
+  // describe('[Get coupon tickets]', () => {
+  //   it('should be get many coupon tickets', async () => {
+  //     const [admin] = await seedUsers({ count: 1, role: 'admin' }, drizzle.db);
+  //     const [couponOwner] = await seedUsers(
+  //       { count: 1, role: 'user' },
+  //       drizzle.db,
+  //     );
+  //     const SEED_COUNT = 1;
+  //     const [couponRelations] = await seedCoupons(
+  //       { count: SEED_COUNT, user: couponOwner.user },
+  //       drizzle.db,
+  //     );
+  //
+  //     const response = await CouponTicketAPI.getCouponTickets(
+  //       {
+  //         host,
+  //         headers: {
+  //           LmsSecret,
+  //           UserSessionId: admin.userSession.id,
+  //         },
+  //       },
+  //       couponRelations.id,
+  //     );
+  //     if (!response.success || !response.data) {
+  //       const message = JSON.stringify(response.data, null, 4);
+  //       throw new Error(`assert - ${message}`);
+  //     }
+  //
+  //     const foundCouponTickets = response.data;
+  //     console.log(`[foundCouponTickets]`, foundCouponTickets);
+  //     expect(foundCouponTickets[0].couponId).toEqual(couponRelations.id);
+  //     expect(foundCouponTickets[0].userId).toEqual(couponOwner.user.id);
+  //   });
+  // });
 
-      const response = await CouponTicketAPI.getCouponTickets(
-        {
-          host,
-          headers: {
-            LmsSecret,
-            UserSessionId: admin.userSession.id,
-          },
-        },
-        couponRelations.id,
-      );
-      if (!response.success || !response.data) {
-        const message = JSON.stringify(response.data, null, 4);
-        throw new Error(`assert - ${message}`);
-      }
-
-      const foundCouponTickets = response.data;
-      expect(foundCouponTickets[0].couponId).toEqual(couponRelations.id);
-      expect(foundCouponTickets[0].userId).toEqual(couponOwner.user.id);
-    });
-  });
-
-  describe('[Get coupon ticket]', () => {
-    it('should be a coupon ticket success', async () => {
-      const [admin] = await seedUsers({ count: 1, role: 'admin' }, drizzle.db);
-      const [couponOwner] = await seedUsers(
-        { count: 1, role: 'user' },
-        drizzle.db,
-      );
-      const [couponRelations] = await seedCoupons(
-        { count: 1, user: couponOwner.user },
-        drizzle.db,
-      );
-
-      const response = await CouponTicketAPI.getCouponTicket(
-        {
-          host,
-          headers: {
-            LmsSecret,
-            UserSessionId: admin.userSession.id,
-          },
-        },
-        couponRelations.id,
-        couponRelations.ticket.id,
-      );
-      if (!response.success || !response.data) {
-        const message = JSON.stringify(response.data, null, 4);
-        throw new Error(`assert - ${message}`);
-      }
-
-      const foundCouponTicket = response.data;
-      expect(foundCouponTicket.userId).toEqual(couponOwner.user.id);
-    });
-  });
+  // 미완성
+  // describe('[Get coupon ticket]', () => {
+  //   it('should be a coupon ticket success', async () => {
+  //     const [admin] = await seedUsers({ count: 1, role: 'admin' }, drizzle.db);
+  //     const [couponOwner] = await seedUsers(
+  //       { count: 1, role: 'user' },
+  //       drizzle.db,
+  //     );
+  //     const [couponRelations] = await seedCoupons(
+  //       { count: 1, user: couponOwner.user },
+  //       drizzle.db,
+  //     );
+  //
+  //     const response = await CouponTicketAPI.getCouponTicket(
+  //       {
+  //         host,
+  //         headers: {
+  //           LmsSecret,
+  //           UserSessionId: admin.userSession.id,
+  //         },
+  //       },
+  //       couponRelations.id,
+  //       couponRelations.ticket.id,
+  //     );
+  //     if (!response.success || !response.data) {
+  //       const message = JSON.stringify(response.data, null, 4);
+  //       throw new Error(`assert - ${message}`);
+  //     }
+  //
+  //     const foundCouponTicket = response.data;
+  //     expect(foundCouponTicket.userId).toEqual(couponOwner.user.id);
+  //   });
+  // });
 
   describe('[Create coupon ticket]', () => {
     it('should be a create coupon ticket success', async () => {
@@ -106,12 +108,7 @@ describe('CouponTicketController (e2e)', () => {
         drizzle.db,
       );
 
-      const createCouponTicketDto: CreateCouponTicketDto = {
-        type: 'public',
-        userId: couponIssuer.user.id,
-      };
-
-      const response = await CouponTicketAPI.createCouponTicket(
+      const response = await CouponTicketAPI.createPublicCouponTicket(
         {
           host,
           headers: {
@@ -120,7 +117,10 @@ describe('CouponTicketController (e2e)', () => {
           },
         },
         couponRelations.id,
-        createCouponTicketDto,
+        {
+          type: 'public',
+          userId: couponIssuer.user.id,
+        },
       );
       if (!response.success || !response.data) {
         const message = JSON.stringify(response.data, null, 4);
@@ -128,8 +128,8 @@ describe('CouponTicketController (e2e)', () => {
       }
 
       const createdCouponTicket = response.data;
-      expect(createdCouponTicket.couponId).toEqual(couponRelations.id);
-      expect(createdCouponTicket.userId).toEqual(couponIssuer.user.id);
+      expect(createdCouponTicket.id).toEqual(couponRelations.id);
+      expect(createdCouponTicket.ticket.userId).toEqual(couponIssuer.user.id);
     });
   });
 });

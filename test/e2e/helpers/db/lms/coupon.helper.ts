@@ -164,6 +164,8 @@ export const seedCoupons = async (
     { length: count },
     (_, i) => ({
       ...typia.random<ICouponCreate>(),
+      expiredAt: null,
+      expiredIn: null,
       name: `coupon-${i}`,
     }),
   );
