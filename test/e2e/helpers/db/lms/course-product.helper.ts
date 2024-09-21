@@ -141,6 +141,7 @@ export const createCourseProductSnapshotDiscount = async (
 
 export const createRandomCourseProduct = async (
   db: TransactionClient,
+  index?: number,
 ): Promise<ICourseProductWithRelations> => {
   const {
     course,
@@ -163,7 +164,7 @@ export const createRandomCourseProduct = async (
     {
       ...typia.random<IProductSnapshotCreate>(),
       productId: product.id,
-      title: '테스트 온라인 강의',
+      title: `테스트 온라인 강의 ${index ?? ''}`,
       description: '테스트 온라인 강의 상품입니다.',
     } satisfies IProductSnapshotCreate,
     db,
@@ -248,6 +249,8 @@ export const seedCourseProducts = async (
   db: TransactionClient,
 ) => {
   return await Promise.all(
-    Array.from({ length: count }).map(() => createRandomCourseProduct(db)),
+    Array.from({ length: count }).map((_, index) =>
+      createRandomCourseProduct(db, index + 1),
+    ),
   );
 };

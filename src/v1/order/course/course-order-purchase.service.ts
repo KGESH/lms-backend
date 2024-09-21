@@ -254,25 +254,25 @@ export class CourseOrderPurchaseService {
       });
 
     try {
-      const couponTicket = params.couponTicketId
+      const couponRelations = params.couponTicketId
         ? await this.couponTicketQueryService.findCouponTicketRelationsOrThrow({
             id: params.couponTicketId,
           })
         : null;
 
-      if (couponTicket) {
+      if (couponRelations) {
         // Verify coupon ticket expiry
-        this._verifyCouponExpiryOrThrow(couponTicket);
+        this._verifyCouponExpiryOrThrow(couponRelations);
 
         // Verify coupon tickets criteria
-        this._verifyCourseCouponCriteriaOrThrow(courseProduct, couponTicket);
+        this._verifyCourseCouponCriteriaOrThrow(courseProduct, couponRelations);
       }
 
       // Verify payment amount mismatch
       if (params.paymentId) {
         const calculatedAmount = this._calculateAmount(
           courseProduct.lastSnapshot,
-          couponTicket,
+          couponRelations,
         );
 
         const pgPaymentResult = await this.paymentService.getPgPaymentResult(
@@ -321,11 +321,11 @@ export class CourseOrderPurchaseService {
             );
 
           // Use coupon tickets
-          const usedCouponTicket = couponTicket
+          const usedCouponTicket = couponRelations
             ? await this.couponTicketPaymentService.createCouponTicketPayments(
                 {
                   orderId: order.id,
-                  couponTicketId: couponTicket.id,
+                  couponTicketId: couponRelations.ticket.id,
                   createdAt: paidAt,
                 },
                 tx,

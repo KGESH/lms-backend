@@ -57,7 +57,10 @@ export const couponTickets = pgTable('coupon_tickets', {
 
 export const couponTicketPayments = pgTable('coupon_ticket_payments', {
   id: uuid('id').primaryKey().defaultRandom(),
-  couponTicketId: uuid('coupon_ticket_id').notNull().unique(),
+  couponTicketId: uuid('coupon_ticket_id')
+    .notNull()
+    .unique()
+    .references(() => couponTickets.id),
   orderId: uuid('order_id').notNull(),
   createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
     .notNull()

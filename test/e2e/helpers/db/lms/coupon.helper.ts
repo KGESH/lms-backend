@@ -29,7 +29,7 @@ import {
   ICouponEbookCriteria,
   ICouponTeacherCriteria,
 } from '../../../../../src/v1/coupon/criteria/coupon-criteria.interface';
-import { assertCoupon } from '@src/shared/helpers/assert/coupon';
+import { assertCoupon } from '../../../../../src/shared/helpers/assert/coupon';
 
 export const createCoupon = async (
   params: ICouponCreate,
@@ -136,7 +136,16 @@ export const seedCoupons = async (
       ...typia.random<ICouponCreate>(),
       expiredAt: null,
       expiredIn: null,
-      name: `coupon-${i}`,
+      discountType: 'percent',
+      name: `할인 쿠폰 ${i}`,
+      description: `${(i % 10) * 10 + 1}% 할인`,
+      value: `${(i % 10) * 10 + 1}`,
+      threshold: null,
+      limit: null,
+      volume: null,
+      volumePerCitizen: null,
+      closedAt: null,
+      openedAt: null,
     }),
   );
 

@@ -28,6 +28,7 @@ import { seedEbooks } from './test/e2e/helpers/db/lms/ebook.helper';
 import { seedEbookProducts } from './test/e2e/helpers/db/lms/ebook-product.helper';
 import { seedPosts } from './test/e2e/helpers/db/lms/post.helper';
 import { seedNavbarCategories } from './test/e2e/helpers/db/lms/post-category.helper';
+import { seedCoupons } from './test/e2e/helpers/db/lms/coupon.helper';
 
 const env = new ConfigService();
 
@@ -68,7 +69,7 @@ async function seed() {
       },
       db,
     );
-    await seedPgUsers(db);
+    const [testPgUser] = await seedPgUsers(db);
     await seedCourseProducts({ count: 3 }, db);
     await seedCourseReviews({ count: 3 }, db);
     await seedCourseOrders({ count: 3 }, db);
@@ -78,6 +79,7 @@ async function seed() {
     await seedEbookReviews({ count: 3 }, db);
     await seedPosts({ count: 3 }, db);
     await seedNavbarCategories(db);
+    await seedCoupons({ count: 3, user: testPgUser.user }, db);
   } catch (e) {
     console.error(e);
     await clearDatabase(db);
