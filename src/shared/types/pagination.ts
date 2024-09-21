@@ -3,9 +3,9 @@ import { PositiveInt, UInt } from './primitive';
 export type Pagination = {
   /**
    * page offset.
-   * default: 0
+   * default: 1
    */
-  page: UInt;
+  page: PositiveInt;
 
   /**
    * item count.
