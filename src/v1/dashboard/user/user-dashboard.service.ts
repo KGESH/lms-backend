@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { UserDashboardQueryRepository } from '@src/v1/dashboard/user/user-dashboard-query.repository';
-import { IUserWithoutPassword } from '@src/v1/user/user.interface';
 import { Uuid } from '@src/shared/types/primitive';
-import { IUserCourseResourceHistory } from '@src/v1/dashboard/user/user-dashboard.interface';
+import {
+  IPurchasedUser,
+  IUserCourseResourceHistory,
+} from '@src/v1/dashboard/user/user-dashboard.interface';
 import { UserCourseEnrollmentService } from '@src/v1/user/course/enrollment/user-course-enrollment.service';
 import { ICourseEnrollmentCertificate } from '@src/v1/user/course/enrollment/user-course-enrollment-relations.interface';
 import { ICourseEnrollment } from '@src/v1/course/enrollment/course-enrollment.interface';
-import { Pagination } from '@src/shared/types/pagination';
+import { Paginated, Pagination } from '@src/shared/types/pagination';
 
 @Injectable()
 export class UserDashboardService {
@@ -30,11 +32,13 @@ export class UserDashboardService {
     );
   }
 
-  async findPurchasedCourseUsers(where: {
-    courseId: Uuid;
-  }): Promise<IUserWithoutPassword[]> {
+  async findPurchasedCourseUsers(
+    where: { courseId: Uuid },
+    pagination: Pagination,
+  ): Promise<Paginated<IPurchasedUser[]>> {
     return await this.userDashboardQueryRepository.findPurchasedCourseUsers(
       where,
+      pagination,
     );
   }
 }

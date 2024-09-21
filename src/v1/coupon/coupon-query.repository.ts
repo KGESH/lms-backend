@@ -38,7 +38,7 @@ export class CouponQueryRepository {
 
     return {
       pagination,
-      totalCount: coupons[0].totalCount ?? 0,
+      totalCount: coupons[0]?.totalCount ?? 0,
       data: coupons.map(({ coupon }) => assertCoupon(coupon)),
     };
   }

@@ -2,10 +2,21 @@ import {
   ICourseOrderRelations,
   ICourseOrderWithRelations,
 } from '@src/v1/order/course/course-order.interface';
-import { OrderCourseDto } from '@src/v1/order/order.dto';
+import { OrderBaseDto, OrderCourseDto } from '@src/v1/order/order.dto';
 import * as typia from 'typia';
 import * as date from '@src/shared/utils/date';
 import { CourseOrderDto } from '@src/v1/order/course/course-order.dto';
+import { IOrder } from '@src/v1/order/order.interface';
+
+export const orderToDto = (order: IOrder): OrderBaseDto => ({
+  id: order.id,
+  userId: order.userId,
+  paymentMethod: order.paymentMethod,
+  title: order.title,
+  description: order.description,
+  amount: order.amount,
+  paidAt: order.paidAt ? date.toISOString(order.paidAt) : null,
+});
 
 export const courseOrderToDto = (courseOrder: unknown): OrderCourseDto => {
   const order = courseOrder as ICourseOrderRelations;

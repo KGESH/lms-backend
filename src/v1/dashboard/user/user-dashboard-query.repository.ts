@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { Uuid } from '@src/shared/types/primitive';
-import { eq } from 'drizzle-orm';
+import { asc, desc, eq, sql } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
-import { IUserWithoutPassword } from '@src/v1/user/user.interface';
-import { IUserCourseResourceHistory } from '@src/v1/dashboard/user/user-dashboard.interface';
-import * as typia from 'typia';
+import {
+  IPurchasedUser,
+  IUserCourseResourceHistory,
+} from '@src/v1/dashboard/user/user-dashboard.interface';
+import { Paginated, Pagination } from '@src/shared/types/pagination';
+import { assertOrder } from '@src/shared/helpers/assert/order';
 
 @Injectable()
 export class UserDashboardQueryRepository {
@@ -42,34 +45,57 @@ export class UserDashboardQueryRepository {
     }));
   }
 
-  async findPurchasedCourseUsers(where: {
-    courseId: Uuid;
-  }): Promise<IUserWithoutPassword[]> {
-    const courseProducts = await this.drizzle.db.query.courseProducts.findMany({
-      where: eq(dbSchema.courseProducts.courseId, where.courseId),
-      with: {
-        snapshots: {
-          with: {
-            courseOrders: {
-              with: {
-                order: {
-                  with: {
-                    user: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    });
+  async findPurchasedCourseUsers(
+    where: { courseId: Uuid },
+    pagination: Pagination,
+  ): Promise<Paginated<IPurchasedUser[]>> {
+    const users = await this.drizzle.db
+      .select({
+        user: dbSchema.users,
+        order: dbSchema.orders,
+        totalCount: sql<number>`count(${dbSchema.users.id}) over()`.mapWith(
+          Number,
+        ),
+      })
+      .from(dbSchema.courseProducts)
+      .where(eq(dbSchema.courseProducts.courseId, where.courseId))
+      .innerJoin(
+        dbSchema.courseProductSnapshots,
+        eq(
+          dbSchema.courseProductSnapshots.productId,
+          dbSchema.courseProducts.id,
+        ),
+      )
+      .innerJoin(
+        dbSchema.courseOrders,
+        eq(
+          dbSchema.courseOrders.productSnapshotId,
+          dbSchema.courseProductSnapshots.id,
+        ),
+      )
+      .innerJoin(
+        dbSchema.orders,
+        eq(dbSchema.orders.id, dbSchema.courseOrders.orderId),
+      )
+      .innerJoin(dbSchema.users, eq(dbSchema.users.id, dbSchema.orders.userId))
+      .groupBy(dbSchema.users.id, dbSchema.orders.id)
+      .orderBy(
+        pagination.orderBy === 'asc'
+          ? asc(dbSchema.orders.paidAt)
+          : desc(dbSchema.orders.paidAt),
+      )
+      .offset((pagination.page - 1) * pagination.pageSize)
+      .limit(pagination.pageSize);
 
-    return courseProducts
-      .flatMap((courseProduct) => courseProduct.snapshots)
-      .flatMap((snapshot) => snapshot.courseOrders)
-      .filter((courseOrder) => !!courseOrder?.order)
-      .map((courseOrder) =>
-        typia.misc.clone<IUserWithoutPassword>(courseOrder!.order.user),
-      );
+    return {
+      totalCount: users[0]?.totalCount ?? 0,
+      pagination,
+      data: users.map(
+        ({ order, user: { password, ...userWithoutPassword } }) => ({
+          user: userWithoutPassword,
+          order: assertOrder(order),
+        }),
+      ),
+    };
   }
 }
