@@ -70,8 +70,10 @@ describe('UserDashboardController (e2e)', () => {
               UserSessionId: admin.userSession.id,
             },
           },
-          purchasedUser.user.id,
-          course.id,
+          {
+            courseId: course.id,
+            userId: purchasedUser.user.id,
+          },
         );
       if (!response.success) {
         const message = JSON.stringify(response.data, null, 4);
@@ -103,16 +105,25 @@ describe('UserDashboardController (e2e)', () => {
               UserSessionId: admin.userSession.id,
             },
           },
-          firstUser.product.courseId,
+          {
+            courseId: firstUser.product.courseId,
+            orderBy: 'desc',
+            page: 0,
+            pageSize: 10,
+          },
         );
       if (!response.success) {
         const message = JSON.stringify(response.data, null, 4);
         throw new Error(`assert - ${message}`);
       }
 
-      const purchasedUsers = response.data;
+      const paginatedResult = response.data;
+      const purchasedUsers = paginatedResult.data;
       expect(
-        purchasedUsers.find((user) => user.id === firstUser.user.id),
+        purchasedUsers.find(({ user }) => user.id === firstUser.user.id),
+      ).toBeDefined();
+      expect(
+        purchasedUsers.find(({ order }) => order.id === firstUser.order.id),
       ).toBeDefined();
     });
   });
