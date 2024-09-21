@@ -50,13 +50,15 @@ describe('CouponController (e2e)', () => {
           pageSize: 10,
         },
       );
-      if (!response.success || !response.data) {
+      if (!response.success) {
         const message = JSON.stringify(response.data, null, 4);
         throw new Error(`assert - ${message}`);
       }
 
       const foundCoupons = response.data;
-      expect(foundCoupons.length).toEqual(SEED_COUNT);
+      console.log(`[DEBUG]`, foundCoupons);
+      expect(foundCoupons.data.length).toEqual(SEED_COUNT);
+      expect(foundCoupons.totalCount).toEqual(SEED_COUNT);
     });
   });
 
