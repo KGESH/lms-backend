@@ -108,7 +108,7 @@ describe('UserDashboardController (e2e)', () => {
           {
             courseId: firstUser.product.courseId,
             orderBy: 'desc',
-            page: 0,
+            page: 1,
             pageSize: 10,
           },
         );
