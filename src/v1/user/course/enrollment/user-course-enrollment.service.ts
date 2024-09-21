@@ -15,6 +15,7 @@ import { CourseEnrollmentProgressQueryRepository } from '@src/v1/course/enrollme
 import { CourseCertificateRepository } from '@src/v1/course/enrollment/certificate/course-certificate.repository';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { ICourseCertificate } from '@src/v1/course/enrollment/certificate/course-certificate.interface';
+import { Pagination } from '@src/shared/types/pagination';
 
 @Injectable()
 export class UserCourseEnrollmentService {

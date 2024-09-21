@@ -2,8 +2,9 @@ import { Module } from '@nestjs/common';
 import { UserDashboardController } from '@src/v1/dashboard/user/user-dashboard.controller';
 import { UserDashboardService } from '@src/v1/dashboard/user/user-dashboard.service';
 import { UserDashboardQueryRepository } from '@src/v1/dashboard/user/user-dashboard-query.repository';
+import { UserCourseEnrollmentModule } from '@src/v1/user/course/enrollment/user-course-enrollment.module';
 
-const modules = [];
+const modules = [UserCourseEnrollmentModule];
 
 const providers = [UserDashboardService, UserDashboardQueryRepository];
 

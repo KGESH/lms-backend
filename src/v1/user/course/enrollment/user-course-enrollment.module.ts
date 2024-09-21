@@ -16,6 +16,6 @@ const providers = [
   imports: [...modules],
   controllers: [UserCourseEnrollmentController],
   providers: [...providers],
-  exports: [...modules],
+  exports: [...modules, ...providers],
 })
 export class UserCourseEnrollmentModule {}

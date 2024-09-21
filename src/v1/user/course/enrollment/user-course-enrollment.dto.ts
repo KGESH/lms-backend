@@ -3,6 +3,7 @@ import { CourseCertificateDto } from '@src/v1/course/enrollment/certificate/cour
 import { CourseEnrollmentProgressDto } from '@src/v1/course/enrollment/progress/course-enrollment-progress.dto';
 import { Uuid } from '@src/shared/types/primitive';
 import { CourseWithRelationsDto } from '@src/v1/course/course-with-relations.dto';
+import { Pagination } from '@src/shared/types/pagination';
 
 export type CourseEnrollmentCertificateDto = {
   course: CourseWithRelationsDto;
@@ -15,3 +16,5 @@ export type CompleteLessonDto = {
   courseId: Uuid;
   lessonId: Uuid;
 };
+
+export type CourseEnrollmentQuery = Partial<Pagination>;

@@ -2,12 +2,15 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CouponQueryRepository } from '@src/v1/coupon/coupon-query.repository';
 import { ICoupon, ICouponPagination } from '@src/v1/coupon/coupon.interface';
 import { ICouponWithCriteria } from '@src/v1/coupon/criteria/coupon-criteria.interface';
+import { Paginated } from '@src/shared/types/pagination';
 
 @Injectable()
 export class CouponQueryService {
   constructor(private readonly couponQueryRepository: CouponQueryRepository) {}
 
-  async findCoupons(pagination: ICouponPagination): Promise<ICoupon[]> {
+  async findCoupons(
+    pagination: ICouponPagination,
+  ): Promise<Paginated<ICoupon[]>> {
     return await this.couponQueryRepository.findManyCoupons(pagination);
   }
 

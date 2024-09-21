@@ -26,6 +26,7 @@ import * as date from '@src/shared/utils/date';
 import { couponToDto } from '@src/shared/helpers/transofrm/coupon';
 import { withDefaultPagination } from '@src/core/pagination';
 import { CouponQueryService } from '@src/v1/coupon/coupon-query.service';
+import { Paginated } from '@src/shared/types/pagination';
 
 @Controller('v1/coupon')
 export class CouponController {
@@ -66,13 +67,17 @@ export class CouponController {
   async getCoupons(
     @TypedHeaders() headers: AuthHeaders,
     @TypedQuery() query: CouponQuery,
-  ): Promise<CouponDto[]> {
-    const coupons = await this.couponQueryService.findCoupons({
+  ): Promise<Paginated<CouponDto[]>> {
+    const paginatedCoupons = await this.couponQueryService.findCoupons({
       ...withDefaultPagination(query),
       orderByColumn: query.orderByColumn ?? 'expiredAt',
     });
 
-    return coupons.map(couponToDto);
+    return {
+      pagination: paginatedCoupons.pagination,
+      totalCount: paginatedCoupons.totalCount,
+      data: paginatedCoupons.data.map(couponToDto),
+    };
   }
 
   /**
