@@ -113,6 +113,7 @@ describe('OrderController (e2e)', () => {
           txId: null,
           paymentMethod: '프로모션 이벤트',
           amount: courseProduct.lastSnapshot!.pricing!.amount,
+          couponTicketId: null,
         },
       );
       if (!response.success) {
@@ -165,6 +166,7 @@ describe('OrderController (e2e)', () => {
           txId: null,
           paymentMethod: '프로모션 이벤트',
           amount: typia.random<Price>(),
+          couponTicketId: null,
         },
       );
       if (!response.success) {
