@@ -10,6 +10,8 @@ export type BirthDate = string & typia.tags.Format<'date'>;
 
 export type UInt = number & typia.tags.Type<'uint32'>;
 
+export type PositiveInt = UInt & typia.tags.Minimum<1>;
+
 export type UFloat = number & typia.tags.Type<'float'> & typia.tags.Minimum<0>;
 
 export type PhoneNumber = string; // Todo: typing

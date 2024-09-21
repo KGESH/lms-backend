@@ -1,4 +1,4 @@
-import { UInt } from './primitive';
+import { PositiveInt, UInt } from './primitive';
 
 export type Pagination = {
   /**
@@ -11,7 +11,7 @@ export type Pagination = {
    * item count.
    * default: 10
    */
-  pageSize: UInt;
+  pageSize: PositiveInt;
 
   /**
    * order by 'created_at'.
