@@ -7,6 +7,7 @@ import { ConfigsService } from '../../../src/configs/configs.service';
 import { seedUsers } from '../helpers/db/lms/user.helper';
 import { seedUiRepeatTimer } from '../helpers/db/ui/repeat-timer.helper';
 import { seedCarouselReview } from '../helpers/db/ui/carousel-review.helper';
+import { seedCarouselMainBanner } from '../helpers/db/ui/carousel-main-banner.helper';
 
 describe('UiComponentController (e2e)', () => {
   let host: Uri;
@@ -33,8 +34,9 @@ describe('UiComponentController (e2e)', () => {
         await seedUsers({ count: 1, role: 'manager' }, drizzle.db)
       )[0];
       const path = '/';
-      await seedCarouselReview({ count: 1 }, drizzle.db, path);
       await seedUiRepeatTimer({ count: 2 }, drizzle.db, path);
+      await seedCarouselMainBanner({ count: 1 }, drizzle.db, path);
+      await seedCarouselReview({ count: 1 }, drizzle.db, path);
 
       const response = await UiComponentAPI.getUiComponentsByPath(
         {
@@ -52,11 +54,20 @@ describe('UiComponentController (e2e)', () => {
         throw new Error(`assert - ${message}`);
       }
 
-      const ui = response.data;
-      expect(ui['carousel'].length).toEqual(1);
-      expect(ui['carousel'][0].path).toEqual('/');
-      expect(ui['repeat_timer'].length).toEqual(2);
-      expect(ui['repeat_timer'][0].path).toEqual('/');
+      const uiGroup = response.data;
+      const { repeatTimers, carousel, banners, marketingBanners } = uiGroup;
+      const { reviewCarousels, mainBannerCarousels, productCarousels } =
+        carousel;
+
+      expect(repeatTimers.length).toEqual(2);
+      expect(mainBannerCarousels.length).toEqual(1);
+      expect(reviewCarousels.length).toEqual(1);
+      expect(productCarousels.length).toEqual(0);
+      expect(banners.length).toEqual(0);
+      expect(marketingBanners.length).toEqual(0);
+      expect(repeatTimers[0].path).toEqual('/');
+      expect(mainBannerCarousels[0].uiCarousel.path).toEqual('/');
+      expect(reviewCarousels[0].uiCarousel.path).toEqual('/');
     });
   });
 });
