@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { ICoupon, ICouponPagination } from '@src/v1/coupon/coupon.interface';
-import { asc, desc, eq, sql } from 'drizzle-orm';
+import { count, eq } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import * as typia from 'typia';
 import {
@@ -21,25 +21,59 @@ export class CouponQueryRepository {
 
   async findManyCoupons(
     pagination: ICouponPagination,
-  ): Promise<Paginated<ICoupon[]>> {
-    const coupons = await this.drizzle.db
-      .select({
-        coupon: dbSchema.coupons,
-        totalCount: sql<number>`count(*) over()`.mapWith(Number),
-      })
-      .from(dbSchema.coupons)
-      .orderBy(
-        pagination.orderBy === 'asc'
-          ? asc(dbSchema.coupons[pagination.orderByColumn])
-          : desc(dbSchema.coupons[pagination.orderByColumn]),
-      )
-      .offset((pagination.page - 1) * pagination.pageSize)
-      .limit(pagination.pageSize);
+    db = this.drizzle.db,
+  ): Promise<Paginated<ICouponWithCriteria[]>> {
+    const { coupons, totalCount } = await db.transaction(async (tx) => {
+      const couponsQuery = tx.query.coupons.findMany({
+        with: {
+          couponAllCriteria: true,
+          couponCategoryCriteria: true,
+          couponTeacherCriteria: true,
+          couponCourseCriteria: true,
+          couponEbookCriteria: true,
+        },
+        orderBy: (coupon, { asc, desc }) =>
+          pagination.orderBy === 'asc'
+            ? asc(coupon[pagination.orderByColumn])
+            : desc(coupon[pagination.orderByColumn]),
+        offset: (pagination.page - 1) * pagination.pageSize,
+        limit: pagination.pageSize,
+      });
+      const totalCouponCountQuery = tx
+        .select({
+          totalCount: count(),
+        })
+        .from(dbSchema.coupons);
+
+      const [coupons, [{ totalCount }]] = await Promise.all([
+        couponsQuery,
+        totalCouponCountQuery,
+      ]);
+
+      return { coupons, totalCount };
+    });
 
     return {
       pagination,
-      totalCount: coupons[0]?.totalCount ?? 0,
-      data: coupons.map(({ coupon }) => assertCoupon(coupon)),
+      totalCount,
+      data: coupons.map((coupon) => ({
+        ...assertCoupon(coupon),
+        couponAllCriteria: typia.assert<ICouponAllCriteria[]>(
+          coupon.couponAllCriteria,
+        ),
+        couponCategoryCriteria: typia.assert<ICouponCategoryCriteria[]>(
+          coupon.couponCategoryCriteria,
+        ),
+        couponTeacherCriteria: typia.assert<ICouponTeacherCriteria[]>(
+          coupon.couponTeacherCriteria,
+        ),
+        couponCourseCriteria: typia.assert<ICouponCourseCriteria[]>(
+          coupon.couponCourseCriteria,
+        ),
+        couponEbookCriteria: typia.assert<ICouponEbookCriteria[]>(
+          coupon.couponEbookCriteria,
+        ),
+      })),
     };
   }
 

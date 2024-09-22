@@ -1,6 +1,6 @@
 import { Uuid } from '@src/shared/types/primitive';
-import { Optional } from '@src/shared/types/optional';
 import { CouponDto } from '@src/v1/coupon/coupon.dto';
+import { RequiredField } from '@src/shared/types/required-field';
 
 /**
  * 쿠폰 적용 조건 Base
@@ -29,7 +29,12 @@ export type CouponAllCriteriaDto = CouponCriteriaBaseDto & {
   type: 'all';
 };
 
-export type CreateCouponAllCriteriaDto = Optional<CouponAllCriteriaDto, 'id'>;
+export type CreateCouponAllCriteriaDto = Omit<CouponAllCriteriaDto, 'id'>;
+
+export type UpdateCouponAllCriteriaDto = Omit<
+  RequiredField<Partial<CouponAllCriteriaDto>, 'type' | 'id'>,
+  'couponId'
+>;
 
 export type CouponCategoryCriteriaDto = CouponCriteriaBaseDto & {
   /**
@@ -39,9 +44,14 @@ export type CouponCategoryCriteriaDto = CouponCriteriaBaseDto & {
   categoryId: Uuid;
 };
 
-export type CreateCouponCategoryCriteriaDto = Optional<
+export type CreateCouponCategoryCriteriaDto = Omit<
   CouponCategoryCriteriaDto,
   'id'
+>;
+
+export type UpdateCouponCategoryCriteriaDto = Omit<
+  RequiredField<Partial<CouponCategoryCriteriaDto>, 'type' | 'id'>,
+  'couponId'
 >;
 
 export type CouponTeacherCriteriaDto = CouponCriteriaBaseDto & {
@@ -52,9 +62,14 @@ export type CouponTeacherCriteriaDto = CouponCriteriaBaseDto & {
   teacherId: Uuid;
 };
 
-export type CreateCouponTeacherCriteriaDto = Optional<
+export type CreateCouponTeacherCriteriaDto = Omit<
   CouponTeacherCriteriaDto,
   'id'
+>;
+
+export type UpdateCouponTeacherCriteriaDto = Omit<
+  RequiredField<Partial<CouponTeacherCriteriaDto>, 'type' | 'id'>,
+  'couponId'
 >;
 
 export type CouponCourseCriteriaDto = CouponCriteriaBaseDto & {
@@ -65,9 +80,11 @@ export type CouponCourseCriteriaDto = CouponCriteriaBaseDto & {
   courseId: Uuid;
 };
 
-export type CreateCouponCourseCriteriaDto = Optional<
-  CouponCourseCriteriaDto,
-  'id'
+export type CreateCouponCourseCriteriaDto = Omit<CouponCourseCriteriaDto, 'id'>;
+
+export type UpdateCouponCourseCriteriaDto = Omit<
+  RequiredField<Partial<CouponCourseCriteriaDto>, 'type' | 'id'>,
+  'couponId'
 >;
 
 export type CouponEbookCriteriaDto = CouponCriteriaBaseDto & {
@@ -78,9 +95,11 @@ export type CouponEbookCriteriaDto = CouponCriteriaBaseDto & {
   ebookId: Uuid;
 };
 
-export type CreateCouponEbookCriteriaDto = Optional<
-  CouponEbookCriteriaDto,
-  'id'
+export type CreateCouponEbookCriteriaDto = Omit<CouponEbookCriteriaDto, 'id'>;
+
+export type UpdateCouponEbookCriteriaDto = Omit<
+  RequiredField<Partial<CouponEbookCriteriaDto>, 'type' | 'id'>,
+  'couponId'
 >;
 
 export type CouponCriteriaDto =
@@ -104,3 +123,10 @@ export type CouponWithCriteriaDto = CouponDto & {
   couponCourseCriteria: CouponCourseCriteriaDto[];
   couponEbookCriteria: CouponEbookCriteriaDto[];
 };
+
+export type CouponCriteriaUpdateDto =
+  | UpdateCouponAllCriteriaDto
+  | UpdateCouponCategoryCriteriaDto
+  | UpdateCouponTeacherCriteriaDto
+  | UpdateCouponCourseCriteriaDto
+  | UpdateCouponEbookCriteriaDto;

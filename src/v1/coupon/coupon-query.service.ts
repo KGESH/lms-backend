@@ -10,7 +10,7 @@ export class CouponQueryService {
 
   async findCoupons(
     pagination: ICouponPagination,
-  ): Promise<Paginated<ICoupon[]>> {
+  ): Promise<Paginated<ICouponWithCriteria[]>> {
     return await this.couponQueryRepository.findManyCoupons(pagination);
   }
 
@@ -18,14 +18,13 @@ export class CouponQueryService {
     return await this.couponQueryRepository.findCoupon(where);
   }
 
-  async findCouponOrThrow(where: Pick<ICoupon, 'id'>): Promise<ICoupon> {
-    const coupon = await this.findCoupon(where);
+  async findCouponWithCriteria(
+    where: Pick<ICoupon, 'id'>,
+  ): Promise<ICouponWithCriteria | null> {
+    const couponWithCriteria =
+      await this.couponQueryRepository.findCouponWithCriteria(where);
 
-    if (!coupon) {
-      throw new NotFoundException('Coupon not found');
-    }
-
-    return coupon;
+    return couponWithCriteria;
   }
 
   async findCouponWithCriteriaOrThrow(

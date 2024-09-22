@@ -6,30 +6,139 @@ import {
   ICouponUpdate,
 } from '@src/v1/coupon/coupon.interface';
 import { Uuid } from '@src/shared/types/primitive';
+import {
+  ICouponAllCriteria,
+  ICouponCategoryCriteria,
+  ICouponCourseCriteria,
+  ICouponCriteria,
+  ICouponCriteriaCreate,
+  ICouponCriteriaUpdate,
+  ICouponEbookCriteria,
+  ICouponTeacherCriteria,
+  ICouponWithCriteria,
+} from '@src/v1/coupon/criteria/coupon-criteria.interface';
+import { CouponCriteriaRepository } from '@src/v1/coupon/criteria/coupon-criteria.repository';
+import { DrizzleService } from '@src/infra/db/drizzle.service';
+import * as typia from 'typia';
+import { CouponQueryService } from '@src/v1/coupon/coupon-query.service';
 
 @Injectable()
 export class CouponService {
   private readonly logger = new Logger(CouponService.name);
-  constructor(private readonly couponRepository: CouponRepository) {}
+  constructor(
+    private readonly couponQueryService: CouponQueryService,
+    private readonly couponRepository: CouponRepository,
+    private readonly couponCriteriaRepository: CouponCriteriaRepository,
+    private readonly drizzle: DrizzleService,
+  ) {}
 
-  async createCoupon(params: ICouponCreate): Promise<ICoupon> {
-    const coupon = await this.couponRepository.createCoupon(params);
+  async createCoupon(
+    couponCreateParams: ICouponCreate,
+    criteriaCreateParams: ICouponCriteriaCreate[],
+  ): Promise<ICouponWithCriteria> {
+    const criteriaMap = new Map<ICouponCriteria['type'], ICouponCriteria[]>();
 
-    this.logger.log('[CreateCoupon]', coupon);
+    const { coupon } = await this.drizzle.db.transaction(async (tx) => {
+      const coupon = await this.couponRepository.createCoupon(
+        couponCreateParams,
+        tx,
+      );
 
-    return coupon;
+      if (criteriaCreateParams.length > 0) {
+        const criteria = await Promise.all(
+          criteriaCreateParams.map((params) =>
+            this.couponCriteriaRepository.createCouponCriteria(params, tx),
+          ),
+        );
+
+        criteria.forEach((c) => {
+          const criteriaList = criteriaMap.get(c.type) ?? [];
+          criteriaList.push(c);
+          criteriaMap.set(c.type, criteriaList);
+        });
+      }
+
+      return { coupon };
+    });
+
+    return {
+      ...coupon,
+      couponAllCriteria: typia.assert<ICouponAllCriteria[]>(
+        criteriaMap.get('all') ?? [],
+      ),
+      couponCategoryCriteria: typia.assert<ICouponCategoryCriteria[]>(
+        criteriaMap.get('category') ?? [],
+      ),
+      couponTeacherCriteria: typia.assert<ICouponTeacherCriteria[]>(
+        criteriaMap.get('teacher') ?? [],
+      ),
+      couponCourseCriteria: typia.assert<ICouponCourseCriteria[]>(
+        criteriaMap.get('course') ?? [],
+      ),
+      couponEbookCriteria: typia.assert<ICouponEbookCriteria[]>(
+        criteriaMap.get('ebook') ?? [],
+      ),
+    };
   }
 
   async updateCoupon(
     where: Pick<ICoupon, 'id'>,
-    params: ICouponUpdate,
+    couponUpdateParams: ICouponUpdate,
+    criteriaUpdateParams: {
+      create: ICouponCriteriaCreate[];
+      update: ICouponCriteriaUpdate[];
+    },
   ): Promise<ICoupon> {
     {
-      const updated = await this.couponRepository.updateCoupon(where, params);
+      const criteriaMap = new Map<ICouponCriteria['type'], ICouponCriteria[]>();
 
-      this.logger.log('[UpdateCoupon]', updated);
+      await this.drizzle.db.transaction(async (tx) => {
+        const updatedCoupon = await this.couponRepository.updateCoupon(
+          where,
+          couponUpdateParams,
+        );
 
-      return updated;
+        if (criteriaUpdateParams.create.length > 0) {
+          const createdCriteria = await Promise.all(
+            criteriaUpdateParams.create.map((params) =>
+              this.couponCriteriaRepository.createCouponCriteria(params, tx),
+            ),
+          );
+
+          createdCriteria.forEach((c) => {
+            const criteriaList = criteriaMap.get(c.type) ?? [];
+            criteriaList.push(c);
+            criteriaMap.set(c.type, criteriaList);
+          });
+        }
+
+        if (criteriaUpdateParams.update.length > 0) {
+          const updatedCriteria = await Promise.all(
+            criteriaUpdateParams.update.map((params) =>
+              this.couponCriteriaRepository.updateCouponCriteria(
+                { id: params.id },
+                params,
+                tx,
+              ),
+            ),
+          );
+
+          updatedCriteria.forEach((c) => {
+            const criteriaList = criteriaMap.get(c.type) ?? [];
+            criteriaList.push(c);
+            criteriaMap.set(c.type, criteriaList);
+          });
+        }
+
+        return updatedCoupon;
+      });
+
+      const updatedCouponWithCriteria =
+        await this.couponQueryService.findCouponWithCriteriaOrThrow(where);
+
+      this.logger.log('[UpdateCoupon]', updatedCouponWithCriteria);
+
+      return updatedCouponWithCriteria;
     }
   }
 

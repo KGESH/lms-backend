@@ -23,10 +23,14 @@ import { AuthHeaders } from '@src/v1/auth/auth.headers';
 import { Uuid } from '@src/shared/types/primitive';
 import { CouponService } from '@src/v1/coupon/coupon.service';
 import * as date from '@src/shared/utils/date';
-import { couponToDto } from '@src/shared/helpers/transofrm/coupon';
+import {
+  couponToDto,
+  couponWithCriteriaToDto,
+} from '@src/shared/helpers/transofrm/coupon';
 import { withDefaultPagination } from '@src/core/pagination';
 import { CouponQueryService } from '@src/v1/coupon/coupon-query.service';
 import { Paginated } from '@src/shared/types/pagination';
+import { CouponWithCriteriaDto } from '@src/v1/coupon/criteria/coupon-criteria.dto';
 
 @Controller('v1/coupon')
 export class CouponController {
@@ -67,7 +71,7 @@ export class CouponController {
   async getCoupons(
     @TypedHeaders() headers: AuthHeaders,
     @TypedQuery() query: CouponQuery,
-  ): Promise<Paginated<CouponDto[]>> {
+  ): Promise<Paginated<CouponWithCriteriaDto[]>> {
     const paginatedCoupons = await this.couponQueryService.findCoupons({
       ...withDefaultPagination(query),
       orderByColumn: query.orderByColumn ?? 'expiredAt',
@@ -76,7 +80,7 @@ export class CouponController {
     return {
       pagination: paginatedCoupons.pagination,
       totalCount: paginatedCoupons.totalCount,
-      data: paginatedCoupons.data.map(couponToDto),
+      data: paginatedCoupons.data.map(couponWithCriteriaToDto),
     };
   }
 
@@ -110,14 +114,16 @@ export class CouponController {
   async getCoupon(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('couponId') couponId: Uuid,
-  ): Promise<CouponDto | null> {
-    const coupon = await this.couponQueryService.findCoupon({ id: couponId });
+  ): Promise<CouponWithCriteriaDto | null> {
+    const coupon = await this.couponQueryService.findCouponWithCriteria({
+      id: couponId,
+    });
 
     if (!coupon) {
       return null;
     }
 
-    return couponToDto(coupon);
+    return couponWithCriteriaToDto(coupon);
   }
 
   /**
@@ -151,12 +157,21 @@ export class CouponController {
     @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: CreateCouponDto,
   ): Promise<CouponDto> {
-    const coupon = await this.couponService.createCoupon({
-      ...body,
-      openedAt: body.openedAt ? date.toDate(body.openedAt) : null,
-      closedAt: body.closedAt ? date.toDate(body.closedAt) : null,
-      expiredAt: body.expiredAt ? date.toDate(body.expiredAt) : null,
-    });
+    const coupon = await this.couponService.createCoupon(
+      {
+        ...body,
+        openedAt: body.openedAt ? date.toDate(body.openedAt) : null,
+        closedAt: body.closedAt ? date.toDate(body.closedAt) : null,
+        expiredAt: body.expiredAt ? date.toDate(body.expiredAt) : null,
+      },
+      [
+        ...body.couponAllCriteria,
+        ...body.couponCategoryCriteria,
+        ...body.couponTeacherCriteria,
+        ...body.couponCourseCriteria,
+        ...body.couponEbookCriteria,
+      ],
+    );
 
     return couponToDto(coupon);
   }
@@ -218,6 +233,22 @@ export class CouponController {
           : body.expiredAt
             ? date.toDate(body.expiredAt)
             : null,
+      },
+      {
+        create: [
+          ...(body?.criteriaUpdateParams?.create?.couponAllCriteria ?? []),
+          ...(body?.criteriaUpdateParams?.create?.couponCategoryCriteria ?? []),
+          ...(body?.criteriaUpdateParams?.create?.couponTeacherCriteria ?? []),
+          ...(body?.criteriaUpdateParams?.create?.couponCourseCriteria ?? []),
+          ...(body?.criteriaUpdateParams?.create?.couponEbookCriteria ?? []),
+        ],
+        update: [
+          ...(body?.criteriaUpdateParams?.update?.couponAllCriteria ?? []),
+          ...(body?.criteriaUpdateParams?.update?.couponCategoryCriteria ?? []),
+          ...(body?.criteriaUpdateParams?.update?.couponTeacherCriteria ?? []),
+          ...(body?.criteriaUpdateParams?.update?.couponCourseCriteria ?? []),
+          ...(body?.criteriaUpdateParams?.update?.couponEbookCriteria ?? []),
+        ],
       },
     );
 

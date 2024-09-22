@@ -15,6 +15,8 @@ import { ICouponDisposable } from '@src/v1/coupon/disposable/coupon-disposable.i
 import { CouponDisposableDto } from '@src/v1/coupon/disposable/coupon-disposable.dto';
 import { ICouponTicketPayment } from '@src/v1/coupon/ticket/payment/coupon-ticket-payment.interface';
 import { CouponTicketPaymentDto } from '@src/v1/coupon/ticket/payment/coupon-ticket-payment.dto';
+import { ICouponWithCriteria } from '@src/v1/coupon/criteria/coupon-criteria.interface';
+import { CouponWithCriteriaDto } from '@src/v1/coupon/criteria/coupon-criteria.dto';
 
 export const couponToDto = (coupon: ICoupon): CouponDto => {
   return {
@@ -22,6 +24,24 @@ export const couponToDto = (coupon: ICoupon): CouponDto => {
     openedAt: coupon.openedAt ? date.toISOString(coupon.openedAt) : null,
     closedAt: coupon.closedAt ? date.toISOString(coupon.closedAt) : null,
     expiredAt: coupon.expiredAt ? date.toISOString(coupon.expiredAt) : null,
+  };
+};
+
+export const couponWithCriteriaToDto = ({
+  couponAllCriteria,
+  couponCategoryCriteria,
+  couponTeacherCriteria,
+  couponCourseCriteria,
+  couponEbookCriteria,
+  ...coupon
+}: ICouponWithCriteria): CouponWithCriteriaDto => {
+  return {
+    ...couponToDto(coupon),
+    couponAllCriteria,
+    couponCategoryCriteria,
+    couponTeacherCriteria,
+    couponCourseCriteria,
+    couponEbookCriteria,
   };
 };
 
@@ -65,13 +85,8 @@ export const couponTicketRelationsToDto = (
   couponRelations: ICouponTicketRelations,
 ): CouponTicketRelationsDto => {
   return {
-    ...couponToDto(couponRelations),
+    ...couponWithCriteriaToDto(couponRelations),
     ticket: couponTicketToDto(couponRelations.ticket),
-    couponAllCriteria: couponRelations.couponAllCriteria,
-    couponCategoryCriteria: couponRelations.couponCategoryCriteria,
-    couponTeacherCriteria: couponRelations.couponTeacherCriteria,
-    couponCourseCriteria: couponRelations.couponCourseCriteria,
-    couponEbookCriteria: couponRelations.couponEbookCriteria,
   };
 };
 

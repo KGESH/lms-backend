@@ -7,6 +7,18 @@ import {
   Uuid,
 } from '@src/shared/types/primitive';
 import { Pagination } from '@src/shared/types/pagination';
+import {
+  CreateCouponAllCriteriaDto,
+  CreateCouponCategoryCriteriaDto,
+  CreateCouponCourseCriteriaDto,
+  CreateCouponEbookCriteriaDto,
+  CreateCouponTeacherCriteriaDto,
+  UpdateCouponAllCriteriaDto,
+  UpdateCouponCategoryCriteriaDto,
+  UpdateCouponCourseCriteriaDto,
+  UpdateCouponEbookCriteriaDto,
+  UpdateCouponTeacherCriteriaDto,
+} from '@src/v1/coupon/criteria/coupon-criteria.dto';
 
 export type CouponDto = {
   /**
@@ -77,9 +89,32 @@ export type CouponDto = {
   volumePerCitizen: UInt | null;
 };
 
-export type CreateCouponDto = Omit<CouponDto, 'id'>;
+export type CreateCouponDto = Omit<CouponDto, 'id'> & {
+  couponAllCriteria: CreateCouponAllCriteriaDto[];
+  couponCategoryCriteria: CreateCouponCategoryCriteriaDto[];
+  couponTeacherCriteria: CreateCouponTeacherCriteriaDto[];
+  couponCourseCriteria: CreateCouponCourseCriteriaDto[];
+  couponEbookCriteria: CreateCouponEbookCriteriaDto[];
+};
 
-export type UpdateCouponDto = Partial<CreateCouponDto>;
+export type UpdateCouponDto = Partial<CreateCouponDto> & {
+  criteriaUpdateParams: {
+    create: {
+      couponAllCriteria: CreateCouponAllCriteriaDto[];
+      couponCategoryCriteria: CreateCouponCategoryCriteriaDto[];
+      couponTeacherCriteria: CreateCouponTeacherCriteriaDto[];
+      couponCourseCriteria: CreateCouponCourseCriteriaDto[];
+      couponEbookCriteria: CreateCouponEbookCriteriaDto[];
+    } | null;
+    update: {
+      couponAllCriteria: UpdateCouponAllCriteriaDto[];
+      couponCategoryCriteria: UpdateCouponCategoryCriteriaDto[];
+      couponTeacherCriteria: UpdateCouponTeacherCriteriaDto[];
+      couponCourseCriteria: UpdateCouponCourseCriteriaDto[];
+      couponEbookCriteria: UpdateCouponEbookCriteriaDto[];
+    } | null;
+  } | null;
+};
 
 export type DeleteCouponDto = Pick<CouponDto, 'id'>;
 

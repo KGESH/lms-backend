@@ -1,6 +1,7 @@
 import { Uuid } from '@src/shared/types/primitive';
 import { Optional } from '@src/shared/types/optional';
 import { ICoupon } from '@src/v1/coupon/coupon.interface';
+import { RequiredField } from '@src/shared/types/required-field';
 
 /**
  * 쿠폰 적용 조건 Base
@@ -90,6 +91,25 @@ export type ICouponCriteriaCreate =
   | ICouponTeacherCriteriaCreate
   | ICouponCourseCriteriaCreate
   | ICouponEbookCriteriaCreate;
+
+export type ICouponCriteriaUpdate =
+  | Omit<RequiredField<Partial<ICouponAllCriteria>, 'type' | 'id'>, 'couponId'>
+  | Omit<
+      RequiredField<Partial<ICouponCategoryCriteria>, 'type' | 'id'>,
+      'couponId'
+    >
+  | Omit<
+      RequiredField<Partial<ICouponTeacherCriteria>, 'type' | 'id'>,
+      'couponId'
+    >
+  | Omit<
+      RequiredField<Partial<ICouponCourseCriteria>, 'type' | 'id'>,
+      'couponId'
+    >
+  | Omit<
+      RequiredField<Partial<ICouponEbookCriteria>, 'type' | 'id'>,
+      'couponId'
+    >;
 
 export type ICouponWithCriteria = ICoupon & {
   couponAllCriteria: ICouponAllCriteria[];
