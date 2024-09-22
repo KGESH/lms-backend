@@ -2,103 +2,98 @@ import { Injectable } from '@nestjs/common';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import {
   IUiComponentBase,
-  IUiComponentGroup,
-  IUiSectionGroupBase,
+  // IUiComponentGroup,
 } from '@src/v1/ui/component/ui-component.interface';
-import { eq, inArray } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import { IUiRepeatTimerComponent } from '@src/v1/ui/component/repeat-timer/ui-repeat-timer.interface';
-import {
-  UI_CATEGORY,
-  UiCarouselType,
-  UiCategory,
-} from '@src/v1/ui/category/ui-category.interface';
+import { UiCarouselType } from '@src/v1/ui/category/ui-category.interface';
 import { IUiCarouselComponent } from '@src/v1/ui/component/carousel/ui-carousel.interface';
+import { IUiComponentGroup } from '@src/v1/ui/component/ui-component-group.interface';
+import * as typia from 'typia';
+import { IUiCarouselMainBannerWithContents } from '@src/v1/ui/component/carousel/carousel-main-banner/ui-carousel-main-banner.interface';
+import { IUiCarouselReviewWithItems } from '@src/v1/ui/component/carousel/carousel-review/ui-carousel-review.interface';
 
 @Injectable()
 export class UiComponentQueryRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async getUiComponentsByPath(where: Pick<IUiComponentBase, 'path'>): Promise<
-    IUiComponentGroup<
-      UiCategory,
-      IUiRepeatTimerComponent[] | IUiCarouselComponent<UiCarouselType>[]
-      // | IUiComponent<'banner', unknown>
-      // | IUiComponent<'marketing-banner', unknown>
-      // | IUiComponent<'carousel', unknown>
-    >
-  > {
-    const sections = await this.drizzle.db.query.uiComponents.findMany({
+  async getUiComponentsByPath(
+    where: Pick<IUiComponentBase, 'path'>,
+  ): Promise<IUiComponentGroup> {
+    const uiComponents = await this.drizzle.db.query.uiComponents.findMany({
       where: eq(dbSchema.uiComponents.path, where.path),
-    });
-
-    // group by category.
-    const groupedSections = sections.reduce((acc, section) => {
-      if (!acc[section.category]) {
-        acc[section.category] = [];
-      }
-      acc[section.category].push(section);
-      return acc;
-    }, {} as IUiSectionGroupBase);
-
-    const repeatTimerUiComponentIds =
-      groupedSections['repeat_timer']?.map((ui) => ui.id) ?? [];
-    const repeatTimerUiPromises = this.drizzle.db.query.uiRepeatTimers.findMany(
-      {
-        where: inArray(
-          dbSchema.uiRepeatTimers.uiComponentId,
-          repeatTimerUiComponentIds,
-        ),
-        with: {
-          uiComponent: true,
+      with: {
+        repeatTimers: true,
+        carousel: {
+          with: {
+            reviews: true,
+            contents: true,
+          },
         },
       },
-    );
-
-    const bannerUiComponentIds =
-      groupedSections['banner']?.map((ui) => ui.id) ?? [];
-    // Todo: Impl
-    const marketingBannerUiComponentIds =
-      groupedSections['marketing_banner']?.map((ui) => ui.id) ?? [];
-    // Todo: Impl
-    const carouselUiComponentIds =
-      groupedSections['carousel']?.map((ui) => ui.id) ?? [];
-    const carouselUiPromises = this.drizzle.db.query.uiCarousels.findMany({
-      where: inArray(
-        dbSchema.uiCarousels.uiComponentId,
-        carouselUiComponentIds,
-      ),
-      with: {
-        uiComponent: true,
-        reviews: true,
-        contents: true,
-        // Todo: add other relations
-      },
     });
 
-    const [repeatTimerEntities, carouselEntities] = await Promise.all([
-      repeatTimerUiPromises,
-      carouselUiPromises,
-    ]);
-    const repeatTimerUiComponents: IUiRepeatTimerComponent[] =
-      repeatTimerEntities.map((ui) => ({
-        ...ui.uiComponent,
-        category: UI_CATEGORY.REPEAT_TIMER,
-        ui,
-      }));
+    const uiRepeatTimers: IUiRepeatTimerComponent[] = [];
+    const uiCarouselMainBanners: IUiCarouselMainBannerWithContents[] = [];
+    const uiCarouselReviews: IUiCarouselReviewWithItems[] = [];
+    const uiCarouselProducts: IUiCarouselComponent<UiCarouselType>[] = [];
 
-    const carouselUiComponents: IUiCarouselComponent<UiCarouselType>[] =
-      carouselEntities.map((ui) => ({
-        ...ui.uiComponent,
-        category: UI_CATEGORY.CAROUSEL,
-        ui,
-      }));
+    uiComponents.forEach((ui) => {
+      const category = ui.category;
+      switch (category) {
+        case 'repeat_timer':
+          const repeatTimerUiComponent = typia.assert<IUiRepeatTimerComponent>({
+            ...ui,
+            ui: ui.repeatTimers,
+          });
+          uiRepeatTimers.push(repeatTimerUiComponent);
+          break;
 
+        case 'carousel':
+          const carouselType = ui.carousel!.carouselType;
+          if (carouselType === 'carousel.main_banner') {
+            const mainBannerCarousel =
+              typia.assert<IUiCarouselMainBannerWithContents>({
+                uiCarousel: {
+                  ...ui,
+                  ui: ui.carousel,
+                },
+                contents: ui?.carousel?.contents ?? [],
+              });
+            uiCarouselMainBanners.push(mainBannerCarousel);
+          } else if (carouselType === 'carousel.review') {
+            const reviewCarousel = typia.assert<IUiCarouselReviewWithItems>({
+              uiCarousel: {
+                ...ui,
+                ui: ui.carousel,
+              },
+              uiCarouselReviewItems: ui.carousel?.reviews ?? [],
+            });
+            uiCarouselReviews.push(reviewCarousel);
+          } else {
+            // Todo: Impl
+          }
+          break;
+
+        case 'banner':
+        case 'marketing_banner':
+        // Todo: Impl
+        default:
+          break;
+      }
+    });
+
+    // Todo: Impl
     return {
-      'repeat_timer': repeatTimerUiComponents,
-      banner: [],
-      'marketing_banner': [],
-      carousel: carouselUiComponents,
+      repeatTimers: uiRepeatTimers,
+      carousel: {
+        mainBannerCarousels: uiCarouselMainBanners,
+        reviewCarousels: uiCarouselReviews,
+        productCarousels: [],
+      },
+      banners: [],
+      marketingBanners: [],
     };
   }
 }

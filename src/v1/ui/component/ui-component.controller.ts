@@ -1,4 +1,4 @@
-import { Controller, UseGuards } from '@nestjs/common';
+import { Controller, Logger, UseGuards } from '@nestjs/common';
 import {
   TypedException,
   TypedHeaders,
@@ -13,22 +13,17 @@ import { RolesGuard } from '@src/core/guards/roles.guard';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import {
   UiComponentBaseDto,
-  UiComponentGroupDto,
   UiComponentQuery,
 } from '@src/v1/ui/component/ui-component.dto';
 import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
-import {
-  UiCarouselType,
-  UiCategory,
-} from '@src/v1/ui/category/ui-category.interface';
-import { UiRepeatTimerDto } from '@src/v1/ui/component/repeat-timer/ui-repeat-timer.dto';
-import { UiCarouselDto } from '@src/v1/ui/component/carousel/ui-carousel.dto';
 import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '@src/shared/types/response';
 import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
+import { IUiComponentGroup } from '@src/v1/ui/component/ui-component-group.dto';
 
 @Controller('v1/ui/component')
 export class UiComponentController {
+  private readonly logger = new Logger(UiComponentController.name);
   constructor(private readonly uiComponentService: UiComponentService) {}
 
   /**
@@ -52,12 +47,7 @@ export class UiComponentController {
   async getUiComponentsByPath(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedQuery() query: UiComponentQuery,
-  ): Promise<
-    UiComponentGroupDto<
-      UiCategory,
-      UiRepeatTimerDto[] | UiCarouselDto<UiCarouselType>[]
-    >
-  > {
+  ): Promise<IUiComponentGroup> {
     const uiComponents = await this.uiComponentService.getUiComponentsByPath({
       path: query.path,
     });
@@ -73,8 +63,9 @@ export class UiComponentController {
    *
    * @tag ui
    * @summary UI 컴포넌트를 삭제합니다.
+   * @param uiComponentId - 삭제할 UI 컴포넌트 id
    */
-  @TypedRoute.Delete('/:id')
+  @TypedRoute.Delete('/:uiComponentId')
   @Roles('admin', 'manager')
   @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
@@ -87,9 +78,11 @@ export class UiComponentController {
   })
   async deleteUiComponent(
     @TypedHeaders() headers: AuthHeaders,
-    @TypedParam('id') id: Uuid,
+    @TypedParam('uiComponentId') uiComponentId: Uuid,
   ): Promise<UiComponentBaseDto> {
-    const deleted = await this.uiComponentService.deleteUiComponent({ id });
+    const deleted = await this.uiComponentService.deleteUiComponent({
+      id: uiComponentId,
+    });
     return deleted;
   }
 }
