@@ -83,18 +83,14 @@ export class UiComponentQueryRepository {
       repeatTimerEntities.map((ui) => ({
         ...ui.uiComponent,
         category: UI_CATEGORY.REPEAT_TIMER,
-        ui: {
-          ...ui,
-        },
+        ui,
       }));
 
     const carouselUiComponents: IUiCarouselComponent<UiCarouselType>[] =
       carouselEntities.map((ui) => ({
         ...ui.uiComponent,
         category: UI_CATEGORY.CAROUSEL,
-        ui: {
-          ...ui,
-        },
+        ui,
       }));
 
     return {

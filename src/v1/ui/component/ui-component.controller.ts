@@ -1,5 +1,11 @@
 import { Controller, UseGuards } from '@nestjs/common';
-import { TypedHeaders, TypedParam, TypedQuery, TypedRoute } from '@nestia/core';
+import {
+  TypedException,
+  TypedHeaders,
+  TypedParam,
+  TypedQuery,
+  TypedRoute,
+} from '@nestia/core';
 import { UiComponentService } from '@src/v1/ui/component/ui-component.service';
 import { Uuid } from '@src/shared/types/primitive';
 import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
@@ -16,7 +22,10 @@ import {
   UiCategory,
 } from '@src/v1/ui/category/ui-category.interface';
 import { UiRepeatTimerDto } from '@src/v1/ui/component/repeat-timer/ui-repeat-timer.dto';
-import { CreateUiCarouselDto } from '@src/v1/ui/component/carousel/ui-carousel.dto';
+import { UiCarouselDto } from '@src/v1/ui/component/carousel/ui-carousel.dto';
+import { TypeGuardError } from 'typia';
+import { IErrorResponse } from '@src/shared/types/response';
+import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
 
 @Controller('v1/ui/component')
 export class UiComponentController {
@@ -30,15 +39,23 @@ export class UiComponentController {
    * @tag ui
    * @summary 특정 페이지 (path)에 속한 UI 컴포넌트 목록을 조회합니다.
    */
-  @SkipAuth()
   @TypedRoute.Get('/')
+  @SkipAuth()
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
   async getUiComponentsByPath(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedQuery() query: UiComponentQuery,
   ): Promise<
     UiComponentGroupDto<
       UiCategory,
-      UiRepeatTimerDto[] | CreateUiCarouselDto<UiCarouselType>[]
+      UiRepeatTimerDto[] | UiCarouselDto<UiCarouselType>[]
     >
   > {
     const uiComponents = await this.uiComponentService.getUiComponentsByPath({
@@ -57,9 +74,17 @@ export class UiComponentController {
    * @tag ui
    * @summary UI 컴포넌트를 삭제합니다.
    */
+  @TypedRoute.Delete('/:id')
   @Roles('admin', 'manager')
   @UseGuards(RolesGuard)
-  @TypedRoute.Delete('/:id')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
   async deleteUiComponent(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('id') id: Uuid,
