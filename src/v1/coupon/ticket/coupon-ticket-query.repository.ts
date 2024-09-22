@@ -86,8 +86,6 @@ export class CouponTicketQueryRepository {
       },
     });
 
-    console.log(`[DEBUG]`, JSON.stringify(couponTickets, null, 4));
-
     return couponTickets.map(({ coupon, ...couponTicket }) => ({
       ...assertCoupon(coupon),
       ticket: couponTicket,
