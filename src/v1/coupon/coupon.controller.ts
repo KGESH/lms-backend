@@ -8,7 +8,6 @@ import {
   TypedRoute,
 } from '@nestia/core';
 import {
-  CouponDto,
   CouponQuery,
   CreateCouponDto,
   UpdateCouponDto,
@@ -23,10 +22,7 @@ import { AuthHeaders } from '@src/v1/auth/auth.headers';
 import { Uuid } from '@src/shared/types/primitive';
 import { CouponService } from '@src/v1/coupon/coupon.service';
 import * as date from '@src/shared/utils/date';
-import {
-  couponToDto,
-  couponWithCriteriaToDto,
-} from '@src/shared/helpers/transofrm/coupon';
+import { couponWithCriteriaToDto } from '@src/shared/helpers/transofrm/coupon';
 import { withDefaultPagination } from '@src/core/pagination';
 import { CouponQueryService } from '@src/v1/coupon/coupon-query.service';
 import { Paginated } from '@src/shared/types/pagination';
@@ -156,7 +152,7 @@ export class CouponController {
   async createCoupon(
     @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: CreateCouponDto,
-  ): Promise<CouponDto> {
+  ): Promise<CouponWithCriteriaDto> {
     const coupon = await this.couponService.createCoupon(
       {
         ...body,
@@ -173,7 +169,7 @@ export class CouponController {
       ],
     );
 
-    return couponToDto(coupon);
+    return couponWithCriteriaToDto(coupon);
   }
 
   /**
@@ -207,7 +203,7 @@ export class CouponController {
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('couponId') couponId: Uuid,
     @TypedBody() body: UpdateCouponDto,
-  ): Promise<CouponDto> {
+  ): Promise<CouponWithCriteriaDto> {
     const coupon = await this.couponService.updateCoupon(
       {
         id: couponId,
@@ -252,7 +248,7 @@ export class CouponController {
       },
     );
 
-    return couponToDto(coupon);
+    return couponWithCriteriaToDto(coupon);
   }
 
   /**

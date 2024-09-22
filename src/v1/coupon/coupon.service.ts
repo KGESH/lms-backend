@@ -88,7 +88,7 @@ export class CouponService {
       create: ICouponCriteriaCreate[];
       update: ICouponCriteriaUpdate[];
     },
-  ): Promise<ICoupon> {
+  ): Promise<ICouponWithCriteria> {
     {
       const criteriaMap = new Map<ICouponCriteria['type'], ICouponCriteria[]>();
 
