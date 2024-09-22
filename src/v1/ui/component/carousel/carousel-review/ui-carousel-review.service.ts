@@ -28,7 +28,7 @@ export class UiCarouselReviewService {
     private readonly drizzle: DrizzleService,
   ) {}
 
-  async getUiCarouselReviewWithItems(
+  async findUiCarouselReviewWithItems(
     where: Pick<IUiCarouselComponent<UiCarouselReview>['ui'], 'uiComponentId'>,
   ): Promise<IUiCarouselReviewWithItems | null> {
     const carouselWithItems =
@@ -43,7 +43,9 @@ export class UiCarouselReviewService {
     carouselParams: IUiCarouselComponentCreate<UiCarouselReview>,
   ): Promise<IUiCarouselComponent<UiCarouselReview>> {
     const uiCarousel =
-      await this.uiCarouselComponentRepository.create(carouselParams);
+      await this.uiCarouselComponentRepository.createUiCarouselComponent(
+        carouselParams,
+      );
 
     return uiCarousel;
   }

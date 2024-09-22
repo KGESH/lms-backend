@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1726649246454,
-      "tag": "0000_mean_blackheart",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1726720611014,
-      "tag": "0001_curvy_ultimatum",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1726735666304,
-      "tag": "0002_reflective_karnak",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1726932922893,
-      "tag": "0003_round_firebird",
+      "when": 1727004316295,
+      "tag": "0000_good_namora",
       "breakpoints": true
     }
   ]

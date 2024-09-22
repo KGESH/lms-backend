@@ -13,33 +13,6 @@ import { DrizzleService } from '@src/infra/db/drizzle.service';
 export class UiCarouselReviewComponentRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async create(
-    params: IUiCarouselReviewCreate,
-    db = this.drizzle.db,
-  ): Promise<IUiCarouselReview> {
-    const id = createUuid();
-    const [uiCarouselReview] = await db
-      .insert(dbSchema.uiCarouselReviews)
-      .values({
-        id,
-        uiCarouselId: params.uiCarouselId,
-        sequence: params.sequence,
-        title: params.title,
-        content: params.content,
-        rating: params.rating,
-      })
-      .returning();
-
-    return {
-      id: uiCarouselReview.id,
-      uiCarouselId: uiCarouselReview.uiCarouselId,
-      sequence: uiCarouselReview.sequence,
-      title: uiCarouselReview.title,
-      content: uiCarouselReview.content,
-      rating: uiCarouselReview.rating,
-    };
-  }
-
   async createMany(
     params: IUiCarouselReviewCreate[],
     db = this.drizzle.db,

@@ -106,7 +106,7 @@ describe('CourseProductController (e2e)', () => {
         },
         uiContents: [
           {
-            type: 'main-banner',
+            type: 'main_banner',
             content: '테스트 비디오 배너',
             metadata: null,
             description: 'mock main banner',
@@ -114,7 +114,7 @@ describe('CourseProductController (e2e)', () => {
             url: 'https://www.youtube.com',
           },
           {
-            type: 'target-description',
+            type: 'target_description',
             content: '테스트 타겟 말풍선',
             metadata: null,
             description: null,
@@ -160,10 +160,10 @@ describe('CourseProductController (e2e)', () => {
       expect(product.announcement.richTextContent).toEqual('테스트 공지사항');
       expect(product.refundPolicy.richTextContent).toEqual('테스트 환불정책');
       expect(
-        product.uiContents.find((ui) => ui.type === 'main-banner')!.url,
+        product.uiContents.find((ui) => ui.type === 'main_banner')!.url,
       ).toEqual('https://www.youtube.com');
       expect(
-        product.uiContents.find((ui) => ui.type === 'target-description')!
+        product.uiContents.find((ui) => ui.type === 'target_description')!
           .content,
       ).toEqual('테스트 타겟 말풍선');
       expect(
@@ -207,7 +207,7 @@ describe('CourseProductController (e2e)', () => {
         uiContents: {
           create: [
             {
-              type: 'target-description',
+              type: 'target_description',
               content: 'mock new content',
               description: null,
               metadata: null,

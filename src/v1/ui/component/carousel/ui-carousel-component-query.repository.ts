@@ -18,23 +18,24 @@ export class UiCarouselComponentQueryRepository<T extends UiCarouselType> {
   async findUiCarousel(
     where: Pick<IUiCarousel<T>, 'uiComponentId'>,
   ): Promise<IUiCarouselComponent<T> | null> {
-    const uiCarousel = await this.drizzle.db.query.uiCarousels.findFirst({
+    const uiCarousel = await this.drizzle.db.query.uiComponents.findFirst({
+      where: eq(dbSchema.uiComponents.id, where.uiComponentId),
       with: {
-        uiComponent: true,
+        carousel: true,
       },
-      where: eq(dbSchema.uiCarousels.uiComponentId, where.uiComponentId),
     });
 
-    if (!uiCarousel) {
+    if (!uiCarousel?.carousel) {
       return null;
     }
 
+    const { carousel, ...uiComponent } = uiCarousel;
     return {
-      ...uiCarousel.uiComponent,
+      ...uiComponent,
       category: UI_CATEGORY.CAROUSEL,
       ui: {
-        ...uiCarousel,
-        carouselType: uiCarousel.carouselType as T,
+        ...carousel,
+        carouselType: carousel.carouselType as T,
       },
     };
   }

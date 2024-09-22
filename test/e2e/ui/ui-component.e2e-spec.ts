@@ -55,8 +55,8 @@ describe('UiComponentController (e2e)', () => {
       const ui = response.data;
       expect(ui['carousel'].length).toEqual(1);
       expect(ui['carousel'][0].path).toEqual('/');
-      expect(ui['repeat-timer'].length).toEqual(2);
-      expect(ui['repeat-timer'][0].path).toEqual('/');
+      expect(ui['repeat_timer'].length).toEqual(2);
+      expect(ui['repeat_timer'][0].path).toEqual('/');
     });
   });
 });

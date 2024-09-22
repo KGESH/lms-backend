@@ -1,1 +1,0 @@
-ALTER TABLE "coupon_disposables" ALTER COLUMN "expired_at" DROP NOT NULL;

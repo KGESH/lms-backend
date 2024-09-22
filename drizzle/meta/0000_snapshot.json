@@ -1,5 +1,5 @@
 {
-  "id": "4536491d-677e-43c6-936d-c73c29574394",
+  "id": "a086c5e5-2a28-4e7d-b285-290c81612f10",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -161,7 +161,7 @@
           "name": "expired_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
@@ -301,9 +301,31 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "coupon_ticket_payments_coupon_ticket_id_coupon_tickets_id_fk": {
+          "name": "coupon_ticket_payments_coupon_ticket_id_coupon_tickets_id_fk",
+          "tableFrom": "coupon_ticket_payments",
+          "tableTo": "coupon_tickets",
+          "columnsFrom": [
+            "coupon_ticket_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "coupon_ticket_payments_coupon_ticket_id_unique": {
+          "name": "coupon_ticket_payments_coupon_ticket_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "coupon_ticket_id"
+          ]
+        }
+      }
     },
     "public.coupon_tickets": {
       "name": "coupon_tickets",
@@ -2965,6 +2987,86 @@
         }
       }
     },
+    "public.ui_carousel_contents": {
+      "name": "ui_carousel_contents",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "ui_carousel_id": {
+          "name": "ui_carousel_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "ui_carousel_contents_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sequence": {
+          "name": "sequence",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_url": {
+          "name": "content_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "link_url": {
+          "name": "link_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ui_carousel_contents_ui_carousel_id_ui_carousels_id_fk": {
+          "name": "ui_carousel_contents_ui_carousel_id_ui_carousels_id_fk",
+          "tableFrom": "ui_carousel_contents",
+          "tableTo": "ui_carousels",
+          "columnsFrom": [
+            "ui_carousel_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.ui_carousel_reviews": {
       "name": "ui_carousel_reviews",
       "schema": "",
@@ -3539,16 +3641,24 @@
       "name": "product_ui_content_type",
       "schema": "public",
       "values": [
-        "main-banner",
-        "target-description",
+        "main_banner",
+        "target_description",
         "tag"
+      ]
+    },
+    "public.ui_carousel_contents_type": {
+      "name": "ui_carousel_contents_type",
+      "schema": "public",
+      "values": [
+        "image",
+        "video"
       ]
     },
     "public.ui_carousel_type": {
       "name": "ui_carousel_type",
       "schema": "public",
       "values": [
-        "carousel.main-banner",
+        "carousel.main_banner",
         "carousel.review",
         "carousel.product"
       ]
@@ -3558,9 +3668,9 @@
       "schema": "public",
       "values": [
         "carousel",
-        "repeat-timer",
+        "repeat_timer",
         "banner",
-        "marketing-banner"
+        "marketing_banner"
       ]
     },
     "public.user_role": {

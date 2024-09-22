@@ -17,6 +17,7 @@ export type IUiRepeatTimerComponent = IUiComponent<
   UiRepeatTimer,
   IUiRepeatTimer
 >;
+
 export type IUiRepeatTimerComponentCreate = Optional<
   IUiComponent<UiRepeatTimer, Optional<IUiRepeatTimer, 'id' | 'uiComponentId'>>,
   'id'

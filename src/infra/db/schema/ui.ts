@@ -1,5 +1,5 @@
 import { integer, pgTable, real, text, uuid } from 'drizzle-orm/pg-core';
-import { uiCarouselType, uiCategory } from './enum';
+import { uiCarouselContentsType, uiCarouselType, uiCategory } from './enum';
 import { relations } from 'drizzle-orm';
 
 export const uiComponents = pgTable('ui_components', {
@@ -33,6 +33,20 @@ export const uiCarousels = pgTable('ui_carousels', {
   description: text('description'),
 });
 
+export const uiCarouselContents = pgTable('ui_carousel_contents', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  uiCarouselId: uuid('ui_carousel_id')
+    .notNull()
+    .references(() => uiCarousels.id, { onDelete: 'cascade' }),
+  type: uiCarouselContentsType('type').notNull(),
+  sequence: integer('sequence').notNull(),
+  title: text('title').notNull(),
+  description: text('description'),
+  contentUrl: text('content_url'),
+  linkUrl: text('link_url'),
+  metadata: text('metadata'),
+});
+
 export const uiCarouselReviews = pgTable('ui_carousel_reviews', {
   id: uuid('id').primaryKey().defaultRandom(),
   uiCarouselId: uuid('ui_carousel_id')
@@ -44,9 +58,9 @@ export const uiCarouselReviews = pgTable('ui_carousel_reviews', {
   rating: real('rating').notNull(), // 4bytes float
 });
 
-export const uiComponentsRelations = relations(uiComponents, ({ many }) => ({
-  repeatTimers: many(uiRepeatTimers),
-  carousels: many(uiCarousels),
+export const uiComponentsRelations = relations(uiComponents, ({ one }) => ({
+  repeatTimers: one(uiRepeatTimers),
+  carousel: one(uiCarousels),
 }));
 
 export const uiRepeatTimersRelations = relations(uiRepeatTimers, ({ one }) => ({
@@ -62,7 +76,18 @@ export const uiCarouselsRelations = relations(uiCarousels, ({ one, many }) => ({
     references: [uiComponents.id],
   }),
   reviews: many(uiCarouselReviews),
+  contents: many(uiCarouselContents),
 }));
+
+export const uiCarouselContentsRelations = relations(
+  uiCarouselContents,
+  ({ one }) => ({
+    carousel: one(uiCarousels, {
+      fields: [uiCarouselContents.uiCarouselId],
+      references: [uiCarousels.id],
+    }),
+  }),
+);
 
 export const uiCarouselReviewsRelations = relations(
   uiCarouselReviews,
@@ -80,10 +105,12 @@ export const uiDbSchemas = {
   uiRepeatTimers,
   uiCarousels,
   uiCarouselReviews,
+  uiCarouselContents,
 
   // Relations
   uiComponentsRelations,
   uiRepeatTimersRelations,
   uiCarouselsRelations,
   uiCarouselReviewsRelations,
+  uiCarouselContentsRelations,
 };

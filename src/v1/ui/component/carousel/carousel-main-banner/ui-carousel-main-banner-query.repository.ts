@@ -2,27 +2,30 @@ import { Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
-import { IUiCarouselReviewWithItems } from './ui-carousel-review.interface';
 import {
   UiCarousel,
-  UiCarouselReview,
+  UiCarouselMainBanner,
 } from '@src/v1/ui/category/ui-category.interface';
 import { IUiCarouselComponent } from '@src/v1/ui/component/carousel/ui-carousel.interface';
+import { IUiCarouselMainBannerWithContents } from '@src/v1/ui/component/carousel/carousel-main-banner/ui-carousel-main-banner.interface';
 
 @Injectable()
-export class UiCarouselReviewQueryRepository {
+export class UiCarouselMainBannerQueryRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async findCarouselReviewWithItems(
-    where: Pick<IUiCarouselComponent<UiCarouselReview>['ui'], 'uiComponentId'>,
-  ): Promise<IUiCarouselReviewWithItems | null> {
+  async findCarouselMainBannerWithContents(
+    where: Pick<
+      IUiCarouselComponent<UiCarouselMainBanner>['ui'],
+      'uiComponentId'
+    >,
+  ): Promise<IUiCarouselMainBannerWithContents | null> {
     const uiComponentWithCarousel =
       await this.drizzle.db.query.uiComponents.findFirst({
-        where: eq(dbSchema.uiComponents.id, where.uiComponentId),
+        where: eq(dbSchema.uiCarousels.uiComponentId, where.uiComponentId),
         with: {
           carousel: {
             with: {
-              reviews: true,
+              contents: true,
             },
           },
         },
@@ -39,17 +42,10 @@ export class UiCarouselReviewQueryRepository {
         category: uiComponent.category as UiCarousel,
         ui: {
           ...carousel,
-          carouselType: carousel.carouselType as UiCarouselReview,
+          carouselType: carousel.carouselType as UiCarouselMainBanner,
         },
       },
-      uiCarouselReviewItems: carousel.reviews.map((review) => ({
-        id: review.id,
-        uiCarouselId: review.uiCarouselId,
-        sequence: review.sequence,
-        title: review.title,
-        content: review.content,
-        rating: review.rating,
-      })),
+      contents: carousel.contents,
     };
   }
 }

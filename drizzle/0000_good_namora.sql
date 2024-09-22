@@ -41,19 +41,25 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."product_ui_content_type" AS ENUM('main-banner', 'target-description', 'tag');
+ CREATE TYPE "public"."product_ui_content_type" AS ENUM('main_banner', 'target_description', 'tag');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."ui_carousel_type" AS ENUM('carousel.main-banner', 'carousel.review', 'carousel.product');
+ CREATE TYPE "public"."ui_carousel_contents_type" AS ENUM('image', 'video');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."ui_categories" AS ENUM('carousel', 'repeat-timer', 'banner', 'marketing-banner');
+ CREATE TYPE "public"."ui_carousel_type" AS ENUM('carousel.main_banner', 'carousel.review', 'carousel.product');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."ui_categories" AS ENUM('carousel', 'repeat_timer', 'banner', 'marketing_banner');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -92,7 +98,7 @@ CREATE TABLE IF NOT EXISTS "coupon_disposables" (
 	"coupon_id" uuid NOT NULL,
 	"code" text NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"expired_at" timestamp with time zone NOT NULL,
+	"expired_at" timestamp with time zone,
 	CONSTRAINT "coupon_disposables_code_unique" UNIQUE("code")
 );
 --> statement-breakpoint
@@ -117,7 +123,8 @@ CREATE TABLE IF NOT EXISTS "coupon_ticket_payments" (
 	"coupon_ticket_id" uuid NOT NULL,
 	"order_id" uuid NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"deleted_at" timestamp with time zone
+	"deleted_at" timestamp with time zone,
+	CONSTRAINT "coupon_ticket_payments_coupon_ticket_id_unique" UNIQUE("coupon_ticket_id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "coupon_tickets" (
@@ -548,6 +555,18 @@ CREATE TABLE IF NOT EXISTS "teachers" (
 	CONSTRAINT "teachers_user_id_unique" UNIQUE("user_id")
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "ui_carousel_contents" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"ui_carousel_id" uuid NOT NULL,
+	"type" "ui_carousel_contents_type" NOT NULL,
+	"sequence" integer NOT NULL,
+	"title" text NOT NULL,
+	"description" text,
+	"content_url" text,
+	"link_url" text,
+	"metadata" text
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "ui_carousel_reviews" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"ui_carousel_id" uuid NOT NULL,
@@ -624,6 +643,12 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"deleted_at" timestamp with time zone,
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "coupon_ticket_payments" ADD CONSTRAINT "coupon_ticket_payments_coupon_ticket_id_coupon_tickets_id_fk" FOREIGN KEY ("coupon_ticket_id") REFERENCES "public"."coupon_tickets"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "course_categories" ADD CONSTRAINT "course_categories_parent_id_course_categories_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."course_categories"("id") ON DELETE cascade ON UPDATE no action;
@@ -795,6 +820,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "teachers" ADD CONSTRAINT "teachers_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "ui_carousel_contents" ADD CONSTRAINT "ui_carousel_contents_ui_carousel_id_ui_carousels_id_fk" FOREIGN KEY ("ui_carousel_id") REFERENCES "public"."ui_carousels"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

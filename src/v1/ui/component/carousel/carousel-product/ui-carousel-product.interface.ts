@@ -7,5 +7,4 @@ export type IUiCarouselProduct = {
   title: string;
   price: number;
   imageUrl: string;
-  imageAlt: string | null;
 };

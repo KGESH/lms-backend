@@ -28,13 +28,13 @@ export const productType = pgEnum('product_type', ['course', 'ebook']);
 
 export const uiCategory = pgEnum('ui_categories', [
   'carousel',
-  'repeat-timer',
+  'repeat_timer',
   'banner',
-  'marketing-banner',
+  'marketing_banner',
 ]);
 
 export const uiCarouselType = pgEnum('ui_carousel_type', [
-  'carousel.main-banner',
+  'carousel.main_banner',
   'carousel.review',
   'carousel.product',
 ]);
@@ -46,9 +46,14 @@ export const lessonContentType = pgEnum('lesson_content_type', [
   'file',
 ]);
 
+export const uiCarouselContentsType = pgEnum('ui_carousel_contents_type', [
+  'image',
+  'video',
+]);
+
 export const productUiContentType = pgEnum('product_ui_content_type', [
-  'main-banner',
-  'target-description',
+  'main_banner',
+  'target_description',
   'tag',
 ]);
 

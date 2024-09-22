@@ -17,7 +17,7 @@ import { createUuid } from '@src/shared/utils/uuid';
 export class UiCarouselComponentRepository<T extends UiCarouselType> {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async create(
+  async createUiCarouselComponent(
     params: IUiCarouselComponentCreate<T>,
     db = this.drizzle.db,
   ): Promise<IUiCarouselComponent<T>> {
@@ -60,7 +60,7 @@ export class UiCarouselComponentRepository<T extends UiCarouselType> {
     };
   }
 
-  async update(
+  async updateUiCarouselComponent(
     where: Pick<IUiCarouselComponent<T>['ui'], 'id' | 'uiComponentId'>,
     params: IUiCarouselComponentUpdate<T>,
     db = this.drizzle.db,

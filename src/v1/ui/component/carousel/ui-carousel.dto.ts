@@ -24,5 +24,7 @@ export type CreateUiCarouselDto<T extends UiCarouselType> = Omit<
 };
 
 export type UpdateUiCarouselDto<T extends UiCarouselType> = Partial<
-  UiCarouselDto<T>
+  Omit<UiCarouselDto<T>, 'ui' | 'uiComponentId' | 'id'> & {
+    ui: Partial<Omit<UiCarouselDto<T>['ui'], 'id' | 'uiComponentId'>>;
+  }
 >;

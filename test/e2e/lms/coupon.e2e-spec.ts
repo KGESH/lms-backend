@@ -56,7 +56,6 @@ describe('CouponController (e2e)', () => {
       }
 
       const foundCoupons = response.data;
-      console.log(`[DEBUG]`, foundCoupons);
       expect(foundCoupons.data.length).toEqual(SEED_COUNT);
       expect(foundCoupons.totalCount).toEqual(SEED_COUNT);
     });

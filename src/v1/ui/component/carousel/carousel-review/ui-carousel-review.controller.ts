@@ -45,7 +45,7 @@ export class UiCarouselReviewController {
     @TypedParam('uiComponentId') uiComponentId: Uuid,
   ): Promise<UiCarouselReviewWithItemsDto | null> {
     const carouselWithItems =
-      await this.uiCarouselReviewService.getUiCarouselReviewWithItems({
+      await this.uiCarouselReviewService.findUiCarouselReviewWithItems({
         uiComponentId,
       });
 
