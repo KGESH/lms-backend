@@ -56,7 +56,6 @@ export class AuthController {
     status: INVALID_LMS_SECRET,
     description: 'invalid LMS api secret',
   })
-  @SkipAuth()
   async kakaoLogin(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedBody() body: KakaoLoginDto,
