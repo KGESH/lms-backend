@@ -71,9 +71,16 @@ describe('CouponDisposableController (e2e)', () => {
         throw new Error(`assert - ${message}`);
       }
 
-      const foundCouponDisposables = response.data;
+      const paginatedCouponDisposables = response.data;
+      const foundCouponDisposables = paginatedCouponDisposables.data;
       expect(foundCouponDisposables[0].couponId).toEqual(couponRelations.id);
       expect(foundCouponDisposables[0].code).toEqual('ABC-EFG');
+      expect(paginatedCouponDisposables.totalCount).toEqual(SEED_COUNT);
+      expect(paginatedCouponDisposables.pagination).toEqual({
+        orderBy: 'desc',
+        page: 1,
+        pageSize: 10,
+      });
     });
   });
 

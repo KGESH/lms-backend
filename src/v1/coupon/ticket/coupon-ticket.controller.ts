@@ -178,7 +178,7 @@ export class CouponTicketController {
    * @summary 비공개 쿠폰 발급 - Role('admin', 'manager')
    */
   @TypedRoute.Post('/disposable')
-  @Roles('user', 'admin', 'manager')
+  @Roles('admin', 'manager')
   @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
     status: 400,

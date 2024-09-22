@@ -4,10 +4,10 @@ import {
   ICouponDisposable,
   ICouponDisposableWithUsedTicket,
 } from '@src/v1/coupon/disposable/coupon-disposable.interface';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import { OptionalPick } from '@src/shared/types/optional';
-import { Pagination } from '@src/shared/types/pagination';
+import { Paginated, Pagination } from '@src/shared/types/pagination';
 
 @Injectable()
 export class CouponDisposableQueryRepository {
@@ -27,10 +27,15 @@ export class CouponDisposableQueryRepository {
   async findCouponDisposables(
     where: OptionalPick<ICouponDisposable, 'couponId' | 'code'>,
     pagination: Pagination,
-  ): Promise<ICouponDisposable[]> {
-    const couponDisposables =
-      await this.drizzle.db.query.couponDisposables.findMany({
-        where: and(
+  ): Promise<Paginated<ICouponDisposable[]>> {
+    const couponDisposables = await this.drizzle.db
+      .select({
+        couponDisposable: dbSchema.couponDisposables,
+        totalCount: sql<number>`count(*) over()`.mapWith(Number),
+      })
+      .from(dbSchema.couponDisposables)
+      .where(
+        and(
           where.couponId
             ? eq(dbSchema.couponDisposables.couponId, where.couponId)
             : undefined,
@@ -38,15 +43,20 @@ export class CouponDisposableQueryRepository {
             ? eq(dbSchema.couponDisposables.code, where.code)
             : undefined,
         ),
-        orderBy: (couponDisposable, { asc, desc }) =>
-          pagination.orderBy === 'asc'
-            ? asc(couponDisposable.createdAt)
-            : desc(couponDisposable.createdAt),
-        offset: (pagination.page - 1) * pagination.pageSize,
-        limit: pagination.pageSize,
-      });
+      )
+      .orderBy(
+        pagination.orderBy === 'asc'
+          ? asc(dbSchema.couponDisposables.createdAt)
+          : desc(dbSchema.couponDisposables.createdAt),
+      )
+      .offset((pagination.page - 1) * pagination.pageSize)
+      .limit(pagination.pageSize);
 
-    return couponDisposables;
+    return {
+      pagination,
+      totalCount: couponDisposables[0]?.totalCount ?? 0,
+      data: couponDisposables.map(({ couponDisposable }) => couponDisposable),
+    };
   }
 
   async findCouponDisposable(

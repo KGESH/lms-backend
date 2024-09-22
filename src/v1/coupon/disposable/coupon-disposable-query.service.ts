@@ -9,7 +9,7 @@ import {
 } from '@src/v1/coupon/disposable/coupon-disposable.interface';
 import { CouponDisposableQueryRepository } from '@src/v1/coupon/disposable/coupon-disposable-query.repository';
 import { OptionalPick } from '@src/shared/types/optional';
-import { Pagination } from '@src/shared/types/pagination';
+import { Paginated, Pagination } from '@src/shared/types/pagination';
 
 @Injectable()
 export class CouponDisposableQueryService {
@@ -20,7 +20,7 @@ export class CouponDisposableQueryService {
   async findCouponDisposables(
     where: OptionalPick<ICouponDisposable, 'couponId' | 'code'>,
     pagination: Pagination,
-  ): Promise<ICouponDisposable[]> {
+  ): Promise<Paginated<ICouponDisposable[]>> {
     if (!where.couponId && !where.code) {
       throw new BadRequestException('couponId or code is required');
     }
