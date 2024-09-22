@@ -34,7 +34,7 @@ export class CouponService {
 
   async createCoupon(
     couponCreateParams: ICouponCreate,
-    criteriaCreateParams: ICouponCriteriaCreate[],
+    criteriaCreateParams: Omit<ICouponCriteriaCreate, 'couponId'>[],
   ): Promise<ICouponWithCriteria> {
     const criteriaMap = new Map<ICouponCriteria['type'], ICouponCriteria[]>();
 
@@ -47,7 +47,13 @@ export class CouponService {
       if (criteriaCreateParams.length > 0) {
         const criteria = await Promise.all(
           criteriaCreateParams.map((params) =>
-            this.couponCriteriaRepository.createCouponCriteria(params, tx),
+            this.couponCriteriaRepository.createCouponCriteria(
+              typia.assert<ICouponCriteriaCreate>({
+                ...params,
+                couponId: coupon.id,
+              }),
+              tx,
+            ),
           ),
         );
 
@@ -85,8 +91,8 @@ export class CouponService {
     where: Pick<ICoupon, 'id'>,
     couponUpdateParams: ICouponUpdate,
     criteriaUpdateParams: {
-      create: ICouponCriteriaCreate[];
-      update: ICouponCriteriaUpdate[];
+      create: Omit<ICouponCriteriaCreate, 'couponId'>[];
+      update: Omit<ICouponCriteriaUpdate, 'couponId'>[];
     },
   ): Promise<ICouponWithCriteria> {
     {
@@ -101,7 +107,13 @@ export class CouponService {
         if (criteriaUpdateParams.create.length > 0) {
           const createdCriteria = await Promise.all(
             criteriaUpdateParams.create.map((params) =>
-              this.couponCriteriaRepository.createCouponCriteria(params, tx),
+              this.couponCriteriaRepository.createCouponCriteria(
+                typia.assert<ICouponCriteriaCreate>({
+                  ...params,
+                  couponId: updatedCoupon.id,
+                }),
+                tx,
+              ),
             ),
           );
 

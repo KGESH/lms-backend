@@ -90,30 +90,30 @@ export type CouponDto = {
 };
 
 export type CreateCouponDto = Omit<CouponDto, 'id'> & {
-  couponAllCriteria: CreateCouponAllCriteriaDto[];
-  couponCategoryCriteria: CreateCouponCategoryCriteriaDto[];
-  couponTeacherCriteria: CreateCouponTeacherCriteriaDto[];
-  couponCourseCriteria: CreateCouponCourseCriteriaDto[];
-  couponEbookCriteria: CreateCouponEbookCriteriaDto[];
+  couponAllCriteria?: CreateCouponAllCriteriaDto[];
+  couponCategoryCriteria?: CreateCouponCategoryCriteriaDto[];
+  couponTeacherCriteria?: CreateCouponTeacherCriteriaDto[];
+  couponCourseCriteria?: CreateCouponCourseCriteriaDto[];
+  couponEbookCriteria?: CreateCouponEbookCriteriaDto[];
 };
 
 export type UpdateCouponDto = Partial<CreateCouponDto> & {
-  criteriaUpdateParams: {
-    create: {
-      couponAllCriteria: CreateCouponAllCriteriaDto[];
-      couponCategoryCriteria: CreateCouponCategoryCriteriaDto[];
-      couponTeacherCriteria: CreateCouponTeacherCriteriaDto[];
-      couponCourseCriteria: CreateCouponCourseCriteriaDto[];
-      couponEbookCriteria: CreateCouponEbookCriteriaDto[];
-    } | null;
-    update: {
-      couponAllCriteria: UpdateCouponAllCriteriaDto[];
-      couponCategoryCriteria: UpdateCouponCategoryCriteriaDto[];
-      couponTeacherCriteria: UpdateCouponTeacherCriteriaDto[];
-      couponCourseCriteria: UpdateCouponCourseCriteriaDto[];
-      couponEbookCriteria: UpdateCouponEbookCriteriaDto[];
-    } | null;
-  } | null;
+  criteriaUpdateParams?: {
+    create?: {
+      couponAllCriteria?: CreateCouponAllCriteriaDto[];
+      couponCategoryCriteria?: CreateCouponCategoryCriteriaDto[];
+      couponTeacherCriteria?: CreateCouponTeacherCriteriaDto[];
+      couponCourseCriteria?: CreateCouponCourseCriteriaDto[];
+      couponEbookCriteria?: CreateCouponEbookCriteriaDto[];
+    };
+    update?: {
+      couponAllCriteria?: UpdateCouponAllCriteriaDto[];
+      couponCategoryCriteria?: UpdateCouponCategoryCriteriaDto[];
+      couponTeacherCriteria?: UpdateCouponTeacherCriteriaDto[];
+      couponCourseCriteria?: UpdateCouponCourseCriteriaDto[];
+      couponEbookCriteria?: UpdateCouponEbookCriteriaDto[];
+    };
+  };
 };
 
 export type DeleteCouponDto = Pick<CouponDto, 'id'>;

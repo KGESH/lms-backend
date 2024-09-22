@@ -98,6 +98,10 @@ describe('CouponController (e2e)', () => {
   describe('[Create coupon]', () => {
     it('should be a create coupon success', async () => {
       const [admin] = await seedUsers({ count: 1, role: 'admin' }, drizzle.db);
+      const [teacher] = await seedUsers(
+        { count: 1, role: 'teacher' },
+        drizzle.db,
+      );
 
       const createCouponDto: CreateCouponDto = {
         name: '30% coupon',
@@ -112,6 +116,13 @@ describe('CouponController (e2e)', () => {
         volume: null,
         closedAt: null,
         volumePerCitizen: null,
+        couponTeacherCriteria: [
+          {
+            type: 'teacher',
+            direction: 'include',
+            teacherId: teacher.user.id,
+          },
+        ],
       };
 
       const response = await CouponAPI.createCoupon(
@@ -138,6 +149,10 @@ describe('CouponController (e2e)', () => {
   describe('[Update coupon]', () => {
     it('should be a create coupon success', async () => {
       const [admin] = await seedUsers({ count: 1, role: 'admin' }, drizzle.db);
+      const [teacher] = await seedUsers(
+        { count: 1, role: 'teacher' },
+        drizzle.db,
+      );
       const seedCoupon = await createCoupon(
         {
           ...typia.random<ICouponCreate>(),
@@ -151,6 +166,17 @@ describe('CouponController (e2e)', () => {
       const updateCouponDto: UpdateCouponDto = {
         name: '90% coupon',
         value: '90',
+        criteriaUpdateParams: {
+          create: {
+            couponTeacherCriteria: [
+              {
+                type: 'teacher',
+                direction: 'include',
+                teacherId: teacher.user.id,
+              },
+            ],
+          },
+        },
       };
 
       const response = await CouponAPI.updateCoupon(

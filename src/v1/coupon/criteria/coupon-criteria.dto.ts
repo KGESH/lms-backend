@@ -29,7 +29,10 @@ export type CouponAllCriteriaDto = CouponCriteriaBaseDto & {
   type: 'all';
 };
 
-export type CreateCouponAllCriteriaDto = Omit<CouponAllCriteriaDto, 'id'>;
+export type CreateCouponAllCriteriaDto = Omit<
+  CouponAllCriteriaDto,
+  'id' | 'couponId'
+>;
 
 export type UpdateCouponAllCriteriaDto = Omit<
   RequiredField<Partial<CouponAllCriteriaDto>, 'type' | 'id'>,
@@ -46,7 +49,7 @@ export type CouponCategoryCriteriaDto = CouponCriteriaBaseDto & {
 
 export type CreateCouponCategoryCriteriaDto = Omit<
   CouponCategoryCriteriaDto,
-  'id'
+  'id' | 'couponId'
 >;
 
 export type UpdateCouponCategoryCriteriaDto = Omit<
@@ -64,7 +67,7 @@ export type CouponTeacherCriteriaDto = CouponCriteriaBaseDto & {
 
 export type CreateCouponTeacherCriteriaDto = Omit<
   CouponTeacherCriteriaDto,
-  'id'
+  'id' | 'couponId'
 >;
 
 export type UpdateCouponTeacherCriteriaDto = Omit<
@@ -80,7 +83,10 @@ export type CouponCourseCriteriaDto = CouponCriteriaBaseDto & {
   courseId: Uuid;
 };
 
-export type CreateCouponCourseCriteriaDto = Omit<CouponCourseCriteriaDto, 'id'>;
+export type CreateCouponCourseCriteriaDto = Omit<
+  CouponCourseCriteriaDto,
+  'id' | 'couponId'
+>;
 
 export type UpdateCouponCourseCriteriaDto = Omit<
   RequiredField<Partial<CouponCourseCriteriaDto>, 'type' | 'id'>,
@@ -95,26 +101,15 @@ export type CouponEbookCriteriaDto = CouponCriteriaBaseDto & {
   ebookId: Uuid;
 };
 
-export type CreateCouponEbookCriteriaDto = Omit<CouponEbookCriteriaDto, 'id'>;
+export type CreateCouponEbookCriteriaDto = Omit<
+  CouponEbookCriteriaDto,
+  'id' | 'couponId'
+>;
 
 export type UpdateCouponEbookCriteriaDto = Omit<
   RequiredField<Partial<CouponEbookCriteriaDto>, 'type' | 'id'>,
   'couponId'
 >;
-
-export type CouponCriteriaDto =
-  | CouponAllCriteriaDto
-  | CouponCategoryCriteriaDto
-  | CouponTeacherCriteriaDto
-  | CouponCourseCriteriaDto
-  | CouponEbookCriteriaDto;
-
-export type CouponCriteriaCreateDto =
-  | CreateCouponAllCriteriaDto
-  | CreateCouponCategoryCriteriaDto
-  | CreateCouponTeacherCriteriaDto
-  | CreateCouponCourseCriteriaDto
-  | CreateCouponEbookCriteriaDto;
 
 export type CouponWithCriteriaDto = CouponDto & {
   couponAllCriteria: CouponAllCriteriaDto[];
@@ -123,10 +118,3 @@ export type CouponWithCriteriaDto = CouponDto & {
   couponCourseCriteria: CouponCourseCriteriaDto[];
   couponEbookCriteria: CouponEbookCriteriaDto[];
 };
-
-export type CouponCriteriaUpdateDto =
-  | UpdateCouponAllCriteriaDto
-  | UpdateCouponCategoryCriteriaDto
-  | UpdateCouponTeacherCriteriaDto
-  | UpdateCouponCourseCriteriaDto
-  | UpdateCouponEbookCriteriaDto;

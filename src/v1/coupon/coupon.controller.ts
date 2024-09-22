@@ -161,11 +161,11 @@ export class CouponController {
         expiredAt: body.expiredAt ? date.toDate(body.expiredAt) : null,
       },
       [
-        ...body.couponAllCriteria,
-        ...body.couponCategoryCriteria,
-        ...body.couponTeacherCriteria,
-        ...body.couponCourseCriteria,
-        ...body.couponEbookCriteria,
+        ...(body?.couponAllCriteria ?? []),
+        ...(body?.couponCategoryCriteria ?? []),
+        ...(body?.couponTeacherCriteria ?? []),
+        ...(body?.couponCourseCriteria ?? []),
+        ...(body?.couponEbookCriteria ?? []),
       ],
     );
 
