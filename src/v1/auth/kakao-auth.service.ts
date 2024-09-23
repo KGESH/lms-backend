@@ -21,6 +21,7 @@ export class KakaoAuthService {
           password: null,
           displayName: params.name,
           role: 'user',
+          image: params.image,
         },
         infoCreateParams: {
           name: params.name,
@@ -31,7 +32,7 @@ export class KakaoAuthService {
           duplicationInformation: params.duplicationInformation,
         },
         accountCreateParams: {
-          providerId: 'kakao', // Todo: 심사 통과 이후 수정
+          providerId: params.providerId,
           providerType: 'kakao',
         },
       });

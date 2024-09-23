@@ -26,7 +26,13 @@ export type IUserWithoutPassword = OmitPassword<IUser>;
 
 export type IUserCreate = Pick<
   Optional<IUser, 'id' | 'emailVerified'>,
-  'id' | 'email' | 'password' | 'displayName' | 'role' | 'emailVerified'
+  | 'id'
+  | 'email'
+  | 'password'
+  | 'displayName'
+  | 'role'
+  | 'emailVerified'
+  | 'image'
 >;
 
 export type IUserUpdate = Partial<Omit<IUser, 'id'>>;

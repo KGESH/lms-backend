@@ -7,7 +7,7 @@ export type LoginUserDto = Pick<UserDto, 'email' | 'password'>;
 
 export type CreateUserDto = Pick<
   UserDto,
-  'email' | 'displayName' | 'password' | 'role'
+  'email' | 'displayName' | 'password' | 'role' | 'image'
 >;
 
 export type CreateUserInfoDto = Pick<

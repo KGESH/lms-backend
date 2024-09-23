@@ -7,6 +7,7 @@ import {
 } from '@src/shared/types/primitive';
 
 export type KakaoLoginDto = {
+  providerId: string;
   name: string;
   email: EMail;
   gender: Gender;
@@ -15,4 +16,5 @@ export type KakaoLoginDto = {
   phoneNumber: PhoneNumber;
   connectingInformation: string | null;
   duplicationInformation: string | null;
+  image: string | null;
 };
