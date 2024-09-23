@@ -30,6 +30,7 @@ import { seedPosts } from './test/e2e/helpers/db/lms/post.helper';
 import { seedNavbarCategories } from './test/e2e/helpers/db/lms/post-category.helper';
 import { seedCoupons } from './test/e2e/helpers/db/lms/coupon.helper';
 import { seedCarouselMainBanner } from './test/e2e/helpers/db/ui/carousel-main-banner.helper';
+import { seedSignupTerms } from './test/e2e/helpers/db/lms/term.helper';
 
 const env = new ConfigService();
 
@@ -82,6 +83,7 @@ async function seed() {
     await seedPosts({ count: 3 }, db);
     await seedNavbarCategories(db);
     await seedCoupons({ count: 3, user: testPgUser.user }, db);
+    await seedSignupTerms({ count: 3 }, db);
   } catch (e) {
     console.error(e);
     await clearDatabase(db);

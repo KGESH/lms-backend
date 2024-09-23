@@ -69,3 +69,5 @@ export type EbookContentType = 'video' | 'image' | 'text' | 'file';
 export type ProductUiContentType = 'main_banner' | 'target_description' | 'tag';
 
 export type CarouselContentType = 'video' | 'image';
+
+export type TermType = 'mandatory' | 'optional';

@@ -69,3 +69,5 @@ export const couponDirection = pgEnum('coupon_direction', [
   'include',
   'exclude',
 ]);
+
+export const termType = pgEnum('term_type', ['mandatory', 'optional']);

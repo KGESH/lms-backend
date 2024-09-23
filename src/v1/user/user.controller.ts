@@ -44,6 +44,7 @@ export class UserController {
    */
   @TypedRoute.Get('/')
   @Roles('admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
@@ -56,7 +57,6 @@ export class UserController {
     status: INVALID_LMS_SECRET,
     description: 'invalid LMS api secret',
   })
-  @UseGuards(RolesGuard)
   async getUsers(
     @TypedHeaders() headers: AuthHeaders,
     @TypedQuery() query: UserQuery,

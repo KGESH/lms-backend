@@ -24,6 +24,7 @@ import { LoggerMiddleware } from '@src/core/middlewares/logger.middleware';
 import { DashboardModule } from '@src/v1/dashboard/dashboard.module';
 import { CouponModule } from '@src/v1/coupon/coupon.module';
 import { UserCouponModule } from '@src/v1/user/coupon/user-coupon.module';
+import { TermModule } from '@src/v1/term/term.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { UserCouponModule } from '@src/v1/user/coupon/user-coupon.module';
     PostRelationsModule,
     CouponModule,
     UserCouponModule,
+    TermModule,
   ],
   controllers: [AppController],
   providers: [AppService],

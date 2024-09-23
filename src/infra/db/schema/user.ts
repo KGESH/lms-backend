@@ -7,6 +7,7 @@ import { orders } from './order';
 import { ebookEnrollments } from './ebook';
 import { courseEnrollments } from './course';
 import { posts } from './post';
+import { userTerms } from './term';
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -72,6 +73,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   coursesEnrollments: many(courseEnrollments),
   ebookEnrollments: many(ebookEnrollments),
   posts: many(posts),
+  userTerms: many(userTerms),
 }));
 
 export const userSessionsRelations = relations(userSessions, ({ one }) => ({

@@ -81,6 +81,7 @@ export const seedAdminUser = async (
       email,
       password,
       role: 'admin',
+      image: null,
     },
     accountCreateParams: {
       providerId: null,
@@ -111,6 +112,7 @@ export const seedPgUsers = async (db: TransactionClient) => {
         email: 'test@gmail.com',
         password: 'testuser1234!@#$',
         role: 'user',
+        image: null,
       },
       accountCreateParams: {
         providerId: null,
