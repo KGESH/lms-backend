@@ -11,6 +11,8 @@ import { UserTermQueryRepository } from '@src/v1/term/user-term-query.repository
 import { UserTermQueryService } from '@src/v1/term/user-term-query.service';
 import { SignupTermQueryService } from '@src/v1/term/signup-term-query.service';
 import { TermController } from '@src/v1/term/term.controller';
+import { SignupTermService } from '@src/v1/term/signup-term.service';
+import { SignupTermRepository } from '@src/v1/term/signup-term.repository';
 
 const modules = [];
 
@@ -26,6 +28,8 @@ const providers = [
   UserTermQueryRepository,
   UserTermQueryService,
   SignupTermQueryService,
+  SignupTermService,
+  SignupTermRepository,
 ];
 
 @Module({

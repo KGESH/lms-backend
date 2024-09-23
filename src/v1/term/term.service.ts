@@ -27,11 +27,14 @@ export class TermService {
   ): Promise<ITermWithSnapshot> {
     const { term, snapshot } = await this.drizzle.db.transaction(async (tx) => {
       const term = await this.termRepository.createTerm(termCreateParams, tx);
-      const snapshot = await this.termSnapshotRepository.createTermSnapshot({
-        ...snapshotCreateParams,
-        termId: term.id,
-        updatedReason: null,
-      });
+      const snapshot = await this.termSnapshotRepository.createTermSnapshot(
+        {
+          ...snapshotCreateParams,
+          termId: term.id,
+          updatedReason: null,
+        },
+        tx,
+      );
 
       return { term, snapshot };
     });
@@ -57,30 +60,33 @@ export class TermService {
       const term = termUpdateParams
         ? await this.termRepository.updateTerm(where, termUpdateParams, tx)
         : termWithLatestSnapshot;
-      const snapshot = await this.termSnapshotRepository.createTermSnapshot({
-        termId: term.id,
-        title:
-          termContentUpdateParams?.title ??
-          termWithLatestSnapshot.snapshot.title,
-        content:
-          termContentUpdateParams?.content ??
-          termWithLatestSnapshot.snapshot.content,
-        description:
-          termContentUpdateParams?.description ||
-          termContentUpdateParams?.description === null
-            ? termContentUpdateParams?.description
-            : termWithLatestSnapshot.snapshot.description,
-        metadata:
-          termContentUpdateParams?.metadata ||
-          termContentUpdateParams?.metadata === null
-            ? termContentUpdateParams?.metadata
-            : termWithLatestSnapshot.snapshot.metadata,
-        updatedReason:
-          termContentUpdateParams?.updatedReason ||
-          termContentUpdateParams?.updatedReason === null
-            ? termContentUpdateParams?.updatedReason
-            : termWithLatestSnapshot.snapshot.updatedReason,
-      });
+      const snapshot = await this.termSnapshotRepository.createTermSnapshot(
+        {
+          termId: term.id,
+          title:
+            termContentUpdateParams?.title ??
+            termWithLatestSnapshot.snapshot.title,
+          content:
+            termContentUpdateParams?.content ??
+            termWithLatestSnapshot.snapshot.content,
+          description:
+            termContentUpdateParams?.description ||
+            termContentUpdateParams?.description === null
+              ? termContentUpdateParams?.description
+              : termWithLatestSnapshot.snapshot.description,
+          metadata:
+            termContentUpdateParams?.metadata ||
+            termContentUpdateParams?.metadata === null
+              ? termContentUpdateParams?.metadata
+              : termWithLatestSnapshot.snapshot.metadata,
+          updatedReason:
+            termContentUpdateParams?.updatedReason ||
+            termContentUpdateParams?.updatedReason === null
+              ? termContentUpdateParams?.updatedReason
+              : termWithLatestSnapshot.snapshot.updatedReason,
+        },
+        tx,
+      );
 
       return { term, snapshot };
     });

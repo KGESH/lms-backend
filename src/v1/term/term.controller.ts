@@ -40,7 +40,7 @@ export class TermController {
   ) {}
 
   /**
-   * 회원가입시 필요한 약관 목록을 조회합니다.
+   * 회원가입 페이지에서 체크박스로 보여줄 약관 목록을 조회합니다.
    *
    * 로그인 없이 조회할 수 있습니다.
    *
@@ -66,6 +66,14 @@ export class TermController {
     return signupFormTerms.map(signupFormTermToDto);
   }
 
+  /**
+   * 회원가입 페이지에서 체크박스로 보여줄 약관 목록을 생성합니다.
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag term
+   * @summary 회원가입 약관 동의 목록 생성 (public)
+   */
   @TypedRoute.Post('/signup')
   @Roles('admin', 'manager')
   @UseGuards(RolesGuard)
@@ -95,6 +103,16 @@ export class TermController {
     return signupFormTerms.map(SignupTermToDto);
   }
 
+  /**
+   * 약관을 생성합니다.
+   *
+   * 약관 생성시 스냅샷(약관 본문)이 함께 생성됩니다.
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag term
+   * @summary 약관 생성
+   */
   @TypedRoute.Post('/')
   @Roles('admin', 'manager')
   @UseGuards(RolesGuard)
@@ -123,6 +141,16 @@ export class TermController {
     return termWithSnapshotToDto(createdTerm);
   }
 
+  /**
+   * 약관을 수정합니다.
+   *
+   * 기존 약관의 스냅샷을 생성합니다.
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag term
+   * @summary 약관 수정 (스냅샷 생성)
+   */
   @TypedRoute.Patch('/:termId')
   @Roles('admin', 'manager')
   @UseGuards(RolesGuard)
