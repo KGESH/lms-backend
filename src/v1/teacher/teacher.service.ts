@@ -74,6 +74,7 @@ export class TeacherService {
             ...params.accountCreateParams,
             userId,
           },
+          userTerms: [],
         },
         tx,
       );

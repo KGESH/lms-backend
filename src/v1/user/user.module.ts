@@ -5,6 +5,9 @@ import { UserRepository } from '@src/v1/user/user.repository';
 import { UserInfoRepository } from '@src/v1/user/user-info.repository';
 import { UserAccountRepository } from '@src/v1/user/user-account.repository';
 import { UserQueryRepository } from '@src/v1/user/user-query.repository';
+import { TermModule } from '@src/v1/term/term.module';
+
+const modules = [TermModule];
 
 const providers = [
   UserService,
@@ -15,8 +18,9 @@ const providers = [
 ];
 
 @Module({
+  imports: [...modules],
   controllers: [UserController],
   providers: [...providers],
-  exports: [...providers],
+  exports: [...modules, ...providers],
 })
 export class UserModule {}

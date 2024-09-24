@@ -17,6 +17,7 @@ import { compareHash } from '@src/shared/helpers/hash';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { SessionRepository } from '@src/v1/auth/session.repository';
 import { ISessionWithUser } from '@src/v1/auth/session.interface';
+import { UserTermService } from '@src/v1/term/user-term.service';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +25,7 @@ export class AuthService {
 
   constructor(
     private readonly userService: UserService,
+    private readonly userTermService: UserTermService,
     private readonly sessionRepository: SessionRepository,
     private readonly drizzle: DrizzleService,
   ) {}
@@ -47,9 +49,11 @@ export class AuthService {
     return typia.misc.clone<IUserWithoutPassword>(user);
   }
 
-  async signUpUser(params: IUserSignUp): Promise<IUserWithoutPassword> {
+  async signUpUser(
+    userSignupParams: IUserSignUp,
+  ): Promise<IUserWithoutPassword> {
     const exist = await this.userService.findUserByEmail({
-      email: params.userCreateParams.email,
+      email: userSignupParams.userCreateParams.email,
     });
 
     if (exist) {
@@ -57,8 +61,13 @@ export class AuthService {
     }
 
     const user = await this.drizzle.db.transaction(async (tx) => {
-      return await this.userService.createUser(params, tx);
+      return await this.userService.createUser(userSignupParams, tx);
     });
+
+    // Agree terms
+    if (userSignupParams.userTerms.length > 0) {
+      await this.userTermService.createUserTerms(userSignupParams.userTerms);
+    }
 
     return user;
   }

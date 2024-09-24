@@ -4,6 +4,7 @@ import {
   pgTable,
   text,
   timestamp,
+  unique,
   uuid,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
@@ -49,28 +50,34 @@ export const signupTerms = pgTable('signup_terms', {
     .defaultNow(),
 });
 
-export const userTerms = pgTable('user_terms', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  termId: uuid('term_id')
-    .notNull()
-    .references(() => terms.id, { onDelete: 'cascade' }),
-  agreed: boolean('agreed').notNull(),
-  createdAt: timestamp('created_at', {
-    mode: 'date',
-    withTimezone: true,
-  })
-    .notNull()
-    .defaultNow(),
-  updatedAt: timestamp('updated_at', {
-    mode: 'date',
-    withTimezone: true,
-  })
-    .notNull()
-    .defaultNow(),
-});
+export const userTerms = pgTable(
+  'user_terms',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    termId: uuid('term_id')
+      .notNull()
+      .references(() => terms.id, { onDelete: 'cascade' }),
+    agreed: boolean('agreed').notNull(),
+    createdAt: timestamp('created_at', {
+      mode: 'date',
+      withTimezone: true,
+    })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp('updated_at', {
+      mode: 'date',
+      withTimezone: true,
+    })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => ({
+    userAgreed: unique().on(table.userId, table.termId),
+  }),
+);
 
 export const termsRelations = relations(terms, ({ many }) => ({
   snapshots: many(termSnapshots),

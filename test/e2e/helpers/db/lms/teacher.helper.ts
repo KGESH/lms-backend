@@ -41,6 +41,7 @@ export const createTeacher = async (
         userCreateParams: { ...params.userCreateParams, role: 'teacher' },
         accountCreateParams: params.accountCreateParams,
         infoCreateParams: params.infoCreateParams,
+        userTerms: [],
       },
       tx,
     );

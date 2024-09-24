@@ -4,6 +4,8 @@ import {
   ITerm,
   ITermSnapshot,
   ITermWithSnapshot,
+  IUserAgreedTerm,
+  IUserTerm,
 } from '@src/v1/term/term.interface';
 import {
   SignupFormTermDto,
@@ -11,8 +13,11 @@ import {
   TermDto,
   TermSnapshotDto,
   TermWithSnapshotDto,
+  UserAgreedTermDto,
+  UserTermDto,
 } from '@src/v1/term/term.dto';
 import * as date from '@src/shared/utils/date';
+import { userTerms } from '@src/infra/db/schema/term';
 
 export const termToDto = (term: ITerm): TermDto => ({
   ...term,
@@ -45,4 +50,17 @@ export const signupFormTermToDto = (
 ): SignupFormTermDto => ({
   ...termWithSnapshotToDto(termRelations),
   signupTerm: SignupTermToDto(termRelations.signupTerm),
+});
+
+export const userTermToDto = (userTerm: IUserTerm): UserTermDto => ({
+  ...userTerm,
+  createdAt: date.toISOString(userTerm.createdAt),
+  updatedAt: date.toISOString(userTerm.updatedAt),
+});
+
+export const userAgreedTermToDto = (
+  term: IUserAgreedTerm,
+): UserAgreedTermDto => ({
+  ...termWithSnapshotToDto(term),
+  userTerm: userTermToDto(term.userTerm),
 });

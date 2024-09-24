@@ -35,6 +35,7 @@ export class KakaoAuthService {
           providerId: params.providerId,
           providerType: 'kakao',
         },
+        userTerms: [],
       });
       return user;
     }

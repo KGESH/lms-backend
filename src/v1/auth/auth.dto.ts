@@ -2,6 +2,7 @@ import { UserDto, UserInfoDto } from '@src/v1/user/user.dto';
 import { AuthProvider, Uuid } from '@src/shared/types/primitive';
 import { IUser } from '@src/v1/user/user.interface';
 import { NonNullableInfer } from '@src/shared/types/non-nullable-infer';
+import { CreateUserTermDto } from '@src/v1/term/term.dto';
 
 export type LoginUserDto = Pick<UserDto, 'email' | 'password'>;
 
@@ -36,6 +37,7 @@ export type SignUpUserDto = {
   userCreateParams: CreateUserDto;
   infoCreateParams: CreateUserInfoDto;
   accountCreateParams: CreateUserAccountDto;
+  userTerms: CreateUserTermDto[];
 };
 
 export type UpdateUserRoleDto = Pick<UserDto, 'id' | 'role'>;

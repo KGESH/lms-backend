@@ -77,3 +77,7 @@ export type TermWithSnapshotDto = TermDto & {
 export type SignupFormTermDto = TermWithSnapshotDto & {
   signupTerm: SignupTermDto;
 };
+
+export type UserAgreedTermDto = TermWithSnapshotDto & {
+  userTerm: UserTermDto;
+};

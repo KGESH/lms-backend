@@ -1,22 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { UserTermRepository } from '@src/v1/term/user-term.repository';
-import { IUserTerm, IUserTermCreate } from '@src/v1/term/term.interface';
+import { IUserAgreedTerm, IUserTerm } from '@src/v1/term/term.interface';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
+import { UserTermQueryRepository } from '@src/v1/term/user-term-query.repository';
 
 @Injectable()
 export class UserTermQueryService {
   constructor(
-    private readonly userTermRepository: UserTermRepository,
+    private readonly userTermQueryRepository: UserTermQueryRepository,
     private readonly drizzle: DrizzleService,
   ) {}
 
-  async createUserTerms(params: IUserTermCreate[]): Promise<IUserTerm[]> {
-    return await this.drizzle.db.transaction(async (tx) => {
-      const userTerms = await this.userTermRepository.createManyUserTerms(
-        params,
-        tx,
-      );
-      return userTerms;
-    });
+  async findUserTerms(
+    where: Pick<IUserTerm, 'userId'>,
+  ): Promise<IUserAgreedTerm[]> {
+    return await this.userTermQueryRepository.findUserTerms(where);
   }
 }

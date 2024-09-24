@@ -59,3 +59,7 @@ export type ITermWithSnapshot = ITerm & {
 export type ISignupFormTerm = ITermWithSnapshot & {
   signupTerm: ISignupTerm;
 };
+
+export type IUserAgreedTerm = ITermWithSnapshot & {
+  userTerm: IUserTerm;
+};

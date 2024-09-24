@@ -9,8 +9,9 @@ import { APP_GUARD } from '@nestjs/core';
 import { ApiGuard } from '@src/core/guards/api.guard';
 import { AuthAdminService } from '@src/v1/auth/auth-admin.service';
 import { AuthAdminController } from '@src/v1/auth/admin/auth-admin.controller';
+import { TermModule } from '@src/v1/term/term.module';
 
-const modules = [UserModule];
+const modules = [UserModule, TermModule];
 
 const providers = [
   AuthService,

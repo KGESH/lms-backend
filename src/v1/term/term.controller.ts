@@ -11,15 +11,18 @@ import {
 import {
   CreateSignupTermDto,
   CreateTermWithSnapshotDto,
+  CreateUserTermDto,
   SignupFormTermDto,
   SignupTermDto,
   TermWithSnapshotDto,
   UpdateTermWithContentDto,
+  UserTermDto,
 } from '@src/v1/term/term.dto';
 import {
   signupFormTermToDto,
   SignupTermToDto,
   termWithSnapshotToDto,
+  userTermToDto,
 } from '@src/shared/helpers/transofrm/term';
 import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
 import { TypeGuardError } from 'typia';
@@ -30,12 +33,14 @@ import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
 import { Uuid } from '@src/shared/types/primitive';
 import { SignupTermService } from '@src/v1/term/signup-term.service';
+import { UserTermService } from '@src/v1/term/user-term.service';
 
 @Controller('/v1/term')
 export class TermController {
   constructor(
     private readonly termService: TermService,
     private readonly signupTermService: SignupTermService,
+    private readonly userTermService: UserTermService,
     private readonly signupTermQueryService: SignupTermQueryService,
   ) {}
 
@@ -101,6 +106,40 @@ export class TermController {
       await this.signupTermService.createSignupFormTerms(body);
 
     return signupFormTerms.map(SignupTermToDto);
+  }
+
+  /**
+   * 약관에 동의 또는 거부합니다.
+   *
+   * @tag term
+   * @summary 회원가입 약관 동의 (public)
+   */
+  @TypedRoute.Post('/agree')
+  @Roles('user', 'teacher')
+  @UseGuards(RolesGuard)
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'Not enough [role] to access this resource.',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 409,
+    description: 'User already agreed or disagreed terms.',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async agreeTerms(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedBody() body: CreateUserTermDto[],
+  ): Promise<UserTermDto[]> {
+    const userTerms = await this.userTermService.createUserTerms(body);
+
+    return userTerms.map(userTermToDto);
   }
 
   /**

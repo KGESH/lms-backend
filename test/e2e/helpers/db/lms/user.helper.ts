@@ -97,6 +97,7 @@ export const seedAdminUser = async (
       phoneNumber: '+821000000000',
       userId,
     },
+    userTerms: [],
   };
 
   return await createUser(adminCreateDto, db);
@@ -128,6 +129,7 @@ export const seedPgUsers = async (db: TransactionClient) => {
         phoneNumber: '+821012345678',
         userId,
       },
+      userTerms: [],
     },
   ];
   return await createManyUsers(userCreateDtos, db);
@@ -165,6 +167,7 @@ export const seedUsers = async (
         ...typia.random<IUserSignUp['accountCreateParams']>(),
         userId,
       },
+      userTerms: [],
     };
   });
 
