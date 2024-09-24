@@ -38,8 +38,6 @@ export class CouponDisposableController {
    *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
    *
-   * Query parameter 'couponId' 속성을 설정해 쿠폰 ID로 필터링할 수 있습니다.
-   *
    * Query parameter 'code' 속성을 설정해 쿠폰 코드로 필터링할 수 있습니다.
    *
    * @tag coupon
