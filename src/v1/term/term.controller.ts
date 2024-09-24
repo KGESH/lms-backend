@@ -34,6 +34,8 @@ import { RolesGuard } from '@src/core/guards/roles.guard';
 import { Uuid } from '@src/shared/types/primitive';
 import { SignupTermService } from '@src/v1/term/signup-term.service';
 import { UserTermService } from '@src/v1/term/user-term.service';
+import { SessionUser } from '@src/core/decorators/session-user.decorator';
+import { ISessionWithUser } from '@src/v1/auth/session.interface';
 
 @Controller('/v1/term')
 export class TermController {
@@ -136,8 +138,14 @@ export class TermController {
   async agreeTerms(
     @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: CreateUserTermDto[],
+    @SessionUser() session: ISessionWithUser,
   ): Promise<UserTermDto[]> {
-    const userTerms = await this.userTermService.createUserTerms(body);
+    const userTerms = await this.userTermService.createUserTerms(
+      body.map((params) => ({
+        ...params,
+        userId: session.userId,
+      })),
+    );
 
     return userTerms.map(userTermToDto);
   }

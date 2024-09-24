@@ -67,7 +67,7 @@ export type UserTermDto = {
 
 export type CreateUserTermDto = Omit<
   UserTermDto,
-  'id' | 'createdAt' | 'updatedAt'
+  'id' | 'userId' | 'createdAt' | 'updatedAt'
 >;
 
 export type TermWithSnapshotDto = TermDto & {
