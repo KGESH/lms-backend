@@ -3,6 +3,7 @@ import { UserDashboardService } from '@src/v1/dashboard/user/user-dashboard.serv
 import {
   TypedException,
   TypedHeaders,
+  TypedParam,
   TypedQuery,
   TypedRoute,
 } from '@nestia/core';
@@ -27,10 +28,95 @@ import { certificateToDto } from '@src/shared/helpers/transofrm/certifacate';
 import { Paginated } from '@src/shared/types/pagination';
 import { withDefaultPagination } from '@src/core/pagination';
 import { orderToDto } from '@src/shared/helpers/transofrm/course-order';
+import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
+import { UserQuery, UserWithoutPasswordDto } from '@src/v1/user/user.dto';
+import { UserService } from '@src/v1/user/user.service';
+import { Uuid } from '@src/shared/types/primitive';
 
 @Controller('v1/dashboard/user')
 export class UserDashboardController {
-  constructor(private readonly userDashboardService: UserDashboardService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly userDashboardService: UserDashboardService,
+  ) {}
+
+  /**
+   * 사용자 목록을 조회합니다.
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * Query parameter 'role'을 통해 사용자 권한을 필터링할 수 있습니다.
+   *
+   * Query parameter 'email'을 통해 사용자 이메일에 특정 문자열이 포함된 사용자를 조회할 수 있습니다.
+   *
+   * Query parameter 'displayName'을 통해 사용자 닉네임에 특정 문자열이 포함된 사용자를 조회할 수 있습니다.
+   *
+   * Query parameter 'name'을 통해 사용자 이름에 특정 문자열이 포함된 사용자를 조회할 수 있습니다.
+   *
+   * @tag dashboard
+   * @summary 사용자 목록 조회 - Role('admin', 'manager', 'teacher')
+   */
+  @TypedRoute.Get('/')
+  @Roles('admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'Not enough [role] to access this resource.',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async getUsers(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedQuery() query: UserQuery,
+  ): Promise<Paginated<UserWithoutPasswordDto[]>> {
+    const { data: users, ...paginated } = await this.userService.findUsers(
+      query,
+      withDefaultPagination(query),
+    );
+
+    return {
+      ...paginated,
+      data: users.map(userToDto),
+    };
+  }
+
+  /**
+   * 특정 사용자를 조회합니다.
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag dashboard
+   * @summary 특정 사용자 조회 - Role('admin', 'manager', 'teacher')
+   * @param id - 조회할 사용자의 id
+   */
+  @TypedRoute.Get('/:id')
+  @Roles('admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'Not enough [role] to access this resource.',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async getUser(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedParam('id') id: Uuid,
+  ): Promise<UserWithoutPasswordDto | null> {
+    const user = await this.userService.findUserById({ id });
+    return user ? userToDto(user) : null;
+  }
 
   /**
    * 특정 사용자의 수강 내역 목록을 조회합니다.
@@ -52,6 +138,10 @@ export class UserDashboardController {
   @TypedException<IErrorResponse<403>>({
     status: 403,
     description: 'Not enough [role] to access this resource.',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   async getUserCourseEnrollmentHistories(
     @TypedHeaders() headers: AuthHeaders,
@@ -96,6 +186,10 @@ export class UserDashboardController {
     status: 403,
     description: 'Not enough [role] to access this resource.',
   })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
   async getUserCourseResourceHistories(
     @TypedHeaders() headers: AuthHeaders,
     @TypedQuery() query: CourseResourceHistoryQuery,
@@ -134,6 +228,10 @@ export class UserDashboardController {
   @TypedException<IErrorResponse<403>>({
     status: 403,
     description: 'Not enough [role] to access this resource.',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   async getPurchasedCourseUsers(
     @TypedHeaders() headers: AuthHeaders,
