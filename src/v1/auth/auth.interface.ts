@@ -13,5 +13,5 @@ export type IUserSignUp = {
   userCreateParams: Optional<IUserCreate, 'id'>;
   infoCreateParams: Optional<IUserInfoCreate, 'userId'>;
   accountCreateParams: Optional<IUserAccountCreate, 'userId'>;
-  userTerms: IUserTermCreate[];
+  userTerms: Omit<IUserTermCreate, 'userId'>[];
 };

@@ -66,7 +66,12 @@ export class AuthService {
 
     // Agree terms
     if (userSignupParams.userTerms.length > 0) {
-      await this.userTermService.createUserTerms(userSignupParams.userTerms);
+      await this.userTermService.createUserTerms(
+        userSignupParams.userTerms.map((term) => ({
+          ...term,
+          userId: user.id,
+        })),
+      );
     }
 
     return user;
