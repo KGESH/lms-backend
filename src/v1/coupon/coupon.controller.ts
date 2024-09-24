@@ -204,46 +204,47 @@ export class CouponController {
     @TypedParam('couponId') couponId: Uuid,
     @TypedBody() body: UpdateCouponDto,
   ): Promise<CouponWithCriteriaDto> {
+    const { criteriaUpdateParams, ...couponUpdateParam } = body;
     const coupon = await this.couponService.updateCoupon(
       {
         id: couponId,
       },
       {
-        ...body,
+        ...couponUpdateParam,
         // undefined mean "DO NOT" update.
         // null mean infinity date
         // ex) openedAt: 2020-01-01. closedAt: null
         // open ~ close)  2020-01-01 ~ never close
-        openedAt: typia.is<undefined>(body.openedAt)
+        openedAt: typia.is<undefined>(couponUpdateParam.openedAt)
           ? undefined
-          : body.openedAt
-            ? date.toDate(body.openedAt)
+          : couponUpdateParam.openedAt
+            ? date.toDate(couponUpdateParam.openedAt)
             : null,
-        closedAt: typia.is<undefined>(body.closedAt)
+        closedAt: typia.is<undefined>(couponUpdateParam.closedAt)
           ? undefined
-          : body.closedAt
-            ? date.toDate(body.closedAt)
+          : couponUpdateParam.closedAt
+            ? date.toDate(couponUpdateParam.closedAt)
             : null,
-        expiredAt: typia.is<undefined>(body.expiredAt)
+        expiredAt: typia.is<undefined>(couponUpdateParam.expiredAt)
           ? undefined
-          : body.expiredAt
-            ? date.toDate(body.expiredAt)
+          : couponUpdateParam.expiredAt
+            ? date.toDate(couponUpdateParam.expiredAt)
             : null,
       },
       {
         create: [
-          ...(body?.criteriaUpdateParams?.create?.couponAllCriteria ?? []),
-          ...(body?.criteriaUpdateParams?.create?.couponCategoryCriteria ?? []),
-          ...(body?.criteriaUpdateParams?.create?.couponTeacherCriteria ?? []),
-          ...(body?.criteriaUpdateParams?.create?.couponCourseCriteria ?? []),
-          ...(body?.criteriaUpdateParams?.create?.couponEbookCriteria ?? []),
+          ...(criteriaUpdateParams?.create?.couponAllCriteria ?? []),
+          ...(criteriaUpdateParams?.create?.couponCategoryCriteria ?? []),
+          ...(criteriaUpdateParams?.create?.couponTeacherCriteria ?? []),
+          ...(criteriaUpdateParams?.create?.couponCourseCriteria ?? []),
+          ...(criteriaUpdateParams?.create?.couponEbookCriteria ?? []),
         ],
         update: [
-          ...(body?.criteriaUpdateParams?.update?.couponAllCriteria ?? []),
-          ...(body?.criteriaUpdateParams?.update?.couponCategoryCriteria ?? []),
-          ...(body?.criteriaUpdateParams?.update?.couponTeacherCriteria ?? []),
-          ...(body?.criteriaUpdateParams?.update?.couponCourseCriteria ?? []),
-          ...(body?.criteriaUpdateParams?.update?.couponEbookCriteria ?? []),
+          ...(criteriaUpdateParams?.update?.couponAllCriteria ?? []),
+          ...(criteriaUpdateParams?.update?.couponCategoryCriteria ?? []),
+          ...(criteriaUpdateParams?.update?.couponTeacherCriteria ?? []),
+          ...(criteriaUpdateParams?.update?.couponCourseCriteria ?? []),
+          ...(criteriaUpdateParams?.update?.couponEbookCriteria ?? []),
         ],
       },
     );

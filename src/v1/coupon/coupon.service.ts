@@ -96,13 +96,25 @@ export class CouponService {
     },
   ): Promise<ICouponWithCriteria> {
     {
+      const existCoupon =
+        await this.couponQueryService.findCouponOrThrow(where);
+
+      const validCouponUpdateParams =
+        typia.misc.clone<ICouponUpdate>(couponUpdateParams);
+
+      const needCouponUpdate = Object.values(validCouponUpdateParams).some(
+        (v) => v !== undefined,
+      );
+
       const criteriaMap = new Map<ICouponCriteria['type'], ICouponCriteria[]>();
 
       await this.drizzle.db.transaction(async (tx) => {
-        const updatedCoupon = await this.couponRepository.updateCoupon(
-          where,
-          couponUpdateParams,
-        );
+        const updatedCoupon = needCouponUpdate
+          ? await this.couponRepository.updateCoupon(
+              where,
+              validCouponUpdateParams,
+            )
+          : existCoupon;
 
         if (criteriaUpdateParams.create.length > 0) {
           const createdCriteria = await Promise.all(
@@ -110,7 +122,7 @@ export class CouponService {
               this.couponCriteriaRepository.createCouponCriteria(
                 typia.assert<ICouponCriteriaCreate>({
                   ...params,
-                  couponId: updatedCoupon.id,
+                  couponId: existCoupon.id,
                 }),
                 tx,
               ),
@@ -147,8 +159,6 @@ export class CouponService {
 
       const updatedCouponWithCriteria =
         await this.couponQueryService.findCouponWithCriteriaOrThrow(where);
-
-      this.logger.log('[UpdateCoupon]', updatedCouponWithCriteria);
 
       return updatedCouponWithCriteria;
     }

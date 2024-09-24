@@ -18,6 +18,16 @@ export class CouponQueryService {
     return await this.couponQueryRepository.findCoupon(where);
   }
 
+  async findCouponOrThrow(where: Pick<ICoupon, 'id'>): Promise<ICoupon> {
+    const coupon = await this.couponQueryRepository.findCoupon(where);
+
+    if (!coupon) {
+      throw new NotFoundException('Coupon not found');
+    }
+
+    return coupon;
+  }
+
   async findCouponWithCriteria(
     where: Pick<ICoupon, 'id'>,
   ): Promise<ICouponWithCriteria | null> {
