@@ -3,6 +3,7 @@ import { SMS } from '@src/infra/sms/sms-vender.token';
 import { SolapiMessageService } from 'solapi';
 import { ConfigsService } from '@src/configs/configs.service';
 import { localizePhoneNumber } from '@src/shared/helpers/phone-number';
+import { IS_PRODUCTION } from '@src/shared/utils/is-production';
 
 /**
  * @docs
@@ -23,6 +24,13 @@ export class SmsService {
     targetPhoneNumber: string;
     content: string;
   }) {
+    this.logger.debug('[Send SMS] Phone number:', targetPhoneNumber);
+    this.logger.debug('[Send SMS] Content: ', content);
+
+    if (!IS_PRODUCTION) {
+      return;
+    }
+
     const localizedPhoneNumber = localizePhoneNumber(targetPhoneNumber);
     const response = await this.solapiMessageService.sendOne({
       to: localizedPhoneNumber,

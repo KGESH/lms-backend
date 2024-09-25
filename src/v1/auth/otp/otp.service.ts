@@ -81,6 +81,7 @@ export class OtpService {
       return await this.otpRepository.createOtp(params, tx);
     });
 
+    // Only send SMS when production
     await this.smsService.sendSms({
       targetPhoneNumber: params.phoneNumber,
       content: `[갈길이머니] 본인 확인 인증번호는 (${otp.code})입니다.`,
