@@ -152,8 +152,10 @@ describe('EbookProductController (e2e)', () => {
       )[0];
 
       const updateDto: UpdateEbookProductDto = {
-        title: 'updated product title',
-        description: 'updated description',
+        snapshot: {
+          title: 'updated product title',
+          description: 'updated description',
+        },
         pricing: {
           amount: '10000',
         },

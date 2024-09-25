@@ -16,6 +16,7 @@ import {
 import { createRandomCourse } from '../helpers/db/lms/course.helper';
 import { ConfigsService } from '@src/configs/configs.service';
 import { seedUsers } from '../helpers/db/lms/user.helper';
+import { createUuid } from '@src/shared/utils/uuid';
 
 describe('CourseProductController (e2e)', () => {
   let host: Uri;
@@ -129,6 +130,14 @@ describe('CourseProductController (e2e)', () => {
             sequence: 1,
             url: null,
           },
+          {
+            type: 'badge',
+            content: '테스트 뱃지 UI',
+            metadata: null,
+            description: null,
+            sequence: 1,
+            url: null,
+          },
         ],
       };
 
@@ -169,6 +178,9 @@ describe('CourseProductController (e2e)', () => {
       expect(
         product.uiContents.find((ui) => ui.type === 'tag')!.content,
       ).toEqual('테스트 구매 대상 태그');
+      expect(
+        product.uiContents.find((ui) => ui.type === 'badge')!.content,
+      ).toEqual('테스트 뱃지 UI');
     });
   });
 
@@ -183,8 +195,16 @@ describe('CourseProductController (e2e)', () => {
       )[0];
 
       const updateDto: UpdateCourseProductDto = {
-        title: 'updated product title',
-        description: 'updated description',
+        snapshot: {
+          title: 'updated product title',
+          description: 'updated description',
+        },
+        thumbnail: {
+          id: createUuid(), // Uploaded file ID
+          metadata: null,
+          type: 'image',
+          url: 'https://aceternity.com/images/products/thumbnails/new/editrix.png',
+        },
         pricing: {
           amount: '10000',
         },

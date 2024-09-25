@@ -18,7 +18,7 @@ import {
   IProductSnapshotDiscountCreate,
 } from '../../../../../src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
 import { IEbookProductWithRelations } from '../../../../../src/v1/product/ebook-product/ebook-product-relations.interface';
-import { DiscountValue } from '../../../../../src/shared/types/primitive';
+import { DiscountValue, Uuid } from '../../../../../src/shared/types/primitive';
 import { TransactionClient } from '../../../../../src/infra/db/drizzle.types';
 import {
   IProductSnapshotContent,
@@ -35,6 +35,7 @@ import {
   IProductSnapshotUiContent,
   IProductSnapshotUiContentCreate,
 } from '../../../../../src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
+import { createManyFiles } from './file.helper';
 
 export const createEbookProduct = async (
   params: IEbookProductCreate,
@@ -151,9 +152,21 @@ export const createRandomEbookProduct = async (
     },
     db,
   );
+  const [thumbnail] = await createManyFiles(
+    [
+      {
+        id: typia.random<Uuid>(),
+        metadata: null,
+        type: 'image',
+        url: 'https://aceternity.com/images/products/thumbnails/new/editrix.png',
+      },
+    ],
+    db,
+  );
   const snapshot = await createEbookProductSnapshot(
     {
       ...typia.random<IProductSnapshotCreate>(),
+      thumbnailId: thumbnail.id,
       productId: product.id,
       title: '테스트 온라인 전자책',
       description: '테스트 온라인 전자책 상품입니다.',
@@ -219,6 +232,7 @@ export const createRandomEbookProduct = async (
     },
     lastSnapshot: {
       ...snapshot,
+      thumbnail,
       announcement,
       refundPolicy,
       content,

@@ -19,7 +19,7 @@ import {
   IProductSnapshotDiscountCreate,
 } from '../../../../../src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
 import { ICourseProductWithRelations } from '../../../../../src/v1/product/course-product/course-product-relations.interface';
-import { DiscountValue } from '../../../../../src/shared/types/primitive';
+import { DiscountValue, Uuid } from '../../../../../src/shared/types/primitive';
 import { TransactionClient } from '../../../../../src/infra/db/drizzle.types';
 import {
   IProductSnapshotContent,
@@ -35,6 +35,7 @@ import {
   IProductSnapshotUiContent,
   IProductSnapshotUiContentCreate,
 } from '../../../../../src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
+import { createManyFiles } from './file.helper';
 
 export const createCourseProduct = async (
   params: ICourseProductCreate,
@@ -160,9 +161,21 @@ export const createRandomCourseProduct = async (
     },
     db,
   );
+  const [thumbnail] = await createManyFiles(
+    [
+      {
+        id: typia.random<Uuid>(),
+        metadata: null,
+        type: 'image',
+        url: 'https://aceternity.com/images/products/thumbnails/new/editrix.png',
+      },
+    ],
+    db,
+  );
   const snapshot = await createCourseProductSnapshot(
     {
       ...typia.random<IProductSnapshotCreate>(),
+      thumbnailId: thumbnail.id,
       productId: product.id,
       title: `테스트 온라인 강의 ${index ?? ''}`,
       description: '테스트 온라인 강의 상품입니다.',
@@ -234,6 +247,7 @@ export const createRandomCourseProduct = async (
     },
     lastSnapshot: {
       ...snapshot,
+      thumbnail,
       announcement,
       refundPolicy,
       content,
