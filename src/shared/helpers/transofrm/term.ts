@@ -17,7 +17,6 @@ import {
   UserTermDto,
 } from '@src/v1/term/term.dto';
 import * as date from '@src/shared/utils/date';
-import { userTerms } from '@src/infra/db/schema/term';
 
 export const termToDto = (term: ITerm): TermDto => ({
   ...term,

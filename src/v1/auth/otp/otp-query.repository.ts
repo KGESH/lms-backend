@@ -8,13 +8,12 @@ import { eq, and } from 'drizzle-orm';
 export class OtpQueryRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async findLatestOtpByCode(
-    where: Pick<IOtp, 'userId' | 'usage' | 'code'>,
+  async findLatestOtpByIdentifier(
+    where: Pick<IOtp, 'identifier' | 'usage'>,
   ): Promise<IOtp | null> {
     const [otp] = await this.drizzle.db.query.otps.findMany({
       where: and(
-        where.userId ? eq(dbSchema.otps.userId, where.userId) : undefined,
-        eq(dbSchema.otps.code, where.code),
+        eq(dbSchema.otps.identifier, where.identifier),
         eq(dbSchema.otps.usage, where.usage),
       ),
       orderBy: (otp, { desc }) => desc(otp.createdAt),

@@ -61,18 +61,20 @@ export class AuthService {
     }
 
     const user = await this.drizzle.db.transaction(async (tx) => {
-      return await this.userService.createUser(userSignupParams, tx);
-    });
+      const user = await this.userService.createUser(userSignupParams, tx);
+      // Agree terms
+      if (userSignupParams.userTerms.length > 0) {
+        await this.userTermService.createUserTerms(
+          userSignupParams.userTerms.map((term) => ({
+            ...term,
+            userId: user.id,
+          })),
+          tx,
+        );
+      }
 
-    // Agree terms
-    if (userSignupParams.userTerms.length > 0) {
-      await this.userTermService.createUserTerms(
-        userSignupParams.userTerms.map((term) => ({
-          ...term,
-          userId: user.id,
-        })),
-      );
-    }
+      return user;
+    });
 
     return user;
   }

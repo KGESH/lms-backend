@@ -4,7 +4,7 @@ import { otpUsage } from './enum';
 
 export const otps = pgTable('otps', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id'),
+  identifier: text('identifier').notNull(),
   usage: otpUsage('usage').notNull(),
   code: text('code').notNull(),
   expires: timestamp('expires_at', {

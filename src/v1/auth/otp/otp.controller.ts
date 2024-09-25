@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Logger } from '@nestjs/common';
 import { OtpService } from '@src/v1/auth/otp/otp.service';
 import {
   TypedBody,
@@ -22,6 +22,7 @@ import { localizePhoneNumber } from '@src/shared/helpers/phone-number';
 
 @Controller('v1/otp')
 export class OtpController {
+  private readonly logger = new Logger(OtpController.name);
   constructor(private readonly otpService: OtpService) {}
 
   @TypedRoute.Post('/signup')
@@ -69,6 +70,7 @@ export class OtpController {
   ): Promise<VerifyOtpResponseDto> {
     const isValid = await this.otpService.verifySignupOtp({
       code: body.code,
+      identifier: body.identifier,
     });
 
     return { isValid };
