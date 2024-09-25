@@ -39,6 +39,8 @@ export const uiCarouselType = pgEnum('ui_carousel_type', [
   'carousel.product',
 ]);
 
+export const fileType = pgEnum('file_type', ['video', 'image', 'text', 'file']);
+
 export const lessonContentType = pgEnum('lesson_content_type', [
   'video',
   'image',
@@ -55,6 +57,7 @@ export const productUiContentType = pgEnum('product_ui_content_type', [
   'main_banner',
   'target_description',
   'tag',
+  'badge',
 ]);
 
 export const couponCriteriaType = pgEnum('coupon_criteria_type', [

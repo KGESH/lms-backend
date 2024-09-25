@@ -5,6 +5,7 @@ import { discountType, lessonContentType, productUiContentType } from './enum';
 import { teachers } from './teacher';
 import { ebookOrders } from './order';
 import { users } from './user';
+import { files } from './file';
 
 export const ebookCategories = pgTable('ebook_categories', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -62,6 +63,9 @@ export const ebookProducts = pgTable('ebook_products', {
 export const ebookProductSnapshots = pgTable('ebook_product_snapshots', {
   id: uuid('id').primaryKey().defaultRandom(),
   productId: uuid('product_id').notNull(),
+  thumbnailId: uuid('thumbnail_id')
+    .notNull()
+    .references(() => files.id),
   title: text('title').notNull(),
   description: text('description'),
   createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
@@ -202,6 +206,10 @@ export const ebookProductSnapshotsRelations = relations(
     product: one(ebookProducts, {
       fields: [ebookProductSnapshots.productId],
       references: [ebookProducts.id],
+    }),
+    thumbnail: one(files, {
+      fields: [ebookProductSnapshots.thumbnailId],
+      references: [files.id],
     }),
     announcement: one(ebookProductSnapshotAnnouncements),
     refundPolicy: one(ebookProductSnapshotRefundPolicies),

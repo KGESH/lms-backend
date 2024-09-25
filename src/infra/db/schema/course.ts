@@ -13,6 +13,7 @@ import { relations } from 'drizzle-orm';
 import { courseOrders } from './order';
 import { teachers } from './teacher';
 import { users } from './user';
+import { files } from './file';
 
 export const courseCategories = pgTable('course_categories', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -90,7 +91,12 @@ export const courseProducts = pgTable('course_products', {
 
 export const courseProductSnapshots = pgTable('course_product_snapshots', {
   id: uuid('id').primaryKey().defaultRandom(),
-  productId: uuid('product_id').notNull(),
+  productId: uuid('product_id')
+    .notNull()
+    .references(() => courseProducts.id, { onDelete: 'cascade' }),
+  thumbnailId: uuid('thumbnail_id')
+    .notNull()
+    .references(() => files.id),
   title: text('title').notNull(),
   description: text('description'),
   createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
@@ -254,6 +260,10 @@ export const courseProductSnapshotsRelations = relations(
     product: one(courseProducts, {
       fields: [courseProductSnapshots.productId],
       references: [courseProducts.id],
+    }),
+    thumbnail: one(files, {
+      fields: [courseProductSnapshots.thumbnailId],
+      references: [files.id],
     }),
     announcement: one(courseProductSnapshotAnnouncements),
     refundPolicy: one(courseProductSnapshotRefundPolicies),

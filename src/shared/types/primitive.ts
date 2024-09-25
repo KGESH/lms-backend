@@ -62,11 +62,17 @@ export type Ebook = 'ebook';
 
 export type ProductType = Course | Ebook;
 
-export type LessonContentType = 'video' | 'image' | 'text' | 'file';
+export type FileType = 'video' | 'image' | 'text' | 'file';
 
-export type EbookContentType = 'video' | 'image' | 'text' | 'file';
+export type LessonContentType = FileType;
 
-export type ProductUiContentType = 'main_banner' | 'target_description' | 'tag';
+export type EbookContentType = FileType;
+
+export type ProductUiContentType =
+  | 'main_banner'
+  | 'target_description'
+  | 'tag'
+  | 'badge';
 
 export type CarouselContentType = 'video' | 'image';
 
