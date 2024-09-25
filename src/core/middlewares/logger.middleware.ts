@@ -14,7 +14,7 @@ export class LoggerMiddleware implements NestMiddleware {
         `Query: ${JSON.stringify(query, null, 2).replace(/,/g, ',\n')}\n` +
         `Body: { \n` +
         Object.keys(body)
-          .map((key) => `  "${key}": "${body[key]}"`)
+          .map((key) => `  "${key}": ${JSON.stringify(body[key], null, 2)}`)
           .join(',\n') +
         `\n}\n` +
         `Headers: {\n` +
