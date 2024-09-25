@@ -18,7 +18,6 @@ import { IErrorResponse } from '@src/shared/types/response';
 import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
 import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
 import * as date from '@src/shared/utils/date';
-import { localizePhoneNumber } from '@src/shared/helpers/phone-number';
 
 @Controller('v1/otp')
 export class OtpController {
@@ -44,7 +43,7 @@ export class OtpController {
     @TypedBody() body: SignupOtpDto,
   ): Promise<OtpDto> {
     const otp = await this.otpService.sendSignupOtp({
-      phoneNumber: localizePhoneNumber(body.phoneNumber),
+      phoneNumber: body.phoneNumber,
     });
 
     return {

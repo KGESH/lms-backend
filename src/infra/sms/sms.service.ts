@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { SMS } from '@src/infra/sms/sms-vender.token';
 import { SolapiMessageService } from 'solapi';
 import { ConfigsService } from '@src/configs/configs.service';
+import { localizePhoneNumber } from '@src/shared/helpers/phone-number';
 
 /**
  * @docs
@@ -22,8 +23,9 @@ export class SmsService {
     targetPhoneNumber: string;
     content: string;
   }) {
+    const localizedPhoneNumber = localizePhoneNumber(targetPhoneNumber);
     const response = await this.solapiMessageService.sendOne({
-      to: targetPhoneNumber,
+      to: localizedPhoneNumber,
       text: content,
       from: this.configsService.env.FROM_PHONE_NUMBER,
     });

@@ -39,7 +39,8 @@ export class OtpService {
     code,
     identifier,
   }: Pick<IOtp, 'code' | 'identifier'>): Promise<boolean> {
-    return await this.verifyOtp({ code, identifier, usage: 'signup' });
+    const isValid = await this.verifyOtp({ code, identifier, usage: 'signup' });
+    return isValid;
   }
 
   async sendSignupOtp({ phoneNumber }: { phoneNumber: string }): Promise<IOtp> {
