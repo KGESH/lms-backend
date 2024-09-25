@@ -36,6 +36,10 @@ import {
   IProductSnapshotUiContentCreate,
 } from '../../../../../src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
 import { createManyFiles } from './file.helper';
+import {
+  IProductThumbnail,
+  IProductThumbnailCreate,
+} from '../../../../../src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
 
 export const createCourseProduct = async (
   params: ICourseProductCreate,
@@ -59,6 +63,14 @@ export const createCourseProductSnapshot = async (
     .returning();
 
   return snapshot;
+};
+
+export const createCourseProductThumbnail = async (
+  params: IProductThumbnailCreate,
+  db: TransactionClient,
+): Promise<IProductThumbnail> => {
+  const [thumbnail] = await createManyFiles([params], db);
+  return typia.assert<IProductThumbnail>(thumbnail);
 };
 
 export const createCourseProductAnnouncement = async (
@@ -161,15 +173,13 @@ export const createRandomCourseProduct = async (
     },
     db,
   );
-  const [thumbnail] = await createManyFiles(
-    [
-      {
-        id: typia.random<Uuid>(),
-        metadata: null,
-        type: 'image',
-        url: 'https://aceternity.com/images/products/thumbnails/new/editrix.png',
-      },
-    ],
+  const thumbnail = await createCourseProductThumbnail(
+    {
+      id: typia.random<Uuid>(),
+      metadata: null,
+      type: 'image',
+      url: 'https://aceternity.com/images/products/thumbnails/new/editrix.png',
+    },
     db,
   );
   const snapshot = await createCourseProductSnapshot(
