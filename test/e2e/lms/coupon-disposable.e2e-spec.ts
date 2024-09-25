@@ -61,6 +61,7 @@ describe('CouponDisposableController (e2e)', () => {
         },
         couponRelations.id,
         {
+          code: 'C-EF', // code로 패턴 매칭 검색
           orderBy: 'desc',
           page: 1,
           pageSize: 10,
