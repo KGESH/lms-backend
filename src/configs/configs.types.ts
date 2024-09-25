@@ -24,8 +24,15 @@ export type IPortoneConfigs = {
   PORTONE_API_BASE_URL: string;
 };
 
+export type ISmsConfigs = {
+  SMS_API_KEY: string;
+  SMS_API_SECRET: string;
+  FROM_PHONE_NUMBER: string;
+};
+
 export type IEnvironment = IAppConfigs &
   IAuthConfigs &
   IDatabaseConfigs &
   IAwsConfigs &
-  IPortoneConfigs;
+  IPortoneConfigs &
+  ISmsConfigs;

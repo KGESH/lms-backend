@@ -39,6 +39,9 @@ export class ConfigsService {
         +`${process.env.AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS}`,
       PORTONE_API_SECRET: process.env.PORTONE_API_SECRET,
       PORTONE_API_BASE_URL: process.env.PORTONE_API_BASE_URL,
+      SMS_API_KEY: process.env.SMS_API_KEY,
+      SMS_API_SECRET: process.env.SMS_API_SECRET,
+      FROM_PHONE_NUMBER: process.env.FROM_PHONE_NUMBER,
     };
 
     const productionConfigs = typia.validate<IEnvironment>(fromExternal);
@@ -69,6 +72,9 @@ export class ConfigsService {
       ),
       PORTONE_API_SECRET: this.dotEnv.get('PORTONE_API_SECRET'),
       PORTONE_API_BASE_URL: this.dotEnv.get('PORTONE_API_BASE_URL'),
+      SMS_API_KEY: this.dotEnv.get('SMS_API_KEY'),
+      SMS_API_SECRET: this.dotEnv.get('SMS_API_SECRET'),
+      FROM_PHONE_NUMBER: this.dotEnv.get('FROM_PHONE_NUMBER'),
     };
 
     const devConfigs = typia.validate<IEnvironment>(fromDotEnv);
