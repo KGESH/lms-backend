@@ -24,6 +24,18 @@ export class OtpController {
   private readonly logger = new Logger(OtpController.name);
   constructor(private readonly otpService: OtpService) {}
 
+  /**
+   * 이메일 회원가입시 휴대폰 인증을 위한 6자리 숫자 인증번호를 전송합니다.
+   *
+   * 동일한 휴대폰 번호로 인증번호를 전송한 기록이 있는 경우, 가장 마지막에 전송한 인증번호만 유효합니다.
+   *
+   * 인증 코드의 유효 시간은 **3분**입니다.
+   *
+   * 이미 가입된 흎대폰 번호인 경우, 409 예외를 반환합니다.
+   *
+   * @tag otp
+   * @summary 이메일 회원가입 휴대폰 인증번호 전송
+   */
   @TypedRoute.Post('/signup')
   @SkipAuth()
   @TypedException<TypeGuardError>({
@@ -53,6 +65,16 @@ export class OtpController {
     };
   }
 
+  /**
+   * 이메일 회원가입시 전송한 휴대폰 인증번호를 검증합니다.
+   *
+   * 동일한 휴대폰 번호로 인증번호를 전송한 기록이 있는 경우, 가장 마지막에 전송한 인증번호만 유효합니다.
+   *
+   * 인증 코드의 유효 시간은 **3분**입니다.
+   *
+   * @tag otp
+   * @summary 이메일 회원가입 휴대폰 인증번호 검증
+   */
   @TypedRoute.Post('/signup/verify')
   @SkipAuth()
   @TypedException<TypeGuardError>({
