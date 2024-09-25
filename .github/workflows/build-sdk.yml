@@ -49,6 +49,9 @@ jobs:
           AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS: ${{secrets.AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS}}
           PORTONE_API_BASE_URL: ${{secrets.PORTONE_API_BASE_URL}}
           PORTONE_API_SECRET: ${{secrets.PORTONE_API_SECRET}}
+          SMS_API_KEY: ${{secrets.SMS_API_KEY}}
+          SMS_API_SECRET: ${{secrets.SMS_API_SECRET}}
+          FROM_PHONE_NUMBER: ${{secrets.FROM_PHONE_NUMBER}}
 
       - name: Publish SDK
         run: npm run deploy
@@ -64,3 +67,6 @@ jobs:
           AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS: ${{secrets.AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS}}
           PORTONE_API_BASE_URL: ${{secrets.PORTONE_API_BASE_URL}}
           PORTONE_API_SECRET: ${{secrets.PORTONE_API_SECRET}}
+          SMS_API_KEY: ${{secrets.SMS_API_KEY}}
+          SMS_API_SECRET: ${{secrets.SMS_API_SECRET}}
+          FROM_PHONE_NUMBER: ${{secrets.FROM_PHONE_NUMBER}}
