@@ -4,7 +4,7 @@ import {
   ICouponDisposable,
   ICouponDisposableWithUsedTicket,
 } from '@src/v1/coupon/disposable/coupon-disposable.interface';
-import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, ilike, inArray, sql } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import { OptionalPick } from '@src/shared/types/optional';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
@@ -40,7 +40,7 @@ export class CouponDisposableQueryRepository {
             ? eq(dbSchema.couponDisposables.couponId, where.couponId)
             : undefined,
           where.code
-            ? eq(dbSchema.couponDisposables.code, where.code)
+            ? ilike(dbSchema.couponDisposables.code, `%${where.code}%`)
             : undefined,
         ),
       )
