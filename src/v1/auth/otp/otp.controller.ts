@@ -30,6 +30,10 @@ export class OtpController {
     status: 400,
     description: 'invalid request',
   })
+  @TypedException<IErrorResponse<409>>({
+    status: 409,
+    description: 'User already exist.',
+  })
   @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
     status: INVALID_LMS_SECRET,
     description: 'invalid LMS api secret',

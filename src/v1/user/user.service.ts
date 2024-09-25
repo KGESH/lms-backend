@@ -7,7 +7,6 @@ import {
   IUserWithoutPassword,
 } from './user.interface';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
-import * as typia from 'typia';
 import { IUserSignUp } from '@src/v1/auth/auth.interface';
 import { UserInfoRepository } from '@src/v1/user/user-info.repository';
 import { UserAccountRepository } from '@src/v1/user/user-account.repository';
@@ -15,6 +14,7 @@ import { UserQueryRepository } from '@src/v1/user/user-query.repository';
 import { createUuid } from '@src/shared/utils/uuid';
 import { TransactionClient } from '@src/infra/db/drizzle.types';
 import { OptionalPick } from '@src/shared/types/optional';
+import { assertUserWithoutPassword } from '@src/shared/helpers/assert/user';
 
 @Injectable()
 export class UserService {
@@ -36,9 +36,7 @@ export class UserService {
     );
     return {
       ...users,
-      data: users.data.map((user) =>
-        typia.misc.clone<IUserWithoutPassword>(user),
-      ),
+      data: users.data.map((user) => assertUserWithoutPassword(user)),
     };
   }
 
@@ -46,14 +44,26 @@ export class UserService {
     query: Pick<IUser, 'id'>,
   ): Promise<IUserWithoutPassword | null> {
     const user = await this.userQueryRepository.findOne(query);
-    return user ? typia.misc.clone<IUserWithoutPassword>(user) : null;
+    return user ? assertUserWithoutPassword(user) : null;
+  }
+
+  async findUserByPhoneNumber(where: {
+    phoneNumber: string;
+  }): Promise<IUserWithoutPassword | null> {
+    const user = await this.userQueryRepository.findUserByPhoneNumber(where);
+
+    if (!user) {
+      return null;
+    }
+
+    return assertUserWithoutPassword(user);
   }
 
   async findUserByIdOrThrow(
     query: Pick<IUser, 'id'>,
   ): Promise<IUserWithoutPassword> {
     const user = await this.userQueryRepository.findOneOrThrow(query);
-    return typia.misc.clone<IUserWithoutPassword>(user);
+    return assertUserWithoutPassword(user);
   }
 
   async findUserByEmail(query: Pick<IUser, 'email'>): Promise<IUser | null> {
@@ -71,7 +81,7 @@ export class UserService {
   ): Promise<IUserWithoutPassword | null> {
     const user =
       await this.userQueryRepository.findUserByMatchedUsername(where);
-    return user ? typia.misc.clone<IUserWithoutPassword>(user) : null;
+    return user ? assertUserWithoutPassword(user) : null;
   }
 
   async createUser(
@@ -102,7 +112,7 @@ export class UserService {
       tx,
     );
 
-    return typia.misc.clone<IUserWithoutPassword>(user);
+    return assertUserWithoutPassword(user);
   }
 
   async updateUser(
@@ -117,6 +127,6 @@ export class UserService {
       tx,
     );
 
-    return typia.misc.clone<IUserWithoutPassword>(updated);
+    return assertUserWithoutPassword(updated);
   }
 }

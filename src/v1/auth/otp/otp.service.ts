@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { OtpRepository } from '@src/v1/auth/otp/otp.repository';
 import { IOtp, IOtpCreate } from '@src/v1/auth/otp/otp.interface';
 import { SmsService } from '@src/infra/sms/sms.service';
 import { OtpQueryRepository } from '@src/v1/auth/otp/otp-query.repository';
 import * as date from '@src/shared/utils/date';
+import { UserService } from '@src/v1/user/user.service';
 
 @Injectable()
 export class OtpService {
   constructor(
+    private readonly userService: UserService,
     private readonly smsService: SmsService,
     private readonly otpRepository: OtpRepository,
     private readonly otpQueryRepository: OtpQueryRepository,
@@ -30,18 +32,26 @@ export class OtpService {
   }
 
   async sendSignupOtp({ phoneNumber }: { phoneNumber: string }): Promise<IOtp> {
+    const existUser = await this.userService.findUserByPhoneNumber({
+      phoneNumber,
+    });
+
+    if (existUser) {
+      throw new ConflictException('User already exist.');
+    }
+
     const random6DigitsNumberString = Math.floor(
       100000 + Math.random() * 900000,
     ).toString();
 
-    const after1Hour = date.addDate(date.now('date'), 1, 'hour', 'date');
+    const afterOneHour = date.addDate(date.now('date'), 1, 'hour', 'date');
 
     const otp = await this.createOtp({
       phoneNumber,
       code: random6DigitsNumberString,
       userId: null,
       usage: 'signup',
-      expires: after1Hour,
+      expires: afterOneHour,
     });
 
     return otp;

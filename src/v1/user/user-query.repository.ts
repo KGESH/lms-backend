@@ -32,6 +32,23 @@ export class UserQueryRepository {
     return user;
   }
 
+  async findUserByPhoneNumber(where: {
+    phoneNumber: string;
+  }): Promise<IUser | null> {
+    const userInfo = await this.drizzle.db.query.userInfos.findFirst({
+      where: eq(dbSchema.userInfos.phoneNumber, where.phoneNumber),
+      with: {
+        user: true,
+      },
+    });
+
+    if (!userInfo) {
+      return null;
+    }
+
+    return userInfo.user;
+  }
+
   async findUserByEmail(where: Pick<IUser, 'email'>): Promise<IUser | null> {
     const user = await this.drizzle.db.query.users.findFirst({
       where: eq(dbSchema.users.email, where.email),

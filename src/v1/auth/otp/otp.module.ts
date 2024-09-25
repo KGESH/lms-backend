@@ -4,8 +4,9 @@ import { SmsModule } from '@src/infra/sms/sms.module';
 import { OtpService } from '@src/v1/auth/otp/otp.service';
 import { OtpRepository } from '@src/v1/auth/otp/otp.repository';
 import { OtpQueryRepository } from '@src/v1/auth/otp/otp-query.repository';
+import { UserModule } from '@src/v1/user/user.module';
 
-const modules = [SmsModule];
+const modules = [UserModule, SmsModule];
 
 const providers = [OtpService, OtpRepository, OtpQueryRepository];
 
