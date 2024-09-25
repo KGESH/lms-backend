@@ -74,3 +74,10 @@ export const couponDirection = pgEnum('coupon_direction', [
 ]);
 
 export const termType = pgEnum('term_type', ['mandatory', 'optional']);
+
+export const otpUsage = pgEnum('otp_usage', [
+  'login',
+  'signup',
+  'password_reset',
+  'delete_account',
+]);

@@ -10,6 +10,7 @@ import { mockReviewDbSchema } from './mock-review';
 import { couponDbSchema } from './coupon';
 import { termDbSchema } from './term';
 import { fileDbSchemas } from './file';
+import { otpDbSchemas } from './otp';
 
 export const dbSchema = {
   // 사용자 (일반 사용자, 관리자(매니저), 최고 관리자)
@@ -47,4 +48,7 @@ export const dbSchema = {
 
   // 파일
   ...fileDbSchemas,
+
+  // OTP
+  ...otpDbSchemas,
 };

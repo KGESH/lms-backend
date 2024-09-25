@@ -25,6 +25,7 @@ import { DashboardModule } from '@src/v1/dashboard/dashboard.module';
 import { CouponModule } from '@src/v1/coupon/coupon.module';
 import { UserCouponModule } from '@src/v1/user/coupon/user-coupon.module';
 import { TermModule } from '@src/v1/term/term.module';
+import { OtpModule } from '@src/v1/auth/otp/otp.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { TermModule } from '@src/v1/term/term.module';
     CouponModule,
     UserCouponModule,
     TermModule,
+    OtpModule,
   ],
   controllers: [AppController],
   providers: [AppService],

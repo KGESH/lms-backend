@@ -77,3 +77,5 @@ export type ProductUiContentType =
 export type CarouselContentType = 'video' | 'image';
 
 export type TermType = 'mandatory' | 'optional';
+
+export type OtpUsage = 'login' | 'signup' | 'password_reset' | 'delete_account';
