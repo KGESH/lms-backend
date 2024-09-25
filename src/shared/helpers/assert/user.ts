@@ -1,10 +1,10 @@
 import * as typia from 'typia';
-import { IUser, IUserWithoutPassword } from '@src/v1/user/user.interface';
+import { IUserWithoutPassword } from '@src/v1/user/user.interface';
 
 export const assertUserWithoutPassword = (
   user: IUserWithoutPassword,
 ): IUserWithoutPassword =>
-  typia.assert<IUser>({
+  typia.assert<IUserWithoutPassword>({
     id: user.id,
     displayName: user.displayName,
     email: user.email,
