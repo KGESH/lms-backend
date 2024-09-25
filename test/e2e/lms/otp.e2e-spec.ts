@@ -26,13 +26,14 @@ describe('OtpController (e2e)', () => {
 
   describe('SMS OTP', () => {
     it('should be signup otp sequence success', async () => {
+      const PHONE_NUMBER = '+821012345678';
       const sendOtpResponse = await OtpAPI.signup.sendSignupOtp(
         {
           host,
           headers: { LmsSecret },
         },
         {
-          phoneNumber: '01012345678',
+          phoneNumber: PHONE_NUMBER,
         },
       );
       if (!sendOtpResponse.success) {
@@ -50,6 +51,7 @@ describe('OtpController (e2e)', () => {
         },
         {
           code: otp.code,
+          identifier: PHONE_NUMBER,
         },
       );
       if (!verifyResponse.success) {
