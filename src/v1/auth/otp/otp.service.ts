@@ -54,14 +54,19 @@ export class OtpService {
 
     const random6DigitsNumberString = generateRandomNumberString({ digits: 6 });
 
-    const afterOneHour = date.addDate(date.now('date'), 1, 'hour', 'date');
+    const afterThreeMinutes = date.addDate(
+      date.now('date'),
+      3,
+      'minute',
+      'date',
+    );
 
     const otp = await this.sendOtp({
       phoneNumber,
       code: random6DigitsNumberString,
       identifier: phoneNumber,
       usage: 'signup',
-      expires: afterOneHour,
+      expires: afterThreeMinutes,
     });
 
     return otp;
