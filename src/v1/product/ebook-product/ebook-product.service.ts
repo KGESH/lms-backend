@@ -33,12 +33,12 @@ import {
 } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
 import { EbookProductSnapshotUiContentRepository } from '@src/v1/product/ebook-product/ebook-product-snapshot-ui-content.repository';
 import { IProductThumbnailCreate } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
-import { FileService } from '@src/v1/file/file.service';
+import { ProductThumbnailService } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.service';
 
 @Injectable()
 export class EbookProductService {
   constructor(
-    private readonly fileService: FileService,
+    private readonly productThumbnailService: ProductThumbnailService,
     private readonly ebookProductRepository: EbookProductRepository,
     private readonly ebookProductQueryRepository: EbookProductQueryRepository,
     private readonly ebookProductSnapshotRepository: EbookProductSnapshotRepository,
@@ -171,10 +171,11 @@ export class EbookProductService {
             },
             tx,
           ));
-        const thumbnail = await this.fileService.createFile(
-          ebookProductSnapshotThumbnailCreateParams,
-          tx,
-        );
+        const thumbnail =
+          await this.productThumbnailService.createProductThumbnail(
+            ebookProductSnapshotThumbnailCreateParams,
+            tx,
+          );
         const snapshot = await this.ebookProductSnapshotRepository.create(
           {
             ...ebookProductSnapshotCreateParams,
@@ -311,7 +312,7 @@ export class EbookProductService {
     const updatedProduct: NonNullableInfer<IEbookProductWithRelations> =
       await this.drizzle.db.transaction(async (tx) => {
         const thumbnail = ebookProductSnapshotThumbnailCreateParams
-          ? await this.fileService.createFile(
+          ? await this.productThumbnailService.createProductThumbnail(
               ebookProductSnapshotThumbnailCreateParams,
               tx,
             )

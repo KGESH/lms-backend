@@ -12,9 +12,9 @@ import { CourseProductSnapshotContentRepository } from '@src/v1/product/course-p
 import { CourseProductSnapshotAnnouncementRepository } from '@src/v1/product/course-product/course-product-snapshot-announcement.repository';
 import { CourseProductSnapshotRefundPolicyRepository } from '@src/v1/product/course-product/course-product-snapshot-refund-policy.repository';
 import { CourseProductSnapshotUiContentRepository } from '@src/v1/product/course-product/course-product-snapshot-ui-content.repository';
-import { FileModule } from '@src/v1/file/file.module';
+import { ProductThumbnailModule } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.module';
 
-const modules = [CourseModule, UserModule, FileModule];
+const modules = [CourseModule, UserModule, ProductThumbnailModule];
 
 const providers = [
   CourseProductService,

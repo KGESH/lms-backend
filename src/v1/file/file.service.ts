@@ -7,14 +7,14 @@ import { TransactionClient } from '@src/infra/db/drizzle.types';
 export class FileService {
   constructor(private readonly fileRepository: FileRepository) {}
 
-  async createFile(params: IFileCreate, tx: TransactionClient): Promise<IFile> {
+  async createFile(params: IFileCreate, tx?: TransactionClient): Promise<IFile> {
     const [file] = await this.fileRepository.createManyFiles([params], tx);
     return file;
   }
 
   async createManyFiles(
     params: IFileCreate[],
-    tx: TransactionClient,
+    tx?: TransactionClient,
   ): Promise<IFile[]> {
     const files = await this.fileRepository.createManyFiles(params, tx);
     return files;

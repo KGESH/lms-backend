@@ -34,13 +34,13 @@ import {
   IProductSnapshotUiContentUpdate,
 } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
 import { IProductThumbnailCreate } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
-import { FileService } from '@src/v1/file/file.service';
+import { ProductThumbnailService } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.service';
 
 @Injectable()
 export class CourseProductService {
   constructor(
-    private readonly fileService: FileService,
     private readonly courseQueryService: CourseQueryService,
+    private readonly productThumbnailService: ProductThumbnailService,
     private readonly courseProductRepository: CourseProductRepository,
     private readonly courseProductQueryRepository: CourseProductQueryRepository,
     private readonly courseProductSnapshotRepository: CourseProductSnapshotRepository,
@@ -182,10 +182,11 @@ export class CourseProductService {
           },
           tx,
         ));
-      const thumbnail = await this.fileService.createFile(
-        courseProductSnapshotThumbnailCreateParams,
-        tx,
-      );
+      const thumbnail =
+        await this.productThumbnailService.createProductThumbnail(
+          courseProductSnapshotThumbnailCreateParams,
+          tx,
+        );
       const snapshot = await this.courseProductSnapshotRepository.create(
         {
           ...courseProductSnapshotCreateParams,
@@ -319,7 +320,7 @@ export class CourseProductService {
     const updatedProduct: NonNullableInfer<ICourseProductWithRelations> =
       await this.drizzle.db.transaction(async (tx) => {
         const thumbnail = courseProductSnapshotThumbnailCreateParams
-          ? await this.fileService.createFile(
+          ? await this.productThumbnailService.createProductThumbnail(
               courseProductSnapshotThumbnailCreateParams,
               tx,
             )
