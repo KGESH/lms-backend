@@ -1,4 +1,9 @@
-import { FileType, ISO8601, Uri, Uuid } from '@src/shared/types/primitive';
+import {
+  ISO8601,
+  ProductThumbnailType,
+  Uri,
+  Uuid,
+} from '@src/shared/types/primitive';
 
 export type ProductThumbnailDto = {
   /**
@@ -14,7 +19,7 @@ export type ProductThumbnailDto = {
   /**
    * 파일 타입
    * */
-  type: FileType;
+  type: ProductThumbnailType;
 
   /**
    * 파일 메타데이터

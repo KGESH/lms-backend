@@ -64,6 +64,8 @@ export type ProductType = Course | Ebook;
 
 export type FileType = 'video' | 'image' | 'text' | 'file';
 
+export type ProductThumbnailType = 'video' | 'image';
+
 export type LessonContentType = FileType;
 
 export type EbookContentType = FileType;
