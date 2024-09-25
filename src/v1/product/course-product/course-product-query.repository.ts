@@ -16,6 +16,7 @@ import { IProductSnapshotAnnouncement } from '@src/v1/product/common/snapshot/an
 import { IProductSnapshotRefundPolicy } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
 import { IProductSnapshotDiscount } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
+import { IProductThumbnail } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
 
 @Injectable()
 export class CourseProductQueryRepository {
@@ -48,6 +49,7 @@ export class CourseProductQueryRepository {
         teacher: dbSchema.teachers,
         teacherUser: dbSchema.users,
         snapshot: dbSchema.courseProductSnapshots,
+        thumbnail: dbSchema.files,
         pricing: dbSchema.courseProductSnapshotPricing,
         discount: dbSchema.courseProductSnapshotDiscounts,
         totalCount: sql<number>`count(*) over()`.mapWith(Number),
@@ -72,6 +74,10 @@ export class CourseProductQueryRepository {
       .innerJoin(
         dbSchema.courseProductSnapshots,
         eq(dbSchema.courseProductSnapshots.id, productLatestSnapshotQuery),
+      )
+      .innerJoin(
+        dbSchema.files,
+        eq(dbSchema.files.id, dbSchema.courseProductSnapshots.thumbnailId),
       )
       .innerJoin(
         dbSchema.courseProductSnapshotPricing,
@@ -111,6 +117,7 @@ export class CourseProductQueryRepository {
         },
         lastSnapshot: {
           ...product.snapshot,
+          thumbnail: product.thumbnail,
           pricing: product.pricing,
           discount: product.discount ?? null,
         },
@@ -139,6 +146,7 @@ export class CourseProductQueryRepository {
           orderBy: desc(dbSchema.courseProductSnapshots.createdAt),
           limit: 1,
           with: {
+            thumbnail: true,
             pricing: true,
             discount: true,
           },
@@ -159,6 +167,9 @@ export class CourseProductQueryRepository {
       },
       lastSnapshot: {
         ...product.snapshots[0],
+        thumbnail: typia.assert<IProductThumbnail>(
+          product.snapshots[0].thumbnail,
+        ),
         pricing: typia.assert<IProductSnapshotPricing>({
           ...product.snapshots[0].pricing,
           amount: typia.assert<Price>(
@@ -201,6 +212,7 @@ export class CourseProductQueryRepository {
           orderBy: desc(dbSchema.courseProductSnapshots.createdAt),
           limit: 1,
           with: {
+            thumbnail: true,
             announcement: true,
             refundPolicy: true,
             content: true,
@@ -233,6 +245,7 @@ export class CourseProductQueryRepository {
       lastSnapshot: lastSnapshot
         ? {
             ...lastSnapshot,
+            thumbnail: typia.assert<IProductThumbnail>(lastSnapshot.thumbnail),
             announcement: typia.assert<IProductSnapshotAnnouncement>(
               lastSnapshot.announcement,
             ),

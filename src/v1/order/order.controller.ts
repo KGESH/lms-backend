@@ -177,6 +177,7 @@ export class OrderController {
         snapshotId: ebookProduct.lastSnapshot.id,
         title: ebookProduct.lastSnapshot.title,
         description: ebookProduct.lastSnapshot.description,
+        thumbnailUrl: ebookProduct.lastSnapshot.thumbnail.url,
         createdAt: toISOString(ebookProduct.lastSnapshot.createdAt),
         updatedAt: toISOString(ebookProduct.lastSnapshot.updatedAt),
         deletedAt: ebookProduct.lastSnapshot.deletedAt
@@ -217,6 +218,7 @@ export class OrderController {
       product: {
         course: courseRelationsToDto(courseProduct.course),
         courseId: courseProduct.courseId,
+        thumbnailUrl: courseProduct.lastSnapshot.thumbnail.url,
         snapshotId: courseProduct.lastSnapshot.id,
         title: courseProduct.lastSnapshot.title,
         description: courseProduct.lastSnapshot.description,

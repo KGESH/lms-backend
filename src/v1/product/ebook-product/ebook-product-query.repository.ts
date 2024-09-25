@@ -16,12 +16,13 @@ import { IProductSnapshotAnnouncement } from '@src/v1/product/common/snapshot/an
 import { IProductSnapshotRefundPolicy } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
 import { IProductSnapshotDiscount } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
+import { IProductThumbnail } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
 
 @Injectable()
 export class EbookProductQueryRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async findEbookProductsWithRelations(
+  async findEbookProductsWithPricing(
     // orderByColumn  Todo: Impl
     pagination: Pagination,
   ): Promise<Paginated<IEbookProductWithPricing[]>> {
@@ -45,6 +46,7 @@ export class EbookProductQueryRepository {
         teacher: dbSchema.teachers,
         teacherUser: dbSchema.users,
         snapshot: dbSchema.ebookProductSnapshots,
+        thumbnail: dbSchema.files,
         pricing: dbSchema.ebookProductSnapshotPricing,
         discount: dbSchema.ebookProductSnapshotDiscounts,
         totalCount: sql<number>`count(*) over()`.mapWith(Number),
@@ -71,6 +73,10 @@ export class EbookProductQueryRepository {
         eq(dbSchema.ebookProductSnapshots.id, productLatestSnapshotQuery),
       )
       .innerJoin(
+        dbSchema.files,
+        eq(dbSchema.files.id, dbSchema.ebookProductSnapshots.thumbnailId),
+      )
+      .innerJoin(
         dbSchema.ebookProductSnapshotPricing,
         eq(
           dbSchema.ebookProductSnapshotPricing.productSnapshotId,
@@ -92,7 +98,7 @@ export class EbookProductQueryRepository {
       .offset((pagination.page - 1) * pagination.pageSize)
       .limit(pagination.pageSize);
 
-    return typia.misc.clone<Paginated<IEbookProductWithPricing[]>>({
+    return typia.assert<Paginated<IEbookProductWithPricing[]>>({
       pagination,
       totalCount: products[0]?.totalCount ?? 0,
       data: products.map((product) =>
@@ -109,12 +115,74 @@ export class EbookProductQueryRepository {
           },
           lastSnapshot: {
             ...product.snapshot,
+            thumbnail: product.thumbnail,
             pricing: product.pricing,
             discount: product.discount ?? null,
           },
         }),
       ),
     });
+  }
+
+  async findEbookProductWithPricing(
+    where: Pick<IEbookProduct, 'ebookId'>,
+  ): Promise<IEbookProductWithPricing | null> {
+    const product = await this.drizzle.db.query.ebookProducts.findFirst({
+      where: eq(dbSchema.ebookProducts.ebookId, where.ebookId),
+      with: {
+        ebook: {
+          with: {
+            category: true,
+            teacher: {
+              with: {
+                account: true,
+              },
+            },
+          },
+        },
+        snapshots: {
+          where: isNull(dbSchema.ebookProductSnapshots.deletedAt),
+          orderBy: desc(dbSchema.ebookProductSnapshots.createdAt),
+          limit: 1,
+          with: {
+            thumbnail: true,
+            pricing: true,
+            discount: true,
+          },
+        },
+      },
+    });
+
+    if (!product?.snapshots[0]) {
+      return null;
+    }
+
+    return {
+      ...product,
+      ebook: {
+        ...product.ebook,
+        teacher: product.ebook.teacher,
+        contents: [],
+      },
+      lastSnapshot: {
+        ...product.snapshots[0],
+        thumbnail: typia.assert<IProductThumbnail>(
+          product.snapshots[0].thumbnail,
+        ),
+        pricing: typia.assert<IProductSnapshotPricing>({
+          ...product.snapshots[0].pricing,
+          amount: typia.assert<Price>(
+            `${product.snapshots[0].pricing!.amount}`,
+          ),
+        }),
+        discount: typia.assert<IProductSnapshotDiscount>({
+          ...product.snapshots[0].discount,
+          value: typia.assert<DiscountValue>(
+            `${product.snapshots[0].discount!.value}`,
+          ),
+        }),
+      },
+    };
   }
 
   async findEbookProductWithRelations(
@@ -138,6 +206,7 @@ export class EbookProductQueryRepository {
           orderBy: desc(dbSchema.ebookProductSnapshots.createdAt),
           limit: 1,
           with: {
+            thumbnail: true,
             announcement: true,
             refundPolicy: true,
             content: true,
@@ -164,6 +233,7 @@ export class EbookProductQueryRepository {
       lastSnapshot: lastSnapshot
         ? {
             ...lastSnapshot,
+            thumbnail: typia.assert<IProductThumbnail>(lastSnapshot.thumbnail),
             announcement: typia.assert<IProductSnapshotAnnouncement>(
               lastSnapshot.announcement,
             ),

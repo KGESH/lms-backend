@@ -4,6 +4,7 @@ import { Optional } from '@src/shared/types/optional';
 export type IProductSnapshot = {
   id: Uuid;
   productId: Uuid;
+  thumbnailId: Uuid;
   title: string;
   description: string | null;
   createdAt: Date;
@@ -13,5 +14,5 @@ export type IProductSnapshot = {
 
 export type IProductSnapshotCreate = Pick<
   Optional<IProductSnapshot, 'id'>,
-  'id' | 'productId' | 'title' | 'description'
+  'id' | 'productId' | 'thumbnailId' | 'title' | 'description'
 >;

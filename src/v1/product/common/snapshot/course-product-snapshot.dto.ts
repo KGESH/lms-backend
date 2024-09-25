@@ -4,8 +4,10 @@ import { ProductSnapshotRefundPolicyDto } from '@src/v1/product/common/snapshot/
 import { ProductSnapshotPricingDto } from '@src/v1/product/common/snapshot/pricing/product-snapshot-pricing.dto';
 import { ProductSnapshotDiscountDto } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.dto';
 import { ProductSnapshotUiContentDto } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.dto';
+import { ProductThumbnailDto } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.dto';
 
 export type CreateProductContentDto = {
+  thumbnail: Pick<ProductThumbnailDto, 'id' | 'url' | 'metadata' | 'type'>;
   content: Pick<ProductSnapshotContentDto, 'richTextContent'>;
   announcement: Pick<ProductSnapshotAnnouncementDto, 'richTextContent'>;
   refundPolicy: Pick<ProductSnapshotRefundPolicyDto, 'richTextContent'>;

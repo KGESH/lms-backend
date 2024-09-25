@@ -33,10 +33,13 @@ import {
   IProductSnapshotUiContentCreate,
   IProductSnapshotUiContentUpdate,
 } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
+import { IProductThumbnailCreate } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
+import { FileService } from '@src/v1/file/file.service';
 
 @Injectable()
 export class CourseProductService {
   constructor(
+    private readonly fileService: FileService,
     private readonly courseQueryService: CourseQueryService,
     private readonly courseProductRepository: CourseProductRepository,
     private readonly courseProductQueryRepository: CourseProductQueryRepository,
@@ -117,6 +120,7 @@ export class CourseProductService {
   async createCourseProduct({
     courseProductCreateParams,
     courseProductSnapshotCreateParams,
+    courseProductSnapshotThumbnailCreateParams,
     courseProductSnapshotContentCreateParams,
     courseProductSnapshotAnnouncementCreateParams,
     courseProductSnapshotRefundPolicyCreateParams,
@@ -127,8 +131,9 @@ export class CourseProductService {
     courseProductCreateParams: ICourseProductCreate;
     courseProductSnapshotCreateParams: Optional<
       IProductSnapshotCreate,
-      'productId'
+      'productId' | 'thumbnailId'
     >;
+    courseProductSnapshotThumbnailCreateParams: IProductThumbnailCreate;
     courseProductSnapshotContentCreateParams: Optional<
       IProductSnapshotContentCreate,
       'productSnapshotId'
@@ -177,10 +182,15 @@ export class CourseProductService {
           },
           tx,
         ));
+      const thumbnail = await this.fileService.createFile(
+        courseProductSnapshotThumbnailCreateParams,
+        tx,
+      );
       const snapshot = await this.courseProductSnapshotRepository.create(
         {
           ...courseProductSnapshotCreateParams,
           productId: courseProduct.id,
+          thumbnailId: thumbnail.id,
           id: createUuid(),
         },
         tx,
@@ -227,6 +237,7 @@ export class CourseProductService {
         ...courseProduct,
         lastSnapshot: {
           ...snapshot,
+          thumbnail,
           announcement,
           content,
           refundPolicy,
@@ -261,6 +272,7 @@ export class CourseProductService {
     where: Pick<ICourseProduct, 'courseId'>,
     {
       courseProductSnapshotCreateParams,
+      courseProductSnapshotThumbnailCreateParams,
       courseProductSnapshotContentCreateParams,
       courseProductSnapshotAnnouncementCreateParams,
       courseProductSnapshotRefundPolicyCreateParams,
@@ -268,9 +280,11 @@ export class CourseProductService {
       courseProductSnapshotDiscountCreateParams,
       courseProductSnapshotUiContentParams,
     }: {
-      courseProductSnapshotCreateParams?: Partial<
-        Omit<IProductSnapshotCreate, 'productId'>
+      courseProductSnapshotCreateParams?: Omit<
+        IProductSnapshotCreate,
+        'productId' | 'thumbnailId'
       >;
+      courseProductSnapshotThumbnailCreateParams?: IProductThumbnailCreate;
       courseProductSnapshotContentCreateParams?: Pick<
         IProductSnapshotContentCreate,
         'richTextContent'
@@ -304,12 +318,22 @@ export class CourseProductService {
     // If the parameter is not given, use the existing snapshot. e.g. pricing create params.
     const updatedProduct: NonNullableInfer<ICourseProductWithRelations> =
       await this.drizzle.db.transaction(async (tx) => {
+        const thumbnail = courseProductSnapshotThumbnailCreateParams
+          ? await this.fileService.createFile(
+              courseProductSnapshotThumbnailCreateParams,
+              tx,
+            )
+          : existProduct.lastSnapshot.thumbnail;
+
         const snapshot = await this.courseProductSnapshotRepository.create(
           {
-            ...existProduct.lastSnapshot,
-            ...courseProductSnapshotCreateParams,
             productId: existProduct.id,
+            thumbnailId: thumbnail.id,
             id: createUuid(),
+            ...(courseProductSnapshotCreateParams ?? {
+              title: existProduct.lastSnapshot.title,
+              description: existProduct.lastSnapshot.description,
+            }),
           },
           tx,
         );
@@ -409,6 +433,7 @@ export class CourseProductService {
           ...existProduct,
           lastSnapshot: {
             ...snapshot,
+            thumbnail,
             announcement,
             content,
             refundPolicy,

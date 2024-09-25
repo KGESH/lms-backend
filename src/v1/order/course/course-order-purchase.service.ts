@@ -5,10 +5,7 @@ import { ICourseOrderPurchase } from '@src/v1/order/course/course-order-purchase
 import { CourseProductService } from '@src/v1/product/course-product/course-product.service';
 import { UserService } from '@src/v1/user/user.service';
 import { ICourseOrder } from '@src/v1/order/course/course-order.interface';
-import {
-  ICourseProductWithLastSnapshot,
-  ICourseProductWithPricing,
-} from '@src/v1/product/course-product/course-product-relations.interface';
+import { ICourseProductWithPricing } from '@src/v1/product/course-product/course-product-relations.interface';
 import { NonNullableInfer } from '@src/shared/types/non-nullable-infer';
 import { IOrder } from '@src/v1/order/order.interface';
 import { createUuid } from '@src/shared/utils/uuid';
@@ -63,6 +60,11 @@ export class CourseOrderPurchaseService {
     }
   }
 
+  /**
+   * Verify coupon criteria for course product.
+   * If criteria mismatch, throw ForbiddenException.
+   * If 'include' criteria exist within the same type, ignore 'exclude' criteria.
+   */
   private _verifyCourseCouponCriteriaOrThrow(
     product: ICourseProductWithPricing,
     coupon: Pick<
@@ -80,73 +82,204 @@ export class CourseOrderPurchaseService {
       ...coupon.couponCourseCriteria,
     ];
 
-    criteria.forEach((criteria) => {
-      switch (criteria.type) {
+    // Build a map from criteria type to array of criteria
+    const criteriaMap = new Map<ICouponCriteria['type'], ICouponCriteria[]>();
+
+    // Group criteria by their type
+    criteria.forEach((criterion) => {
+      if (!criteriaMap.has(criterion.type)) {
+        criteriaMap.set(criterion.type, []);
+      }
+      criteriaMap.get(criterion.type)?.push(criterion);
+    });
+
+    const filteredCriteria: ICouponCriteria[] = [];
+
+    // Process each group of criteria
+    criteriaMap.forEach((criteriaArray) => {
+      const hasInclude = criteriaArray.some((c) => c.direction === 'include');
+
+      if (hasInclude) {
+        // Ignore 'exclude' criteria if 'include' criteria exist
+        const includeCriteria = criteriaArray.filter(
+          (c) => c.direction === 'include',
+        );
+        filteredCriteria.push(...includeCriteria);
+      } else {
+        // Keep all criteria if only 'exclude' criteria exist
+        filteredCriteria.push(...criteriaArray);
+      }
+    });
+
+    // Now use filteredCriteria for validation
+    filteredCriteria.forEach((criterion) => {
+      switch (criterion.type) {
         case 'all':
+          // No action needed for 'all' criteria
           return;
 
         case 'category':
           if (
-            criteria.direction === 'include' &&
-            criteria.categoryId !== product.course.categoryId
+            criterion.direction === 'include' &&
+            criterion.categoryId !== product.course.categoryId
           ) {
             throw new ForbiddenException(
-              `Coupon category criteria direction mismatch. [include, ${product.course.categoryId}]`,
+              `Coupon category criteria mismatch: expected category ${criterion.categoryId}, got ${product.course.categoryId}.`,
             );
           } else if (
-            criteria.direction === 'exclude' &&
-            criteria.categoryId === product.course.categoryId
+            criterion.direction === 'exclude' &&
+            criterion.categoryId === product.course.categoryId
           ) {
             throw new ForbiddenException(
-              `Coupon category criteria direction mismatch. [Exclude, ${product.course.categoryId}]`,
+              `Coupon cannot be applied to category ${product.course.categoryId}.`,
             );
           }
           return;
 
         case 'teacher':
           if (
-            criteria.direction === 'include' &&
-            criteria.teacherId !== product.course.teacherId
+            criterion.direction === 'include' &&
+            criterion.teacherId !== product.course.teacherId
           ) {
             throw new ForbiddenException(
-              `Coupon teacher criteria direction mismatch. [include, ${product.course.teacherId}]`,
+              `Coupon teacher criteria mismatch: expected teacher ${criterion.teacherId}, got ${product.course.teacherId}.`,
             );
           } else if (
-            criteria.direction === 'exclude' &&
-            criteria.teacherId === product.course.teacherId
+            criterion.direction === 'exclude' &&
+            criterion.teacherId === product.course.teacherId
           ) {
             throw new ForbiddenException(
-              `Coupon teacher criteria direction mismatch. [Exclude, ${product.course.teacherId}]`,
+              `Coupon cannot be applied to teacher ${product.course.teacherId}.`,
             );
           }
           return;
 
         case 'course':
           if (
-            criteria.direction === 'include' &&
-            criteria.courseId !== product.courseId
+            criterion.direction === 'include' &&
+            criterion.courseId !== product.courseId
           ) {
             throw new ForbiddenException(
-              `Coupon course criteria direction mismatch. [include, ${product.courseId}]`,
+              `Coupon course criteria mismatch: expected course ${criterion.courseId}, got ${product.courseId}.`,
             );
           } else if (
-            criteria.direction === 'exclude' &&
-            criteria.courseId === product.courseId
+            criterion.direction === 'exclude' &&
+            criterion.courseId === product.courseId
           ) {
             throw new ForbiddenException(
-              `Coupon course criteria direction mismatch. [Exclude, ${product.courseId}]`,
+              `Coupon cannot be applied to course ${product.courseId}.`,
             );
           }
           return;
 
         default:
           this.logger.error(
-            `Invalid coupon criteria type ${JSON.stringify(criteria, null, 4)}`,
+            `Invalid coupon criterion type: ${JSON.stringify(criterion, null, 4)}`,
           );
-          throw new Error(`Invalid coupon criteria type.`);
+          throw new Error(`Invalid coupon criterion type.`);
       }
     });
   }
+
+  // private _verifyCourseCouponCriteriaOrThrow(
+  //   product: ICourseProductWithPricing,
+  //   coupon: Pick<
+  //     ICouponTicketRelations,
+  //     | 'couponAllCriteria'
+  //     | 'couponCategoryCriteria'
+  //     | 'couponTeacherCriteria'
+  //     | 'couponCourseCriteria'
+  //   >,
+  // ): void {
+  //   const criteria: ICouponCriteria[] = [
+  //     ...coupon.couponAllCriteria,
+  //     ...coupon.couponCategoryCriteria,
+  //     ...coupon.couponTeacherCriteria,
+  //     ...coupon.couponCourseCriteria,
+  //   ];
+  //
+  //   // if same type criteria have 'include' and 'exclude' criteria,
+  //   // ignore 'exclude' criteria, only use 'include' criteria
+  //   const filteredCriteria: ICouponCriteria[] = [];
+  //   const map = new Map<ICouponCriteria['type'], ICouponCriteria[]>();
+  //
+  //   // push every criteria to map
+  //   criteria.forEach((criteria) => {
+  //     if (!map.has(criteria.type)) {
+  //       map.set(criteria.type, []);
+  //     }
+  //     map.get(criteria.type)?.push(criteria);
+  //   });
+  //
+  //   // filter every 'exclude' criteria if 'exclude' and 'include' both criteria exist
+  //
+  //   criteria.forEach((criteria) => {
+  //     switch (criteria.type) {
+  //       case 'all':
+  //         return;
+  //
+  //       case 'category':
+  //         if (
+  //           criteria.direction === 'include' &&
+  //           criteria.categoryId !== product.course.categoryId
+  //         ) {
+  //           throw new ForbiddenException(
+  //             `Coupon category criteria direction mismatch. [include, ${product.course.categoryId}]`,
+  //           );
+  //         } else if (
+  //           criteria.direction === 'exclude' &&
+  //           criteria.categoryId === product.course.categoryId
+  //         ) {
+  //           throw new ForbiddenException(
+  //             `Coupon category criteria direction mismatch. [Exclude, ${product.course.categoryId}]`,
+  //           );
+  //         }
+  //         return;
+  //
+  //       case 'teacher':
+  //         if (
+  //           criteria.direction === 'include' &&
+  //           criteria.teacherId !== product.course.teacherId
+  //         ) {
+  //           throw new ForbiddenException(
+  //             `Coupon teacher criteria direction mismatch. [include, ${product.course.teacherId}]`,
+  //           );
+  //         } else if (
+  //           criteria.direction === 'exclude' &&
+  //           criteria.teacherId === product.course.teacherId
+  //         ) {
+  //           throw new ForbiddenException(
+  //             `Coupon teacher criteria direction mismatch. [Exclude, ${product.course.teacherId}]`,
+  //           );
+  //         }
+  //         return;
+  //
+  //       case 'course':
+  //         if (
+  //           criteria.direction === 'include' &&
+  //           criteria.courseId !== product.courseId
+  //         ) {
+  //           throw new ForbiddenException(
+  //             `Coupon course criteria direction mismatch. [include, ${product.courseId}]`,
+  //           );
+  //         } else if (
+  //           criteria.direction === 'exclude' &&
+  //           criteria.courseId === product.courseId
+  //         ) {
+  //           throw new ForbiddenException(
+  //             `Coupon course criteria direction mismatch. [Exclude, ${product.courseId}]`,
+  //           );
+  //         }
+  //         return;
+  //
+  //       default:
+  //         this.logger.error(
+  //           `Invalid coupon criteria type ${JSON.stringify(criteria, null, 4)}`,
+  //         );
+  //         throw new Error(`Invalid coupon criteria type.`);
+  //     }
+  //   });
+  // }
 
   private _verifyCouponExpiryOrThrow(coupon: ICoupon): void {
     const now = date.now('date');
@@ -244,7 +377,7 @@ export class CourseOrderPurchaseService {
   async purchaseCourse(params: Omit<ICourseOrderPurchase, 'paidAt'>): Promise<{
     order: IOrder;
     courseOrder: ICourseOrder;
-    courseProduct: NonNullableInfer<ICourseProductWithLastSnapshot>;
+    courseProduct: NonNullableInfer<ICourseProductWithPricing>;
     enrollment: ICourseEnrollment;
     usedCouponTicket: ICouponTicketPayment | null;
   }> {

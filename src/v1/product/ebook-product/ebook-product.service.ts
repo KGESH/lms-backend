@@ -32,10 +32,13 @@ import {
   IProductSnapshotUiContentUpdate,
 } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
 import { EbookProductSnapshotUiContentRepository } from '@src/v1/product/ebook-product/ebook-product-snapshot-ui-content.repository';
+import { IProductThumbnailCreate } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
+import { FileService } from '@src/v1/file/file.service';
 
 @Injectable()
 export class EbookProductService {
   constructor(
+    private readonly fileService: FileService,
     private readonly ebookProductRepository: EbookProductRepository,
     private readonly ebookProductQueryRepository: EbookProductQueryRepository,
     private readonly ebookProductSnapshotRepository: EbookProductSnapshotRepository,
@@ -51,9 +54,22 @@ export class EbookProductService {
   async findEbookProductsWithPricing(
     pagination: Pagination,
   ): Promise<Paginated<IEbookProductWithPricing[]>> {
-    return await this.ebookProductQueryRepository.findEbookProductsWithRelations(
+    return await this.ebookProductQueryRepository.findEbookProductsWithPricing(
       pagination,
     );
+  }
+
+  async findEbookProductWithPricingOrThrow(
+    where: Pick<IEbookProduct, 'ebookId'>,
+  ): Promise<IEbookProductWithPricing> {
+    const ebookProduct =
+      await this.ebookProductQueryRepository.findEbookProductWithPricing(where);
+
+    if (!ebookProduct) {
+      throw new NotFoundException('Ebook product not found');
+    }
+
+    return ebookProduct;
   }
 
   async findEbookProductWithRelations(
@@ -100,6 +116,7 @@ export class EbookProductService {
   async createEbookProduct({
     ebookProductCreateParams,
     ebookProductSnapshotCreateParams,
+    ebookProductSnapshotThumbnailCreateParams,
     ebookProductSnapshotContentCreateParams,
     ebookProductSnapshotAnnouncementCreateParams,
     ebookProductSnapshotRefundPolicyCreateParams,
@@ -110,8 +127,9 @@ export class EbookProductService {
     ebookProductCreateParams: IEbookProductCreate;
     ebookProductSnapshotCreateParams: Optional<
       IProductSnapshotCreate,
-      'productId'
+      'productId' | 'thumbnailId'
     >;
+    ebookProductSnapshotThumbnailCreateParams: IProductThumbnailCreate;
     ebookProductSnapshotContentCreateParams: Optional<
       IProductSnapshotContentCreate,
       'productSnapshotId'
@@ -153,10 +171,15 @@ export class EbookProductService {
             },
             tx,
           ));
+        const thumbnail = await this.fileService.createFile(
+          ebookProductSnapshotThumbnailCreateParams,
+          tx,
+        );
         const snapshot = await this.ebookProductSnapshotRepository.create(
           {
             ...ebookProductSnapshotCreateParams,
             productId: ebookProduct.id,
+            thumbnailId: thumbnail.id,
             id: createUuid(),
           },
           tx,
@@ -207,6 +230,7 @@ export class EbookProductService {
           ...ebookProduct,
           lastSnapshot: {
             ...snapshot,
+            thumbnail,
             announcement,
             content,
             refundPolicy,
@@ -241,6 +265,7 @@ export class EbookProductService {
     where: Pick<IEbookProduct, 'ebookId'>,
     {
       ebookProductSnapshotCreateParams,
+      ebookProductSnapshotThumbnailCreateParams,
       ebookProductSnapshotContentCreateParams,
       ebookProductSnapshotAnnouncementCreateParams,
       ebookProductSnapshotRefundPolicyCreateParams,
@@ -248,9 +273,11 @@ export class EbookProductService {
       ebookProductSnapshotDiscountCreateParams,
       ebookProductSnapshotUiContentParams,
     }: {
-      ebookProductSnapshotCreateParams?: Partial<
-        Omit<IProductSnapshotCreate, 'productId'>
+      ebookProductSnapshotCreateParams?: Omit<
+        IProductSnapshotCreate,
+        'productId' | 'thumbnailId'
       >;
+      ebookProductSnapshotThumbnailCreateParams?: IProductThumbnailCreate;
       ebookProductSnapshotContentCreateParams?: Pick<
         IProductSnapshotContentCreate,
         'richTextContent'
@@ -283,12 +310,22 @@ export class EbookProductService {
     // If the parameter is not given, use the existing snapshot. e.g. pricing create params.
     const updatedProduct: NonNullableInfer<IEbookProductWithRelations> =
       await this.drizzle.db.transaction(async (tx) => {
+        const thumbnail = ebookProductSnapshotThumbnailCreateParams
+          ? await this.fileService.createFile(
+              ebookProductSnapshotThumbnailCreateParams,
+              tx,
+            )
+          : existProduct.lastSnapshot.thumbnail;
+
         const snapshot = await this.ebookProductSnapshotRepository.create(
           {
-            ...existProduct.lastSnapshot,
-            ...ebookProductSnapshotCreateParams,
             productId: existProduct.id,
+            thumbnailId: thumbnail.id,
             id: createUuid(),
+            ...(ebookProductSnapshotCreateParams ?? {
+              title: existProduct.lastSnapshot.title,
+              description: existProduct.lastSnapshot.description,
+            }),
           },
           tx,
         );
@@ -387,6 +424,7 @@ export class EbookProductService {
           ...existProduct,
           lastSnapshot: {
             ...snapshot,
+            thumbnail,
             announcement,
             content,
             refundPolicy,

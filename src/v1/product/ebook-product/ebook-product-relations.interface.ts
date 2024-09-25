@@ -7,6 +7,7 @@ import { IProductSnapshotAnnouncement } from '@src/v1/product/common/snapshot/an
 import { IProductSnapshotRefundPolicy } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
 import { IEbookWithRelations } from '@src/v1/ebook/ebook-with-relations.interface';
 import { IProductSnapshotUiContent } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
+import { IProductThumbnail } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
 
 export type IEbookProductWithLastSnapshot = IEbookProduct & {
   ebook: IEbookWithRelations;
@@ -16,6 +17,7 @@ export type IEbookProductWithLastSnapshot = IEbookProduct & {
 export type IEbookProductWithPricing = IEbookProduct & {
   ebook: IEbookWithRelations;
   lastSnapshot: IProductSnapshot & {
+    thumbnail: IProductThumbnail;
     pricing: IProductSnapshotPricing;
     discount: IProductSnapshotDiscount;
   };
@@ -25,6 +27,7 @@ export type IEbookProductWithRelations = IEbookProduct & {
   ebook: IEbookWithRelations;
   lastSnapshot:
     | (IProductSnapshot & {
+        thumbnail: IProductThumbnail;
         announcement: IProductSnapshotAnnouncement;
         refundPolicy: IProductSnapshotRefundPolicy;
         pricing: IProductSnapshotPricing;

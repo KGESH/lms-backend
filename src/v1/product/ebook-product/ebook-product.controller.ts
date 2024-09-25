@@ -187,9 +187,8 @@ export class EbookProductController {
     @TypedBody() body: CreateEbookProductDto,
   ): Promise<EbookProductDto> {
     const product = await this.ebookProductService.createEbookProduct({
-      ebookProductCreateParams: {
-        ebookId,
-      },
+      ebookProductCreateParams: { ebookId },
+      ebookProductSnapshotThumbnailCreateParams: body.thumbnail,
       ebookProductSnapshotCreateParams: {
         title: body.title,
         description: body.description,
@@ -277,7 +276,7 @@ export class EbookProductController {
         ebookId,
       },
       {
-        ebookProductSnapshotCreateParams: { ...body },
+        ebookProductSnapshotCreateParams: body.snapshot,
         ebookProductSnapshotAnnouncementCreateParams: body.announcement,
         ebookProductSnapshotContentCreateParams: body.content,
         ebookProductSnapshotRefundPolicyCreateParams: body.refundPolicy,

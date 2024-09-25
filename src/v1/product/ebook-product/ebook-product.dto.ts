@@ -1,4 +1,4 @@
-import { ISO8601, Uuid } from '@src/shared/types/primitive';
+import { ISO8601, Uri, Uuid } from '@src/shared/types/primitive';
 import { ProductSnapshotDiscountDto } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.dto';
 import { ProductSnapshotPricingDto } from '@src/v1/product/common/snapshot/pricing/product-snapshot-pricing.dto';
 import { ProductSnapshotContentDto } from '@src/v1/product/common/snapshot/content/product-snapshot-content.dto';
@@ -17,6 +17,7 @@ export type EbookProductDto = {
   snapshotId: Uuid;
   title: string;
   description: string | null;
+  thumbnailUrl: Uri;
   ebook: EbookWithRelationsDto;
   content: ProductSnapshotContentDto;
   announcement: ProductSnapshotAnnouncementDto;
@@ -36,7 +37,16 @@ export type CreateEbookProductDto = Pick<
   CreateProductContentDto;
 
 export type UpdateEbookProductDto = Partial<
-  Omit<CreateEbookProductDto, 'uiContents'> & {
+  Pick<
+    CreateEbookProductDto,
+    | 'content'
+    | 'pricing'
+    | 'thumbnail'
+    | 'announcement'
+    | 'discount'
+    | 'refundPolicy'
+  > & {
+    snapshot: Pick<EbookProductDto, 'title' | 'description'>;
     uiContents: UpdateUiContentsDto;
   }
 >;

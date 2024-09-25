@@ -5,7 +5,7 @@ import { IEbookOrderPurchase } from '@src/v1/order/ebook/ebook-order-purchase.in
 import { EbookProductService } from '@src/v1/product/ebook-product/ebook-product.service';
 import { UserService } from '@src/v1/user/user.service';
 import { IEbookOrder } from '@src/v1/order/ebook/ebook-order.interface';
-import { IEbookProductWithLastSnapshot } from '@src/v1/product/ebook-product/ebook-product-relations.interface';
+import { IEbookProductWithPricing } from '@src/v1/product/ebook-product/ebook-product-relations.interface';
 import { NonNullableInfer } from '@src/shared/types/non-nullable-infer';
 import { IOrder } from '@src/v1/order/order.interface';
 import { createUuid } from '@src/shared/utils/uuid';
@@ -27,7 +27,7 @@ export class EbookOrderPurchaseService {
   async purchaseEbook(params: Omit<IEbookOrderPurchase, 'paidAt'>): Promise<{
     order: IOrder;
     ebookOrder: IEbookOrder;
-    ebookProduct: NonNullableInfer<IEbookProductWithLastSnapshot>;
+    ebookProduct: NonNullableInfer<IEbookProductWithPricing>;
     enrollment: IEbookEnrollment;
   }> {
     try {
@@ -49,7 +49,7 @@ export class EbookOrderPurchaseService {
       });
 
       const ebookProduct =
-        await this.ebookProductService.findEbookProductOrThrow({
+        await this.ebookProductService.findEbookProductWithPricingOrThrow({
           ebookId: params.ebookId,
         });
 

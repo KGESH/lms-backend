@@ -194,9 +194,8 @@ export class CourseProductController {
     @TypedBody() body: CreateCourseProductDto,
   ): Promise<CourseProductDto> {
     const product = await this.courseProductService.createCourseProduct({
-      courseProductCreateParams: {
-        courseId,
-      },
+      courseProductCreateParams: { courseId },
+      courseProductSnapshotThumbnailCreateParams: body.thumbnail,
       courseProductSnapshotCreateParams: {
         title: body.title,
         description: body.description,
@@ -282,7 +281,8 @@ export class CourseProductController {
     const updated = await this.courseProductService.updateCourseProduct(
       { courseId },
       {
-        courseProductSnapshotCreateParams: { ...body },
+        courseProductSnapshotCreateParams: body.snapshot,
+        courseProductSnapshotThumbnailCreateParams: body.thumbnail,
         courseProductSnapshotAnnouncementCreateParams: body.announcement,
         courseProductSnapshotContentCreateParams: body.content,
         courseProductSnapshotRefundPolicyCreateParams: body.refundPolicy,

@@ -15,6 +15,7 @@ export const ebookProductToDto = (
     snapshotId: product.lastSnapshot.id,
     title: product.lastSnapshot.title,
     description: product.lastSnapshot.description,
+    thumbnailUrl: product.lastSnapshot.thumbnail.url,
     createdAt: date.toISOString(product.lastSnapshot.createdAt),
     updatedAt: date.toISOString(product.lastSnapshot.updatedAt),
     deletedAt: product.lastSnapshot.deletedAt
@@ -49,6 +50,7 @@ export const ebookProductWithPricingToDto = (
     snapshotId: product.lastSnapshot.id,
     title: product.lastSnapshot.title,
     description: product.lastSnapshot.description,
+    thumbnailUrl: product.lastSnapshot.thumbnail.url,
     createdAt: date.toISOString(product.lastSnapshot.createdAt),
     updatedAt: date.toISOString(product.lastSnapshot.updatedAt),
     deletedAt: product.lastSnapshot.deletedAt

@@ -15,6 +15,7 @@ export const courseProductToDto = (
     snapshotId: product.lastSnapshot.id,
     title: product.lastSnapshot.title,
     description: product.lastSnapshot.description,
+    thumbnailUrl: product.lastSnapshot.thumbnail.url,
     createdAt: date.toISOString(product.lastSnapshot.createdAt),
     updatedAt: date.toISOString(product.lastSnapshot.updatedAt),
     deletedAt: product.lastSnapshot.deletedAt
@@ -48,6 +49,7 @@ export const courseProductWithPricingToDto = (
     courseId: product.courseId,
     snapshotId: product.lastSnapshot.id,
     title: product.lastSnapshot.title,
+    thumbnailUrl: product.lastSnapshot.thumbnail.url,
     description: product.lastSnapshot.description,
     createdAt: date.toISOString(product.lastSnapshot.createdAt),
     updatedAt: date.toISOString(product.lastSnapshot.updatedAt),
