@@ -92,6 +92,12 @@ export const courseOrderRelationsToDto = (
       createdAt: date.toISOString(courseOrderRelations.course.createdAt),
       updatedAt: date.toISOString(courseOrderRelations.course.updatedAt),
       category: courseOrderRelations.course.category,
+      thumbnail: {
+        ...courseOrderRelations.course.thumbnail,
+        createdAt: date.toISOString(
+          courseOrderRelations.course.thumbnail.createdAt,
+        ),
+      },
       teacher: {
         id: courseOrderRelations.course.teacher.id,
         userId: courseOrderRelations.course.teacher.userId,

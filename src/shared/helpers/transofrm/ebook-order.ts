@@ -79,6 +79,12 @@ export const ebookOrderRelationsToDto = (
       createdAt: date.toISOString(ebookOrderRelations.ebook.createdAt),
       updatedAt: date.toISOString(ebookOrderRelations.ebook.updatedAt),
       category: ebookOrderRelations.ebook.category,
+      thumbnail: {
+        ...ebookOrderRelations.ebook.thumbnail,
+        createdAt: date.toISOString(
+          ebookOrderRelations.ebook.thumbnail.createdAt,
+        ),
+      },
       teacher: {
         id: ebookOrderRelations.ebook.teacher.id,
         userId: ebookOrderRelations.ebook.teacher.userId,

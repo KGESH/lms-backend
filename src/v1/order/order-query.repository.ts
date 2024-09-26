@@ -6,8 +6,8 @@ import * as typia from 'typia';
 import { IOrder } from '@src/v1/order/order.interface';
 import { Price, Uuid } from '@src/shared/types/primitive';
 import { ICourseOrderWithRelations } from '@src/v1/order/course/course-order.interface';
-import { IReview } from '@src/v1/review/review.interface';
 import { IEbookOrderWithRelations } from '@src/v1/order/ebook/ebook-order.interface';
+import { IProductThumbnail } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
 
 @Injectable()
 export class OrderQueryRepository {
@@ -58,6 +58,10 @@ export class OrderQueryRepository {
       .innerJoin(
         dbSchema.ebookProducts,
         eq(dbSchema.ebookProductSnapshots.productId, dbSchema.ebookProducts.id),
+      )
+      .innerJoin(
+        dbSchema.files,
+        eq(dbSchema.ebookProductSnapshots.thumbnailId, dbSchema.files.id),
       );
 
     if (!order) {
@@ -101,6 +105,7 @@ export class OrderQueryRepository {
         updatedAt: ebook.updatedAt,
         teacher: ebook.teacher,
         category: ebook.category,
+        thumbnail: typia.assert<IProductThumbnail>(order.files),
         contents: [],
       },
     };
@@ -136,6 +141,10 @@ export class OrderQueryRepository {
           dbSchema.courseProductSnapshots.productId,
           dbSchema.courseProducts.id,
         ),
+      )
+      .innerJoin(
+        dbSchema.files,
+        eq(dbSchema.courseProductSnapshots.thumbnailId, dbSchema.files.id),
       );
 
     if (!order) {
@@ -179,6 +188,7 @@ export class OrderQueryRepository {
         updatedAt: course.updatedAt,
         teacher: course.teacher,
         category: course.category,
+        thumbnail: typia.assert<IProductThumbnail>(order.files),
         chapters: [],
       },
     };
@@ -194,6 +204,7 @@ export class OrderQueryRepository {
           with: {
             productSnapshot: {
               with: {
+                thumbnail: true,
                 product: {
                   with: {
                     course: {
@@ -233,6 +244,9 @@ export class OrderQueryRepository {
         updatedAt: order.courseOrder.productSnapshot.product.course.updatedAt,
         teacher: order.courseOrder.productSnapshot.product.course.teacher,
         category: order.courseOrder.productSnapshot.product.course.category,
+        thumbnail: typia.assert<IProductThumbnail>(
+          order.courseOrder!.productSnapshot.thumbnail,
+        ),
         chapters: [],
       },
     });
@@ -247,6 +261,7 @@ export class OrderQueryRepository {
           with: {
             productSnapshot: {
               with: {
+                thumbnail: true,
                 product: {
                   with: {
                     ebook: {
@@ -289,6 +304,9 @@ export class OrderQueryRepository {
               order.ebookOrder!.productSnapshot.product.ebook.updatedAt,
             teacher: order.ebookOrder!.productSnapshot.product.ebook.teacher,
             category: order.ebookOrder!.productSnapshot.product.ebook.category,
+            thumbnail: typia.assert<IProductThumbnail>(
+              order.ebookOrder!.productSnapshot.thumbnail,
+            ),
             contents: [],
           },
         }),
@@ -305,6 +323,7 @@ export class OrderQueryRepository {
           with: {
             productSnapshot: {
               with: {
+                thumbnail: true,
                 product: {
                   with: {
                     ebook: {
@@ -343,6 +362,9 @@ export class OrderQueryRepository {
         updatedAt: order.ebookOrder.productSnapshot.product.ebook.updatedAt,
         teacher: order.ebookOrder.productSnapshot.product.ebook.teacher,
         category: order.ebookOrder.productSnapshot.product.ebook.category,
+        thumbnail: typia.assert<IProductThumbnail>(
+          order.ebookOrder!.productSnapshot.thumbnail,
+        ),
         contents: [],
       },
     });
@@ -361,6 +383,7 @@ export class OrderQueryRepository {
           with: {
             productSnapshot: {
               with: {
+                thumbnail: true,
                 product: {
                   with: {
                     course: {
@@ -404,6 +427,9 @@ export class OrderQueryRepository {
             teacher: order.courseOrder!.productSnapshot.product.course.teacher,
             category:
               order.courseOrder!.productSnapshot.product.course.category,
+            thumbnail: typia.assert<IProductThumbnail>(
+              order.courseOrder!.productSnapshot.thumbnail,
+            ),
             chapters: [],
           },
         }),

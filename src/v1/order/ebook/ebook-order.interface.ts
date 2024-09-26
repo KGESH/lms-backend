@@ -7,6 +7,7 @@ import { IProductSnapshotPricing } from '@src/v1/product/common/snapshot/pricing
 import { IOrder } from '@src/v1/order/order.interface';
 import { IEbookWithRelations } from '@src/v1/ebook/ebook-with-relations.interface';
 import { IProductSnapshotUiContent } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
+import { IProductThumbnail } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
 
 export type IEbookOrder = {
   id: Uuid;
@@ -31,5 +32,7 @@ export type IEbookOrderRelations = IOrder & {
 };
 
 export type IEbookOrderWithRelations = IOrder & {
-  ebook: IEbookWithRelations;
+  ebook: IEbookWithRelations & {
+    thumbnail: IProductThumbnail;
+  };
 };

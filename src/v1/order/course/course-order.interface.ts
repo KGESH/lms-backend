@@ -6,6 +6,9 @@ import { IProductSnapshotDiscount } from '@src/v1/product/common/snapshot/discou
 import { IProductSnapshotPricing } from '@src/v1/product/common/snapshot/pricing/product-snapshot-pricing.interface';
 import { IOrder } from '@src/v1/order/order.interface';
 import { ICourseWithRelations } from '@src/v1/course/course-with-relations.interface';
+import { ICourseProduct } from '@src/v1/product/course-product/course-product.interface';
+import { ICourseProductWithPricing } from '@src/v1/product/course-product/course-product-relations.interface';
+import { IProductThumbnail } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
 
 export type ICourseOrder = {
   id: Uuid;
@@ -29,5 +32,7 @@ export type ICourseOrderRelations = IOrder & {
 };
 
 export type ICourseOrderWithRelations = IOrder & {
-  course: ICourseWithRelations;
+  course: ICourseWithRelations & {
+    thumbnail: IProductThumbnail;
+  };
 };
