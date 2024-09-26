@@ -1,7 +1,7 @@
 import { dbSchema } from '../../../../../src/infra/db/schema';
 import * as typia from 'typia';
 import * as date from '../../../../../src/shared/utils/date';
-import { createRandomCourse } from './course.helper';
+import { createCourse, createRandomCourse } from './course.helper';
 import {
   ICourseProduct,
   ICourseProductCreate,
@@ -40,6 +40,17 @@ import {
   IProductThumbnail,
   IProductThumbnailCreate,
 } from '../../../../../src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
+import { ICourseWithRelations } from '../../../../../src/v1/course/course-with-relations.interface';
+import { MOCK_REFUND_POLICY } from './mock/refund-policy.mock';
+import { MOCK_ANNOUNCEMENT } from './mock/announcement.mock';
+import { MOCK_CONTENT } from './mock/content.mock';
+import { ITeacherWithAccount } from '../../../../../src/v1/teacher/teacher.interface';
+import { createCourseCategory } from './course-category.helper';
+import { createManyChapter } from './chapter.helper';
+import { createManyLesson } from './lesson.helper';
+import { createManyLessonContent } from './lesson-content.helper';
+import { LOREM_IPSUM } from './mock/lorem-ipsum.mock';
+import { createTeacher } from './teacher.helper';
 
 export const createCourseProduct = async (
   params: ICourseProductCreate,
@@ -276,5 +287,519 @@ export const seedCourseProducts = async (
     Array.from({ length: count }).map((_, index) =>
       createRandomCourseProduct(db, index + 1),
     ),
+  );
+};
+
+export const seedPgTeacher = async (db: TransactionClient) => {
+  const userId = typia.random<Uuid>();
+  return await createTeacher(
+    {
+      userCreateParams: {
+        id: userId,
+        displayName: '김멘사',
+        email: 'kim.mensa.123@gmail.com',
+        password: 'kim.mensa.123@gmail.com',
+        emailVerified: null,
+        image: null,
+      },
+      accountCreateParams: {
+        userId,
+        providerId: typia.random<Uuid>(),
+        providerType: 'email',
+      },
+      infoCreateParams: {
+        userId,
+        name: '김선율',
+        birthDate: '1997-12-01',
+        connectingInformation: null,
+        duplicationInformation: null,
+        gender: 'male',
+        phoneNumber: '+821098764543',
+      },
+    },
+    db,
+  );
+};
+
+export const seedPgFirstCourse = async (
+  teacherUser: ITeacherWithAccount,
+  db: TransactionClient,
+): Promise<ICourseWithRelations> => {
+  const courseCategory = await createCourseCategory(
+    {
+      name: '경제',
+      description: '경제 강의',
+      parentId: null,
+    },
+    db,
+  );
+  const course = await createCourse(
+    {
+      title: '대한민국 경제시장 40년 압축',
+      categoryId: courseCategory.id,
+      description: '대한민국 경제시장 40년 압축 VOD',
+      teacherId: teacherUser.id,
+    },
+    db,
+  );
+  const chapters = await createManyChapter(
+    Array.from({ length: 10 }, (_, index) => ({
+      title: `대한민국 경제시장 40년 압축 강의 ${index + 1}`,
+      description: `대한민국 경제시장 40년 압축 강의 ${index + 1}`,
+      sequence: index + 1,
+      courseId: course.id,
+    })),
+    db,
+  );
+  const lessons = (
+    await Promise.all(
+      chapters.map((chapter) => {
+        return createManyLesson(
+          Array.from({ length: 10 }, (_, index) => ({
+            title: `대한민국 경제시장 40년 압축 강의 ${index + 1}번째`,
+            sequence: index + 1,
+            description: LOREM_IPSUM,
+            chapterId: chapter.id,
+          })),
+          db,
+        );
+      }),
+    )
+  ).flat();
+  const lessonContents = (
+    await Promise.all(
+      lessons.map((lesson, index) => {
+        return createManyLessonContent(
+          [
+            {
+              contentType: 'video',
+              title: `대한민국 경제시장 40년 압축 강의 ${index + 1}번째`,
+              description: LOREM_IPSUM,
+              url: `https://www.youtube.com/watch?v=qgvdmyQhQCI`,
+              metadata: null,
+              sequence: index + 1,
+              lessonId: lesson.id,
+            },
+            {
+              contentType: 'text',
+              title: `대한민국 경제시장 40년 압축 강의 ${index + 1}번째`,
+              description: LOREM_IPSUM,
+              url: null,
+              metadata: null,
+              sequence: index + 1,
+              lessonId: lesson.id,
+            },
+          ],
+          db,
+        );
+      }),
+    )
+  ).flat();
+
+  return {
+    ...course,
+    teacher: teacherUser,
+    category: courseCategory,
+    chapters: chapters.map((chapter) => ({
+      ...chapter,
+      lessons: lessons.map((lesson) => ({
+        ...lesson,
+        lessonContents: lessonContents,
+      })),
+    })),
+  };
+};
+
+export const seedPgSecondCourse = async (
+  teacherUser: ITeacherWithAccount,
+  db: TransactionClient,
+): Promise<ICourseWithRelations> => {
+  const courseCategory = await createCourseCategory(
+    {
+      name: '경제',
+      description: '경제 강의',
+      parentId: null,
+    },
+    db,
+  );
+  const course = await createCourse(
+    {
+      title: `모르면 큰일나는 경제상식 20가지 요약본`,
+      categoryId: courseCategory.id,
+      description: `모르면 큰일나는 경제상식 20가지 요약본 VOD`,
+      teacherId: teacherUser.id,
+    },
+    db,
+  );
+  const chapters = await createManyChapter(
+    Array.from({ length: 10 }, (_, index) => ({
+      title: `대한민국 경제시장 40년 압축 강의 ${index + 1}`,
+      description: `대한민국 경제시장 40년 압축 강의 ${index + 1}`,
+      sequence: index + 1,
+      courseId: course.id,
+    })),
+    db,
+  );
+  const lessons = (
+    await Promise.all(
+      chapters.map((chapter) => {
+        return createManyLesson(
+          Array.from({ length: 10 }, (_, index) => ({
+            title: `모르면 큰일나는 경제상식 20가지 요약본 ${index + 1}번째`,
+            sequence: index + 1,
+            description: LOREM_IPSUM,
+            chapterId: chapter.id,
+          })),
+          db,
+        );
+      }),
+    )
+  ).flat();
+  const lessonContents = (
+    await Promise.all(
+      lessons.map((lesson, index) => {
+        return createManyLessonContent(
+          [
+            {
+              contentType: 'video',
+              title: `모르면 큰일나는 경제상식 20가지 요약본 ${index + 1}번째`,
+              description: LOREM_IPSUM,
+              url: `https://www.youtube.com/watch?v=qgvdmyQhQCI`,
+              metadata: null,
+              sequence: index + 1,
+              lessonId: lesson.id,
+            },
+            {
+              contentType: 'text',
+              title: `모르면 큰일나는 경제상식 20가지 요약본 ${index + 1}번째`,
+              description: LOREM_IPSUM,
+              url: null,
+              metadata: null,
+              sequence: index + 1,
+              lessonId: lesson.id,
+            },
+          ],
+          db,
+        );
+      }),
+    )
+  ).flat();
+
+  return {
+    ...course,
+    teacher: teacherUser,
+    category: courseCategory,
+    chapters: chapters.map((chapter) => ({
+      ...chapter,
+      lessons: lessons.map((lesson) => ({
+        ...lesson,
+        lessonContents: lessonContents,
+      })),
+    })),
+  };
+};
+
+export const seedPgThirdCourse = async (
+  teacherUser: ITeacherWithAccount,
+  db: TransactionClient,
+): Promise<ICourseWithRelations> => {
+  const courseCategory = await createCourseCategory(
+    {
+      name: '경제 분석',
+      description: '경제 분석 강의',
+      parentId: null,
+    },
+    db,
+  );
+  const course = await createCourse(
+    {
+      title: '김멘사 경제 분석',
+      categoryId: courseCategory.id,
+      description: '김멘사 경제 분석 VOD',
+      teacherId: teacherUser.id,
+    },
+    db,
+  );
+  const chapters = await createManyChapter(
+    Array.from({ length: 10 }, (_, index) => ({
+      title: `김멘사 경제 분석 강의 ${index + 1}`,
+      description: `김멘사 경제 분석 강의 ${index + 1}`,
+      sequence: index + 1,
+      courseId: course.id,
+    })),
+    db,
+  );
+  const lessons = (
+    await Promise.all(
+      chapters.map((chapter) => {
+        return createManyLesson(
+          Array.from({ length: 10 }, (_, index) => ({
+            title: `김멘사 경제 분석 강의 ${index + 1}번째`,
+            sequence: index + 1,
+            description: LOREM_IPSUM,
+            chapterId: chapter.id,
+          })),
+          db,
+        );
+      }),
+    )
+  ).flat();
+  const lessonContents = (
+    await Promise.all(
+      lessons.map((lesson, index) => {
+        return createManyLessonContent(
+          [
+            {
+              contentType: 'video',
+              title: `김멘사 경제 분석 강의 ${index + 1}번째`,
+              description: LOREM_IPSUM,
+              url: `https://www.youtube.com/watch?v=qgvdmyQhQCI`,
+              metadata: null,
+              sequence: index + 1,
+              lessonId: lesson.id,
+            },
+            {
+              contentType: 'text',
+              title: `김멘사 경제 분석 강의 ${index + 1}번째`,
+              description: LOREM_IPSUM,
+              url: null,
+              metadata: null,
+              sequence: index + 1,
+              lessonId: lesson.id,
+            },
+          ],
+          db,
+        );
+      }),
+    )
+  ).flat();
+
+  return {
+    ...course,
+    teacher: teacherUser,
+    category: courseCategory,
+    chapters: chapters.map((chapter) => ({
+      ...chapter,
+      lessons: lessons.map((lesson) => ({
+        ...lesson,
+        lessonContents: lessonContents,
+      })),
+    })),
+  };
+};
+
+export const seedPgFirstCourseProduct = async (
+  course: ICourseWithRelations,
+  db: TransactionClient,
+) => {
+  const product = await createCourseProduct({ courseId: course.id }, db);
+  const thumbnail = await createCourseProductThumbnail(
+    {
+      id: typia.random<Uuid>(),
+      metadata: null,
+      type: 'image',
+      url: `https://cdn3.wadiz.kr/studio/images/2024/08/21/4f8089c0-3f44-415d-8be7-23401757e8b3.jpg`,
+    },
+    db,
+  );
+  const snapshot = await createCourseProductSnapshot(
+    {
+      ...typia.random<IProductSnapshotCreate>(),
+      thumbnailId: thumbnail.id,
+      productId: product.id,
+      title: `대한민국 경제시장 40년 압축 강의`,
+      description: '대한민국 경제시장 40년 압축 강의 상품입니다.',
+    } satisfies IProductSnapshotCreate,
+    db,
+  );
+  const announcement = await createCourseProductAnnouncement(
+    {
+      productSnapshotId: snapshot.id,
+      richTextContent: MOCK_ANNOUNCEMENT,
+    },
+    db,
+  );
+  const refundPolicy = await createCourseProductSnapshotRefundPolicy(
+    {
+      productSnapshotId: snapshot.id,
+      richTextContent: MOCK_REFUND_POLICY,
+    },
+    db,
+  );
+  const content = await createCourseProductSnapshotContent(
+    {
+      productSnapshotId: snapshot.id,
+      richTextContent: MOCK_CONTENT,
+    },
+    db,
+  );
+  const pricing = await createCourseProductSnapshotPricing(
+    {
+      productSnapshotId: snapshot.id,
+      amount: `${500_000}`,
+    },
+    db,
+  );
+  const discount = await createCourseProductSnapshotDiscount(
+    {
+      enabled: true,
+      value: `30`,
+      discountType: 'percent',
+      productSnapshotId: snapshot.id,
+      validFrom: date.now('date'),
+      validTo: date.addDate(date.now('date'), 1, 'month', 'date'),
+    },
+    db,
+  );
+  const uiContents = await createCourseProductSnapshotUiContent(
+    typia.random<IProductSnapshotUiContentCreate[]>().map((params) => ({
+      ...params,
+      productSnapshotId: snapshot.id,
+    })),
+    db,
+  );
+};
+
+export const seedPgSecondCourseProduct = async (
+  course: ICourseWithRelations,
+  db: TransactionClient,
+) => {
+  const product = await createCourseProduct({ courseId: course.id }, db);
+  const thumbnail = await createCourseProductThumbnail(
+    {
+      id: typia.random<Uuid>(),
+      metadata: null,
+      type: 'image',
+      url: `https://cdn3.wadiz.kr/studio/images/2024/08/21/4f8089c0-3f44-415d-8be7-23401757e8b3.jpg`,
+    },
+    db,
+  );
+  const snapshot = await createCourseProductSnapshot(
+    {
+      ...typia.random<IProductSnapshotCreate>(),
+      thumbnailId: thumbnail.id,
+      productId: product.id,
+      title: `모르면 큰일나는 경제상식 20가지 요약본`,
+      description: '모르면 큰일나는 경제상식 20가지 요약본 상품입니다.',
+    } satisfies IProductSnapshotCreate,
+    db,
+  );
+  const announcement = await createCourseProductAnnouncement(
+    {
+      productSnapshotId: snapshot.id,
+      richTextContent: MOCK_ANNOUNCEMENT,
+    },
+    db,
+  );
+  const refundPolicy = await createCourseProductSnapshotRefundPolicy(
+    {
+      productSnapshotId: snapshot.id,
+      richTextContent: MOCK_REFUND_POLICY,
+    },
+    db,
+  );
+  const content = await createCourseProductSnapshotContent(
+    {
+      productSnapshotId: snapshot.id,
+      richTextContent: MOCK_CONTENT,
+    },
+    db,
+  );
+  const pricing = await createCourseProductSnapshotPricing(
+    {
+      productSnapshotId: snapshot.id,
+      amount: `${600_000}`,
+    },
+    db,
+  );
+  const discount = await createCourseProductSnapshotDiscount(
+    {
+      enabled: true,
+      value: `30`,
+      discountType: 'percent',
+      productSnapshotId: snapshot.id,
+      validFrom: date.now('date'),
+      validTo: date.addDate(date.now('date'), 1, 'month', 'date'),
+    },
+    db,
+  );
+  const uiContents = await createCourseProductSnapshotUiContent(
+    typia.random<IProductSnapshotUiContentCreate[]>().map((params) => ({
+      ...params,
+      productSnapshotId: snapshot.id,
+    })),
+    db,
+  );
+};
+
+export const seedPgThirdCourseProduct = async (
+  course: ICourseWithRelations,
+  db: TransactionClient,
+) => {
+  const product = await createCourseProduct({ courseId: course.id }, db);
+  const thumbnail = await createCourseProductThumbnail(
+    {
+      id: typia.random<Uuid>(),
+      metadata: null,
+      type: 'image',
+      url: `https://cdn3.wadiz.kr/studio/images/2024/08/21/b0d6938e-ea57-43b6-b68a-ab1ae39cfdee.png`,
+    },
+    db,
+  );
+  const snapshot = await createCourseProductSnapshot(
+    {
+      ...typia.random<IProductSnapshotCreate>(),
+      thumbnailId: thumbnail.id,
+      productId: product.id,
+      title: `김멘사 경제 분석`,
+      description: '김멘사 경제 분석 상품입니다.',
+    } satisfies IProductSnapshotCreate,
+    db,
+  );
+  const announcement = await createCourseProductAnnouncement(
+    {
+      productSnapshotId: snapshot.id,
+      richTextContent: MOCK_ANNOUNCEMENT,
+    },
+    db,
+  );
+  const refundPolicy = await createCourseProductSnapshotRefundPolicy(
+    {
+      productSnapshotId: snapshot.id,
+      richTextContent: MOCK_REFUND_POLICY,
+    },
+    db,
+  );
+  const content = await createCourseProductSnapshotContent(
+    {
+      productSnapshotId: snapshot.id,
+      richTextContent: MOCK_CONTENT,
+    },
+    db,
+  );
+  const pricing = await createCourseProductSnapshotPricing(
+    {
+      productSnapshotId: snapshot.id,
+      amount: `${600_000}`,
+    },
+    db,
+  );
+  const discount = await createCourseProductSnapshotDiscount(
+    {
+      enabled: true,
+      value: `30`,
+      discountType: 'percent',
+      productSnapshotId: snapshot.id,
+      validFrom: date.now('date'),
+      validTo: date.addDate(date.now('date'), 1, 'month', 'date'),
+    },
+    db,
+  );
+  const uiContents = await createCourseProductSnapshotUiContent(
+    typia.random<IProductSnapshotUiContentCreate[]>().map((params) => ({
+      ...params,
+      productSnapshotId: snapshot.id,
+    })),
+    db,
   );
 };

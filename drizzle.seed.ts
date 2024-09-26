@@ -13,7 +13,15 @@ import {
   seedUsers,
 } from './test/e2e/helpers/db/lms/user.helper';
 import { seedTeachers } from './test/e2e/helpers/db/lms/teacher.helper';
-import { seedCourseProducts } from './test/e2e/helpers/db/lms/course-product.helper';
+import {
+  seedCourseProducts,
+  seedPgFirstCourse,
+  seedPgFirstCourseProduct,
+  seedPgSecondCourse,
+  seedPgSecondCourseProduct,
+  seedPgTeacher,
+  seedPgThirdCourseProduct,
+} from './test/e2e/helpers/db/lms/course-product.helper';
 import { clearDatabase } from './src/shared/helpers/db';
 import {
   seedCourseReviews,
@@ -61,10 +69,6 @@ async function seed() {
     await seedUiRepeatTimer({ count: 2 }, db, '/');
     await seedCarouselReview({ count: 4 }, db, '/');
     await seedCarouselMainBanner({ count: 1 }, db, '/');
-    await seedTeachers({ count: 2 }, db);
-    await seedUsers({ count: 3, role: 'user' }, db);
-    await seedUsers({ count: 1, role: 'manager' }, db);
-    await seedUsers({ count: 1, role: 'teacher' }, db);
     await seedAdminUser(
       {
         email: env.get('ADMIN_EMAIL'),
@@ -73,16 +77,41 @@ async function seed() {
       db,
     );
     const [testPgUser] = await seedPgUsers(db);
-    await seedCourseProducts({ count: 3 }, db);
-    await seedCourseReviews({ count: 3 }, db);
-    await seedCourseOrders({ count: 3 }, db);
-    await seedEbookOrders({ count: 3 }, db);
-    await seedEbooks({ count: 3 }, db);
-    await seedEbookProducts({ count: 3 }, db);
-    await seedEbookReviews({ count: 3 }, db);
+    const pgTeacherUser = await seedPgTeacher(db);
+    const pgFirstCourse = await seedPgFirstCourse(
+      { ...pgTeacherUser.teacher, account: pgTeacherUser.user },
+      db,
+    );
+    const pgSecondCourse = await seedPgSecondCourse(
+      { ...pgTeacherUser.teacher, account: pgTeacherUser.user },
+      db,
+    );
+    const pgFirstCourseProduct = await seedPgFirstCourseProduct(
+      pgFirstCourse,
+      db,
+    );
+    const pgSecondCourseProduct = await seedPgSecondCourseProduct(
+      pgSecondCourse,
+      db,
+    );
+    const pgThirdCourseProduct = await seedPgThirdCourseProduct(
+      pgSecondCourse,
+      db,
+    );
     await seedPosts({ count: 3 }, db);
     await seedNavbarCategories(db);
-    await seedCoupons({ count: 3, user: testPgUser.user }, db);
+    // await seedCourseProducts({ count: 3 }, db);
+    // await seedCourseReviews({ count: 3 }, db);
+    // await seedCourseOrders({ count: 3 }, db);
+    // await seedEbookOrders({ count: 3 }, db);
+    // await seedEbooks({ count: 3 }, db);
+    // await seedEbookProducts({ count: 3 }, db);
+    // await seedEbookReviews({ count: 3 }, db);
+    // await seedCoupons({ count: 3, user: testPgUser.user }, db);
+    // await seedTeachers({ count: 2 }, db);
+    // await seedUsers({ count: 3, role: 'user' }, db);
+    // await seedUsers({ count: 1, role: 'manager' }, db);
+    // await seedUsers({ count: 1, role: 'teacher' }, db);
     await seedSignupTerms({ count: 3 }, db);
   } catch (e) {
     console.error(e);
