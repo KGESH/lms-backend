@@ -135,6 +135,10 @@ export class AuthController {
     status: 400,
     description: 'invalid request',
   })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'password is incorrect',
+  })
   @TypedException<IErrorResponse<404>>({
     status: 404,
     description: 'user not found',
