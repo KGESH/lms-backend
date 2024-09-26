@@ -1,5 +1,6 @@
 import { ISO8601, UInt, Uuid } from '@src/shared/types/primitive';
 import { Pagination } from '@src/shared/types/pagination';
+import { CouponTicketDto } from '@src/v1/coupon/ticket/coupon-ticket.dto';
 
 /**
  * 일회용 쿠폰 코드
@@ -40,4 +41,8 @@ export type CreateCouponDisposableDto = Pick<
 
 export type CouponDisposableQuery = Partial<Pagination> & {
   code?: string;
+};
+
+export type CouponDisposableWithIssuedTicketDto = CouponDisposableDto & {
+  issuedTicket: CouponTicketDto | null;
 };

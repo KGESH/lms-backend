@@ -18,9 +18,13 @@ import { CouponDisposableQueryService } from '@src/v1/coupon/disposable/coupon-d
 import {
   CouponDisposableDto,
   CouponDisposableQuery,
+  CouponDisposableWithIssuedTicketDto,
   CreateCouponDisposableDto,
 } from '@src/v1/coupon/disposable/coupon-disposable.dto';
-import { couponDisposableToDto } from '@src/shared/helpers/transofrm/coupon';
+import {
+  couponDisposableToDto,
+  couponDisposableWithIssuedTicketToDto,
+} from '@src/shared/helpers/transofrm/coupon';
 import { withDefaultPagination } from '@src/core/pagination';
 import { CouponDisposableService } from '@src/v1/coupon/disposable/coupon-disposable.service';
 import * as date from '@src/shared/utils/date';
@@ -62,7 +66,7 @@ export class CouponDisposableController {
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('couponId') couponId: Uuid,
     @TypedQuery() query: CouponDisposableQuery,
-  ): Promise<Paginated<CouponDisposableDto[]>> {
+  ): Promise<Paginated<CouponDisposableWithIssuedTicketDto[]>> {
     const paginatedCouponDisposables =
       await this.couponDisposableQueryService.findCouponDisposables(
         { ...query, couponId },
@@ -72,7 +76,9 @@ export class CouponDisposableController {
     return {
       totalCount: paginatedCouponDisposables.totalCount,
       pagination: paginatedCouponDisposables.pagination,
-      data: paginatedCouponDisposables.data.map(couponDisposableToDto),
+      data: paginatedCouponDisposables.data.map(
+        couponDisposableWithIssuedTicketToDto,
+      ),
     };
   }
 

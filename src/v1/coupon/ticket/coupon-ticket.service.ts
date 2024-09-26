@@ -137,7 +137,7 @@ export class CouponTicketService {
         { code: params.code },
       );
 
-    if (couponDisposable.usedTicket) {
+    if (couponDisposable.issuedTicket) {
       throw new ConflictException('Coupon code already used');
     }
 

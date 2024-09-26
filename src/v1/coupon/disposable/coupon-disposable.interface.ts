@@ -37,5 +37,5 @@ export type ICouponDisposableCreate = Pick<
 >;
 
 export type ICouponDisposableWithUsedTicket = ICouponDisposable & {
-  usedTicket: ICouponTicket | null;
+  issuedTicket: ICouponTicket | null;
 };

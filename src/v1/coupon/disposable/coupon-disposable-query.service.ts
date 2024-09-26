@@ -20,7 +20,7 @@ export class CouponDisposableQueryService {
   async findCouponDisposables(
     where: OptionalPick<ICouponDisposable, 'couponId' | 'code'>,
     pagination: Pagination,
-  ): Promise<Paginated<ICouponDisposable[]>> {
+  ): Promise<Paginated<ICouponDisposableWithUsedTicket[]>> {
     if (!where.couponId && !where.code) {
       throw new BadRequestException('couponId or code is required');
     }

@@ -27,10 +27,12 @@ export class CouponDisposableQueryRepository {
   async findCouponDisposables(
     where: OptionalPick<ICouponDisposable, 'couponId' | 'code'>,
     pagination: Pagination,
-  ): Promise<Paginated<ICouponDisposable[]>> {
+  ): Promise<Paginated<ICouponDisposableWithUsedTicket[]>> {
+    // ): Promise<Paginated<ICouponDisposable[]>> {
     const couponDisposables = await this.drizzle.db
       .select({
         couponDisposable: dbSchema.couponDisposables,
+        ticket: dbSchema.couponTickets,
         totalCount: sql<number>`count(*) over()`.mapWith(Number),
       })
       .from(dbSchema.couponDisposables)
@@ -44,6 +46,13 @@ export class CouponDisposableQueryRepository {
             : undefined,
         ),
       )
+      .leftJoin(
+        dbSchema.couponTickets,
+        eq(
+          dbSchema.couponDisposables.id,
+          dbSchema.couponTickets.couponDisposableId,
+        ),
+      )
       .orderBy(
         pagination.orderBy === 'asc'
           ? asc(dbSchema.couponDisposables.createdAt)
@@ -55,7 +64,10 @@ export class CouponDisposableQueryRepository {
     return {
       pagination,
       totalCount: couponDisposables[0]?.totalCount ?? 0,
-      data: couponDisposables.map(({ couponDisposable }) => couponDisposable),
+      data: couponDisposables.map(({ couponDisposable, ticket }) => ({
+        ...couponDisposable,
+        issuedTicket: ticket ?? null,
+      })),
     };
   }
 
@@ -85,6 +97,9 @@ export class CouponDisposableQueryRepository {
       return null;
     }
 
-    return { ...couponDisposable, usedTicket: couponDisposable.ticket ?? null };
+    return {
+      ...couponDisposable,
+      issuedTicket: couponDisposable.ticket ?? null,
+    };
   }
 }

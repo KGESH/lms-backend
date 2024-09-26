@@ -11,8 +11,14 @@ import {
   CouponTicketRelationsDto,
   CouponTicketPaymentRelationsDto,
 } from '@src/v1/coupon/ticket/coupon-ticket.dto';
-import { ICouponDisposable } from '@src/v1/coupon/disposable/coupon-disposable.interface';
-import { CouponDisposableDto } from '@src/v1/coupon/disposable/coupon-disposable.dto';
+import {
+  ICouponDisposable,
+  ICouponDisposableWithUsedTicket,
+} from '@src/v1/coupon/disposable/coupon-disposable.interface';
+import {
+  CouponDisposableDto,
+  CouponDisposableWithIssuedTicketDto,
+} from '@src/v1/coupon/disposable/coupon-disposable.dto';
 import { ICouponTicketPayment } from '@src/v1/coupon/ticket/payment/coupon-ticket-payment.interface';
 import { CouponTicketPaymentDto } from '@src/v1/coupon/ticket/payment/coupon-ticket-payment.dto';
 import { ICouponWithCriteria } from '@src/v1/coupon/criteria/coupon-criteria.interface';
@@ -65,6 +71,17 @@ export const couponDisposableToDto = (
     createdAt: date.toISOString(couponDisposable.createdAt),
     expiredAt: couponDisposable.expiredAt
       ? date.toISOString(couponDisposable.expiredAt)
+      : null,
+  };
+};
+
+export const couponDisposableWithIssuedTicketToDto = (
+  couponDisposableRelations: ICouponDisposableWithUsedTicket,
+): CouponDisposableWithIssuedTicketDto => {
+  return {
+    ...couponDisposableToDto(couponDisposableRelations),
+    issuedTicket: couponDisposableRelations.issuedTicket
+      ? couponTicketToDto(couponDisposableRelations.issuedTicket)
       : null,
   };
 };
