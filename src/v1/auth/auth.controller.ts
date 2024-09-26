@@ -152,10 +152,13 @@ export class AuthController {
     @TypedBody() body: UpdatePasswordDto,
     @SessionUser() session: ISessionWithUser,
   ): Promise<UserWithoutPasswordDto> {
-    const user = await this.authService.updatePassword({
-      id: session.userId,
-      ...body,
-    });
+    const user = await this.authService.updatePassword(
+      { id: session.userId },
+      {
+        newPassword: body.newPassword,
+        currentPassword: body.currentPassword,
+      },
+    );
     return userToDto(user);
   }
 }

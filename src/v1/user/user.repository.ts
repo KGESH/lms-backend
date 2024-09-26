@@ -26,9 +26,17 @@ export class UserRepository {
     params: IUserUpdate,
     db = this.drizzle.db,
   ): Promise<IUser> {
+    let updateParams = params;
+    if (params.password) {
+      updateParams = {
+        ...params,
+        password: await hash(params.password),
+      };
+    }
+
     const [updated] = await db
       .update(dbSchema.users)
-      .set(params)
+      .set(updateParams)
       .where(eq(dbSchema.users.id, where.id))
       .returning();
 

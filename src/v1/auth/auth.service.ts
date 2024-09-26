@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -109,25 +110,30 @@ export class AuthService {
     return sessionWithUser;
   }
 
-  async updatePassword(params: IUserPasswordUpdate) {
+  async updatePassword(
+    where: Pick<IUserWithoutPassword, 'id'>,
+    params: IUserPasswordUpdate,
+  ) {
+    if (params.currentPassword === params.newPassword) {
+      throw new ConflictException('New password is the same as the old one');
+    }
+
     const user = await this.userService.findUserWithPasswordOrThrow({
-      id: params.id,
+      id: where.id,
     });
 
     const isSamePassword = await compareHash({
-      rawValue: params.password,
+      rawValue: params.currentPassword,
       hash: typia.assert<string>(user.password),
     });
 
     if (!isSamePassword) {
-      throw new ConflictException('New password is the same as the old one');
+      throw new ForbiddenException('Password is incorrect');
     }
-
-    // Todo: Impl password policy
 
     const updated = await this.userService.updateUser(
       { id: user.id },
-      { password: params.password },
+      { password: params.newPassword },
       this.drizzle.db,
     );
 

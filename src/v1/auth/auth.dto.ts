@@ -42,4 +42,7 @@ export type SignUpUserDto = {
 
 export type UpdateUserRoleDto = Pick<UserDto, 'id' | 'role'>;
 
-export type UpdatePasswordDto = Pick<NonNullableInfer<UserDto>, 'password'>;
+export type UpdatePasswordDto = NonNullableInfer<{
+  currentPassword: UserDto['password'];
+  newPassword: UserDto['password'];
+}>;

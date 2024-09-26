@@ -70,6 +70,7 @@ export type IUserAccount = {
 
 export type IUserAccountCreate = Optional<IUserAccount, 'id'>;
 
-export type IUserPasswordUpdate = NonNullableInfer<
-  Pick<IUser, 'id' | 'password'>
->;
+export type IUserPasswordUpdate = NonNullableInfer<{
+  currentPassword: IUser['password'];
+  newPassword: IUser['password'];
+}>;
