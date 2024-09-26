@@ -7,6 +7,7 @@ import { ConfigsService } from '@src/configs/configs.service';
 import { seedUsers } from '../helpers/db/lms/user.helper';
 import {
   createCouponDisposable,
+  createCouponTicket,
   seedCoupons,
 } from '../helpers/db/lms/coupon.helper';
 import { CreateCouponDisposableDto } from '@src/v1/coupon/disposable/coupon-disposable.dto';
@@ -50,6 +51,15 @@ describe('CouponDisposableController (e2e)', () => {
         },
         drizzle.db,
       );
+      const issuedPrivateCouponTicket = await createCouponTicket(
+        {
+          userId: couponOwner.user.id,
+          couponDisposableId: seedDisposable.id,
+          couponId: seedDisposable.couponId,
+          expiredAt: null,
+        },
+        drizzle.db,
+      );
 
       const response = await CouponDisposableAPI.getCouponDisposables(
         {
@@ -82,6 +92,9 @@ describe('CouponDisposableController (e2e)', () => {
         page: 1,
         pageSize: 10,
       });
+      expect(foundCouponDisposables[0]!.issuedTicket!.id).toEqual(
+        issuedPrivateCouponTicket.id,
+      );
     });
   });
 
