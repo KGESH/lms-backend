@@ -36,7 +36,6 @@ export type UserInfoDto = {
 };
 
 export type UserQuery = OptionalPick<UserDto, 'role' | 'displayName'> & {
-  // email?: EMail
   email?: string; // Partial search
 } & OptionalPick<UserInfoDto, 'name'> &
   Partial<Pagination>;
