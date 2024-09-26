@@ -13,6 +13,8 @@ import { IUiComponentGroup } from '@src/v1/ui/component/ui-component-group.inter
 import * as typia from 'typia';
 import { IUiCarouselMainBannerWithContents } from '@src/v1/ui/component/carousel/carousel-main-banner/ui-carousel-main-banner.interface';
 import { IUiCarouselReviewWithItems } from '@src/v1/ui/component/carousel/carousel-review/ui-carousel-review.interface';
+import { IUiBannerComponent } from '@src/v1/ui/component/banner/ui-banner.interface';
+import { IUiMarketingBannerComponent } from '@src/v1/ui/component/marketing-banner/ui-marketing-banner.interface';
 
 @Injectable()
 export class UiComponentQueryRepository {
@@ -25,6 +27,8 @@ export class UiComponentQueryRepository {
       where: eq(dbSchema.uiComponents.path, where.path),
       with: {
         repeatTimers: true,
+        banners: true,
+        marketingBanners: true,
         carousel: {
           with: {
             reviews: true,
@@ -35,6 +39,8 @@ export class UiComponentQueryRepository {
     });
 
     const uiRepeatTimers: IUiRepeatTimerComponent[] = [];
+    const uiBanners: IUiBannerComponent[] = [];
+    const uiMarketingBanners: IUiMarketingBannerComponent[] = [];
     const uiCarouselMainBanners: IUiCarouselMainBannerWithContents[] = [];
     const uiCarouselReviews: IUiCarouselReviewWithItems[] = [];
     const uiCarouselProducts: IUiCarouselComponent<UiCarouselType>[] = [];
@@ -42,6 +48,23 @@ export class UiComponentQueryRepository {
     uiComponents.forEach((ui) => {
       const category = ui.category;
       switch (category) {
+        case 'banner':
+          const bannerUiComponent = typia.assert<IUiBannerComponent>({
+            ...ui,
+            ui: ui.banners,
+          });
+          uiBanners.push(bannerUiComponent);
+          break;
+
+        case 'marketing_banner':
+          const marketingBannerUiComponent =
+            typia.assert<IUiMarketingBannerComponent>({
+              ...ui,
+              ui: ui.marketingBanners,
+            });
+          uiMarketingBanners.push(marketingBannerUiComponent);
+          break;
+
         case 'repeat_timer':
           const repeatTimerUiComponent = typia.assert<IUiRepeatTimerComponent>({
             ...ui,
@@ -76,9 +99,6 @@ export class UiComponentQueryRepository {
           }
           break;
 
-        case 'banner':
-        case 'marketing_banner':
-        // Todo: Impl
         default:
           break;
       }
@@ -86,14 +106,14 @@ export class UiComponentQueryRepository {
 
     // Todo: Impl
     return {
+      banners: uiBanners,
+      marketingBanners: uiMarketingBanners,
       repeatTimers: uiRepeatTimers,
       carousel: {
         mainBannerCarousels: uiCarouselMainBanners,
         reviewCarousels: uiCarouselReviews,
         productCarousels: [],
       },
-      banners: [],
-      marketingBanners: [],
     };
   }
 }

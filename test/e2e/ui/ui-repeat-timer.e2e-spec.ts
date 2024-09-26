@@ -210,7 +210,9 @@ describe('UiRepeatTimerController (e2e)', () => {
       }
 
       const deletedUiComponent = deleteResponse.data;
-      expect(deletedUiComponent.id).toEqual(uiRepeatTimer.ui.uiComponentId);
+      expect(deletedUiComponent.uiComponentId).toEqual(
+        uiRepeatTimer.ui.uiComponentId,
+      );
 
       // GET result after delete
       const afterDeleteResponse = await RepeatTimerAPI.getUiRepeatTimer(

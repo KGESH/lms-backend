@@ -23,8 +23,14 @@ export type CreateUiCarouselDto<T extends UiCarouselType> = Omit<
   ui: Omit<UiCarouselDto<T>['ui'], 'id' | 'uiComponentId'>;
 };
 
+// export type UpdateUiCarouselDto<T extends UiCarouselType> = Partial<
+//   Omit<UiCarouselDto<T>, 'id' | 'uiComponentId' | 'ui'> & {
+//     ui: Partial<Omit<UiCarouselDto<T>['ui'], 'id' | 'uiComponentId'>>;
+//   }
+// >;
+
 export type UpdateUiCarouselDto<T extends UiCarouselType> = Partial<
-  Omit<UiCarouselDto<T>, 'ui' | 'uiComponentId' | 'id'> & {
-    ui: Partial<Omit<UiCarouselDto<T>['ui'], 'id' | 'uiComponentId'>>;
+  Omit<CreateUiCarouselDto<T>, 'ui'> & {
+    ui: Partial<CreateUiCarouselDto<T>['ui']>;
   }
 >;

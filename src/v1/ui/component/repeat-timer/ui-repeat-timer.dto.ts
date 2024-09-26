@@ -22,7 +22,7 @@ export type CreateUiRepeatTimerDto = Omit<
   ui: Omit<UiRepeatTimerDto['ui'], 'id' | 'uiComponentId'>;
 };
 
-export type UpdateUiRepeatTimerDto = Partial<UiRepeatTimerDto>;
+export type UpdateUiRepeatTimerDto = Partial<CreateUiRepeatTimerDto>;
 
 export type DeletedUiRepeatTimerDto = {
   id: Uuid;

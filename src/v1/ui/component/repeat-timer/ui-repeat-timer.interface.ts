@@ -23,4 +23,5 @@ export type IUiRepeatTimerComponentCreate = Optional<
   'id'
 >;
 
-export type IUiRepeatTimerComponentUpdate = Partial<IUiRepeatTimerComponent>;
+export type IUiRepeatTimerComponentUpdate =
+  Partial<IUiRepeatTimerComponentCreate>;

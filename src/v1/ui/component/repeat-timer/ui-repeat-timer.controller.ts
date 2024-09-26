@@ -19,6 +19,7 @@ import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
 import { IErrorResponse } from '@src/shared/types/response';
+import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
 
 @Controller('v1/ui/component/repeat-timer')
 export class UiRepeatTimerController {
@@ -61,6 +62,14 @@ export class UiRepeatTimerController {
     status: 404,
     description: 'user not found',
   })
+  @TypedException<IErrorResponse<409>>({
+    status: 409,
+    description: 'UI component name must be unique.',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
   async createUiRepeatTimer(
     @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: CreateUiRepeatTimerDto,
@@ -91,7 +100,15 @@ export class UiRepeatTimerController {
   })
   @TypedException<IErrorResponse<404>>({
     status: 404,
-    description: 'user not found',
+    description: 'UI repeat timer not found.',
+  })
+  @TypedException<IErrorResponse<409>>({
+    status: 409,
+    description: 'UI component name must be unique.',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   async updateUiRepeatTimer(
     @TypedHeaders() headers: AuthHeaders,

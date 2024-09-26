@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { UiCarouselContentRepository } from '@src/v1/ui/component/carousel/carousel-content/ui-carousel-content.repository';
 import {

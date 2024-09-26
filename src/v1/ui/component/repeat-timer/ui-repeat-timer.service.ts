@@ -29,7 +29,9 @@ export class UiRepeatTimerService {
   async createUiRepeatTimer(
     params: IUiRepeatTimerComponentCreate,
   ): Promise<IUiRepeatTimerComponent> {
-    return await this.uiRepeatTimerComponentRepository.create(params);
+    return await this.uiRepeatTimerComponentRepository.createRepeatTimer(
+      params,
+    );
   }
 
   async updateUiRepeatTimer(
@@ -41,7 +43,7 @@ export class UiRepeatTimerService {
         where,
       );
 
-    return await this.uiRepeatTimerComponentRepository.update(
+    return await this.uiRepeatTimerComponentRepository.updateRepeatTimer(
       {
         id: ui.id,
         uiComponentId: ui.uiComponentId,

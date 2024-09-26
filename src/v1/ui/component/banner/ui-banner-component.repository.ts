@@ -7,52 +7,50 @@ import {
 import { eq } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import {
-  IUiRepeatTimerComponent,
-  IUiRepeatTimerComponentCreate,
-  IUiRepeatTimerComponentUpdate,
-} from '@src/v1/ui/component/repeat-timer/ui-repeat-timer.interface';
+  IUiBannerComponent,
+  IUiBannerComponentCreate,
+  IUiBannerComponentUpdate,
+} from '@src/v1/ui/component/banner/ui-banner.interface';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { UI_CATEGORY } from '@src/v1/ui/category/ui-category.interface';
 import { createUuid } from '@src/shared/utils/uuid';
 import { UNIQUE_CONSTRAINT_ERROR_CODE } from '@src/infra/db/db.constant';
 
 @Injectable()
-export class UiRepeatTimerComponentRepository {
-  private readonly logger = new Logger(UiRepeatTimerComponentRepository.name);
+export class UiBannerComponentRepository {
+  private readonly logger = new Logger(UiBannerComponentRepository.name);
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async createRepeatTimer(
-    params: IUiRepeatTimerComponentCreate,
+  async createBanner(
+    params: IUiBannerComponentCreate,
     db = this.drizzle.db,
-  ): Promise<IUiRepeatTimerComponent> {
+  ): Promise<IUiBannerComponent> {
     const id = params.ui.id ?? createUuid();
     const uiComponentId = params.ui.uiComponentId ?? createUuid();
-    const { uiComponent, uiRepeatTimer } = await db
+    const { uiComponent, uiBanner } = await db
       .transaction(async (tx) => {
         const [uiComponent] = await tx
           .insert(dbSchema.uiComponents)
           .values({
             id: uiComponentId,
-            category: UI_CATEGORY.REPEAT_TIMER,
+            category: UI_CATEGORY.BANNER,
             name: params.name,
             path: params.path,
             sequence: params.sequence,
             description: params.description,
           })
           .returning();
-        const [uiRepeatTimer] = await tx
-          .insert(dbSchema.uiRepeatTimers)
+        const [uiBanner] = await tx
+          .insert(dbSchema.uiBanners)
           .values({
             id,
             uiComponentId,
             title: params.ui.title,
             description: params.ui.description,
-            repeatMinutes: params.ui.repeatMinutes,
-            buttonLabel: params.ui.buttonLabel,
-            buttonHref: params.ui.buttonHref,
+            linkUrl: params.ui.linkUrl,
           })
           .returning();
-        return { uiComponent, uiRepeatTimer };
+        return { uiComponent, uiBanner };
       })
       .catch((e) => {
         this.logger.error(e);
@@ -60,36 +58,34 @@ export class UiRepeatTimerComponentRepository {
           throw new ConflictException('UI component name must be unique.');
         }
 
-        throw new InternalServerErrorException(
-          'Failed to create UI RepeatTimer',
-        );
+        throw new InternalServerErrorException('Failed to create UI Banner');
       });
 
     return {
       ...uiComponent,
-      category: UI_CATEGORY.REPEAT_TIMER,
+      category: UI_CATEGORY.BANNER,
       ui: {
-        ...uiRepeatTimer,
+        ...uiBanner,
       },
-    } satisfies IUiRepeatTimerComponent;
+    } satisfies IUiBannerComponent;
   }
 
-  async updateRepeatTimer(
-    where: Pick<IUiRepeatTimerComponent['ui'], 'id' | 'uiComponentId'>,
-    params: IUiRepeatTimerComponentUpdate,
+  async updateBanner(
+    where: Pick<IUiBannerComponent['ui'], 'id' | 'uiComponentId'>,
+    params: IUiBannerComponentUpdate,
     db = this.drizzle.db,
-  ): Promise<IUiRepeatTimerComponent> {
+  ): Promise<IUiBannerComponent> {
     const { ui, ...uiComponent } = params;
     const uiComponentId = where.uiComponentId;
-    const uiRepeatTimerId = where.id;
+    const uiBannerId = where.id;
 
     await db
       .transaction(async (tx) => {
-        if (uiRepeatTimerId && ui) {
+        if (uiBannerId && ui) {
           await tx
-            .update(dbSchema.uiRepeatTimers)
+            .update(dbSchema.uiBanners)
             .set(ui)
-            .where(eq(dbSchema.uiRepeatTimers.id, uiRepeatTimerId));
+            .where(eq(dbSchema.uiBanners.id, uiBannerId));
         }
         if (uiComponentId && uiComponent) {
           await tx
@@ -104,36 +100,32 @@ export class UiRepeatTimerComponentRepository {
           throw new ConflictException('UI component name must be unique.');
         }
 
-        throw new InternalServerErrorException(
-          'Failed to update UI RepeatTimer',
-        );
+        throw new InternalServerErrorException('Failed to update UI Banner');
       });
 
-    const updated = await db.query.uiRepeatTimers.findFirst({
+    const updated = await db.query.uiBanners.findFirst({
       with: {
         uiComponent: true,
       },
-      where: eq(dbSchema.uiRepeatTimers.id, where.id),
+      where: eq(dbSchema.uiBanners.id, where.id),
     });
 
     if (!updated) {
-      throw new InternalServerErrorException(
-        'Updated UI RepeatTimer not found',
-      );
+      throw new InternalServerErrorException('Updated UI Banner not found');
     }
 
     return {
       ...updated.uiComponent,
-      category: UI_CATEGORY.REPEAT_TIMER,
+      category: UI_CATEGORY.BANNER,
       ui: {
         ...updated,
       },
-    } satisfies IUiRepeatTimerComponent;
+    } satisfies IUiBannerComponent;
   }
 
-  async delete(
-    where: Pick<IUiRepeatTimerComponent['ui'], 'id'>,
-  ): Promise<IUiRepeatTimerComponent> {
+  async deleteBanner(
+    where: Pick<IUiBannerComponent['ui'], 'id'>,
+  ): Promise<IUiBannerComponent> {
     /**
      * Use UI Component cascade delete
      */

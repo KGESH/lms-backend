@@ -4,6 +4,7 @@ import { UiComponentRepository } from '@src/v1/ui/component/ui-component.reposit
 import { IUiComponentBase } from '@src/v1/ui/component/ui-component.interface';
 import { UiComponentQueryRepository } from '@src/v1/ui/component/ui-component-query.repository';
 import { IUiComponentGroup } from '@src/v1/ui/component/ui-component-group.interface';
+import { Uuid } from "@src/shared/types/primitive";
 
 @Injectable()
 export class UiComponentService {
@@ -21,7 +22,7 @@ export class UiComponentService {
   async deleteUiComponent(
     where: Pick<IUiComponentBase, 'id'>,
     tx?: TransactionClient,
-  ): Promise<IUiComponentBase> {
-    return await this.uiComponentRepository.delete(where, tx);
+  ): Promise<Uuid> {
+    return await this.uiComponentRepository.deleteUiComponent(where, tx);
   }
 }

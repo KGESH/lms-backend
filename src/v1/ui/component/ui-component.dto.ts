@@ -22,3 +22,7 @@ export type UiComponentDto<C extends UiCategory, T> = {
 export type UiComponentQuery = Pick<UiComponentBaseDto, 'path'>;
 
 export type UiComponentGroupDto<C extends UiCategory, T> = Record<C, T>;
+
+export type UiComponentDeleteDto = {
+  uiComponentId: Uuid;
+};

@@ -29,6 +29,8 @@ import {
   UiCarouselContentDto,
   UiCarouselContentUpdateDto,
 } from '@src/v1/ui/component/carousel/carousel-content/ui-carousel-content.dto';
+import { IErrorResponse } from '@src/shared/types/response';
+import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
 
 @Controller('v1/ui/component/carousel-main-banner')
 export class UiCarouselMainBannerController {
@@ -45,6 +47,14 @@ export class UiCarouselMainBannerController {
    */
   @TypedRoute.Get('/:uiComponentId')
   @SkipAuth()
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
   async getUiCarouselMainBanner(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('uiComponentId') uiComponentId: Uuid,
@@ -80,6 +90,14 @@ export class UiCarouselMainBannerController {
     status: 400,
     description: 'invalid request',
   })
+  @TypedException<IErrorResponse<409>>({
+    status: 409,
+    description: 'UI component name must be unique.',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
   async createUiCarouselMainBanner(
     @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: CreateUiCarouselMainBannerDto,
@@ -107,6 +125,10 @@ export class UiCarouselMainBannerController {
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   async createUiCarouselMainBannerItems(
     @TypedHeaders() headers: AuthHeaders,
@@ -136,6 +158,14 @@ export class UiCarouselMainBannerController {
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<409>>({
+    status: 409,
+    description: 'UI component name must be unique.',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   async updateUiCarouselMainBanner(
     @TypedHeaders() headers: AuthHeaders,
@@ -167,6 +197,10 @@ export class UiCarouselMainBannerController {
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   async updateUiCarouselMainBannerItem(
     @TypedHeaders() headers: AuthHeaders,
@@ -201,6 +235,10 @@ export class UiCarouselMainBannerController {
   @TypedException<TypeGuardError>({
     status: 400,
     description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   async deleteUiCarouselMainBannerItems(
     @TypedHeaders() headers: AuthHeaders,

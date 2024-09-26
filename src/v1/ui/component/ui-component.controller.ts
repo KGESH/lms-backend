@@ -12,7 +12,7 @@ import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import {
-  UiComponentBaseDto,
+  UiComponentDeleteDto,
   UiComponentQuery,
 } from '@src/v1/ui/component/ui-component.dto';
 import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
@@ -79,10 +79,11 @@ export class UiComponentController {
   async deleteUiComponent(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('uiComponentId') uiComponentId: Uuid,
-  ): Promise<UiComponentBaseDto> {
-    const deleted = await this.uiComponentService.deleteUiComponent({
-      id: uiComponentId,
-    });
-    return deleted;
+  ): Promise<UiComponentDeleteDto> {
+    const deletedUiComponentId =
+      await this.uiComponentService.deleteUiComponent({
+        id: uiComponentId,
+      });
+    return { uiComponentId: deletedUiComponentId };
   }
 }

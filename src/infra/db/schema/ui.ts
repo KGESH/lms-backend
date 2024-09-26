@@ -23,6 +23,26 @@ export const uiRepeatTimers = pgTable('ui_repeat_timers', {
   buttonHref: text('button_href'),
 });
 
+export const uiBanners = pgTable('ui_banners', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  uiComponentId: uuid('ui_component_id')
+    .notNull()
+    .references(() => uiComponents.id, { onDelete: 'cascade' }),
+  title: text('title').notNull(),
+  description: text('description'),
+  linkUrl: text('link_url'),
+});
+
+export const uiMarketingBanners = pgTable('ui_marketing_banners', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  uiComponentId: uuid('ui_component_id')
+    .notNull()
+    .references(() => uiComponents.id, { onDelete: 'cascade' }),
+  title: text('title').notNull(),
+  description: text('description'),
+  linkUrl: text('link_url'),
+});
+
 export const uiCarousels = pgTable('ui_carousels', {
   id: uuid('id').primaryKey().defaultRandom(),
   uiComponentId: uuid('ui_component_id')
@@ -61,6 +81,8 @@ export const uiCarouselReviews = pgTable('ui_carousel_reviews', {
 export const uiComponentsRelations = relations(uiComponents, ({ one }) => ({
   repeatTimers: one(uiRepeatTimers),
   carousel: one(uiCarousels),
+  banners: one(uiBanners),
+  marketingBanners: one(uiMarketingBanners),
 }));
 
 export const uiRepeatTimersRelations = relations(uiRepeatTimers, ({ one }) => ({
@@ -69,6 +91,23 @@ export const uiRepeatTimersRelations = relations(uiRepeatTimers, ({ one }) => ({
     references: [uiComponents.id],
   }),
 }));
+
+export const uiBannersRelations = relations(uiBanners, ({ one }) => ({
+  uiComponent: one(uiComponents, {
+    fields: [uiBanners.uiComponentId],
+    references: [uiComponents.id],
+  }),
+}));
+
+export const uiMarketingBannersRelations = relations(
+  uiMarketingBanners,
+  ({ one }) => ({
+    uiComponent: one(uiComponents, {
+      fields: [uiMarketingBanners.uiComponentId],
+      references: [uiComponents.id],
+    }),
+  }),
+);
 
 export const uiCarouselsRelations = relations(uiCarousels, ({ one, many }) => ({
   uiComponent: one(uiComponents, {
@@ -103,6 +142,8 @@ export const uiDbSchemas = {
   // Entities
   uiComponents,
   uiRepeatTimers,
+  uiBanners,
+  uiMarketingBanners,
   uiCarousels,
   uiCarouselReviews,
   uiCarouselContents,
@@ -110,6 +151,8 @@ export const uiDbSchemas = {
   // Relations
   uiComponentsRelations,
   uiRepeatTimersRelations,
+  uiBannersRelations,
+  uiMarketingBannersRelations,
   uiCarouselsRelations,
   uiCarouselReviewsRelations,
   uiCarouselContentsRelations,

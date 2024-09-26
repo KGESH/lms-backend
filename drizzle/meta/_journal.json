@@ -43,6 +43,20 @@
       "when": 1727268584559,
       "tag": "0005_equal_speed",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1727368194220,
+      "tag": "0006_cloudy_shadowcat",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1727369547778,
+      "tag": "0007_outstanding_cobalt_man",
+      "breakpoints": true
     }
   ]
 }
