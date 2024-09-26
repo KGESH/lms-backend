@@ -111,6 +111,13 @@ export type ICouponCriteriaUpdate =
       'couponId'
     >;
 
+export type ICouponCriteriaDelete =
+  | Pick<ICouponAllCriteria, 'type' | 'id'>
+  | Pick<ICouponCategoryCriteria, 'type' | 'id'>
+  | Pick<ICouponTeacherCriteria, 'type' | 'id'>
+  | Pick<ICouponCourseCriteria, 'type' | 'id'>
+  | Pick<ICouponEbookCriteria, 'type' | 'id'>;
+
 export type ICouponWithCriteria = ICoupon & {
   couponAllCriteria: ICouponAllCriteria[];
   couponCategoryCriteria: ICouponCategoryCriteria[];

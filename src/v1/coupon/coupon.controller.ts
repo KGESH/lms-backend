@@ -246,6 +246,13 @@ export class CouponController {
           ...(criteriaUpdateParams?.update?.couponCourseCriteria ?? []),
           ...(criteriaUpdateParams?.update?.couponEbookCriteria ?? []),
         ],
+        delete: [
+          ...(criteriaUpdateParams?.delete?.couponAllCriteria ?? []),
+          ...(criteriaUpdateParams?.delete?.couponCategoryCriteria ?? []),
+          ...(criteriaUpdateParams?.delete?.couponTeacherCriteria ?? []),
+          ...(criteriaUpdateParams?.delete?.couponCourseCriteria ?? []),
+          ...(criteriaUpdateParams?.delete?.couponEbookCriteria ?? []),
+        ],
       },
     );
 

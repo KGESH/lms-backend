@@ -10,9 +10,10 @@ import {
   ICouponEbookCriteria,
   ICouponTeacherCriteria,
   ICouponCriteriaUpdate,
+  ICouponCriteriaDelete,
 } from '@src/v1/coupon/criteria/coupon-criteria.interface';
 import * as typia from 'typia';
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 
 @Injectable()
 export class CouponCriteriaRepository {
@@ -106,5 +107,75 @@ export class CouponCriteriaRepository {
           .returning();
         return typia.assert<ICouponEbookCriteria>(couponEbookCriteria);
     }
+  }
+
+  async deleteManyCouponCriteria(
+    params: ICouponCriteriaDelete[],
+    db = this.drizzle.db,
+  ): Promise<ICouponCriteriaDelete[]> {
+    const allCriteriaIds = params
+      .filter((param) => param.type === 'all')
+      .map((param) => param.id);
+    const categoryCriteriaIds = params
+      .filter((param) => param.type === 'category')
+      .map((param) => param.id);
+    const teacherCriteriaIds = params
+      .filter((param) => param.type === 'teacher')
+      .map((param) => param.id);
+    const courseCriteriaIds = params
+      .filter((param) => param.type === 'course')
+      .map((param) => param.id);
+    const ebookCriteriaIds = params
+      .filter((param) => param.type === 'ebook')
+      .map((param) => param.id);
+
+    const deleteAllCriteriaPromise =
+      allCriteriaIds.length > 0
+        ? db
+            .delete(dbSchema.couponAllCriteria)
+            .where(inArray(dbSchema.couponAllCriteria.id, allCriteriaIds))
+        : undefined;
+
+    const deleteCategoryCriteriaPromise =
+      categoryCriteriaIds.length > 0
+        ? db
+            .delete(dbSchema.couponCategoryCriteria)
+            .where(
+              inArray(dbSchema.couponCategoryCriteria.id, categoryCriteriaIds),
+            )
+        : undefined;
+
+    const deleteTeacherCriteriaPromise =
+      teacherCriteriaIds.length > 0
+        ? db
+            .delete(dbSchema.couponTeacherCriteria)
+            .where(
+              inArray(dbSchema.couponTeacherCriteria.id, teacherCriteriaIds),
+            )
+        : undefined;
+
+    const deleteCourseCriteriaPromise =
+      courseCriteriaIds.length > 0
+        ? db
+            .delete(dbSchema.couponCourseCriteria)
+            .where(inArray(dbSchema.couponCourseCriteria.id, courseCriteriaIds))
+        : undefined;
+
+    const deleteEbookCriteriaPromise =
+      ebookCriteriaIds.length > 0
+        ? db
+            .delete(dbSchema.couponEbookCriteria)
+            .where(inArray(dbSchema.couponEbookCriteria.id, ebookCriteriaIds))
+        : undefined;
+
+    await Promise.all([
+      deleteAllCriteriaPromise,
+      deleteCategoryCriteriaPromise,
+      deleteTeacherCriteriaPromise,
+      deleteCourseCriteriaPromise,
+      deleteEbookCriteriaPromise,
+    ]);
+
+    return params;
   }
 }

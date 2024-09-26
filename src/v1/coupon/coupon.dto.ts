@@ -13,6 +13,11 @@ import {
   CreateCouponCourseCriteriaDto,
   CreateCouponEbookCriteriaDto,
   CreateCouponTeacherCriteriaDto,
+  DeleteCouponAllCriteriaDto,
+  DeleteCouponCategoryCriteriaDto,
+  DeleteCouponCourseCriteriaDto,
+  DeleteCouponEbookCriteriaDto,
+  DeleteCouponTeacherCriteriaDto,
   UpdateCouponAllCriteriaDto,
   UpdateCouponCategoryCriteriaDto,
   UpdateCouponCourseCriteriaDto,
@@ -112,6 +117,13 @@ export type UpdateCouponDto = Partial<CreateCouponDto> & {
       couponTeacherCriteria?: UpdateCouponTeacherCriteriaDto[];
       couponCourseCriteria?: UpdateCouponCourseCriteriaDto[];
       couponEbookCriteria?: UpdateCouponEbookCriteriaDto[];
+    };
+    delete?: {
+      couponAllCriteria?: DeleteCouponAllCriteriaDto[];
+      couponCategoryCriteria?: DeleteCouponCategoryCriteriaDto[];
+      couponTeacherCriteria?: DeleteCouponTeacherCriteriaDto[];
+      couponCourseCriteria?: DeleteCouponCourseCriteriaDto[];
+      couponEbookCriteria?: DeleteCouponEbookCriteriaDto[];
     };
   };
 };

@@ -39,6 +39,11 @@ export type UpdateCouponAllCriteriaDto = Omit<
   'couponId'
 >;
 
+export type DeleteCouponAllCriteriaDto = Pick<
+  CouponAllCriteriaDto,
+  'type' | 'id'
+>;
+
 export type CouponCategoryCriteriaDto = CouponCriteriaBaseDto & {
   /**
    * 쿠폰 적용 조건 타입
@@ -55,6 +60,11 @@ export type CreateCouponCategoryCriteriaDto = Omit<
 export type UpdateCouponCategoryCriteriaDto = Omit<
   RequiredField<Partial<CouponCategoryCriteriaDto>, 'type' | 'id'>,
   'couponId'
+>;
+
+export type DeleteCouponCategoryCriteriaDto = Pick<
+  CouponCategoryCriteriaDto,
+  'type' | 'id'
 >;
 
 export type CouponTeacherCriteriaDto = CouponCriteriaBaseDto & {
@@ -75,6 +85,11 @@ export type UpdateCouponTeacherCriteriaDto = Omit<
   'couponId'
 >;
 
+export type DeleteCouponTeacherCriteriaDto = Pick<
+  CouponTeacherCriteriaDto,
+  'type' | 'id'
+>;
+
 export type CouponCourseCriteriaDto = CouponCriteriaBaseDto & {
   /**
    * 쿠폰 적용 조건 타입
@@ -91,6 +106,11 @@ export type CreateCouponCourseCriteriaDto = Omit<
 export type UpdateCouponCourseCriteriaDto = Omit<
   RequiredField<Partial<CouponCourseCriteriaDto>, 'type' | 'id'>,
   'couponId'
+>;
+
+export type DeleteCouponCourseCriteriaDto = Pick<
+  CouponCourseCriteriaDto,
+  'type' | 'id'
 >;
 
 export type CouponEbookCriteriaDto = CouponCriteriaBaseDto & {
@@ -111,6 +131,11 @@ export type UpdateCouponEbookCriteriaDto = Omit<
   'couponId'
 >;
 
+export type DeleteCouponEbookCriteriaDto = Pick<
+  CouponEbookCriteriaDto,
+  'type' | 'id'
+>;
+
 export type CouponWithCriteriaDto = CouponDto & {
   couponAllCriteria: CouponAllCriteriaDto[];
   couponCategoryCriteria: CouponCategoryCriteriaDto[];
@@ -118,3 +143,10 @@ export type CouponWithCriteriaDto = CouponDto & {
   couponCourseCriteria: CouponCourseCriteriaDto[];
   couponEbookCriteria: CouponEbookCriteriaDto[];
 };
+
+export type DeleteCouponCriteriaDto =
+  | DeleteCouponAllCriteriaDto
+  | DeleteCouponCategoryCriteriaDto
+  | DeleteCouponTeacherCriteriaDto
+  | DeleteCouponCourseCriteriaDto
+  | DeleteCouponEbookCriteriaDto;

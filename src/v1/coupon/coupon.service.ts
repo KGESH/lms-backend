@@ -12,6 +12,7 @@ import {
   ICouponCourseCriteria,
   ICouponCriteria,
   ICouponCriteriaCreate,
+  ICouponCriteriaDelete,
   ICouponCriteriaUpdate,
   ICouponEbookCriteria,
   ICouponTeacherCriteria,
@@ -93,6 +94,7 @@ export class CouponService {
     criteriaUpdateParams: {
       create: Omit<ICouponCriteriaCreate, 'couponId'>[];
       update: Omit<ICouponCriteriaUpdate, 'couponId'>[];
+      delete: ICouponCriteriaDelete[];
     },
   ): Promise<ICouponWithCriteria> {
     {
@@ -106,18 +108,23 @@ export class CouponService {
         (v) => v !== undefined,
       );
 
-      const criteriaMap = new Map<ICouponCriteria['type'], ICouponCriteria[]>();
-
       await this.drizzle.db.transaction(async (tx) => {
-        const updatedCoupon = needCouponUpdate
-          ? await this.couponRepository.updateCoupon(
-              where,
-              validCouponUpdateParams,
-            )
-          : existCoupon;
+        if (needCouponUpdate) {
+          await this.couponRepository.updateCoupon(
+            where,
+            validCouponUpdateParams,
+          );
+        }
+
+        if (criteriaUpdateParams.delete.length > 0) {
+          await this.couponCriteriaRepository.deleteManyCouponCriteria(
+            criteriaUpdateParams.delete,
+            tx,
+          );
+        }
 
         if (criteriaUpdateParams.create.length > 0) {
-          const createdCriteria = await Promise.all(
+          await Promise.all(
             criteriaUpdateParams.create.map((params) =>
               this.couponCriteriaRepository.createCouponCriteria(
                 typia.assert<ICouponCriteriaCreate>({
@@ -128,16 +135,10 @@ export class CouponService {
               ),
             ),
           );
-
-          createdCriteria.forEach((c) => {
-            const criteriaList = criteriaMap.get(c.type) ?? [];
-            criteriaList.push(c);
-            criteriaMap.set(c.type, criteriaList);
-          });
         }
 
         if (criteriaUpdateParams.update.length > 0) {
-          const updatedCriteria = await Promise.all(
+          await Promise.all(
             criteriaUpdateParams.update.map((params) =>
               this.couponCriteriaRepository.updateCouponCriteria(
                 { id: params.id },
@@ -146,15 +147,7 @@ export class CouponService {
               ),
             ),
           );
-
-          updatedCriteria.forEach((c) => {
-            const criteriaList = criteriaMap.get(c.type) ?? [];
-            criteriaList.push(c);
-            criteriaMap.set(c.type, criteriaList);
-          });
         }
-
-        return updatedCoupon;
       });
 
       const updatedCouponWithCriteria =
