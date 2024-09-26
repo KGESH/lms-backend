@@ -162,7 +162,7 @@ describe('CouponController (e2e)', () => {
         drizzle.db,
       );
 
-      const updateCouponDto: UpdateCouponDto = {
+      const updateCouponWithCreateCriteriaDto: UpdateCouponDto = {
         name: '90% coupon',
         value: '90',
         criteriaUpdateParams: {
@@ -178,7 +178,53 @@ describe('CouponController (e2e)', () => {
         },
       };
 
-      const response = await CouponAPI.updateCoupon(
+      const updateCouponWithCreateCriteriaResponse =
+        await CouponAPI.updateCoupon(
+          {
+            host,
+            headers: {
+              LmsSecret,
+              UserSessionId: admin.userSession.id,
+            },
+          },
+          seedCoupon.id,
+          updateCouponWithCreateCriteriaDto,
+        );
+      if (
+        !updateCouponWithCreateCriteriaResponse.success ||
+        !updateCouponWithCreateCriteriaResponse.data
+      ) {
+        const message = JSON.stringify(
+          updateCouponWithCreateCriteriaResponse.data,
+          null,
+          4,
+        );
+        throw new Error(`assert - ${message}`);
+      }
+
+      const updateCouponWithCreateCriteriaResult =
+        updateCouponWithCreateCriteriaResponse.data;
+      expect(updateCouponWithCreateCriteriaResult.name).toEqual('90% coupon');
+      expect(updateCouponWithCreateCriteriaResult.value).toEqual('90');
+
+      const createdTeacherCriteria =
+        updateCouponWithCreateCriteriaResult.couponTeacherCriteria[0];
+      const updateCriteriaDto: UpdateCouponDto = {
+        criteriaUpdateParams: {
+          update: {
+            couponTeacherCriteria: [
+              {
+                type: 'teacher',
+                direction: 'exclude',
+                id: createdTeacherCriteria.id,
+                teacherId: createdTeacherCriteria.teacherId,
+              },
+            ],
+          },
+        },
+      };
+
+      const updateCriteriaResponse = await CouponAPI.updateCoupon(
         {
           host,
           headers: {
@@ -187,16 +233,49 @@ describe('CouponController (e2e)', () => {
           },
         },
         seedCoupon.id,
-        updateCouponDto,
+        updateCriteriaDto,
       );
-      if (!response.success || !response.data) {
-        const message = JSON.stringify(response.data, null, 4);
+      if (!updateCriteriaResponse.success || !updateCriteriaResponse.data) {
+        const message = JSON.stringify(updateCriteriaResponse.data, null, 4);
         throw new Error(`assert - ${message}`);
       }
 
-      const createdCoupon = response.data;
-      expect(createdCoupon.name).toEqual('90% coupon');
-      expect(createdCoupon.value).toEqual('90');
+      const updateCriteriaResult = updateCriteriaResponse.data;
+      const updatedTeacherCriteria =
+        updateCriteriaResult.couponTeacherCriteria[0];
+      expect(updatedTeacherCriteria.direction).toEqual('exclude');
+
+      const deleteCriteriaDto: UpdateCouponDto = {
+        criteriaUpdateParams: {
+          delete: {
+            couponTeacherCriteria: [
+              {
+                type: 'teacher',
+                id: updatedTeacherCriteria.id,
+              },
+            ],
+          },
+        },
+      };
+
+      const deleteCriteriaResponse = await CouponAPI.updateCoupon(
+        {
+          host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
+          },
+        },
+        seedCoupon.id,
+        deleteCriteriaDto,
+      );
+      if (!deleteCriteriaResponse.success || !deleteCriteriaResponse.data) {
+        const message = JSON.stringify(deleteCriteriaResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      const deleteCriteriaResult = deleteCriteriaResponse.data;
+      expect(deleteCriteriaResult.couponTeacherCriteria.length).toEqual(0);
     });
   });
 
