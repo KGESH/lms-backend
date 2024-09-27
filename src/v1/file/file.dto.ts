@@ -34,7 +34,7 @@ export type FileDto = {
   /**
    * 파일의 이름.
    */
-  filename: string | null;
+  filename: string;
 
   /**
    * 파일의 메타데이터.

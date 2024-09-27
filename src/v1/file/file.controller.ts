@@ -12,7 +12,6 @@ import { AuthHeaders } from '@src/v1/auth/auth.headers';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
 import { FileService } from '@src/v1/file/file.service';
-import * as date from '@src/shared/utils/date';
 import { fileToDto } from '@src/shared/helpers/transofrm/file';
 
 @Controller('v1/file')
