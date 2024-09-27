@@ -8,7 +8,7 @@ export const files = pgTable('files', {
   id: uuid('id').primaryKey().defaultRandom(),
   url: text('url').notNull(),
   type: fileType('type').notNull(),
-  filename: text('filename'),
+  filename: text('filename').notNull(),
   metadata: text('metadata'),
   createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
     .notNull()

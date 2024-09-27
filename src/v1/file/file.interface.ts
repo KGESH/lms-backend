@@ -5,7 +5,7 @@ export type IFile = {
   id: Uuid;
   url: Uri;
   type: FileType;
-  filename: string | null;
+  filename: string;
   metadata: string | null;
   createdAt: Date;
   deletedAt: Date | null;
