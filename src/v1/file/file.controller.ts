@@ -38,12 +38,7 @@ export class FileController {
     @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: CreateFileDto[],
   ): Promise<FileDto[]> {
-    const files = await this.fileService.createManyFiles(
-      body.map((params) => ({
-        ...params,
-        createdAt: date.toDate(params.createdAt),
-      })),
-    );
+    const files = await this.fileService.createManyFiles(body);
 
     return files.map(fileToDto);
   }

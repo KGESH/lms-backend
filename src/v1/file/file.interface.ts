@@ -8,9 +8,10 @@ export type IFile = {
   filename: string | null;
   metadata: string | null;
   createdAt: Date;
+  deletedAt: Date | null;
 };
 
-export type IFileCreate = Omit<IFile, 'createdAt'>;
+export type IFileCreate = Omit<IFile, 'createdAt' | 'deletedAt'>;
 
 export type IPreSignedUrl = RequiredPick<IFile, 'id' | 'filename' | 'url'>;
 

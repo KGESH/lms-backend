@@ -6,7 +6,10 @@ import { Uri, Uuid } from '../../../src/shared/types/primitive';
 import { DrizzleService } from '../../../src/infra/db/drizzle.service';
 import { seedUsers } from '../helpers/db/lms/user.helper';
 import { ConfigsService } from '../../../src/configs/configs.service';
-import { CreatePreSignedUrlDto } from '../../../src/v1/file/file.dto';
+import {
+  CreateFileDto,
+  CreatePreSignedUrlDto,
+} from '../../../src/v1/file/file.dto';
 
 describe('FileController (e2e)', () => {
   let host: Uri;
@@ -33,23 +36,9 @@ describe('FileController (e2e)', () => {
         { count: 1, role: 'user' },
         drizzle.db,
       );
-      const fileId = typia.random<Uuid>();
-      // const [file] = await createManyFiles(
-      //   [
-      //     {
-      //       id: fileId,
-      //       type: 'file',
-      //       filename: 'mock-file',
-      //       metadata: null,
-      //       url: typia.random<Uri>(),
-      //     },
-      //   ],
-      //   drizzle.db,
-      // );
-
       const createDtos: CreatePreSignedUrlDto[] = [
         {
-          fileId,
+          fileId: typia.random<Uuid>(),
           filename: 'mock-file-name',
         },
       ];
@@ -69,6 +58,53 @@ describe('FileController (e2e)', () => {
 
       const [preSignedUrl] = response.data;
       expect(preSignedUrl.filename).toEqual('mock-file-name');
+    });
+
+    describe('[Create files]', () => {
+      it('should be create many file entities success', async () => {
+        const [fileOwner] = await seedUsers(
+          { count: 1, role: 'user' },
+          drizzle.db,
+        );
+
+        const uploadedFiles: CreateFileDto[] = [
+          {
+            id: typia.random<Uuid>(),
+            type: 'image',
+            filename: 'test_thumbnail.png',
+            metadata: null,
+            url: typia.random<Uri>(),
+          },
+          {
+            id: typia.random<Uuid>(),
+            type: 'file',
+            filename: 'test file.pdf',
+            metadata: null,
+            url: typia.random<Uri>(),
+          },
+        ];
+
+        const response = await FileAPI.createFiles(
+          {
+            host,
+            headers: { LmsSecret, UserSessionId: fileOwner.userSession.id },
+          },
+          uploadedFiles,
+        );
+
+        if (!response.success) {
+          const message = JSON.stringify(response.data, null, 4);
+          throw new Error(`[assert] ${message}`);
+        }
+
+        const files = response.data;
+        expect(
+          files.find((file) => file.filename === 'test_thumbnail.png'),
+        ).toBeDefined();
+        expect(
+          files.find((file) => file.filename === 'test file.pdf'),
+        ).toBeDefined();
+      });
     });
   });
 });

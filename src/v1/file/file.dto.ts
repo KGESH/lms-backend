@@ -47,4 +47,4 @@ export type FileDto = {
   createdAt: ISO8601;
 };
 
-export type CreateFileDto = FileDto;
+export type CreateFileDto = Omit<FileDto, 'createdAt'>;
