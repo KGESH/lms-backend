@@ -8,10 +8,15 @@ export const files = pgTable('files', {
   id: uuid('id').primaryKey().defaultRandom(),
   url: text('url').notNull(),
   type: fileType('type').notNull(),
+  filename: text('filename'),
   metadata: text('metadata'),
   createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
     .notNull()
     .defaultNow(),
+  deletedAt: timestamp('deleted_at', {
+    mode: 'date',
+    withTimezone: true,
+  }),
 });
 
 export const filesRelations = relations(files, ({ many }) => ({

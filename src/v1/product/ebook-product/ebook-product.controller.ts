@@ -207,12 +207,8 @@ export class EbookProductController {
       },
       ebookProductSnapshotDiscountCreateParams: {
         ...body.discount,
-        validFrom: body.discount.validFrom
-          ? date.toDate(body.discount.validFrom)
-          : null,
-        validTo: body.discount.validTo
-          ? date.toDate(body.discount.validTo)
-          : null,
+        validFrom: date.toDateOrNull(body.discount.validFrom),
+        validTo: date.toDateOrNull(body.discount.validTo),
       },
       ebookProductSnapshotUiContentCreateParams: body.uiContents,
     });
@@ -284,12 +280,8 @@ export class EbookProductController {
         ebookProductSnapshotDiscountCreateParams: body.discount
           ? {
               ...body.discount,
-              validFrom: body.discount.validFrom
-                ? date.toDate(body.discount.validFrom)
-                : null,
-              validTo: body.discount.validTo
-                ? date.toDate(body.discount.validTo)
-                : null,
+              validFrom: date.toDateOrNull(body.discount.validFrom),
+              validTo: date.toDateOrNull(body.discount.validTo),
             }
           : undefined,
         ebookProductSnapshotUiContentParams: {

@@ -3,7 +3,7 @@ import * as EbookProductAPI from '../../../src/api/functional/v1/product/ebook';
 import * as typia from 'typia';
 import * as date from '../../../src/shared/utils/date';
 import { createTestingServer } from '../helpers/app.helper';
-import { Uri } from '@src/shared/types/primitive';
+import { Uri, Uuid } from '@src/shared/types/primitive';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import {
   createRandomEbookProduct,
@@ -16,6 +16,7 @@ import {
 import { createRandomEbook } from '../helpers/db/lms/ebook.helper';
 import { ConfigsService } from '@src/configs/configs.service';
 import { seedUsers } from '../helpers/db/lms/user.helper';
+import { createManyFiles } from '../helpers/db/lms/file.helper';
 
 describe('EbookProductController (e2e)', () => {
   let host: Uri;
@@ -60,8 +61,23 @@ describe('EbookProductController (e2e)', () => {
   describe('[Create ebook product]', () => {
     it('should be create ebook product success', async () => {
       const { ebook } = await createRandomEbook(drizzle.db);
+      const [uploadedFile] = await createManyFiles(
+        [
+          {
+            id: typia.random<Uuid>(),
+            filename: 'mock-thumbnail.png',
+            metadata: null,
+            type: 'image',
+            url: typia.random<Uri>(),
+          },
+        ],
+        drizzle.db,
+      );
       const createDto: CreateEbookProductDto = {
         ...typia.random<CreateEbookProductDto>(),
+        thumbnail: {
+          id: uploadedFile.id,
+        },
         title: 'mock-product',
         description: null,
         pricing: {

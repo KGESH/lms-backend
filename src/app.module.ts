@@ -26,6 +26,7 @@ import { CouponModule } from '@src/v1/coupon/coupon.module';
 import { UserCouponModule } from '@src/v1/user/coupon/user-coupon.module';
 import { TermModule } from '@src/v1/term/term.module';
 import { OtpModule } from '@src/v1/auth/otp/otp.module';
+import { PromotionModule } from '@src/v1/promotion/promotion.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { OtpModule } from '@src/v1/auth/otp/otp.module';
     UserCouponModule,
     TermModule,
     OtpModule,
+    PromotionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

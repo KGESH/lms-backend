@@ -5,4 +5,9 @@ export type IProductThumbnail = Omit<IFile, 'type'> & {
   type: ProductThumbnailType;
 };
 
-export type IProductThumbnailCreate = Omit<IProductThumbnail, 'createdAt'>;
+export type IProductThumbnailCreate = Pick<IFile, 'id'>;
+
+export type IProductThumbnailUpdate = {
+  newFileId: IFile['id'];
+};
+// export type IProductThumbnailCreate = Omit<IProductThumbnail, 'createdAt'>;

@@ -52,8 +52,18 @@ export function toDate(date: string): Date {
   return dayjs(date).toDate();
 }
 
+export function toDateOrNull(date: string | null | undefined): Date | null {
+  return date ? dayjs(date).toDate() : null;
+}
+
 export function toISOString(date: Date): ISO8601 {
   return dayjs(date).toISOString();
+}
+
+export function toIsoStringOrNull(
+  date: Date | null | undefined,
+): ISO8601 | null {
+  return date ? dayjs(date).toISOString() : null;
 }
 
 export function isBefore(date: Date, compare: Date): boolean {

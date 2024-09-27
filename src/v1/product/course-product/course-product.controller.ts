@@ -214,12 +214,8 @@ export class CourseProductController {
       },
       courseProductSnapshotDiscountCreateParams: {
         ...body.discount,
-        validFrom: body.discount.validFrom
-          ? date.toDate(body.discount.validFrom)
-          : null,
-        validTo: body.discount.validTo
-          ? date.toDate(body.discount.validTo)
-          : null,
+        validFrom: date.toDateOrNull(body.discount.validFrom),
+        validTo: date.toDateOrNull(body.discount.validTo),
       },
       courseProductSnapshotUiContentCreateParams: body.uiContents,
     });
@@ -290,12 +286,8 @@ export class CourseProductController {
         courseProductSnapshotDiscountCreateParams: body.discount
           ? {
               ...body.discount,
-              validFrom: body.discount.validFrom
-                ? date.toDate(body.discount.validFrom)
-                : null,
-              validTo: body.discount.validTo
-                ? date.toDate(body.discount.validTo)
-                : null,
+              validFrom: date.toDateOrNull(body.discount.validFrom),
+              validTo: date.toDateOrNull(body.discount.validTo),
             }
           : null,
         courseProductSnapshotUiContentParams: {

@@ -17,6 +17,7 @@ import { createRandomCourse } from '../helpers/db/lms/course.helper';
 import { ConfigsService } from '@src/configs/configs.service';
 import { seedUsers } from '../helpers/db/lms/user.helper';
 import { createUuid } from '@src/shared/utils/uuid';
+import { createManyFiles } from '../helpers/db/lms/file.helper';
 
 describe('CourseProductController (e2e)', () => {
   let host: Uri;
@@ -92,8 +93,23 @@ describe('CourseProductController (e2e)', () => {
   describe('[Create course product]', () => {
     it('should be create course product success', async () => {
       const { course } = await createRandomCourse(drizzle.db);
+      const [uploadedFile] = await createManyFiles(
+        [
+          {
+            id: createUuid(),
+            filename: 'thumbnail.png',
+            metadata: null,
+            type: 'image',
+            url: 'https://aceternity.com/images/products/thumbnails/new/editrix.png',
+          },
+        ],
+        drizzle.db,
+      );
       const createDto: CreateCourseProductDto = {
         ...typia.random<CreateCourseProductDto>(),
+        thumbnail: {
+          id: uploadedFile.id,
+        },
         title: 'mock-product',
         description: null,
         pricing: {
@@ -194,16 +210,26 @@ describe('CourseProductController (e2e)', () => {
         await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
       )[0];
 
+      const [file] = await createManyFiles(
+        [
+          {
+            id: createUuid(), // Uploaded file ID
+            metadata: null,
+            type: 'image',
+            url: 'https://aceternity.com/images/products/thumbnails/new/editrix.png',
+            filename: 'thumbnail.png',
+          },
+        ],
+        drizzle.db,
+      );
+
       const updateDto: UpdateCourseProductDto = {
         snapshot: {
           title: 'updated product title',
           description: 'updated description',
         },
         thumbnail: {
-          id: createUuid(), // Uploaded file ID
-          metadata: null,
-          type: 'image',
-          url: 'https://aceternity.com/images/products/thumbnails/new/editrix.png',
+          id: file.id,
         },
         pricing: {
           amount: '10000',

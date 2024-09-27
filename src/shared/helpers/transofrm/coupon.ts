@@ -27,9 +27,9 @@ import { CouponWithCriteriaDto } from '@src/v1/coupon/criteria/coupon-criteria.d
 export const couponToDto = (coupon: ICoupon): CouponDto => {
   return {
     ...coupon,
-    openedAt: coupon.openedAt ? date.toISOString(coupon.openedAt) : null,
-    closedAt: coupon.closedAt ? date.toISOString(coupon.closedAt) : null,
-    expiredAt: coupon.expiredAt ? date.toISOString(coupon.expiredAt) : null,
+    openedAt: date.toIsoStringOrNull(coupon.openedAt),
+    closedAt: date.toIsoStringOrNull(coupon.closedAt),
+    expiredAt: date.toIsoStringOrNull(coupon.expiredAt),
   };
 };
 

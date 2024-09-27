@@ -53,18 +53,14 @@ export const courseProductWithPricingToDto = (
     description: product.lastSnapshot.description,
     createdAt: date.toISOString(product.lastSnapshot.createdAt),
     updatedAt: date.toISOString(product.lastSnapshot.updatedAt),
-    deletedAt: product.lastSnapshot.deletedAt
-      ? date.toISOString(product.lastSnapshot.deletedAt)
-      : null,
+    deletedAt: date.toIsoStringOrNull(product.lastSnapshot.deletedAt),
     pricing: product.lastSnapshot.pricing,
     discount: {
       ...product.lastSnapshot.discount,
-      validFrom: product.lastSnapshot.discount.validFrom
-        ? date.toISOString(product.lastSnapshot.discount.validFrom)
-        : null,
-      validTo: product.lastSnapshot.discount.validTo
-        ? date.toISOString(product.lastSnapshot.discount.validTo)
-        : null,
+      validFrom: date.toIsoStringOrNull(
+        product.lastSnapshot.discount.validFrom,
+      ),
+      validTo: date.toIsoStringOrNull(product.lastSnapshot.discount.validTo),
     },
     course: courseRelationsToDto(product.course),
   };

@@ -51,6 +51,7 @@ import { createManyLesson } from './lesson.helper';
 import { createManyLessonContent } from './lesson-content.helper';
 import { LOREM_IPSUM } from './mock/lorem-ipsum.mock';
 import { createTeacher } from './teacher.helper';
+import { IFileCreate } from '@src/v1/file/file.interface';
 
 export const createCourseProduct = async (
   params: ICourseProductCreate,
@@ -77,7 +78,7 @@ export const createCourseProductSnapshot = async (
 };
 
 export const createCourseProductThumbnail = async (
-  params: IProductThumbnailCreate,
+  params: IFileCreate,
   db: TransactionClient,
 ): Promise<IProductThumbnail> => {
   const [thumbnail] = await createManyFiles([params], db);
@@ -184,9 +185,11 @@ export const createRandomCourseProduct = async (
     },
     db,
   );
+
   const thumbnail = await createCourseProductThumbnail(
     {
       id: typia.random<Uuid>(),
+      filename: 'editrix.png',
       metadata: null,
       type: 'image',
       url: 'https://aceternity.com/images/products/thumbnails/new/editrix.png',
@@ -598,6 +601,7 @@ export const seedPgFirstCourseProduct = async (
       id: typia.random<Uuid>(),
       metadata: null,
       type: 'image',
+      filename: '대한민국 경제시장 40년 압축.png',
       url: `https://cdn3.wadiz.kr/studio/images/2024/08/21/4f8089c0-3f44-415d-8be7-23401757e8b3.jpg`,
     },
     db,
@@ -669,6 +673,7 @@ export const seedPgSecondCourseProduct = async (
     {
       id: typia.random<Uuid>(),
       metadata: null,
+      filename: '모르면 큰일나는 경제상식 20가지 요약본.png',
       type: 'image',
       url: `https://cdn3.wadiz.kr/studio/images/2024/08/21/4f8089c0-3f44-415d-8be7-23401757e8b3.jpg`,
     },
@@ -741,6 +746,7 @@ export const seedPgThirdCourseProduct = async (
     {
       id: typia.random<Uuid>(),
       metadata: null,
+      filename: '김멘사 경제 분석.png',
       type: 'image',
       url: `https://cdn3.wadiz.kr/studio/images/2024/08/21/b0d6938e-ea57-43b6-b68a-ab1ae39cfdee.png`,
     },

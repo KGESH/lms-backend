@@ -11,6 +11,7 @@ import { couponDbSchema } from './coupon';
 import { termDbSchema } from './term';
 import { fileDbSchemas } from './file';
 import { otpDbSchemas } from './otp';
+import { promoDbSchema } from './promo';
 
 export const dbSchema = {
   // 사용자 (일반 사용자, 관리자(매니저), 최고 관리자)
@@ -51,4 +52,7 @@ export const dbSchema = {
 
   // OTP
   ...otpDbSchemas,
+
+  // 프로모션 페이지
+  ...promoDbSchema,
 };

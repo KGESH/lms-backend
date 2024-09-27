@@ -41,6 +41,13 @@ export const uiCarouselType = pgEnum('ui_carousel_type', [
 
 export const fileType = pgEnum('file_type', ['video', 'image', 'text', 'file']);
 
+export const promoContentType = pgEnum('promo_content_type', [
+  'image',
+  'video',
+  'text',
+  'file',
+]);
+
 export const lessonContentType = pgEnum('lesson_content_type', [
   'video',
   'image',

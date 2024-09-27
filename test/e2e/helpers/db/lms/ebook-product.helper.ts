@@ -40,6 +40,7 @@ import {
   IProductThumbnail,
   IProductThumbnailCreate,
 } from '../../../../../src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
+import { IFileCreate } from "@src/v1/file/file.interface";
 
 export const createEbookProduct = async (
   params: IEbookProductCreate,
@@ -66,7 +67,7 @@ export const createEbookProductSnapshot = async (
 };
 
 export const createEbookProductThumbnail = async (
-  params: IProductThumbnailCreate,
+  params: IFileCreate,
   db: TransactionClient,
 ): Promise<IProductThumbnail> => {
   const [thumbnail] = await createManyFiles([params], db);
@@ -168,6 +169,7 @@ export const createRandomEbookProduct = async (
     {
       id: typia.random<Uuid>(),
       metadata: null,
+      filename: 'thumbnail.png',
       type: 'image',
       url: 'https://aceternity.com/images/products/thumbnails/new/editrix.png',
     },
