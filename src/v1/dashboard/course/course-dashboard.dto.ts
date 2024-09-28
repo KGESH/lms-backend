@@ -4,7 +4,10 @@ import { LessonContentDto } from '@src/v1/course/chapter/lesson/lesson-content/l
 
 export type ChapterSequenceUpdateDto = Pick<ChapterDto, 'id' | 'sequence'>;
 
-export type LessonSequenceUpdateDto = Pick<LessonDto, 'id' | 'sequence'>;
+export type LessonSequenceUpdateDto = Pick<
+  LessonDto,
+  'id' | 'chapterId' | 'sequence'
+>;
 
 export type CourseDashboardUpdateDto = {
   chapters: ChapterSequenceUpdateDto[];

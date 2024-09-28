@@ -23,7 +23,10 @@ export class CourseDashboardUniqueSequenceGuard implements CanActivate {
     const { chapters, lessons } = params;
 
     const chapterSequenceSet = new Set<number>();
-    const lessonSequenceSet = new Set<number>();
+    const lessonSequenceMap = new Map<
+      CourseDashboardUpdateDto['lessons'][number]['chapterId'], // Group by Chapter ID
+      number // sequence
+    >();
 
     chapters.forEach((chapter) => {
       if (chapterSequenceSet.has(chapter.sequence)) {
@@ -35,12 +38,14 @@ export class CourseDashboardUniqueSequenceGuard implements CanActivate {
     });
 
     lessons.forEach((lesson) => {
-      if (lessonSequenceSet.has(lesson.sequence)) {
-        throw new ConflictException(
-          `Lesson sequence must be unique. Duplicate sequence: ${lesson.sequence}`,
-        );
+      if (lessonSequenceMap.has(lesson.chapterId)) {
+        if (lessonSequenceMap.get(lesson.chapterId) === lesson.sequence) {
+          throw new ConflictException(
+            `Lesson sequence must be unique. Duplicate sequence: ${lesson.sequence}`,
+          );
+        }
       }
-      lessonSequenceSet.add(lesson.sequence);
+      lessonSequenceMap.set(lesson.chapterId, lesson.sequence);
     });
   }
 }
