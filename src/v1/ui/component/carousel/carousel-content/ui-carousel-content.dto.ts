@@ -1,4 +1,5 @@
 import { CarouselContentType, UInt, Uuid } from '@src/shared/types/primitive';
+import { RequiredField } from '@src/shared/types/required-field';
 
 export type UiCarouselContentDto = {
   id: Uuid;
@@ -17,4 +18,7 @@ export type UiCarouselContentCreateDto = Omit<
   'id' | 'uiCarouselId'
 >;
 
-export type UiCarouselContentUpdateDto = Partial<UiCarouselContentCreateDto>;
+export type UiCarouselContentUpdateDto = RequiredField<
+  Partial<Omit<UiCarouselContentDto, 'uiCarouselId'>>,
+  'id'
+>;

@@ -7,6 +7,7 @@ import {
   IUiCarouselContentUpdate,
 } from '@src/v1/ui/component/carousel/carousel-content/ui-carousel-content.interface';
 import { UiCarouselContentQueryRepository } from '@src/v1/ui/component/carousel/carousel-content/ui-carousel-content-query.repository';
+import { TransactionClient } from '@src/infra/db/drizzle.types';
 
 @Injectable()
 export class UiCarouselContentService {
@@ -36,6 +37,7 @@ export class UiCarouselContentService {
   async updateUiCarouselContent(
     where: Pick<IUiCarouselContent, 'id'>,
     params: Omit<IUiCarouselContentUpdate, 'id'>,
+    tx: TransactionClient,
   ): Promise<IUiCarouselContent> {
     const exist =
       await this.uiCarouselContentQueryRepository.findUiCarouselContent(where);
@@ -48,6 +50,7 @@ export class UiCarouselContentService {
       await this.uiCarouselContentRepository.updateUiCarouselContent(
         where,
         params,
+        tx,
       );
 
     return updated;

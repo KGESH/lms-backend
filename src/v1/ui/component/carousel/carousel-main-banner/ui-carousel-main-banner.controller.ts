@@ -191,7 +191,7 @@ export class UiCarouselMainBannerController {
    * @tag ui
    * @summary 메인 배너 캐러셀 UI 아이템 수정.
    */
-  @TypedRoute.Patch('/:uiComponentId/item/:itemId')
+  @TypedRoute.Patch('/:uiComponentId/item')
   @Roles('admin', 'manager')
   @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
@@ -202,17 +202,13 @@ export class UiCarouselMainBannerController {
     status: INVALID_LMS_SECRET,
     description: 'invalid LMS api secret',
   })
-  async updateUiCarouselMainBannerItem(
+  async updateUiCarouselMainBannerItems(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('uiComponentId') uiComponentId: Uuid,
-    @TypedParam('itemId') itemId: Uuid,
-    @TypedBody() body: UiCarouselContentUpdateDto,
-  ): Promise<UiCarouselContentDto> {
+    @TypedBody() body: UiCarouselContentUpdateDto[],
+  ): Promise<UiCarouselContentDto[]> {
     const updatedItem =
-      await this.uiCarouselMainBannerService.updateUiCarouselMainBannerItem(
-        {
-          id: itemId,
-        },
+      await this.uiCarouselMainBannerService.updateUiCarouselMainBannerItems(
         body,
       );
 

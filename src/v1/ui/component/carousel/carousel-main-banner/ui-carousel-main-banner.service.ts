@@ -16,6 +16,7 @@ import {
 import { IUiCarouselMainBannerWithContents } from '@src/v1/ui/component/carousel/carousel-main-banner/ui-carousel-main-banner.interface';
 import { UiCarouselContentService } from '@src/v1/ui/component/carousel/carousel-content/ui-carousel-content.service';
 import { UiCarouselMainBannerQueryRepository } from '@src/v1/ui/component/carousel/carousel-main-banner/ui-carousel-main-banner-query.repository';
+import { RequiredField } from '@src/shared/types/required-field';
 
 @Injectable()
 export class UiCarouselMainBannerService {
@@ -122,17 +123,24 @@ export class UiCarouselMainBannerService {
     return updatedCarousel;
   }
 
-  async updateUiCarouselMainBannerItem(
-    where: Pick<IUiCarouselContent, 'id'>,
-    params: Omit<IUiCarouselContentUpdate, 'id'>,
-  ): Promise<IUiCarouselContent> {
-    const updatedCarouselContent =
-      await this.uiCarouselContentService.updateUiCarouselContent(
-        where,
-        params,
-      );
+  async updateUiCarouselMainBannerItems(
+    updateParams: RequiredField<IUiCarouselContentUpdate, 'id'>[],
+  ): Promise<IUiCarouselContent[]> {
+    const updatedCarouselContents = await this.drizzle.db.transaction(
+      async (tx) => {
+        return await Promise.all(
+          updateParams.map((params) =>
+            this.uiCarouselContentService.updateUiCarouselContent(
+              { id: params.id },
+              params,
+              tx,
+            ),
+          ),
+        );
+      },
+    );
 
-    return updatedCarouselContent;
+    return updatedCarouselContents;
   }
 
   async deleteUiCarouselMainBannerItems(
