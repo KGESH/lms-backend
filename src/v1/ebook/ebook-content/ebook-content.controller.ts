@@ -21,6 +21,7 @@ import {
 import { ebookContentToDto } from '@src/shared/helpers/transofrm/ebook-content';
 import { EbookAccessGuard } from '@src/core/guards/ebook-access.guard';
 import { EbookContentQueryService } from '@src/v1/ebook/ebook-content/ebook-content-query.service';
+import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
 
 @Controller('v1/ebook/:ebookId/content')
 export class EbookContentController {
@@ -49,6 +50,10 @@ export class EbookContentController {
   @TypedException<IErrorResponse<403>>({
     status: 403,
     description: 'User is not enrolled in the ebook',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   async getEbookContents(
     @TypedHeaders() headers: AuthHeaders,
@@ -81,6 +86,10 @@ export class EbookContentController {
   @TypedException<IErrorResponse<403>>({
     status: 403,
     description: 'User is not enrolled in the ebook',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   async getEbookContent(
     @TypedHeaders() headers: AuthHeaders,
@@ -121,6 +130,10 @@ export class EbookContentController {
     status: 404,
     description: 'ebook not found',
   })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
   async createEbookContents(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('ebookId') ebookId: Uuid,
@@ -152,6 +165,10 @@ export class EbookContentController {
   @TypedException<IErrorResponse<404>>({
     status: 404,
     description: 'ebook content not found',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   async updateEbookContent(
     @TypedHeaders() headers: AuthHeaders,
@@ -189,6 +206,10 @@ export class EbookContentController {
   @TypedException<IErrorResponse<404>>({
     status: 404,
     description: 'ebook content not found',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   async deleteEbookContent(
     @TypedHeaders() headers: AuthHeaders,
