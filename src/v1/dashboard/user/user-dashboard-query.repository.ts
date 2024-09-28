@@ -91,7 +91,58 @@ export class UserDashboardQueryRepository {
       totalCount: users[0]?.totalCount ?? 0,
       pagination,
       data: users.map(
-        ({ order, user: { password, ...userWithoutPassword } }) => ({
+        ({ order, user: { password: _, ...userWithoutPassword } }) => ({
+          user: userWithoutPassword,
+          order: assertOrder(order),
+        }),
+      ),
+    };
+  }
+
+  async findPurchasedEbookUsers(
+    where: { ebookId: Uuid },
+    pagination: Pagination,
+  ): Promise<Paginated<IPurchasedUser[]>> {
+    const users = await this.drizzle.db
+      .select({
+        user: dbSchema.users,
+        order: dbSchema.orders,
+        totalCount: sql<number>`count(${dbSchema.users.id}) over()`.mapWith(
+          Number,
+        ),
+      })
+      .from(dbSchema.ebookProducts)
+      .where(eq(dbSchema.ebookProducts.ebookId, where.ebookId))
+      .innerJoin(
+        dbSchema.ebookProductSnapshots,
+        eq(dbSchema.ebookProductSnapshots.productId, dbSchema.ebookProducts.id),
+      )
+      .innerJoin(
+        dbSchema.ebookOrders,
+        eq(
+          dbSchema.ebookOrders.productSnapshotId,
+          dbSchema.ebookProductSnapshots.id,
+        ),
+      )
+      .innerJoin(
+        dbSchema.orders,
+        eq(dbSchema.orders.id, dbSchema.ebookOrders.orderId),
+      )
+      .innerJoin(dbSchema.users, eq(dbSchema.users.id, dbSchema.orders.userId))
+      .groupBy(dbSchema.users.id, dbSchema.orders.id)
+      .orderBy(
+        pagination.orderBy === 'asc'
+          ? asc(dbSchema.orders.paidAt)
+          : desc(dbSchema.orders.paidAt),
+      )
+      .offset((pagination.page - 1) * pagination.pageSize)
+      .limit(pagination.pageSize);
+
+    return {
+      totalCount: users[0]?.totalCount ?? 0,
+      pagination,
+      data: users.map(
+        ({ order, user: { password: _, ...userWithoutPassword } }) => ({
           user: userWithoutPassword,
           order: assertOrder(order),
         }),

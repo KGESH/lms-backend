@@ -16,6 +16,7 @@ import { AuthHeaders } from '@src/v1/auth/auth.headers';
 import {
   CourseResourceHistoryQuery,
   PurchasedCourseUsersQuery,
+  PurchasedEbookUsersQuery,
   PurchasedUserDto,
   UserCourseEnrollmentHistoriesQuery,
   UserCourseResourceHistoryDto,
@@ -172,8 +173,8 @@ export class UserDashboardController {
    *
    * @tag dashboard
    * @summary 특정 사용자의 특정 강의 리소스 접근 기록 조회 - Role('admin', 'manager')
-   * @param userId - 조회할 사용자 id
-   * @param courseId - 강의 id
+   * @query userId - 조회할 사용자 id
+   * @query courseId - 강의 id
    */
   @TypedRoute.Get('/history/course')
   @Roles('admin', 'manager')
@@ -216,7 +217,7 @@ export class UserDashboardController {
    *
    * @tag dashboard
    * @summary 특정 강의를 구매한 사용자 목록 조회 - Role('admin', 'manager')
-   * @param courseId - 강의 id
+   * @query courseId - 강의 id
    */
   @TypedRoute.Get('/purchased/course')
   @Roles('admin', 'manager')
@@ -240,6 +241,50 @@ export class UserDashboardController {
     const paginatedUsers =
       await this.userDashboardService.findPurchasedCourseUsers(
         { courseId: query.courseId },
+        withDefaultPagination(query),
+      );
+
+    return {
+      pagination: paginatedUsers.pagination,
+      totalCount: paginatedUsers.totalCount,
+      data: paginatedUsers.data.map(({ user, order }) => ({
+        user: userToDto(user),
+        order: orderToDto(order),
+      })),
+    };
+  }
+
+  /**
+   * 특정 전자책을 구매한 사용자 목록을 조회합니다.
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag dashboard
+   * @summary 특정 전자책을 구매한 사용자 목록 조회 - Role('admin', 'manager')
+   * @query ebookId - 전자책 id
+   */
+  @TypedRoute.Get('/purchased/ebook')
+  @Roles('admin', 'manager')
+  @UseGuards(RolesGuard)
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'Not enough [role] to access this resource.',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async getPurchasedEbookUsers(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedQuery() query: PurchasedEbookUsersQuery,
+  ): Promise<Paginated<PurchasedUserDto[]>> {
+    const paginatedUsers =
+      await this.userDashboardService.findPurchasedEbookUsers(
+        { ebookId: query.ebookId },
         withDefaultPagination(query),
       );
 

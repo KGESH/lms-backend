@@ -41,4 +41,14 @@ export class UserDashboardService {
       pagination,
     );
   }
+
+  async findPurchasedEbookUsers(
+    where: { ebookId: Uuid },
+    pagination: Pagination,
+  ): Promise<Paginated<IPurchasedUser[]>> {
+    return await this.userDashboardQueryRepository.findPurchasedEbookUsers(
+      where,
+      pagination,
+    );
+  }
 }

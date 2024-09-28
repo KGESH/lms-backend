@@ -23,6 +23,10 @@ export type PurchasedCourseUsersQuery = Partial<Pagination> & {
   courseId: Uuid;
 };
 
+export type PurchasedEbookUsersQuery = Partial<Pagination> & {
+  ebookId: Uuid;
+};
+
 export type PurchasedUserDto = {
   user: UserWithoutPasswordDto;
   order: OrderBaseDto;
