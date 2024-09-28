@@ -7,7 +7,10 @@ import { Uri } from '@src/shared/types/primitive';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { ConfigsService } from '@src/configs/configs.service';
 import { seedUsers } from '../helpers/db/lms/user.helper';
-import { seedCourseOrders } from '../helpers/db/lms/order.helper';
+import {
+  seedCourseOrders,
+  seedEbookOrders,
+} from '../helpers/db/lms/order.helper';
 
 describe('UserDashboardController (e2e)', () => {
   let host: Uri;
@@ -92,7 +95,7 @@ describe('UserDashboardController (e2e)', () => {
   });
 
   describe('[Get purchased users]', () => {
-    it('should be get many purchased users success', async () => {
+    it('should be get many purchased course users success', async () => {
       const [admin] = await seedUsers({ count: 1, role: 'admin' }, drizzle.db);
       const [firstUser] = await seedCourseOrders({ count: 3 }, drizzle.db);
 
@@ -107,6 +110,41 @@ describe('UserDashboardController (e2e)', () => {
           },
           {
             courseId: firstUser.product.courseId,
+            orderBy: 'desc',
+            page: 1,
+            pageSize: 10,
+          },
+        );
+      if (!response.success) {
+        const message = JSON.stringify(response.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      const paginatedResult = response.data;
+      const purchasedUsers = paginatedResult.data;
+      expect(
+        purchasedUsers.find(({ user }) => user.id === firstUser.user.id),
+      ).toBeDefined();
+      expect(
+        purchasedUsers.find(({ order }) => order.id === firstUser.order.id),
+      ).toBeDefined();
+    });
+
+    it('should be get many purchased ebook users success', async () => {
+      const [admin] = await seedUsers({ count: 1, role: 'admin' }, drizzle.db);
+      const [firstUser] = await seedEbookOrders({ count: 3 }, drizzle.db);
+
+      const response =
+        await PurchasedUserDashboardAPI.ebook.getPurchasedEbookUsers(
+          {
+            host,
+            headers: {
+              LmsSecret,
+              UserSessionId: admin.userSession.id,
+            },
+          },
+          {
+            ebookId: firstUser.product.ebookId,
             orderBy: 'desc',
             page: 1,
             pageSize: 10,
