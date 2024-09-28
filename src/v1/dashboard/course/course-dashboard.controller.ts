@@ -20,6 +20,8 @@ import { AuthHeaders } from '@src/v1/auth/auth.headers';
 import { CourseDashboardUniqueSequenceGuard } from '@src/core/guards/course-dashboard-unique-sequence.guard';
 import { CourseDashboardContentUniqueSequenceGuard } from '@src/core/guards/course-dashboard-content-unique-sequence.guard';
 import { LessonContentDto } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.dto';
+import { IErrorResponse } from '@src/shared/types/response';
+import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
 
 @Controller('v1/dashboard/course/:courseId')
 export class CourseDashboardController {
@@ -51,6 +53,10 @@ export class CourseDashboardController {
   @TypedException<TypeGuardError>({
     status: 409,
     description: 'item sequence conflict',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   async updateDashboardSequence(
     @TypedHeaders() headers: AuthHeaders,
@@ -84,6 +90,10 @@ export class CourseDashboardController {
   @TypedException<TypeGuardError>({
     status: 409,
     description: 'item sequence conflict',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
   })
   async updateLessonContentSequence(
     @TypedHeaders() headers: AuthHeaders,

@@ -277,13 +277,13 @@ export class CourseProductController {
     const updated = await this.courseProductService.updateCourseProduct(
       { courseId },
       {
-        courseProductSnapshotCreateParams: body.snapshot,
-        courseProductSnapshotThumbnailCreateParams: body.thumbnail,
-        courseProductSnapshotAnnouncementCreateParams: body.announcement,
-        courseProductSnapshotContentCreateParams: body.content,
-        courseProductSnapshotRefundPolicyCreateParams: body.refundPolicy,
-        courseProductSnapshotPricingCreateParams: body.pricing,
-        courseProductSnapshotDiscountCreateParams: body.discount
+        courseProductSnapshotUpdateParams: body.snapshot,
+        courseProductSnapshotThumbnailUpdateParams: body.thumbnail,
+        courseProductSnapshotAnnouncementUpdateParams: body.announcement,
+        courseProductSnapshotContentUpdateParams: body.content,
+        courseProductSnapshotRefundPolicyUpdateParams: body.refundPolicy,
+        courseProductSnapshotPricingUpdateParams: body.pricing,
+        courseProductSnapshotDiscountUpdateParams: body.discount
           ? {
               ...body.discount,
               validFrom: date.toDateOrNull(body.discount.validFrom),

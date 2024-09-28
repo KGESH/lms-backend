@@ -170,9 +170,6 @@ export class CourseProductService {
         },
       );
 
-    // const product: NonNullableInfer<
-    //   Omit<ICourseProductWithRelations, 'course'>
-    // > =
     await this.drizzle.db.transaction(async (tx) => {
       const courseProduct =
         existProduct ??
@@ -183,12 +180,6 @@ export class CourseProductService {
           },
           tx,
         ));
-      // Todo: remove
-      // const thumbnail =
-      //   await this.productThumbnailService.createProductThumbnail(
-      //     courseProductSnapshotThumbnailCreateParams,
-      //     tx,
-      //   );
       const snapshot = await this.courseProductSnapshotRepository.create(
         {
           ...courseProductSnapshotCreateParams,
@@ -240,7 +231,6 @@ export class CourseProductService {
         ...courseProduct,
         lastSnapshot: {
           ...snapshot,
-          // thumbnail,
           announcement,
           content,
           refundPolicy,
@@ -249,16 +239,7 @@ export class CourseProductService {
           uiContents,
         },
       };
-      // satisfies NonNullableInfer<Omit<ICourseProductWithRelations, 'course'>>;
     });
-
-    //
-    // if (existProduct) {
-    //   return {
-    //     ...product,
-    //     course: existProduct.course,
-    //   };
-    // }
 
     const createdCourseProduct =
       await this.findCourseProductWithRelationsOrThrow({
@@ -266,46 +247,42 @@ export class CourseProductService {
       });
 
     return createdCourseProduct;
-    // return {
-    //   ...product,
-    //   course: createdCourseProduct.course,
-    // };
   }
 
   async updateCourseProduct(
     where: Pick<ICourseProduct, 'courseId'>,
     {
-      courseProductSnapshotCreateParams,
-      courseProductSnapshotThumbnailCreateParams,
-      courseProductSnapshotContentCreateParams,
-      courseProductSnapshotAnnouncementCreateParams,
-      courseProductSnapshotRefundPolicyCreateParams,
-      courseProductSnapshotPricingCreateParams,
-      courseProductSnapshotDiscountCreateParams,
+      courseProductSnapshotUpdateParams,
+      courseProductSnapshotThumbnailUpdateParams,
+      courseProductSnapshotContentUpdateParams,
+      courseProductSnapshotAnnouncementUpdateParams,
+      courseProductSnapshotRefundPolicyUpdateParams,
+      courseProductSnapshotPricingUpdateParams,
+      courseProductSnapshotDiscountUpdateParams,
       courseProductSnapshotUiContentParams,
     }: {
-      courseProductSnapshotCreateParams?: Omit<
+      courseProductSnapshotUpdateParams?: Omit<
         IProductSnapshotCreate,
         'productId' | 'thumbnailId'
       >;
-      courseProductSnapshotThumbnailCreateParams?: IProductThumbnailCreate;
-      courseProductSnapshotContentCreateParams?: Pick<
+      courseProductSnapshotThumbnailUpdateParams?: IProductThumbnailCreate;
+      courseProductSnapshotContentUpdateParams?: Pick<
         IProductSnapshotContentCreate,
         'richTextContent'
       >;
-      courseProductSnapshotAnnouncementCreateParams?: Pick<
+      courseProductSnapshotAnnouncementUpdateParams?: Pick<
         IProductSnapshotAnnouncementCreate,
         'richTextContent'
       >;
-      courseProductSnapshotRefundPolicyCreateParams?: Pick<
+      courseProductSnapshotRefundPolicyUpdateParams?: Pick<
         IProductSnapshotRefundPolicyCreate,
         'richTextContent'
       >;
-      courseProductSnapshotPricingCreateParams?: Pick<
+      courseProductSnapshotPricingUpdateParams?: Pick<
         IProductSnapshotPricingCreate,
         'amount'
       >;
-      courseProductSnapshotDiscountCreateParams?: Omit<
+      courseProductSnapshotDiscountUpdateParams?: Omit<
         IProductSnapshotDiscountCreate,
         'productSnapshotId'
       > | null;
@@ -322,7 +299,7 @@ export class CourseProductService {
     // If the parameter is not given, use the existing snapshot. e.g. pricing create params.
     const updatedProduct = await this.drizzle.db.transaction(async (tx) => {
       // Soft delete
-      if (courseProductSnapshotThumbnailCreateParams) {
+      if (courseProductSnapshotThumbnailUpdateParams) {
         await this.productThumbnailService.deleteProductThumbnail(
           {
             id: existProduct.lastSnapshot.thumbnailId,
@@ -330,22 +307,15 @@ export class CourseProductService {
           tx,
         );
       }
-      //
-      // const thumbnail = courseProductSnapshotThumbnailCreateParams
-      //   ? await this.productThumbnailService.createProductThumbnail(
-      //       courseProductSnapshotThumbnailCreateParams,
-      //       tx,
-      //     )
-      //   : existProduct.lastSnapshot.thumbnail;
 
       const snapshot = await this.courseProductSnapshotRepository.create(
         {
           productId: existProduct.id,
           thumbnailId:
-            courseProductSnapshotThumbnailCreateParams?.id ??
+            courseProductSnapshotThumbnailUpdateParams?.id ??
             existProduct.lastSnapshot.thumbnail.id,
           id: createUuid(),
-          ...(courseProductSnapshotCreateParams ?? {
+          ...(courseProductSnapshotUpdateParams ?? {
             title: existProduct.lastSnapshot.title,
             description: existProduct.lastSnapshot.description,
           }),
@@ -355,7 +325,7 @@ export class CourseProductService {
       const content = await this.courseProductSnapshotContentRepository.create(
         {
           ...existProduct.lastSnapshot.content,
-          ...courseProductSnapshotContentCreateParams,
+          ...courseProductSnapshotContentUpdateParams,
           productSnapshotId: snapshot.id,
           id: createUuid(),
         },
@@ -365,7 +335,7 @@ export class CourseProductService {
         await this.courseProductSnapshotAnnouncementRepository.create(
           {
             ...existProduct.lastSnapshot.announcement,
-            ...courseProductSnapshotAnnouncementCreateParams,
+            ...courseProductSnapshotAnnouncementUpdateParams,
             productSnapshotId: snapshot.id,
             id: createUuid(),
           },
@@ -375,7 +345,7 @@ export class CourseProductService {
         await this.courseProductSnapshotRefundPolicyRepository.create(
           {
             ...existProduct.lastSnapshot.refundPolicy,
-            ...courseProductSnapshotRefundPolicyCreateParams,
+            ...courseProductSnapshotRefundPolicyUpdateParams,
             productSnapshotId: snapshot.id,
             id: createUuid(),
           },
@@ -383,14 +353,14 @@ export class CourseProductService {
         );
       const pricing = await this.courseProductSnapshotPricingRepository.create({
         ...existProduct.lastSnapshot.pricing,
-        ...courseProductSnapshotPricingCreateParams,
+        ...courseProductSnapshotPricingUpdateParams,
         productSnapshotId: snapshot.id,
         id: createUuid(),
       });
       const discount =
         await this.courseProductSnapshotDiscountRepository.create({
           ...existProduct.lastSnapshot.discount,
-          ...courseProductSnapshotDiscountCreateParams,
+          ...courseProductSnapshotDiscountUpdateParams,
           productSnapshotId: snapshot.id,
           id: createUuid(),
         });

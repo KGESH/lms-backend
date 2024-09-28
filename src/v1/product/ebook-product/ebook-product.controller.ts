@@ -268,16 +268,15 @@ export class EbookProductController {
     @TypedBody() body: UpdateEbookProductDto,
   ): Promise<EbookProductDto> {
     const updated = await this.ebookProductService.updateEbookProduct(
+      { ebookId },
       {
-        ebookId,
-      },
-      {
-        ebookProductSnapshotCreateParams: body.snapshot,
-        ebookProductSnapshotAnnouncementCreateParams: body.announcement,
-        ebookProductSnapshotContentCreateParams: body.content,
-        ebookProductSnapshotRefundPolicyCreateParams: body.refundPolicy,
-        ebookProductSnapshotPricingCreateParams: body.pricing,
-        ebookProductSnapshotDiscountCreateParams: body.discount
+        ebookProductSnapshotUpdateParams: body.snapshot,
+        ebookProductSnapshotThumbnailUpdateParams: body.thumbnail,
+        ebookProductSnapshotAnnouncementUpdateParams: body.announcement,
+        ebookProductSnapshotContentUpdateParams: body.content,
+        ebookProductSnapshotRefundPolicyUpdateParams: body.refundPolicy,
+        ebookProductSnapshotPricingUpdateParams: body.pricing,
+        ebookProductSnapshotDiscountUpdateParams: body.discount
           ? {
               ...body.discount,
               validFrom: date.toDateOrNull(body.discount.validFrom),
