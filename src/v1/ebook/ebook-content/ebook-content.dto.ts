@@ -29,3 +29,7 @@ export type EbookContentCreateDto = Pick<
   | 'metadata'
   | 'sequence'
 >;
+
+export type EbookContentUpdateDto = Partial<
+  Omit<EbookContentCreateDto, 'ebookId'>
+>;

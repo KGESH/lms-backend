@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { EbookContentRepository } from '@src/v1/ebook/ebook-content/ebook-content.repository';
 import {
   IEbookContent,
-  IEbookContentCreate,
-} from '@src/v1/ebook/ebook-content/ebook-content.interface';
+  IEbookContentCreate, IEbookContentUpdate
+} from "@src/v1/ebook/ebook-content/ebook-content.interface";
 import { TransactionClient } from '@src/infra/db/drizzle.types';
 import { EbookContentQueryRepository } from '@src/v1/ebook/ebook-content/ebook-content-query.repository';
 
@@ -23,7 +23,7 @@ export class EbookContentService {
 
   async updateEbookContent(
     where: Pick<IEbookContent, 'id'>,
-    params: IEbookContentCreate,
+    params: IEbookContentUpdate,
     tx?: TransactionClient,
   ): Promise<IEbookContent> {
     await this.ebookContentQueryRepository.findEbookContentOrThrow(where);

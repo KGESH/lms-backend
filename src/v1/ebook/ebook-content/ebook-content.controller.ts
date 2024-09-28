@@ -16,6 +16,7 @@ import { Uuid } from '@src/shared/types/primitive';
 import {
   EbookContentCreateDto,
   EbookContentDto,
+  EbookContentUpdateDto,
 } from '@src/v1/ebook/ebook-content/ebook-content.dto';
 import { ebookContentToDto } from '@src/shared/helpers/transofrm/ebook-content';
 import { EbookAccessGuard } from '@src/core/guards/ebook-access.guard';
@@ -156,7 +157,7 @@ export class EbookContentController {
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('ebookId') ebookId: Uuid,
     @TypedParam('id') id: Uuid,
-    @TypedBody() body: EbookContentCreateDto,
+    @TypedBody() body: EbookContentUpdateDto,
   ): Promise<EbookContentDto> {
     const ebookContent = await this.ebookContentService.updateEbookContent(
       { id },

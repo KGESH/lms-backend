@@ -3,6 +3,7 @@ import { DrizzleService } from '@src/infra/db/drizzle.service';
 import {
   IEbookContent,
   IEbookContentCreate,
+  IEbookContentUpdate,
 } from '@src/v1/ebook/ebook-content/ebook-content.interface';
 import { dbSchema } from '@src/infra/db/schema';
 import { eq } from 'drizzle-orm';
@@ -24,7 +25,7 @@ export class EbookContentRepository {
 
   async updateEbookContent(
     where: Pick<IEbookContent, 'id'>,
-    params: IEbookContentCreate,
+    params: IEbookContentUpdate,
     db = this.drizzle.db,
   ): Promise<IEbookContent> {
     const [updated] = await db
