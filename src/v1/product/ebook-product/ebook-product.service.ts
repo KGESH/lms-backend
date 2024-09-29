@@ -370,6 +370,7 @@ export class EbookProductService {
         .filter((ui) => !updateUiIds.includes(ui.id))
         .map((ui) => ({
           ...ui,
+          productSnapshotId: snapshot.id,
           id: createUuid(),
         }));
       const updatedUiParams = existUi
