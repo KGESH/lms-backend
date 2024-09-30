@@ -25,7 +25,9 @@
     "nestia:build": "NODE_ENV=development nestia swagger && NODE_ENV=development nestia sdk",
     "db:push:dev": "dotenv -e .env.development -- drizzle-kit push",
     "db:migrate:gen:dev": "dotenv -e .env.development -- drizzle-kit generate",
-    "db:seed:dev": "pnpm run nestia:build && pnpm run db:push:dev && dotenv -e .env.development -- ts-node drizzle.seed.ts"
+    "db:seed:dev": "pnpm run nestia:build && pnpm run db:push:dev && dotenv -e .env.development -- ts-node drizzle.seed.ts",
+    "db:snapshot:dev": "NODE_ENV=development ./db-snapshot.sh",
+    "db:snapshot:restore": "NODE_ENV=development ./db-restore.sh"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.621.0",

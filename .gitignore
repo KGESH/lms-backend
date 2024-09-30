@@ -68,3 +68,6 @@ swagger.json
 
 # npm package
 .npmrc
+
+# db snapshots
+.snaplet
