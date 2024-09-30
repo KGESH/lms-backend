@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { and, asc, desc, eq, ilike, sql } from 'drizzle-orm';
-import { IUser, IUserInfo } from '@src/v1/user/user.interface';
+import { IUser, IUserInfo, IUserRelations } from '@src/v1/user/user.interface';
 import { dbSchema } from '@src/infra/db/schema';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { OptionalPick } from '@src/shared/types/optional';
+import { assertUserWithoutPassword } from '@src/shared/helpers/assert/user';
 
 @Injectable()
 export class UserQueryRepository {
@@ -137,6 +138,28 @@ export class UserQueryRepository {
       pagination,
       totalCount: users[0]?.totalUserCount ?? 0,
       data: users,
+    };
+  }
+
+  async findUserRelationsById(
+    where: Pick<IUser, 'id'>,
+  ): Promise<IUserRelations | null> {
+    const userRelations = await this.drizzle.db.query.users.findFirst({
+      where: eq(dbSchema.users.id, where.id),
+      with: {
+        info: true,
+        accounts: true,
+      },
+    });
+
+    if (!userRelations?.info || !userRelations.accounts) {
+      return null;
+    }
+
+    return {
+      user: assertUserWithoutPassword(userRelations),
+      info: userRelations.info,
+      account: userRelations.accounts,
     };
   }
 }

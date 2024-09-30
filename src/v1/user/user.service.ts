@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from '@src/v1/user/user.repository';
 import {
   IUser,
   IUserInfo,
+  IUserRelations,
   IUserUpdate,
   IUserWithoutPassword,
 } from './user.interface';
@@ -45,6 +46,19 @@ export class UserService {
   ): Promise<IUserWithoutPassword | null> {
     const user = await this.userQueryRepository.findOne(query);
     return user ? assertUserWithoutPassword(user) : null;
+  }
+
+  async findUserRelationsByIdOrThrow(
+    where: Pick<IUser, 'id'>,
+  ): Promise<IUserRelations> {
+    const userRelations =
+      await this.userQueryRepository.findUserRelationsById(where);
+
+    if (!userRelations) {
+      throw new NotFoundException('User relations not found');
+    }
+
+    return userRelations;
   }
 
   async findUserByPhoneNumber(where: {

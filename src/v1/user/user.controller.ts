@@ -1,8 +1,8 @@
 import { Controller, Logger, UseGuards } from '@nestjs/common';
 import { UserService } from '@src/v1/user/user.service';
 import { TypedException, TypedHeaders, TypedRoute } from '@nestia/core';
-import { UserWithoutPasswordDto } from './user.dto';
-import { userToDto } from '@src/shared/helpers/transofrm/user';
+import { UserProfileDto } from './user.dto';
+import { userProfileToDto } from '@src/shared/helpers/transofrm/user';
 import { AuthHeaders } from '@src/v1/auth/auth.headers';
 import { SessionUser } from '@src/core/decorators/session-user.decorator';
 import { ISessionWithUser } from '@src/v1/auth/session.interface';
@@ -42,6 +42,10 @@ export class UserController {
     status: 401,
     description: 'Session user not found.',
   })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'user relations not found.',
+  })
   @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
     status: INVALID_LMS_SECRET,
     description: 'invalid LMS api secret',
@@ -49,8 +53,12 @@ export class UserController {
   async getCurrentUser(
     @TypedHeaders() headers: AuthHeaders,
     @SessionUser() session: ISessionWithUser,
-  ): Promise<UserWithoutPasswordDto> {
-    return userToDto(session.user);
+  ): Promise<UserProfileDto> {
+    const userRelations = await this.userService.findUserRelationsByIdOrThrow({
+      id: session.userId,
+    });
+
+    return userProfileToDto(userRelations);
   }
 
   /**

@@ -27,7 +27,7 @@ describe('UserController (e2e)', () => {
 
   describe('[GET Me]', () => {
     it('should be get current user', async () => {
-      const { user, userSession } = (
+      const { user, userSession, userAccount, userInfo } = (
         await seedUsers({ count: 1, role: 'user' }, drizzle.db)
       )[0];
 
@@ -43,8 +43,13 @@ describe('UserController (e2e)', () => {
         throw new Error(`assert - ${message}`);
       }
 
-      const currentUser = response.data;
-      expect(currentUser.email).toBe(user.email);
+      const me = response.data;
+      expect(me.user.email).toBe(user.email);
+      expect(me.info.name).toBe(userInfo.name);
+      expect(me.info.gender).toBe(userInfo.gender);
+      expect(me.info.phoneNumber).toBe(userInfo.phoneNumber);
+      expect(me.account.providerId).toBe(userAccount.providerId);
+      expect(me.account.providerType).toBe(userAccount.providerType);
     });
   });
 });

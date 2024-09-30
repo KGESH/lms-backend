@@ -1,4 +1,5 @@
 import {
+  AuthProvider,
   BirthDate,
   EMail,
   ISO8601,
@@ -33,6 +34,19 @@ export type UserInfoDto = {
   birthDate: BirthDate | null;
   connectingInformation: string | null;
   duplicationInformation: string | null;
+};
+
+export type UserAccountDto = {
+  id: Uuid;
+  userId: UserDto['id'];
+  providerId: string | null;
+  providerType: AuthProvider;
+};
+
+export type UserProfileDto = {
+  user: UserWithoutPasswordDto;
+  info: UserInfoDto;
+  account: UserAccountDto;
 };
 
 export type UserQuery = OptionalPick<UserDto, 'role' | 'displayName'> & {

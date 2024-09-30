@@ -74,3 +74,9 @@ export type IUserPasswordUpdate = NonNullableInfer<{
   currentPassword: IUser['password'];
   newPassword: IUser['password'];
 }>;
+
+export type IUserRelations = {
+  user: IUserWithoutPassword;
+  info: IUserInfo;
+  account: IUserAccount;
+};

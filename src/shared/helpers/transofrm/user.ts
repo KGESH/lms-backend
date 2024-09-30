@@ -1,5 +1,8 @@
-import { IUserWithoutPassword } from '@src/v1/user/user.interface';
-import { UserWithoutPasswordDto } from '@src/v1/user/user.dto';
+import {
+  IUserRelations,
+  IUserWithoutPassword,
+} from '@src/v1/user/user.interface';
+import { UserProfileDto, UserWithoutPasswordDto } from '@src/v1/user/user.dto';
 import * as date from '@src/shared/utils/date';
 
 export const userToDto = (
@@ -17,5 +20,15 @@ export const userToDto = (
     createdAt: date.toISOString(user.createdAt),
     updatedAt: date.toISOString(user.updatedAt),
     deletedAt: user.deletedAt ? date.toISOString(user.deletedAt) : null,
+  };
+};
+
+export const userProfileToDto = (
+  userRelations: IUserRelations,
+): UserProfileDto => {
+  return {
+    user: userToDto(userRelations.user),
+    info: userRelations.info,
+    account: userRelations.account,
   };
 };
