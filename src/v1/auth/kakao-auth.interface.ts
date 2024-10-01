@@ -10,10 +10,10 @@ export type IKakaoLogin = {
   providerId: string;
   name: string;
   email: EMail;
-  gender: Gender;
+  gender: Gender | null;
   phoneNumber: PhoneNumber;
-  birthDate: BirthDate;
-  birthdayType: BirthdayType;
+  birthDate: BirthDate | null;
+  birthdayType: BirthdayType | null;
   connectingInformation: string | null;
   duplicationInformation: string | null;
   image: string | null;

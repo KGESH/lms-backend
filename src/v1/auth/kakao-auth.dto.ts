@@ -10,9 +10,9 @@ export type KakaoLoginDto = {
   providerId: string;
   name: string;
   email: EMail;
-  gender: Gender;
-  birthDate: BirthDate;
-  birthdayType: BirthdayType;
+  gender: Gender | null;
+  birthDate: BirthDate | null;
+  birthdayType: BirthdayType | null;
   phoneNumber: PhoneNumber;
   connectingInformation: string | null;
   duplicationInformation: string | null;
