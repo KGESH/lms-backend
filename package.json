@@ -27,7 +27,8 @@
     "db:migrate:gen:dev": "dotenv -e .env.development -- drizzle-kit generate",
     "db:seed:dev": "pnpm run nestia:build && pnpm run db:push:dev && dotenv -e .env.development -- ts-node drizzle.seed.ts",
     "db:snapshot:dev": "NODE_ENV=development ./db-snapshot.sh",
-    "db:snapshot:restore": "NODE_ENV=development ./db-restore.sh"
+    "db:snapshot:restore:dev": "NODE_ENV=development ./db-restore.sh",
+    "db:snapshot:restore:stg": "NODE_ENV=stg ./db-restore.sh"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.621.0",
@@ -62,6 +63,7 @@
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",
+    "@snaplet/snapshot": "^0.93.2",
     "@types/express": "^4.17.17",
     "@types/jest": "^29.5.2",
     "@types/node": "^20.3.1",
