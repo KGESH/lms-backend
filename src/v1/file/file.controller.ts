@@ -104,18 +104,21 @@ export class FileController {
    * @tag file
    * @summary pre-signed URL 목록 생성.
    */
-  @TypedRoute.Get('/private/pre-signed/:key')
+  @TypedRoute.Get('/private/pre-signed/:fileId')
   @Roles('admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)
   async getPrivatePreSignedUrl(
     @TypedHeaders() headers: AuthHeaders,
-    @TypedParam('key') key: string,
+    @TypedParam('fileId') fileId: string,
   ): Promise<FilePreSignedUrlDto> {
-    const preSignedUrl = await this.s3Service.getPreSignedUrl(key, 'private');
+    const preSignedUrl = await this.s3Service.getPreSignedUrl(
+      fileId,
+      'private',
+    );
 
     return {
-      fileId: key,
-      filename: `${key}`,
+      fileId,
+      filename: fileId,
       url: preSignedUrl,
     };
   }
@@ -125,16 +128,17 @@ export class FileController {
    *
    * @tag file
    * @summary pre-signed URL 생성.
+   * @deprecated Use createPreSignedUrls instead.
    */
-  @TypedRoute.Post('/pre-signed/:key')
+  @TypedRoute.Post('/pre-signed/:fileId')
   @Roles('user', 'admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)
   async createPreSignedUrl(
     @TypedHeaders() headers: AuthHeaders,
-    @TypedParam('key') key: string,
+    @TypedParam('fileId') fileId: string,
   ): Promise<PreSignedUrlDto> {
-    const url = await this.s3Service.createPreSignedUrl(key, 'public');
-    this.logger.debug(`Created pre-signed URL for key ${key}: ${url}`);
+    const url = await this.s3Service.createPreSignedUrl(fileId, 'public');
+    this.logger.debug(`Created pre-signed URL for fileId ${fileId}: ${url}`);
     return { url };
   }
 }

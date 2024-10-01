@@ -20,7 +20,7 @@ export class S3Service {
   ) {}
 
   async getPreSignedUrl(
-    key: string,
+    fileId: string,
     access: 'public' | 'private',
   ): Promise<string> {
     const command = new GetObjectCommand({
@@ -28,7 +28,7 @@ export class S3Service {
         access === 'public'
           ? this.configsService.env.AWS_S3_BUCKET
           : this.configsService.env.AWS_S3_PRIVATE_BUCKET,
-      Key: key,
+      Key: fileId,
     });
 
     const url = await getSignedUrl(this.s3, command, {
@@ -39,7 +39,7 @@ export class S3Service {
   }
 
   async createPreSignedUrl(
-    key: string,
+    fileId: string,
     access: 'public' | 'private' = 'public',
   ): Promise<string> {
     const command = new PutObjectCommand({
@@ -47,7 +47,7 @@ export class S3Service {
         access === 'public'
           ? this.configsService.env.AWS_S3_BUCKET
           : this.configsService.env.AWS_S3_PRIVATE_BUCKET,
-      Key: key,
+      Key: fileId,
     });
 
     const url = await getSignedUrl(this.s3, command, {
@@ -57,9 +57,9 @@ export class S3Service {
     return url;
   }
 
-  async upload(key: string, data: any) {
+  async upload(fileId: string, data: any) {
     try {
-      const url = await this.createPreSignedUrl(key);
+      const url = await this.createPreSignedUrl(fileId);
       return await this.http.put(url, data);
     } catch (e) {
       this.logger.error(e);
