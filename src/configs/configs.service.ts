@@ -35,8 +35,11 @@ export class ConfigsService {
       AWS_S3_ACCESS_KEY: process.env.AWS_S3_ACCESS_KEY,
       AWS_S3_SECRET: process.env.AWS_S3_SECRET,
       AWS_S3_BUCKET: process.env.AWS_S3_BUCKET,
+      AWS_S3_PRIVATE_BUCKET: process.env.AWS_S3_PRIVATE_BUCKET,
       AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS:
         +`${process.env.AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS}`,
+      AWS_S3_PRIVATE_PRESIGNED_URL_EXPIRE_SECONDS:
+        +`${process.env.AWS_S3_PRIVATE_PRESIGNED_URL_EXPIRE_SECONDS}`,
       PORTONE_API_SECRET: process.env.PORTONE_API_SECRET,
       PORTONE_API_BASE_URL: process.env.PORTONE_API_BASE_URL,
       SMS_API_KEY: process.env.SMS_API_KEY,
@@ -67,8 +70,12 @@ export class ConfigsService {
       AWS_S3_ACCESS_KEY: this.dotEnv.get('AWS_S3_ACCESS_KEY'),
       AWS_S3_SECRET: this.dotEnv.get('AWS_S3_SECRET'),
       AWS_S3_BUCKET: this.dotEnv.get('AWS_S3_BUCKET'),
+      AWS_S3_PRIVATE_BUCKET: this.dotEnv.get('AWS_S3_PRIVATE_BUCKET'),
       AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS: +this.dotEnv.get(
         'AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS',
+      ),
+      AWS_S3_PRIVATE_PRESIGNED_URL_EXPIRE_SECONDS: +this.dotEnv.get(
+        'AWS_S3_PRIVATE_PRESIGNED_URL_EXPIRE_SECONDS',
       ),
       PORTONE_API_SECRET: this.dotEnv.get('PORTONE_API_SECRET'),
       PORTONE_API_BASE_URL: this.dotEnv.get('PORTONE_API_BASE_URL'),

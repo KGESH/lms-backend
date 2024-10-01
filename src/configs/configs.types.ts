@@ -17,6 +17,8 @@ export type IAwsConfigs = {
   AWS_S3_SECRET: string;
   AWS_S3_BUCKET: string;
   AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS: number;
+  AWS_S3_PRIVATE_PRESIGNED_URL_EXPIRE_SECONDS: number;
+  AWS_S3_PRIVATE_BUCKET: string;
 };
 
 export type IPortoneConfigs = {
