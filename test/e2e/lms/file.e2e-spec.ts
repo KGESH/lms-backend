@@ -10,6 +10,7 @@ import {
   CreateFileDto,
   CreatePreSignedUrlDto,
 } from '../../../src/v1/file/file.dto';
+import { promises as fs } from 'fs';
 
 describe('FileController (e2e)', () => {
   let host: Uri;
@@ -31,6 +32,68 @@ describe('FileController (e2e)', () => {
   });
 
   describe('[Create pre signed Url]', () => {
+    it('should be create many private signed url success', async () => {
+      const pdfPath = process.cwd() + '/test/e2e/sample.pdf';
+      console.log('pdfPath', pdfPath);
+      const pdf = await fs.readFile(pdfPath);
+      const blob = new Blob([Uint8Array.from(pdf)], {
+        type: 'application/pdf',
+      });
+
+      const [fileOwner] = await seedUsers(
+        { count: 1, role: 'admin' },
+        drizzle.db,
+      );
+      const fileId = '5a617cff-93dc-4f32-9030-fbbb2ce327f0';
+      const createDtos: CreatePreSignedUrlDto[] = [
+        {
+          fileId: fileId,
+          filename: fileId,
+        },
+      ];
+
+      const response =
+        await FileAPI.$private.pre_signed.createPrivatePreSignedUrls(
+          {
+            host,
+            headers: { LmsSecret, UserSessionId: fileOwner.userSession.id },
+          },
+          createDtos,
+        );
+
+      if (!response.success) {
+        const message = JSON.stringify(response.data, null, 4);
+        throw new Error(`[assert] ${message}`);
+      }
+
+      const [preSignedUrl] = response.data;
+      expect(preSignedUrl.fileId).toEqual(fileId);
+      console.log(preSignedUrl.url);
+
+      const uploadResponse = await fetch(preSignedUrl.url, {
+        method: 'PUT',
+        body: blob,
+      });
+      expect(uploadResponse.ok).toBeTruthy();
+
+      const getResponse =
+        await FileAPI.$private.pre_signed.getPrivatePreSignedUrl(
+          {
+            host,
+            headers: { LmsSecret, UserSessionId: fileOwner.userSession.id },
+          },
+          fileId,
+        );
+      if (!getResponse.success) {
+        const message = JSON.stringify(getResponse.data, null, 4);
+        throw new Error(`[assert] ${message}`);
+      }
+
+      const getPreSignedUrl = getResponse.data;
+      expect(getPreSignedUrl.fileId).toEqual(fileId);
+      console.log(getPreSignedUrl);
+    });
+
     it('should be create many pre signed url success', async () => {
       const [fileOwner] = await seedUsers(
         { count: 1, role: 'user' },

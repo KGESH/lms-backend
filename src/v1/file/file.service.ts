@@ -18,9 +18,12 @@ export class FileService {
 
   async createPreSignedUrls(
     params: IPreSignedUrlCreate[],
+    access: 'public' | 'private' = 'public',
   ): Promise<IPreSignedUrl[]> {
     const urls = await Promise.all(
-      params.map((param) => this.s3Service.createPreSignedUrl(param.filename)),
+      params.map((param) =>
+        this.s3Service.createPreSignedUrl(param.filename, access),
+      ),
     );
 
     // Aggregate the pre-signed URLs with the input params

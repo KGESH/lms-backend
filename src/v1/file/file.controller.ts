@@ -60,6 +60,7 @@ export class FileController {
         ...params,
         id: params.fileId,
       })),
+      'public',
     );
 
     return preSignedUrls.map((preSignedUrl) => ({
@@ -70,19 +71,69 @@ export class FileController {
   }
 
   /**
+   * 비공개 파일 업로드를 위한 pre-signed URL 목록을 생성합니다.
+   *
+   * @tag file
+   * @summary pre-signed URL 목록 생성.
+   */
+  @TypedRoute.Post('/private/pre-signed')
+  @Roles('admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
+  async createPrivatePreSignedUrls(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedBody() body: CreatePreSignedUrlDto[],
+  ): Promise<FilePreSignedUrlDto[]> {
+    const preSignedUrls = await this.fileService.createPreSignedUrls(
+      body.map((params) => ({
+        ...params,
+        id: params.fileId,
+      })),
+      'private',
+    );
+
+    return preSignedUrls.map((preSignedUrl) => ({
+      fileId: preSignedUrl.id,
+      filename: preSignedUrl.filename,
+      url: preSignedUrl.url,
+    }));
+  }
+
+  /**
+   * 비공개 파일 업로드를 위한 pre-signed URL 목록을 생성합니다.
+   *
+   * @tag file
+   * @summary pre-signed URL 목록 생성.
+   */
+  @TypedRoute.Get('/private/pre-signed/:key')
+  @Roles('admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
+  async getPrivatePreSignedUrl(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedParam('key') key: string,
+  ): Promise<FilePreSignedUrlDto> {
+    const preSignedUrl = await this.s3Service.getPreSignedUrl(key, 'private');
+
+    return {
+      fileId: key,
+      filename: `${key}`,
+      url: preSignedUrl,
+    };
+  }
+
+  /**
    * 파일 업로드를 위한 pre-signed URL을 생성합니다.
    *
    * @tag file
    * @summary pre-signed URL 생성.
    */
-  @TypedRoute.Post('/:key/pre-signed')
+  @TypedRoute.Post('/pre-signed/:key')
   @Roles('user', 'admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)
   async createPreSignedUrl(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('key') key: string,
   ): Promise<PreSignedUrlDto> {
-    const url = await this.s3Service.createPreSignedUrl(key);
+    const url = await this.s3Service.createPreSignedUrl(key, 'public');
     this.logger.debug(`Created pre-signed URL for key ${key}: ${url}`);
     return { url };
   }
