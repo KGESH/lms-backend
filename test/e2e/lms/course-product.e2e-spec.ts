@@ -227,6 +227,7 @@ describe('CourseProductController (e2e)', () => {
         snapshot: {
           title: 'updated product title',
           description: 'updated description',
+          availableDays: 360,
         },
         thumbnail: {
           id: file.id,
@@ -291,6 +292,7 @@ describe('CourseProductController (e2e)', () => {
       const updated = response.data;
       expect(updated.title).toEqual('updated product title');
       expect(updated.description).toEqual('updated description');
+      expect(updated.availableDays).toEqual(360);
       expect(updated.pricing.amount).toEqual('10000');
       expect(updated.announcement.richTextContent).toEqual(
         'updated announcement',

@@ -171,6 +171,7 @@ describe('EbookProductController (e2e)', () => {
         snapshot: {
           title: 'updated product title',
           description: 'updated description',
+          availableDays: null,
         },
         pricing: {
           amount: '10000',

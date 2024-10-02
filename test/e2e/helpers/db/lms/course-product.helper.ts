@@ -9,7 +9,7 @@ import {
 import {
   IProductSnapshot,
   IProductSnapshotCreate,
-} from '../../../../../src/v1/product/common/snapshot/conrse-product-snapshot.interface';
+} from '../../../../../src/v1/product/common/snapshot/product-snapshot.interface';
 import {
   IProductSnapshotPricing,
   IProductSnapshotPricingCreate,
@@ -203,6 +203,7 @@ export const createRandomCourseProduct = async (
       productId: product.id,
       title: `테스트 온라인 강의 ${index ?? ''}`,
       description: '테스트 온라인 강의 상품입니다.',
+      availableDays: null,
     } satisfies IProductSnapshotCreate,
     db,
   );
@@ -613,6 +614,7 @@ export const seedPgFirstCourseProduct = async (
       productId: product.id,
       title: `대한민국 경제시장 40년 압축 강의`,
       description: '대한민국 경제시장 40년 압축 강의 상품입니다.',
+      availableDays: null,
     } satisfies IProductSnapshotCreate,
     db,
   );
@@ -686,6 +688,7 @@ export const seedPgSecondCourseProduct = async (
       productId: product.id,
       title: `모르면 큰일나는 경제상식 20가지 요약본`,
       description: '모르면 큰일나는 경제상식 20가지 요약본 상품입니다.',
+      availableDays: null,
     } satisfies IProductSnapshotCreate,
     db,
   );
@@ -759,6 +762,7 @@ export const seedPgThirdCourseProduct = async (
       productId: product.id,
       title: `김멘사 경제 분석`,
       description: '김멘사 경제 분석 상품입니다.',
+      availableDays: null,
     } satisfies IProductSnapshotCreate,
     db,
   );
