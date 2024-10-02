@@ -1,6 +1,6 @@
 import { Uuid } from '@src/shared/types/primitive';
 import { Optional } from '@src/shared/types/optional';
-import { IProductSnapshot } from '@src/v1/product/common/snapshot/conrse-product-snapshot.interface';
+import { IProductSnapshot } from '@src/v1/product/common/snapshot/product-snapshot.interface';
 import { IProductSnapshotContent } from '@src/v1/product/common/snapshot/content/product-snapshot-content.interface';
 import { IProductSnapshotDiscount } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
 import { IProductSnapshotPricing } from '@src/v1/product/common/snapshot/pricing/product-snapshot-pricing.interface';
@@ -13,6 +13,7 @@ export type IEbookOrder = {
   id: Uuid;
   orderId: Uuid;
   productSnapshotId: Uuid;
+  validUntil: Date | null;
 };
 
 export type IEbookOrderCreate = Optional<IEbookOrder, 'id'>;
@@ -25,14 +26,15 @@ export type IEbookOrderRelations = IOrder & {
       announcement: IProductSnapshotContent;
       refundPolicy: IProductSnapshotContent;
       pricing: IProductSnapshotPricing;
-      discount: IProductSnapshotDiscount | null;
+      discount: IProductSnapshotDiscount;
       uiContents: IProductSnapshotUiContent[];
     };
   };
 };
 
 export type IEbookOrderWithRelations = IOrder & {
-  ebook: IEbookWithRelations & {
-    thumbnail: IProductThumbnail;
-  };
+  ebook: IEbookWithRelations &
+    Pick<IEbookOrder, 'validUntil'> & {
+      thumbnail: IProductThumbnail;
+    };
 };

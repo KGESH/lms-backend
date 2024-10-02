@@ -7,7 +7,7 @@ import {
   OrderCoursePurchasedDto,
   OrderEbookPurchasedDto,
 } from '@src/v1/order/order.dto';
-import { toISOString } from '@src/shared/utils/date';
+import { toISOString, toIsoStringOrNull } from '@src/shared/utils/date';
 import { Uuid } from '@src/shared/types/primitive';
 import { OrderService } from '@src/v1/order/order.service';
 import { CreateOrderRefundDto, OrderRefundDto } from './order-refund.dto';
@@ -174,15 +174,14 @@ export class OrderController {
       product: {
         ebook: ebookRelationsToDto(ebookProduct.ebook),
         ebookId: ebookProduct.ebookId,
+        availableDays: ebookProduct.lastSnapshot.availableDays,
         snapshotId: ebookProduct.lastSnapshot.id,
         title: ebookProduct.lastSnapshot.title,
         description: ebookProduct.lastSnapshot.description,
         thumbnailUrl: ebookProduct.lastSnapshot.thumbnail.url,
         createdAt: toISOString(ebookProduct.lastSnapshot.createdAt),
         updatedAt: toISOString(ebookProduct.lastSnapshot.updatedAt),
-        deletedAt: ebookProduct.lastSnapshot.deletedAt
-          ? toISOString(ebookProduct.lastSnapshot.deletedAt)
-          : null,
+        deletedAt: toIsoStringOrNull(ebookProduct.lastSnapshot.deletedAt),
       },
     };
   }
@@ -213,10 +212,11 @@ export class OrderController {
 
     return {
       ...order,
-      paidAt: order.paidAt ? date.toISOString(order.paidAt) : null,
+      paidAt: date.toIsoStringOrNull(order.paidAt),
       productType: 'course',
       product: {
         course: courseRelationsToDto(courseProduct.course),
+        availableDays: courseProduct.lastSnapshot.availableDays,
         courseId: courseProduct.courseId,
         thumbnailUrl: courseProduct.lastSnapshot.thumbnail.url,
         snapshotId: courseProduct.lastSnapshot.id,
@@ -224,9 +224,7 @@ export class OrderController {
         description: courseProduct.lastSnapshot.description,
         createdAt: toISOString(courseProduct.lastSnapshot.createdAt),
         updatedAt: toISOString(courseProduct.lastSnapshot.updatedAt),
-        deletedAt: courseProduct.lastSnapshot.deletedAt
-          ? toISOString(courseProduct.lastSnapshot.deletedAt)
-          : null,
+        deletedAt: toIsoStringOrNull(courseProduct.lastSnapshot.deletedAt),
       },
     };
   }

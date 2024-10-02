@@ -8,7 +8,6 @@ import { ProductThumbnailDto } from '@src/v1/product/common/snapshot/thumbnail/p
 
 export type CreateProductContentDto = {
   thumbnail: Pick<ProductThumbnailDto, 'id'>;
-  // thumbnail: Pick<ProductThumbnailDto, 'id' | 'url' | 'metadata' | 'type'>;
   content: Pick<ProductSnapshotContentDto, 'richTextContent'>;
   announcement: Pick<ProductSnapshotAnnouncementDto, 'richTextContent'>;
   refundPolicy: Pick<ProductSnapshotRefundPolicyDto, 'richTextContent'>;

@@ -44,6 +44,10 @@ const NESTIA_CONFIG: INestiaConfig = {
         url: `http://h4gwg4kkw4kww80o8cc8k0s8.118.36.207.199.sslip.io`,
         description: 'Dev Server',
       },
+      {
+        url: `https://api.galglmoney.com`,
+        description: 'Staging Server',
+      },
     ],
     beautify: true,
   },

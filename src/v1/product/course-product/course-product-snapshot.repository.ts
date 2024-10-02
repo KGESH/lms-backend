@@ -6,7 +6,7 @@ import { TransactionClient } from '@src/infra/db/drizzle.types';
 import {
   IProductSnapshot,
   IProductSnapshotCreate,
-} from '@src/v1/product/common/snapshot/conrse-product-snapshot.interface';
+} from '@src/v1/product/common/snapshot/product-snapshot.interface';
 import * as date from '@src/shared/utils/date';
 import * as typia from 'typia';
 

@@ -9,7 +9,7 @@ import { CourseProductSnapshotDiscountRepository } from '@src/v1/product/course-
 import { CourseProductSnapshotRepository } from '@src/v1/product/course-product/course-product-snapshot.repository';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { CourseProductQueryRepository } from '@src/v1/product/course-product/course-product-query.repository';
-import { IProductSnapshotCreate } from '@src/v1/product/common/snapshot/conrse-product-snapshot.interface';
+import { IProductSnapshotCreate } from '@src/v1/product/common/snapshot/product-snapshot.interface';
 import { IProductSnapshotPricingCreate } from '@src/v1/product/common/snapshot/pricing/product-snapshot-pricing.interface';
 import { IProductSnapshotDiscountCreate } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
 import {
@@ -318,6 +318,7 @@ export class CourseProductService {
           ...(courseProductSnapshotUpdateParams ?? {
             title: existProduct.lastSnapshot.title,
             description: existProduct.lastSnapshot.description,
+            availableDays: existProduct.lastSnapshot.availableDays,
           }),
         },
         tx,

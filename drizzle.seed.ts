@@ -68,7 +68,7 @@ async function seed() {
 
   // Seed data
   try {
-    await seedCourseCategoriesWithChildren({ count: 3 }, db);
+    // await seedCourseCategoriesWithChildren({ count: 3 }, db);
     await seedUiRepeatTimer({ count: 2 }, db, '/');
     await seedCarouselReview({ count: 4 }, db, '/');
     await seedCarouselMainBanner({ count: 1 }, db, '/');
@@ -104,9 +104,9 @@ async function seed() {
     await seedNavbarCategories(db);
     const { freeCategory, discussionCategory, profitCertificationCategory } =
       await seedCommunityCategories(db);
-    await seedPosts({ count: 1, category: freeCategory }, db);
-    await seedPosts({ count: 1, category: discussionCategory }, db);
-    await seedPosts({ count: 1, category: profitCertificationCategory }, db);
+    // await seedPosts({ count: 1, category: freeCategory }, db);
+    // await seedPosts({ count: 1, category: discussionCategory }, db);
+    // await seedPosts({ count: 1, category: profitCertificationCategory }, db);
     // await seedCourseProducts({ count: 3 }, db);
     // await seedCourseReviews({ count: 3 }, db);
     // await seedCourseOrders({ count: 3 }, db);

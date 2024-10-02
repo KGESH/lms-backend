@@ -16,23 +16,20 @@ export const ebookProductToDto = (
     title: product.lastSnapshot.title,
     description: product.lastSnapshot.description,
     thumbnailUrl: product.lastSnapshot.thumbnail.url,
+    availableDays: product.lastSnapshot.availableDays,
     createdAt: date.toISOString(product.lastSnapshot.createdAt),
     updatedAt: date.toISOString(product.lastSnapshot.updatedAt),
-    deletedAt: product.lastSnapshot.deletedAt
-      ? date.toISOString(product.lastSnapshot.deletedAt)
-      : null,
+    deletedAt: date.toIsoStringOrNull(product.lastSnapshot.deletedAt),
     announcement: product.lastSnapshot.announcement,
     content: product.lastSnapshot.content,
     refundPolicy: product.lastSnapshot.refundPolicy,
     pricing: product.lastSnapshot.pricing,
     discount: {
       ...product.lastSnapshot.discount,
-      validFrom: product.lastSnapshot.discount?.validFrom
-        ? date.toISOString(product.lastSnapshot.discount.validFrom)
-        : null,
-      validTo: product.lastSnapshot.discount?.validTo
-        ? date.toISOString(product.lastSnapshot.discount.validTo)
-        : null,
+      validFrom: date.toIsoStringOrNull(
+        product.lastSnapshot.discount.validFrom,
+      ),
+      validTo: date.toIsoStringOrNull(product.lastSnapshot.discount.validTo),
     },
     uiContents: product.lastSnapshot.uiContents,
     ebook: ebookRelationsToDto(product.ebook),
@@ -51,20 +48,17 @@ export const ebookProductWithPricingToDto = (
     title: product.lastSnapshot.title,
     description: product.lastSnapshot.description,
     thumbnailUrl: product.lastSnapshot.thumbnail.url,
+    availableDays: product.lastSnapshot.availableDays,
     createdAt: date.toISOString(product.lastSnapshot.createdAt),
     updatedAt: date.toISOString(product.lastSnapshot.updatedAt),
-    deletedAt: product.lastSnapshot.deletedAt
-      ? date.toISOString(product.lastSnapshot.deletedAt)
-      : null,
+    deletedAt: date.toIsoStringOrNull(product.lastSnapshot.deletedAt),
     pricing: product.lastSnapshot.pricing,
     discount: {
       ...product.lastSnapshot.discount,
-      validFrom: product.lastSnapshot.discount.validFrom
-        ? date.toISOString(product.lastSnapshot.discount.validFrom)
-        : null,
-      validTo: product.lastSnapshot.discount.validTo
-        ? date.toISOString(product.lastSnapshot.discount.validTo)
-        : null,
+      validFrom: date.toIsoStringOrNull(
+        product.lastSnapshot.discount.validFrom,
+      ),
+      validTo: date.toIsoStringOrNull(product.lastSnapshot.discount.validTo),
     },
     ebook: ebookRelationsToDto(product.ebook),
   };

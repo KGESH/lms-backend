@@ -8,7 +8,7 @@ import {
 import {
   IProductSnapshot,
   IProductSnapshotCreate,
-} from '../../../../../src/v1/product/common/snapshot/conrse-product-snapshot.interface';
+} from '@src/v1/product/common/snapshot/product-snapshot.interface';
 import {
   IProductSnapshotPricing,
   IProductSnapshotPricingCreate,

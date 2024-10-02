@@ -8,7 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "pnpm run nestia:build && NODE_ENV=development nest start",
+    "start": "NODE_ENV=development nest start",
     "start:dev": "pnpm run nestia:build && NODE_ENV=development nest start --watch",
     "start:debug": "NODE_ENV=development nest start --debug --watch",
     "start:prod": "NODE_ENV=production node dist/main",
@@ -18,7 +18,7 @@
     "test:cov": "NODE_ENV=test jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "pnpm run nestia:build && NODE_ENV=test jest --config test/e2e/jest-e2e.json",
-    "test:e2e:watch": "pnpm run nestia:build && NODE_ENV=test jest --config test/e2e/jest-e2e.json --watch",
+    "test:e2e:watch": "NODE_ENV=test jest --config test/e2e/jest-e2e.json --watch",
     "prepare": "ts-patch install && typia patch",
     "nestia:build:sdk:prod": "NODE_ENV=production nestia sdk",
     "nestia:swagger": "NODE_ENV=development nestia swagger",

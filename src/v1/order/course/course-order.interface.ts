@@ -1,19 +1,18 @@
 import { Uuid } from '@src/shared/types/primitive';
 import { Optional } from '@src/shared/types/optional';
-import { IProductSnapshot } from '@src/v1/product/common/snapshot/conrse-product-snapshot.interface';
+import { IProductSnapshot } from '@src/v1/product/common/snapshot/product-snapshot.interface';
 import { IProductSnapshotContent } from '@src/v1/product/common/snapshot/content/product-snapshot-content.interface';
 import { IProductSnapshotDiscount } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
 import { IProductSnapshotPricing } from '@src/v1/product/common/snapshot/pricing/product-snapshot-pricing.interface';
 import { IOrder } from '@src/v1/order/order.interface';
 import { ICourseWithRelations } from '@src/v1/course/course-with-relations.interface';
-import { ICourseProduct } from '@src/v1/product/course-product/course-product.interface';
-import { ICourseProductWithPricing } from '@src/v1/product/course-product/course-product-relations.interface';
 import { IProductThumbnail } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
 
 export type ICourseOrder = {
   id: Uuid;
   orderId: Uuid;
   productSnapshotId: Uuid;
+  validUntil: Date | null;
 };
 
 export type ICourseOrderCreate = Optional<ICourseOrder, 'id'>;
@@ -32,7 +31,8 @@ export type ICourseOrderRelations = IOrder & {
 };
 
 export type ICourseOrderWithRelations = IOrder & {
-  course: ICourseWithRelations & {
-    thumbnail: IProductThumbnail;
-  };
+  course: ICourseWithRelations &
+    Pick<ICourseOrder, 'validUntil'> & {
+      thumbnail: IProductThumbnail;
+    };
 };

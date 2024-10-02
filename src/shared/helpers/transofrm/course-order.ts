@@ -1,9 +1,5 @@
-import {
-  ICourseOrderRelations,
-  ICourseOrderWithRelations,
-} from '@src/v1/order/course/course-order.interface';
-import { OrderBaseDto, OrderCourseDto } from '@src/v1/order/order.dto';
-import * as typia from 'typia';
+import { ICourseOrderWithRelations } from '@src/v1/order/course/course-order.interface';
+import { OrderBaseDto } from '@src/v1/order/order.dto';
 import * as date from '@src/shared/utils/date';
 import { CourseOrderDto } from '@src/v1/order/course/course-order.dto';
 import { IOrder } from '@src/v1/order/order.interface';
@@ -15,60 +11,8 @@ export const orderToDto = (order: IOrder): OrderBaseDto => ({
   title: order.title,
   description: order.description,
   amount: order.amount,
-  paidAt: order.paidAt ? date.toISOString(order.paidAt) : null,
+  paidAt: date.toIsoStringOrNull(order.paidAt),
 });
-
-export const courseOrderToDto = (courseOrder: unknown): OrderCourseDto => {
-  const order = courseOrder as ICourseOrderRelations;
-  return typia.assert<OrderCourseDto>({
-    id: order.id,
-    userId: order.userId,
-    productType: 'course',
-    title: order.title,
-    description: order.description,
-    product: {
-      courseId: order.productOrder.productSnapshot.courseId,
-      snapshotId: order.productOrder.productSnapshot.id,
-      title: order.productOrder.productSnapshot.title,
-      description: order.productOrder.productSnapshot.description,
-      announcement: {
-        ...order.productOrder.productSnapshot.announcement,
-      },
-      refundPolicy: {
-        ...order.productOrder.productSnapshot.refundPolicy,
-      },
-      content: {
-        ...order.productOrder.productSnapshot.content,
-      },
-      pricing: {
-        ...order.productOrder.productSnapshot.pricing,
-      },
-      discount: order.productOrder.productSnapshot.discount
-        ? {
-            ...order.productOrder.productSnapshot.discount,
-            validTo: order.productOrder.productSnapshot.discount.validTo
-              ? date.toISOString(
-                  order.productOrder.productSnapshot.discount.validTo,
-                )
-              : null,
-            validFrom: order.productOrder.productSnapshot.discount.validFrom
-              ? date.toISOString(
-                  order.productOrder.productSnapshot.discount.validFrom,
-                )
-              : null,
-          }
-        : null,
-      createdAt: date.toISOString(order.productOrder.productSnapshot.createdAt),
-      updatedAt: date.toISOString(order.productOrder.productSnapshot.updatedAt),
-      deletedAt: order.productOrder.productSnapshot.deletedAt
-        ? date.toISOString(order.productOrder.productSnapshot.deletedAt)
-        : null,
-    },
-    paymentMethod: order.paymentMethod,
-    amount: order.amount,
-    paidAt: order.paidAt ? date.toISOString(order.paidAt) : null,
-  });
-};
 
 export const courseOrderRelationsToDto = (
   courseOrderRelations: ICourseOrderWithRelations,
@@ -80,15 +24,17 @@ export const courseOrderRelationsToDto = (
     title: courseOrderRelations.title,
     description: courseOrderRelations.description,
     paymentMethod: courseOrderRelations.paymentMethod,
-    paidAt: courseOrderRelations.paidAt
-      ? date.toISOString(courseOrderRelations.paidAt)
-      : null,
+    paidAt: date.toIsoStringOrNull(courseOrderRelations.paidAt),
+
     course: {
       id: courseOrderRelations.course.id,
       title: courseOrderRelations.course.title,
       teacherId: courseOrderRelations.course.teacherId,
       categoryId: courseOrderRelations.course.categoryId,
       description: courseOrderRelations.course.description,
+      validUntil: date.toIsoStringOrNull(
+        courseOrderRelations.course.validUntil,
+      ),
       createdAt: date.toISOString(courseOrderRelations.course.createdAt),
       updatedAt: date.toISOString(courseOrderRelations.course.updatedAt),
       category: courseOrderRelations.course.category,
@@ -103,23 +49,18 @@ export const courseOrderRelationsToDto = (
         userId: courseOrderRelations.course.teacher.userId,
         account: {
           ...courseOrderRelations.course.teacher.account,
-          emailVerified: courseOrderRelations.course.teacher.account
-            .emailVerified
-            ? date.toISOString(
-                courseOrderRelations.course.teacher.account.emailVerified,
-              )
-            : null,
+          emailVerified: date.toIsoStringOrNull(
+            courseOrderRelations.course.teacher.account.emailVerified,
+          ),
           createdAt: date.toISOString(
             courseOrderRelations.course.teacher.account.createdAt,
           ),
           updatedAt: date.toISOString(
             courseOrderRelations.course.teacher.account.updatedAt,
           ),
-          deletedAt: courseOrderRelations.course.teacher.account.deletedAt
-            ? date.toISOString(
-                courseOrderRelations.course.teacher.account.deletedAt,
-              )
-            : null,
+          deletedAt: date.toIsoStringOrNull(
+            courseOrderRelations.course.teacher.account.deletedAt,
+          ),
         },
       },
     },

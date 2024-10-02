@@ -199,6 +199,7 @@ export class CourseProductController {
       courseProductSnapshotCreateParams: {
         title: body.title,
         description: body.description,
+        availableDays: body.availableDays,
       },
       courseProductSnapshotContentCreateParams: {
         richTextContent: body.content.richTextContent,

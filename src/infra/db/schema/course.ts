@@ -99,6 +99,7 @@ export const courseProductSnapshots = pgTable('course_product_snapshots', {
     .references(() => files.id),
   title: text('title').notNull(),
   description: text('description'),
+  availableDays: integer('available_days'),
   createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
     .notNull()
     .defaultNow(),

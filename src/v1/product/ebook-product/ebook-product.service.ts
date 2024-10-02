@@ -9,7 +9,7 @@ import { EbookProductSnapshotDiscountRepository } from '@src/v1/product/ebook-pr
 import { EbookProductSnapshotRepository } from '@src/v1/product/ebook-product/ebook-product-snapshot.repository';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { EbookProductQueryRepository } from '@src/v1/product/ebook-product/ebook-product-query.repository';
-import { IProductSnapshotCreate } from '@src/v1/product/common/snapshot/conrse-product-snapshot.interface';
+import { IProductSnapshotCreate } from '@src/v1/product/common/snapshot/product-snapshot.interface';
 import { IProductSnapshotPricingCreate } from '@src/v1/product/common/snapshot/pricing/product-snapshot-pricing.interface';
 import { IProductSnapshotDiscountCreate } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
 import {
@@ -309,6 +309,7 @@ export class EbookProductService {
           ...(ebookProductSnapshotUpdateParams ?? {
             title: existProduct.lastSnapshot.title,
             description: existProduct.lastSnapshot.description,
+            availableDays: existProduct.lastSnapshot.availableDays,
           }),
         },
         tx,

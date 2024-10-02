@@ -181,106 +181,6 @@ export class CourseOrderPurchaseService {
     });
   }
 
-  // private _verifyCourseCouponCriteriaOrThrow(
-  //   product: ICourseProductWithPricing,
-  //   coupon: Pick<
-  //     ICouponTicketRelations,
-  //     | 'couponAllCriteria'
-  //     | 'couponCategoryCriteria'
-  //     | 'couponTeacherCriteria'
-  //     | 'couponCourseCriteria'
-  //   >,
-  // ): void {
-  //   const criteria: ICouponCriteria[] = [
-  //     ...coupon.couponAllCriteria,
-  //     ...coupon.couponCategoryCriteria,
-  //     ...coupon.couponTeacherCriteria,
-  //     ...coupon.couponCourseCriteria,
-  //   ];
-  //
-  //   // if same type criteria have 'include' and 'exclude' criteria,
-  //   // ignore 'exclude' criteria, only use 'include' criteria
-  //   const filteredCriteria: ICouponCriteria[] = [];
-  //   const map = new Map<ICouponCriteria['type'], ICouponCriteria[]>();
-  //
-  //   // push every criteria to map
-  //   criteria.forEach((criteria) => {
-  //     if (!map.has(criteria.type)) {
-  //       map.set(criteria.type, []);
-  //     }
-  //     map.get(criteria.type)?.push(criteria);
-  //   });
-  //
-  //   // filter every 'exclude' criteria if 'exclude' and 'include' both criteria exist
-  //
-  //   criteria.forEach((criteria) => {
-  //     switch (criteria.type) {
-  //       case 'all':
-  //         return;
-  //
-  //       case 'category':
-  //         if (
-  //           criteria.direction === 'include' &&
-  //           criteria.categoryId !== product.course.categoryId
-  //         ) {
-  //           throw new ForbiddenException(
-  //             `Coupon category criteria direction mismatch. [include, ${product.course.categoryId}]`,
-  //           );
-  //         } else if (
-  //           criteria.direction === 'exclude' &&
-  //           criteria.categoryId === product.course.categoryId
-  //         ) {
-  //           throw new ForbiddenException(
-  //             `Coupon category criteria direction mismatch. [Exclude, ${product.course.categoryId}]`,
-  //           );
-  //         }
-  //         return;
-  //
-  //       case 'teacher':
-  //         if (
-  //           criteria.direction === 'include' &&
-  //           criteria.teacherId !== product.course.teacherId
-  //         ) {
-  //           throw new ForbiddenException(
-  //             `Coupon teacher criteria direction mismatch. [include, ${product.course.teacherId}]`,
-  //           );
-  //         } else if (
-  //           criteria.direction === 'exclude' &&
-  //           criteria.teacherId === product.course.teacherId
-  //         ) {
-  //           throw new ForbiddenException(
-  //             `Coupon teacher criteria direction mismatch. [Exclude, ${product.course.teacherId}]`,
-  //           );
-  //         }
-  //         return;
-  //
-  //       case 'course':
-  //         if (
-  //           criteria.direction === 'include' &&
-  //           criteria.courseId !== product.courseId
-  //         ) {
-  //           throw new ForbiddenException(
-  //             `Coupon course criteria direction mismatch. [include, ${product.courseId}]`,
-  //           );
-  //         } else if (
-  //           criteria.direction === 'exclude' &&
-  //           criteria.courseId === product.courseId
-  //         ) {
-  //           throw new ForbiddenException(
-  //             `Coupon course criteria direction mismatch. [Exclude, ${product.courseId}]`,
-  //           );
-  //         }
-  //         return;
-  //
-  //       default:
-  //         this.logger.error(
-  //           `Invalid coupon criteria type ${JSON.stringify(criteria, null, 4)}`,
-  //         );
-  //         throw new Error(`Invalid coupon criteria type.`);
-  //     }
-  //   });
-  // }
-
   private _verifyCouponExpiryOrThrow(coupon: ICoupon): void {
     const now = date.now('date');
 
@@ -448,6 +348,14 @@ export class CourseOrderPurchaseService {
                 courseOrderCreateParams: {
                   orderId,
                   productSnapshotId: courseProduct.lastSnapshot.id,
+                  validUntil: courseProduct.lastSnapshot.availableDays
+                    ? date.addDate(
+                        paidAt,
+                        courseProduct.lastSnapshot.availableDays,
+                        'day',
+                        'date',
+                      )
+                    : null,
                 },
               },
               tx,

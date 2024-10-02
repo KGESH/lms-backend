@@ -192,6 +192,7 @@ export class EbookProductController {
       ebookProductSnapshotCreateParams: {
         title: body.title,
         description: body.description,
+        availableDays: body.availableDays,
       },
       ebookProductSnapshotContentCreateParams: {
         richTextContent: body.content.richTextContent,
