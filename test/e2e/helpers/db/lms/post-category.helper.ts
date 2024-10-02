@@ -201,3 +201,84 @@ export const seedNavbarCategories = async (db: TransactionClient) => {
     faqCategory,
   };
 };
+
+/**
+ * 커뮤니티 최상위 카테고리를 생성합니다.
+ */
+export const seedRootCommunityCategory = async (db: TransactionClient) => {
+  const communityCategory = await createPostCategory(
+    {
+      name: '커뮤니티',
+      description: '커뮤니티 카테고리',
+      parentId: null,
+    },
+    {
+      readableRoles: ['guest'],
+      writableRoles: ['admin', 'manager', 'teacher', 'user'],
+    },
+    db,
+  );
+
+  return communityCategory;
+};
+
+/**
+ * 커뮤니티 카테고리 목록을 생성합니다.
+ */
+export const seedCommunityCategories = async (db: TransactionClient) => {
+  const communityRootCategory = await seedRootCommunityCategory(db);
+
+  const [freeCategory] = await createManyPostCategories(
+    [
+      {
+        name: '자유게시판',
+        description: '자유게시판 카테고리',
+        parentId: communityRootCategory.id,
+      },
+    ],
+    {
+      readableRoles: ['guest'],
+      writableRoles: ['admin', 'manager', 'teacher', 'user'],
+    },
+    db,
+  );
+
+  // Profit Certification
+  const [profitCertificationCategory] = await createManyPostCategories(
+    [
+      {
+        name: '수익인증',
+        description: '수익인증 카테고리',
+        parentId: communityRootCategory.id,
+      },
+    ],
+    {
+      readableRoles: ['guest'],
+      writableRoles: ['admin', 'manager', 'teacher', 'user'],
+    },
+    db,
+  );
+
+  // Discussion
+  const [discussionCategory] = await createManyPostCategories(
+    [
+      {
+        name: '토론',
+        description: '토론 카테고리',
+        parentId: communityRootCategory.id,
+      },
+    ],
+    {
+      readableRoles: ['guest'],
+      writableRoles: ['admin', 'manager', 'teacher', 'user'],
+    },
+    db,
+  );
+
+  return {
+    communityRootCategory,
+    freeCategory,
+    profitCertificationCategory,
+    discussionCategory,
+  };
+};

@@ -213,7 +213,7 @@ export const seedPosts = async (
     params.author ?? (await seedUsers({ count: 1, role: 'user' }, db))[0].user;
   const category =
     params.category ??
-    (await seedPostCategoriesWithChildren({ count: 1, }, db)).rootCategories[0];
+    (await seedPostCategoriesWithChildren({ count: 1 }, db)).rootCategories[0];
 
   const posts = await Promise.all(
     Array.from({ length: params.count }).map(() =>
