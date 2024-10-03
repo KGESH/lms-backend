@@ -22,6 +22,13 @@
       "when": 1727874953213,
       "tag": "0002_cool_mister_fear",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1727931219132,
+      "tag": "0003_chilly_ricochet",
+      "breakpoints": true
     }
   ]
 }

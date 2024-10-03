@@ -6,6 +6,7 @@ export type ICourseEnrollment = {
   userId: Uuid;
   courseId: Uuid;
   createdAt: Date;
+  validUntil: Date | null;
 };
 
 export type ICourseEnrollmentCreate = Omit<

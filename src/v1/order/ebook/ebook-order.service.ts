@@ -9,7 +9,10 @@ import {
 } from '@src/v1/order/ebook/ebook-order.interface';
 import { Uuid } from '@src/shared/types/primitive';
 import { EbookEnrollmentRepository } from '@src/v1/ebook/enrollment/ebook-enrollment.repository';
-import { IEbookEnrollment } from '@src/v1/ebook/enrollment/ebook-enrollment.interface';
+import {
+  IEbookEnrollment,
+  IEbookEnrollmentCreate,
+} from '@src/v1/ebook/enrollment/ebook-enrollment.interface';
 
 @Injectable()
 export class EbookOrderService {
@@ -24,10 +27,12 @@ export class EbookOrderService {
       ebookId,
       orderCreateParams,
       ebookOrderCreateParams,
+      validUntil,
     }: {
       ebookId: Uuid;
       orderCreateParams: IOrderCreate;
       ebookOrderCreateParams: IEbookOrderCreate;
+      validUntil: IEbookEnrollmentCreate['validUntil'];
     },
     tx: TransactionClient,
   ): Promise<{
@@ -46,6 +51,7 @@ export class EbookOrderService {
       await this.ebookEnrollmentRepository.createEbookEnrollment({
         ebookId,
         userId: orderCreateParams.userId,
+        validUntil,
       });
 
     return { order, ebookOrder, enrollment };

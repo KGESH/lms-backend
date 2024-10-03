@@ -152,6 +152,10 @@ export const ebookEnrollments = pgTable('ebook_enrollments', {
   })
     .notNull()
     .defaultNow(),
+  validUntil: timestamp('valid_until', {
+    mode: 'date',
+    withTimezone: true,
+  }),
 });
 
 export const ebookCategoriesRelations = relations(

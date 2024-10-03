@@ -348,15 +348,15 @@ export class CourseOrderPurchaseService {
                 courseOrderCreateParams: {
                   orderId,
                   productSnapshotId: courseProduct.lastSnapshot.id,
-                  validUntil: courseProduct.lastSnapshot.availableDays
-                    ? date.addDate(
-                        paidAt,
-                        courseProduct.lastSnapshot.availableDays,
-                        'day',
-                        'date',
-                      )
-                    : null,
                 },
+                validUntil: courseProduct.lastSnapshot.availableDays
+                  ? date.addDate(
+                      paidAt,
+                      courseProduct.lastSnapshot.availableDays,
+                      'day',
+                      'date',
+                    )
+                  : null,
               },
               tx,
             );

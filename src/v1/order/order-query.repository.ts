@@ -106,7 +106,6 @@ export class OrderQueryRepository {
         teacher: ebook.teacher,
         category: ebook.category,
         thumbnail: typia.assert<IProductThumbnail>(order.files),
-        validUntil: order.ebook_orders.validUntil,
         contents: [],
       },
     };
@@ -190,7 +189,6 @@ export class OrderQueryRepository {
         teacher: course.teacher,
         category: course.category,
         thumbnail: typia.assert<IProductThumbnail>(order.files),
-        validUntil: order.course_orders.validUntil,
         chapters: [],
       },
     };
@@ -249,7 +247,6 @@ export class OrderQueryRepository {
         thumbnail: typia.assert<IProductThumbnail>(
           order.courseOrder!.productSnapshot.thumbnail,
         ),
-        validUntil: order.courseOrder.validUntil,
         chapters: [],
       },
     });
@@ -310,7 +307,6 @@ export class OrderQueryRepository {
             thumbnail: typia.assert<IProductThumbnail>(
               order.ebookOrder!.productSnapshot.thumbnail,
             ),
-            validUntil: order.ebookOrder!.validUntil,
             contents: [],
           },
         }),
@@ -369,7 +365,6 @@ export class OrderQueryRepository {
         thumbnail: typia.assert<IProductThumbnail>(
           order.ebookOrder!.productSnapshot.thumbnail,
         ),
-        validUntil: order.ebookOrder.validUntil,
         contents: [],
       },
     });
@@ -435,7 +430,6 @@ export class OrderQueryRepository {
             thumbnail: typia.assert<IProductThumbnail>(
               order.courseOrder!.productSnapshot.thumbnail,
             ),
-            validUntil: order.courseOrder!.validUntil,
             chapters: [],
           },
         }),

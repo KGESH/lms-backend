@@ -183,6 +183,10 @@ export const courseEnrollments = pgTable('course_enrollments', {
   })
     .notNull()
     .defaultNow(),
+  validUntil: timestamp('valid_until', {
+    mode: 'date',
+    withTimezone: true,
+  }),
 });
 
 export const courseEnrollmentProgresses = pgTable(

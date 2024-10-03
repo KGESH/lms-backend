@@ -5,6 +5,7 @@ export type IEbookEnrollment = {
   userId: string;
   ebookId: string;
   createdAt: Date;
+  validUntil: Date | null;
 };
 
 export type IEbookEnrollmentCreate = Omit<

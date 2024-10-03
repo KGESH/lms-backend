@@ -74,15 +74,15 @@ export class EbookOrderPurchaseService {
               ebookOrderCreateParams: {
                 orderId,
                 productSnapshotId: ebookProduct.lastSnapshot.id,
-                validUntil: ebookProduct.lastSnapshot.availableDays
-                  ? date.addDate(
-                      paidAt,
-                      ebookProduct.lastSnapshot.availableDays,
-                      'day',
-                      'date',
-                    )
-                  : null,
               },
+              validUntil: ebookProduct.lastSnapshot.availableDays
+                ? date.addDate(
+                    paidAt,
+                    ebookProduct.lastSnapshot.availableDays,
+                    'day',
+                    'date',
+                  )
+                : null,
             },
             tx,
           );

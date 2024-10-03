@@ -5,4 +5,5 @@ export type CourseEnrollmentDto = {
   userId: Uuid;
   courseId: Uuid;
   createdAt: ISO8601;
+  validUntil: ISO8601 | null;
 };

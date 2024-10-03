@@ -32,9 +32,6 @@ export const courseOrderRelationsToDto = (
       teacherId: courseOrderRelations.course.teacherId,
       categoryId: courseOrderRelations.course.categoryId,
       description: courseOrderRelations.course.description,
-      validUntil: date.toIsoStringOrNull(
-        courseOrderRelations.course.validUntil,
-      ),
       createdAt: date.toISOString(courseOrderRelations.course.createdAt),
       updatedAt: date.toISOString(courseOrderRelations.course.updatedAt),
       category: courseOrderRelations.course.category,

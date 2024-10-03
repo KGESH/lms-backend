@@ -9,7 +9,7 @@ import {
 } from '@src/v1/order/course/course-order.interface';
 import { Uuid } from '@src/shared/types/primitive';
 import { CourseEnrollmentRepository } from '@src/v1/course/enrollment/course-enrollment.repository';
-import { ICourseEnrollment } from '@src/v1/course/enrollment/course-enrollment.interface';
+import { ICourseEnrollment, ICourseEnrollmentCreate } from '@src/v1/course/enrollment/course-enrollment.interface';
 
 @Injectable()
 export class CourseOrderService {
@@ -24,10 +24,12 @@ export class CourseOrderService {
       courseId,
       orderCreateParams,
       courseOrderCreateParams,
+      validUntil,
     }: {
       courseId: Uuid;
       orderCreateParams: IOrderCreate;
       courseOrderCreateParams: ICourseOrderCreate;
+      validUntil: ICourseEnrollmentCreate['validUntil'];
     },
     tx: TransactionClient,
   ): Promise<{
@@ -46,6 +48,7 @@ export class CourseOrderService {
       await this.courseEnrollmentRepository.createCourseEnrollment({
         courseId,
         userId: orderCreateParams.userId,
+        validUntil,
       });
 
     return { order, courseOrder, enrollment };

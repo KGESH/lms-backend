@@ -24,14 +24,12 @@ export const courseOrders = pgTable('course_orders', {
   id: uuid('id').primaryKey().defaultRandom(),
   orderId: uuid('order_id').notNull(),
   productSnapshotId: uuid('product_snapshot_id').notNull(),
-  validUntil: timestamp('valid_until', { mode: 'date', withTimezone: true }),
 });
 
 export const ebookOrders = pgTable('ebook_orders', {
   id: uuid('id').primaryKey().defaultRandom(),
   orderId: uuid('order_id').notNull(),
   productSnapshotId: uuid('product_snapshot_id').notNull(),
-  validUntil: timestamp('valid_until', { mode: 'date', withTimezone: true }),
 });
 
 export const orderRefunds = pgTable('course_order_refunds', {
@@ -84,11 +82,13 @@ export const orderRefundsRelations = relations(orderRefunds, ({ one }) => ({
 }));
 
 export const orderDbSchema = {
+  // Entities
   orders,
   courseOrders,
   ebookOrders,
   orderRefunds,
 
+  // Relations
   ordersRelations,
   courseOrdersRelations,
   ebookOrdersRelations,

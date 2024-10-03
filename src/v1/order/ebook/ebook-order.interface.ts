@@ -13,7 +13,6 @@ export type IEbookOrder = {
   id: Uuid;
   orderId: Uuid;
   productSnapshotId: Uuid;
-  validUntil: Date | null;
 };
 
 export type IEbookOrderCreate = Optional<IEbookOrder, 'id'>;
@@ -33,8 +32,7 @@ export type IEbookOrderRelations = IOrder & {
 };
 
 export type IEbookOrderWithRelations = IOrder & {
-  ebook: IEbookWithRelations &
-    Pick<IEbookOrder, 'validUntil'> & {
-      thumbnail: IProductThumbnail;
-    };
+  ebook: IEbookWithRelations & {
+    thumbnail: IProductThumbnail;
+  };
 };

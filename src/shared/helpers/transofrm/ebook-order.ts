@@ -19,7 +19,6 @@ export const ebookOrderRelationsToDto = (
       teacherId: ebookOrderRelations.ebook.teacherId,
       categoryId: ebookOrderRelations.ebook.categoryId,
       description: ebookOrderRelations.ebook.description,
-      validUntil: date.toIsoStringOrNull(ebookOrderRelations.ebook.validUntil),
       createdAt: date.toISOString(ebookOrderRelations.ebook.createdAt),
       updatedAt: date.toISOString(ebookOrderRelations.ebook.updatedAt),
       category: ebookOrderRelations.ebook.category,

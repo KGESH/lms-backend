@@ -8,5 +8,6 @@ export const enrollmentToDto = (
   return {
     ...enrollment,
     createdAt: date.toISOString(enrollment.createdAt),
+    validUntil: date.toIsoStringOrNull(enrollment.validUntil),
   };
 };

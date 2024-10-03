@@ -12,7 +12,6 @@ export type ICourseOrder = {
   id: Uuid;
   orderId: Uuid;
   productSnapshotId: Uuid;
-  validUntil: Date | null;
 };
 
 export type ICourseOrderCreate = Optional<ICourseOrder, 'id'>;
@@ -31,8 +30,7 @@ export type ICourseOrderRelations = IOrder & {
 };
 
 export type ICourseOrderWithRelations = IOrder & {
-  course: ICourseWithRelations &
-    Pick<ICourseOrder, 'validUntil'> & {
-      thumbnail: IProductThumbnail;
-    };
+  course: ICourseWithRelations & {
+    thumbnail: IProductThumbnail;
+  };
 };
