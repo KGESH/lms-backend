@@ -18,7 +18,6 @@ import { UserModule } from '@src/v1/user/user.module';
 import { CouponQueryService } from '@src/v1/coupon/coupon-query.service';
 import { CouponDisposableService } from '@src/v1/coupon/disposable/coupon-disposable.service';
 import { CouponTicketPaymentService } from '@src/v1/coupon/ticket/payment/coupon-ticket-payment.service';
-import { CouponTicketPaymentQueryRepository } from '@src/v1/coupon/ticket/payment/coupon-ticket-payment-query.repository';
 
 const modules = [UserModule];
 
@@ -37,7 +36,6 @@ const providers = [
   CouponTicketQueryRepository,
   CouponTicketPaymentService,
   CouponTicketPaymentRepository,
-  CouponTicketPaymentQueryRepository,
   CouponCriteriaRepository,
 ];
 
