@@ -46,7 +46,7 @@ const NESTIA_CONFIG: INestiaConfig = {
       },
       {
         url: `https://api.galglmoney.com`,
-        description: 'Staging Server',
+        description: 'Prod Server',
       },
     ],
     beautify: true,
