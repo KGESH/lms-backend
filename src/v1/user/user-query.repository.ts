@@ -79,7 +79,7 @@ export class UserQueryRepository {
 
   async findManyUsers(
     where: OptionalPick<IUser, 'role' | 'email' | 'displayName'> &
-      OptionalPick<IUserInfo, 'name'>,
+      OptionalPick<IUserInfo, 'name' | 'phoneNumber'>,
     pagination: Pagination,
   ): Promise<Paginated<IUser[]>> {
     const users = await this.drizzle.db
@@ -110,6 +110,9 @@ export class UserQueryRepository {
             : undefined,
           where.name
             ? ilike(dbSchema.userInfos.name, `%${where.name}%`)
+            : undefined,
+          where.phoneNumber
+            ? ilike(dbSchema.userInfos.phoneNumber, `%${where.phoneNumber}%`)
             : undefined,
         ),
       )

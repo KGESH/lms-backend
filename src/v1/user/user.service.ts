@@ -28,7 +28,7 @@ export class UserService {
 
   async findUsers(
     where: OptionalPick<IUser, 'role' | 'email' | 'displayName'> &
-      OptionalPick<IUserInfo, 'name'>,
+      OptionalPick<IUserInfo, 'name' | 'phoneNumber'>,
     pagination: Pagination,
   ): Promise<Paginated<IUserWithoutPassword[]>> {
     const users = await this.userQueryRepository.findManyUsers(

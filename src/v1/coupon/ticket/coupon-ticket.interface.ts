@@ -9,6 +9,8 @@ import {
   ICouponTeacherCriteria,
 } from '@src/v1/coupon/criteria/coupon-criteria.interface';
 import { ICouponTicketPayment } from '@src/v1/coupon/ticket/payment/coupon-ticket-payment.interface';
+import { Pagination } from '@src/shared/types/pagination';
+import { IUserWithoutPassword } from '@src/v1/user/user.interface';
 
 /**
  * 발급된 쿠폰
@@ -74,5 +76,19 @@ export type ICouponTicketRelations = ICoupon & {
 };
 
 export type ICouponTicketPaymentRelations = ICouponTicketRelations & {
+  user: IUserWithoutPassword;
   payment: ICouponTicketPayment | null;
+};
+
+export type ICouponTicketSearch = {
+  type: 'email' | 'displayName' | 'name' | 'phoneNumber';
+  value: string;
+};
+
+export type ICouponTicketQuery = Pick<ICouponTicket, 'couponId'> & {
+  search?: ICouponTicketSearch;
+};
+
+export type ICouponTicketPagination = Pagination & {
+  orderByColumn: keyof Pick<ICouponTicket, 'createdAt' | 'expiredAt'>;
 };

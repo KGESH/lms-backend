@@ -23,6 +23,7 @@ import { ICouponTicketPayment } from '@src/v1/coupon/ticket/payment/coupon-ticke
 import { CouponTicketPaymentDto } from '@src/v1/coupon/ticket/payment/coupon-ticket-payment.dto';
 import { ICouponWithCriteria } from '@src/v1/coupon/criteria/coupon-criteria.interface';
 import { CouponWithCriteriaDto } from '@src/v1/coupon/criteria/coupon-criteria.dto';
+import { userToDto } from '@src/shared/helpers/transofrm/user';
 
 export const couponToDto = (coupon: ICoupon): CouponDto => {
   return {
@@ -112,6 +113,7 @@ export const couponTicketPaymentRelationsToDto = (
 ): CouponTicketPaymentRelationsDto => {
   return {
     ...couponTicketRelationsToDto(couponTicketPaymentRelations),
+    user: userToDto(couponTicketPaymentRelations.user),
     payment: couponTicketPaymentRelations.payment
       ? couponTicketPaymentToDto(couponTicketPaymentRelations.payment)
       : null,

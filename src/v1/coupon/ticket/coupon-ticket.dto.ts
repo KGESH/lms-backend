@@ -8,6 +8,8 @@ import {
   CouponEbookCriteriaDto,
   CouponTeacherCriteriaDto,
 } from '@src/v1/coupon/criteria/coupon-criteria.dto';
+import { Pagination } from '@src/shared/types/pagination';
+import { UserWithoutPasswordDto } from '@src/v1/user/user.dto';
 
 /**
  * 발급된 쿠폰
@@ -57,19 +59,6 @@ export type CreatePrivateCouponTicketDto = {
   userId: Uuid;
 };
 
-export type CreateCouponTicketDto =
-  | {
-      type: 'public';
-      couponId: Uuid;
-      userId: Uuid;
-    }
-  | {
-      type: 'private';
-      code: string;
-      couponId: Uuid;
-      userId: Uuid;
-    };
-
 export type CouponTicketRelationsDto = CouponDto & {
   ticket: CouponTicketDto;
   couponAllCriteria: CouponAllCriteriaDto[];
@@ -80,5 +69,22 @@ export type CouponTicketRelationsDto = CouponDto & {
 };
 
 export type CouponTicketPaymentRelationsDto = CouponTicketRelationsDto & {
+  user: UserWithoutPasswordDto;
   payment: CouponTicketPaymentDto | null;
 };
+
+export type CouponTicketPaginationDto = Pagination & {
+  orderByColumn: keyof Pick<CouponTicketDto, 'createdAt' | 'expiredAt'>;
+};
+
+/**
+ * 사용자 필터링
+ */
+export type CouponTicketSearchDto = {
+  userFilterType: 'email' | 'displayName' | 'name' | 'phoneNumber';
+  userFilterValue: string;
+};
+
+export type CouponTicketQuery = Partial<
+  CouponTicketPaginationDto & CouponTicketSearchDto
+>;

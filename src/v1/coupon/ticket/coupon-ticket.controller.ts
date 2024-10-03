@@ -4,6 +4,7 @@ import {
   TypedException,
   TypedHeaders,
   TypedParam,
+  TypedQuery,
   TypedRoute,
 } from '@nestia/core';
 import { Roles } from '@src/core/decorators/roles.decorator';
@@ -13,23 +14,37 @@ import { IErrorResponse } from '@src/shared/types/response';
 import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
 import { AuthHeaders } from '@src/v1/auth/auth.headers';
 import { Uuid } from '@src/shared/types/primitive';
-import { couponTicketRelationsToDto } from '@src/shared/helpers/transofrm/coupon';
 import {
-  CouponTicketDto,
+  couponTicketPaymentRelationsToDto,
+  couponTicketRelationsToDto,
+} from '@src/shared/helpers/transofrm/coupon';
+import {
+  CouponTicketPaymentRelationsDto,
+  CouponTicketQuery,
   CouponTicketRelationsDto,
   CreatePrivateCouponTicketDto,
   CreatePublicCouponTicketDto,
 } from '@src/v1/coupon/ticket/coupon-ticket.dto';
 import { CouponTicketService } from '@src/v1/coupon/ticket/coupon-ticket.service';
+import { CouponTicketQueryService } from '@src/v1/coupon/ticket/coupon-ticket-query.service';
+import { withDefaultPagination } from '@src/core/pagination';
+import { Paginated } from '@src/shared/types/pagination';
 
 @Controller('v1/coupon/:couponId/ticket')
 export class CouponTicketController {
-  constructor(private readonly couponTicketService: CouponTicketService) {}
+  constructor(
+    private readonly couponTicketService: CouponTicketService,
+    private readonly couponTicketQueryService: CouponTicketQueryService,
+  ) {}
 
   /**
-   * 발행한 쿠폰 목록을 조회합니다. (미완성)
+   * 발행한 쿠폰 목록을 조회합니다.
    *
    * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * Query parameter 'userFilterType'과 'userFilterValue' 속성을 설정해 쿠폰 티켓 소유자를 필터링할 수 있습니다.
+   *
+   * Query parameter 'userFilterType'과 'userFilterValue' 속성중 하나라도 누락되면 필터링 속성을 무시합니다.
    *
    * @tag coupon
    * @summary 발행한 쿠폰 목록 조회 - Role('admin', 'manager')
@@ -52,12 +67,35 @@ export class CouponTicketController {
   async getCouponTickets(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('couponId') couponId: Uuid,
-  ): Promise<CouponTicketDto[]> {
-    return [];
+    @TypedQuery() query: CouponTicketQuery,
+  ): Promise<Paginated<CouponTicketPaymentRelationsDto[]>> {
+    const paginatedCouponTickets =
+      await this.couponTicketQueryService.findManyCouponTicketsRelations(
+        {
+          couponId,
+          search:
+            query.userFilterType && query.userFilterValue
+              ? {
+                  type: query.userFilterType,
+                  value: query.userFilterValue,
+                }
+              : undefined,
+        },
+        {
+          ...withDefaultPagination(query),
+          orderByColumn: query.orderByColumn ?? 'createdAt',
+        },
+      );
+
+    return {
+      pagination: paginatedCouponTickets.pagination,
+      totalCount: paginatedCouponTickets.totalCount,
+      data: paginatedCouponTickets.data.map(couponTicketPaymentRelationsToDto),
+    };
   }
 
   /**
-   * 발행한 쿠폰을 조회합니다. (미완성)
+   * 발행한 쿠폰을 조회합니다.
    *
    * @tag coupon
    * @summary 발행한 쿠폰 조회
@@ -81,8 +119,17 @@ export class CouponTicketController {
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('couponId') couponId: Uuid,
     @TypedParam('ticketId') ticketId: Uuid,
-  ): Promise<CouponTicketDto | null> {
-    return null;
+  ): Promise<CouponTicketPaymentRelationsDto | null> {
+    const couponTicket =
+      await this.couponTicketQueryService.findCouponTicketPaymentRelations({
+        id: ticketId,
+      });
+
+    if (!couponTicket) {
+      return null;
+    }
+
+    return couponTicketPaymentRelationsToDto(couponTicket);
   }
 
   /**
