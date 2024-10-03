@@ -38,6 +38,7 @@ describe('UserCourseEnrollmentController (e2e)', () => {
         {
           courseId: course.id,
           userId: student.user.id,
+          validUntil: null,
         },
         drizzle.db,
       );
@@ -74,6 +75,7 @@ describe('UserCourseEnrollmentController (e2e)', () => {
         {
           courseId: course.id,
           userId: student.user.id,
+          validUntil: null,
         },
         drizzle.db,
       );
@@ -127,6 +129,7 @@ describe('UserCourseEnrollmentController (e2e)', () => {
         {
           courseId: course.id,
           userId: student.user.id,
+          validUntil: null,
         },
         drizzle.db,
       );
