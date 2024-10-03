@@ -5,7 +5,10 @@ import { Uri } from '@src/shared/types/primitive';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { ConfigsService } from '@src/configs/configs.service';
 import { seedUsers } from '../helpers/db/lms/user.helper';
-import { seedCoupons } from '../helpers/db/lms/coupon.helper';
+import {
+  createCouponTicket,
+  seedCoupons,
+} from '../helpers/db/lms/coupon.helper';
 
 describe('CouponTicketController (e2e)', () => {
   let host: Uri;
@@ -26,75 +29,157 @@ describe('CouponTicketController (e2e)', () => {
     await app.close();
   });
 
-  // 미완성
-  // describe('[Get coupon tickets]', () => {
-  //   it('should be get many coupon tickets', async () => {
-  //     const [admin] = await seedUsers({ count: 1, role: 'admin' }, drizzle.db);
-  //     const [couponOwner] = await seedUsers(
-  //       { count: 1, role: 'user' },
-  //       drizzle.db,
-  //     );
-  //     const SEED_COUNT = 1;
-  //     const [couponRelations] = await seedCoupons(
-  //       { count: SEED_COUNT, user: couponOwner.user },
-  //       drizzle.db,
-  //     );
-  //
-  //     const response = await CouponTicketAPI.getCouponTickets(
-  //       {
-  //         host,
-  //         headers: {
-  //           LmsSecret,
-  //           UserSessionId: admin.userSession.id,
-  //         },
-  //       },
-  //       couponRelations.id,
-  //     );
-  //     if (!response.success || !response.data) {
-  //       const message = JSON.stringify(response.data, null, 4);
-  //       throw new Error(`assert - ${message}`);
-  //     }
-  //
-  //     const foundCouponTickets = response.data;
-  //     console.log(`[foundCouponTickets]`, foundCouponTickets);
-  //     expect(foundCouponTickets[0].couponId).toEqual(couponRelations.id);
-  //     expect(foundCouponTickets[0].userId).toEqual(couponOwner.user.id);
-  //   });
-  // });
+  describe('[Get coupon tickets]', () => {
+    it('should be get many coupon tickets', async () => {
+      const [admin] = await seedUsers({ count: 1, role: 'admin' }, drizzle.db);
+      const [couponOwner] = await seedUsers(
+        { count: 1, role: 'user' },
+        drizzle.db,
+      );
+      const [couponRelations] = await seedCoupons({ count: 1 }, drizzle.db);
+      const SEED_RANDOM_USER_COUPON_COUNT = 5;
+      const randomUsersTickets = [
+        couponRelations.ticket, // Seed ticket
+        ...(await Promise.all(
+          Array.from({ length: SEED_RANDOM_USER_COUPON_COUNT - 1 }) // (5 - (Seed coupon with ticket)) === (5 - 1)
+            .map(() =>
+              createCouponTicket(
+                {
+                  couponId: couponRelations.id,
+                  userId: couponOwner.user.id,
+                  expiredAt: null,
+                  couponDisposableId: null,
+                },
+                drizzle.db,
+              ),
+            ),
+        )),
+      ];
+      const SEED_COUPON_OWNER_TICKET_COUNT = 5;
+      const couponOwnerTickets = [
+        ...(await Promise.all(
+          Array.from({ length: SEED_COUPON_OWNER_TICKET_COUNT }).map(() =>
+            createCouponTicket(
+              {
+                couponId: couponRelations.id,
+                userId: couponOwner.user.id,
+                expiredAt: null,
+                couponDisposableId: null,
+              },
+              drizzle.db,
+            ),
+          ),
+        )),
+      ];
 
-  // 미완성
-  // describe('[Get coupon ticket]', () => {
-  //   it('should be a coupon ticket success', async () => {
-  //     const [admin] = await seedUsers({ count: 1, role: 'admin' }, drizzle.db);
-  //     const [couponOwner] = await seedUsers(
-  //       { count: 1, role: 'user' },
-  //       drizzle.db,
-  //     );
-  //     const [couponRelations] = await seedCoupons(
-  //       { count: 1, user: couponOwner.user },
-  //       drizzle.db,
-  //     );
-  //
-  //     const response = await CouponTicketAPI.getCouponTicket(
-  //       {
-  //         host,
-  //         headers: {
-  //           LmsSecret,
-  //           UserSessionId: admin.userSession.id,
-  //         },
-  //       },
-  //       couponRelations.id,
-  //       couponRelations.ticket.id,
-  //     );
-  //     if (!response.success || !response.data) {
-  //       const message = JSON.stringify(response.data, null, 4);
-  //       throw new Error(`assert - ${message}`);
-  //     }
-  //
-  //     const foundCouponTicket = response.data;
-  //     expect(foundCouponTicket.userId).toEqual(couponOwner.user.id);
-  //   });
-  // });
+      const ticketsResponse = await CouponTicketAPI.getCouponTickets(
+        {
+          host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
+          },
+        },
+        couponRelations.id,
+        {
+          // 쿠폰 페이지네이션
+          orderBy: 'desc',
+          page: 1,
+          pageSize: 5,
+          orderByColumn: 'createdAt',
+          // 쿠폰 티켓 소유자 필터링
+          userFilterType: undefined,
+          userFilterValue: undefined,
+        },
+      );
+      if (!ticketsResponse.success) {
+        const message = JSON.stringify(ticketsResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      const paginatedRandomTickets = ticketsResponse.data;
+      expect(paginatedRandomTickets.totalCount).toEqual(
+        SEED_RANDOM_USER_COUPON_COUNT + SEED_COUPON_OWNER_TICKET_COUNT,
+      );
+
+      const filteredResponse = await CouponTicketAPI.getCouponTickets(
+        {
+          host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
+          },
+        },
+        couponRelations.id,
+        {
+          // 쿠폰 페이지네이션
+          orderBy: 'desc',
+          page: 1,
+          pageSize: 10,
+          orderByColumn: 'createdAt',
+          // 쿠폰 티켓 소유자 필터링
+          userFilterType: 'email',
+          userFilterValue: couponOwner.user.email.slice(0, 2), // 쿠폰 소유자 이메일 부분 검색
+        },
+      );
+      if (!filteredResponse.success) {
+        const message = JSON.stringify(filteredResponse.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      const {
+        pagination,
+        totalCount,
+        data: foundCouponsRelations,
+      } = filteredResponse.data;
+      expect(totalCount).toEqual(
+        SEED_RANDOM_USER_COUPON_COUNT + SEED_COUPON_OWNER_TICKET_COUNT,
+      );
+      expect(pagination).toEqual({ orderBy: 'desc', page: 1, pageSize: 10 });
+      expect(foundCouponsRelations[0].id).toEqual(couponRelations.id);
+      expect(foundCouponsRelations[0].ticket.userId).toEqual(
+        couponOwner.user.id,
+      );
+      expect(foundCouponsRelations[0].payment).toBeNull();
+      expect(foundCouponsRelations[0].user.email).toEqual(
+        couponOwner.user.email,
+      );
+    });
+  });
+
+  describe('[Get coupon ticket]', () => {
+    it('should be a coupon ticket success', async () => {
+      const [admin] = await seedUsers({ count: 1, role: 'admin' }, drizzle.db);
+      const [couponOwner] = await seedUsers(
+        { count: 1, role: 'user' },
+        drizzle.db,
+      );
+      const [couponRelations] = await seedCoupons(
+        { count: 1, user: couponOwner.user },
+        drizzle.db,
+      );
+
+      const response = await CouponTicketAPI.getCouponTicket(
+        {
+          host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
+          },
+        },
+        couponRelations.id,
+        couponRelations.ticket.id,
+      );
+      if (!response.success || !response.data) {
+        const message = JSON.stringify(response.data, null, 4);
+        throw new Error(`assert - ${message}`);
+      }
+
+      const foundCouponRelations = response.data;
+      expect(foundCouponRelations.ticket.userId).toEqual(couponOwner.user.id);
+      expect(foundCouponRelations.payment).toBeNull(); // 쿠폰을 발급하고 결제에 사용하지 않은 상태.
+    });
+  });
 
   describe('[Create coupon ticket]', () => {
     it('should be a create coupon ticket success', async () => {
