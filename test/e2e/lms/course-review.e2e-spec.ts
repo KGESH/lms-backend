@@ -9,7 +9,7 @@ import {
 import { seedCourseOrders } from '../helpers/db/lms/order.helper';
 import * as CourseReviewAPI from '../../../src/api/functional/v1/review/course';
 import { ConfigsService } from '../../../src/configs/configs.service';
-import { CreateReviewDto } from '@src/v1/review/review.dto';
+import { CreateReviewDto } from '../../../src/v1/review/review.dto';
 
 describe('CourseReviewController (e2e)', () => {
   let host: Uri;
