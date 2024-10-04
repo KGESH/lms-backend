@@ -48,13 +48,16 @@ describe('EbookProductController (e2e)', () => {
         },
         product.ebookId,
       );
-      if (!response.success) {
+      if (!response.success || !response.data) {
         throw new Error('assert');
       }
 
       const foundEbookProduct = response.data;
       expect(foundEbookProduct).not.toBeNull();
       expect(foundEbookProduct!.title).toEqual(product.lastSnapshot?.title);
+      expect(foundEbookProduct.ebook.contents[0].ebookId).toEqual(
+        product.ebookId,
+      );
     });
   });
 
