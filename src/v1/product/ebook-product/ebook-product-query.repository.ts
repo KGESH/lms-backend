@@ -193,6 +193,7 @@ export class EbookProductQueryRepository {
       with: {
         ebook: {
           with: {
+            contents: true,
             category: true,
             teacher: {
               with: {
@@ -228,7 +229,7 @@ export class EbookProductQueryRepository {
       ebook: {
         ...product.ebook,
         teacher: product.ebook.teacher,
-        contents: [],
+        contents: product.ebook.contents,
       },
       lastSnapshot: lastSnapshot
         ? {
