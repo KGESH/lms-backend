@@ -255,7 +255,7 @@ export const findReviewRepliesByReviewId = async (
 };
 
 export const seedCourseReviews = async (
-  { count, replyCount }: { count: number; replyCount?: number },
+  { count }: { count: number },
   db: TransactionClient,
 ): Promise<Omit<IReviewWithRelations, 'product'>[]> => {
   const orders = await seedCourseOrders({ count: 1 }, db);

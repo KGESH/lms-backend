@@ -58,7 +58,7 @@ export class EbookReviewController {
       withDefaultPagination(query),
     );
 
-    return reviews.map(reviewToDto);
+    return reviews.data.map(reviewToDto);
   }
 
   /**
@@ -87,7 +87,7 @@ export class EbookReviewController {
       withDefaultPagination(query),
     );
 
-    return reviews.map(reviewToDto);
+    return reviews.data.map(reviewToDto);
   }
 
   /**

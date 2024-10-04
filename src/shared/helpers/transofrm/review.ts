@@ -17,7 +17,7 @@ export const reviewToDto = (
   return {
     ...review,
     createdAt: date.toISOString(review.createdAt),
-    deletedAt: review.deletedAt ? date.toISOString(review.deletedAt) : null,
+    deletedAt: date.toIsoStringOrNull(review.deletedAt),
     user: userToDto(review.user),
     snapshot: {
       ...review.snapshot,
@@ -26,7 +26,7 @@ export const reviewToDto = (
     replies: review.replies.map((reply) => ({
       ...reply,
       createdAt: date.toISOString(reply.createdAt),
-      deletedAt: reply.deletedAt ? date.toISOString(reply.deletedAt) : null,
+      deletedAt: date.toIsoStringOrNull(reply.deletedAt),
       user: userToDto(reply.user),
       snapshot: {
         ...reply.snapshot,
@@ -52,7 +52,7 @@ export const reviewReplyToDto = (
   return {
     ...reply,
     createdAt: date.toISOString(reply.createdAt),
-    deletedAt: reply.deletedAt ? date.toISOString(reply.deletedAt) : null,
+    deletedAt: date.toIsoStringOrNull(reply.deletedAt),
     user: userToDto(reply.user),
     snapshot: {
       ...reply.snapshot,

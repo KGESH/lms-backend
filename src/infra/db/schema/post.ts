@@ -28,7 +28,6 @@ export const postCategoryReadAccesses = pgTable(
       .notNull()
       .references(() => postCategories.id, { onDelete: 'cascade' }),
     role: categoryAccessRole('role').notNull(),
-    // role: userRole('role').notNull(),
   },
   (table) => ({
     access: unique().on(table.categoryId, table.role),
@@ -43,7 +42,6 @@ export const postCategoryWriteAccesses = pgTable(
       .notNull()
       .references(() => postCategories.id, { onDelete: 'cascade' }),
     role: categoryAccessRole('role').notNull(),
-    // role: userRole('role').notNull(),
   },
   (table) => ({
     access: unique().on(table.categoryId, table.role),

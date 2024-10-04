@@ -14,7 +14,7 @@ import {
   IReviewSnapshot,
   IReviewWithRelations,
 } from '@src/v1/review/review.interface';
-import { Pagination } from '@src/shared/types/pagination';
+import { Paginated, Pagination } from '@src/shared/types/pagination';
 import { EbookReviewRepository } from '@src/v1/review/ebook-review/ebook-review.repository';
 import { Optional, OptionalPick } from '@src/shared/types/optional';
 import { IUserWithoutPassword } from '@src/v1/user/user.interface';
@@ -37,7 +37,7 @@ export class EbookReviewService {
       'userId'
     >,
     pagination: Pagination,
-  ): Promise<IReviewWithRelations[]> {
+  ): Promise<Paginated<IReviewWithRelations[]>> {
     const reviews = await this.reviewQueryRepository.findManyWithEbookReviews({
       where,
       pagination,

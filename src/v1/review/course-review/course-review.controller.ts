@@ -46,6 +46,14 @@ export class CourseReviewController {
    */
   @TypedRoute.Get('/')
   @SkipAuth()
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
   async getCourseReviews(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedQuery() query: ReviewQuery,
@@ -58,7 +66,7 @@ export class CourseReviewController {
       withDefaultPagination(query),
     );
 
-    return reviews.map(reviewToDto);
+    return reviews.data.map(reviewToDto);
   }
 
   /**
@@ -74,6 +82,14 @@ export class CourseReviewController {
    */
   @TypedRoute.Get('/:courseId')
   @SkipAuth()
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
   async getCourseReviewsByCourseId(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
@@ -87,7 +103,7 @@ export class CourseReviewController {
       withDefaultPagination(query),
     );
 
-    return reviews.map(reviewToDto);
+    return reviews.data.map(reviewToDto);
   }
 
   /**

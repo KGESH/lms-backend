@@ -14,7 +14,7 @@ import {
   IReviewSnapshot,
   IReviewWithRelations,
 } from '@src/v1/review/review.interface';
-import { Pagination } from '@src/shared/types/pagination';
+import { Paginated, Pagination } from '@src/shared/types/pagination';
 import { CourseReviewRepository } from '@src/v1/review/course-review/course-review.repository';
 import { IUserWithoutPassword } from '@src/v1/user/user.interface';
 import { Optional, OptionalPick } from '@src/shared/types/optional';
@@ -37,7 +37,7 @@ export class CourseReviewService {
       'userId'
     >,
     pagination: Pagination,
-  ): Promise<IReviewWithRelations[]> {
+  ): Promise<Paginated<IReviewWithRelations[]>> {
     const reviews = await this.reviewQueryRepository.findManyWithCourseReviews({
       where,
       pagination,

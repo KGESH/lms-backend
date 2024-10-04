@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { IReview, IReviewWithRelations } from '@src/v1/review/review.interface';
 import { ReviewQueryRepository } from '@src/v1/review/review-query.repository';
-import { Pagination } from '@src/shared/types/pagination';
-import { Optional } from '@src/shared/types/optional';
+import { Paginated, Pagination } from '@src/shared/types/pagination';
+import { Optional, OptionalPick } from '@src/shared/types/optional';
 
 @Injectable()
 export class ReviewService {
@@ -11,8 +11,18 @@ export class ReviewService {
   async findManyReviews(
     where: Optional<Pick<IReview, 'userId' | 'productType'>, 'userId'>,
     pagination: Pagination,
-  ): Promise<IReviewWithRelations[]> {
+  ): Promise<Paginated<IReviewWithRelations[]>> {
     return await this.reviewQueryRepository.findManyReviewsWithReplies(
+      where,
+      pagination,
+    );
+  }
+
+  async findEveryProductReviews(
+    where: OptionalPick<IReview, 'userId'>,
+    pagination: Pagination,
+  ): Promise<Paginated<IReviewWithRelations[]>> {
+    return await this.reviewQueryRepository.findAllProductReviewWithReplies(
       where,
       pagination,
     );
