@@ -14,7 +14,6 @@ export const ebookToDto = (ebook: IEbook): EbookDto => {
   };
 };
 
-// Todo: Impl
 export const ebookRelationsToDto = (
   ebookWithRelations: IEbookWithRelations,
 ): EbookWithRelationsDto => {

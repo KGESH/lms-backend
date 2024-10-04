@@ -38,7 +38,7 @@ export class EbookOrderPurchaseService {
         this.paymentService.verifyPaymentOrThrow({
           pgAmount: pgPaymentResult.amount.total,
           frontendAmount: params.amount,
-          calculatedBackendAmount: pgPaymentResult.amount.total, // Todo: Impl
+          calculatedBackendAmount: pgPaymentResult.amount.total,
         });
       }
 

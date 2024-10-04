@@ -130,10 +130,6 @@ export type UpdateCouponDto = Partial<CreateCouponDto> & {
 
 export type DeleteCouponDto = Pick<CouponDto, 'id'>;
 
-export type CouponRelationsDto = CouponDto & {
-  // Todo: Impl
-};
-
 export type CouponQuery = Partial<
   Pagination & {
     orderByColumn: keyof Pick<

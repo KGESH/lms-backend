@@ -11,6 +11,3 @@ export const ebookContentToDto = (
     updatedAt: date.toISOString(ebookContent.updatedAt),
   };
 };
-
-// Todo: Impl
-// export const ebookRelationsToDto = (ebook: IEbook): EbookDto => {};
