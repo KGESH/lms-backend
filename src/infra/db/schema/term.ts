@@ -1,5 +1,6 @@
 import {
   boolean,
+  index,
   integer,
   pgTable,
   text,
@@ -24,31 +25,44 @@ export const terms = pgTable('terms', {
   deletedAt: timestamp('deleted_at', { mode: 'date', withTimezone: true }),
 });
 
-export const termSnapshots = pgTable('term_snapshots', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  termId: uuid('term_id')
-    .notNull()
-    .references(() => terms.id),
-  title: text('title').notNull(),
-  description: text('description'),
-  content: text('content').notNull(),
-  updatedReason: text('updated_reason'),
-  metadata: text('metadata'),
-  createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
-    .notNull()
-    .defaultNow(),
-});
+export const termSnapshots = pgTable(
+  'term_snapshots',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    termId: uuid('term_id')
+      .notNull()
+      .references(() => terms.id),
+    title: text('title').notNull(),
+    description: text('description'),
+    content: text('content').notNull(),
+    updatedReason: text('updated_reason'),
+    metadata: text('metadata'),
+    createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => ({
+    termIdIdx: index('idx_term_snapshots_term_id').on(table.termId),
+    createdAtIdx: index('idx_term_snapshots_created_at').on(table.createdAt),
+  }),
+);
 
-export const signupTerms = pgTable('signup_terms', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  termId: uuid('term_id')
-    .notNull()
-    .references(() => terms.id),
-  sequence: integer('sequence').notNull().unique(),
-  createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
-    .notNull()
-    .defaultNow(),
-});
+export const signupTerms = pgTable(
+  'signup_terms',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    termId: uuid('term_id')
+      .notNull()
+      .references(() => terms.id),
+    sequence: integer('sequence').notNull().unique(),
+    createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => ({
+    termIdIdx: index('idx_signup_terms_term_id').on(table.termId),
+  }),
+);
 
 export const userTerms = pgTable(
   'user_terms',
@@ -75,6 +89,8 @@ export const userTerms = pgTable(
       .defaultNow(),
   },
   (table) => ({
+    userIdIdx: index('idx_user_terms_user_id').on(table.userId),
+    termIdIdx: index('idx_user_terms_term_id').on(table.termId),
     userAgreed: unique().on(table.userId, table.termId),
   }),
 );

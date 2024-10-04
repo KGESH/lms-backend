@@ -29,6 +29,13 @@
       "when": 1727931219132,
       "tag": "0003_chilly_ricochet",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1728048616356,
+      "tag": "0004_mixed_cyclops",
+      "breakpoints": true
     }
   ]
 }

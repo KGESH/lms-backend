@@ -1,82 +1,145 @@
-import { integer, pgTable, real, text, uuid } from 'drizzle-orm/pg-core';
+import {
+  index,
+  integer,
+  pgTable,
+  real,
+  text,
+  uniqueIndex,
+  uuid,
+} from 'drizzle-orm/pg-core';
 import { uiCarouselContentsType, uiCarouselType, uiCategory } from './enum';
 import { relations } from 'drizzle-orm';
 
-export const uiComponents = pgTable('ui_components', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  category: uiCategory('category').notNull(),
-  name: text('name').unique().notNull(),
-  path: text('path').notNull(),
-  sequence: integer('sequence').notNull(),
-  description: text('description'),
-});
+export const uiComponents = pgTable(
+  'ui_components',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    category: uiCategory('category').notNull(),
+    name: text('name').notNull(),
+    path: text('path').notNull(),
+    sequence: integer('sequence').notNull(),
+    description: text('description'),
+  },
+  (table) => ({
+    nameIdx: uniqueIndex('idx_ui_components_name').on(table.name),
+    pathIdx: index('idx_ui_components_path').on(table.path),
+  }),
+);
 
-export const uiRepeatTimers = pgTable('ui_repeat_timers', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  uiComponentId: uuid('ui_component_id')
-    .notNull()
-    .references(() => uiComponents.id, { onDelete: 'cascade' }),
-  title: text('title').notNull(),
-  description: text('description'),
-  repeatMinutes: integer('repeat_minutes').notNull(),
-  buttonLabel: text('button_label'),
-  buttonHref: text('button_href'),
-});
+export const uiRepeatTimers = pgTable(
+  'ui_repeat_timers',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    uiComponentId: uuid('ui_component_id')
+      .notNull()
+      .references(() => uiComponents.id, { onDelete: 'cascade' }),
+    title: text('title').notNull(),
+    description: text('description'),
+    repeatMinutes: integer('repeat_minutes').notNull(),
+    buttonLabel: text('button_label'),
+    buttonHref: text('button_href'),
+  },
+  (table) => ({
+    uiComponentIdIdx: uniqueIndex('idx_ui_repeat_timers_ui_component_id').on(
+      table.uiComponentId,
+    ),
+  }),
+);
 
-export const uiBanners = pgTable('ui_banners', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  uiComponentId: uuid('ui_component_id')
-    .notNull()
-    .references(() => uiComponents.id, { onDelete: 'cascade' }),
-  title: text('title').notNull(),
-  description: text('description'),
-  linkUrl: text('link_url'),
-});
+export const uiBanners = pgTable(
+  'ui_banners',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    uiComponentId: uuid('ui_component_id')
+      .notNull()
+      .references(() => uiComponents.id, { onDelete: 'cascade' }),
+    title: text('title').notNull(),
+    description: text('description'),
+    linkUrl: text('link_url'),
+  },
+  (table) => ({
+    uiComponentIdIdx: uniqueIndex('idx_ui_banners_ui_component_id').on(
+      table.uiComponentId,
+    ),
+  }),
+);
 
-export const uiMarketingBanners = pgTable('ui_marketing_banners', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  uiComponentId: uuid('ui_component_id')
-    .notNull()
-    .references(() => uiComponents.id, { onDelete: 'cascade' }),
-  title: text('title').notNull(),
-  description: text('description'),
-  linkUrl: text('link_url'),
-});
+export const uiMarketingBanners = pgTable(
+  'ui_marketing_banners',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    uiComponentId: uuid('ui_component_id')
+      .notNull()
+      .references(() => uiComponents.id, { onDelete: 'cascade' }),
+    title: text('title').notNull(),
+    description: text('description'),
+    linkUrl: text('link_url'),
+  },
+  (table) => ({
+    uiComponentIdIdx: uniqueIndex(
+      'idx_ui_marketing_banners_ui_component_id',
+    ).on(table.uiComponentId),
+  }),
+);
 
-export const uiCarousels = pgTable('ui_carousels', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  uiComponentId: uuid('ui_component_id')
-    .notNull()
-    .references(() => uiComponents.id, { onDelete: 'cascade' }),
-  carouselType: uiCarouselType('carousel_type').notNull(),
-  title: text('title').notNull(),
-  description: text('description'),
-});
+export const uiCarousels = pgTable(
+  'ui_carousels',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    uiComponentId: uuid('ui_component_id')
+      .notNull()
+      .references(() => uiComponents.id, { onDelete: 'cascade' }),
+    carouselType: uiCarouselType('carousel_type').notNull(),
+    title: text('title').notNull(),
+    description: text('description'),
+  },
+  (table) => ({
+    uiComponentIdIdx: uniqueIndex('idx_ui_carousels_ui_component_id').on(
+      table.uiComponentId,
+    ),
+  }),
+);
 
-export const uiCarouselContents = pgTable('ui_carousel_contents', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  uiCarouselId: uuid('ui_carousel_id')
-    .notNull()
-    .references(() => uiCarousels.id, { onDelete: 'cascade' }),
-  type: uiCarouselContentsType('type').notNull(),
-  sequence: integer('sequence').notNull(),
-  title: text('title').notNull(),
-  description: text('description'),
-  contentUrl: text('content_url'),
-  linkUrl: text('link_url'),
-  metadata: text('metadata'),
-});
+export const uiCarouselContents = pgTable(
+  'ui_carousel_contents',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    uiCarouselId: uuid('ui_carousel_id')
+      .notNull()
+      .references(() => uiCarousels.id, { onDelete: 'cascade' }),
+    type: uiCarouselContentsType('type').notNull(),
+    sequence: integer('sequence').notNull(),
+    title: text('title').notNull(),
+    description: text('description'),
+    contentUrl: text('content_url'),
+    linkUrl: text('link_url'),
+    metadata: text('metadata'),
+  },
+  (table) => ({
+    uiCarouselIdIdx: index('idx_ui_carousel_contents_ui_carousel_id').on(
+      table.uiCarouselId,
+    ),
+  }),
+);
 
-export const uiCarouselReviews = pgTable('ui_carousel_reviews', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  uiCarouselId: uuid('ui_carousel_id')
-    .notNull()
-    .references(() => uiCarousels.id, { onDelete: 'cascade' }),
-  sequence: integer('sequence').notNull(),
-  title: text('title').notNull(),
-  content: text('content').notNull(),
-  rating: real('rating').notNull(), // 4bytes float
-});
+export const uiCarouselReviews = pgTable(
+  'ui_carousel_reviews',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    uiCarouselId: uuid('ui_carousel_id')
+      .notNull()
+      .references(() => uiCarousels.id, { onDelete: 'cascade' }),
+    sequence: integer('sequence').notNull(),
+    title: text('title').notNull(),
+    content: text('content').notNull(),
+    rating: real('rating').notNull(), // 4bytes float
+  },
+  (table) => ({
+    uiCarouselIdIdx: index('idx_ui_carousel_reviews_ui_carousel_id').on(
+      table.uiCarouselId,
+    ),
+  }),
+);
 
 export const uiComponentsRelations = relations(uiComponents, ({ one }) => ({
   repeatTimers: one(uiRepeatTimers),
