@@ -227,34 +227,10 @@ export class ReviewQueryRepository {
     }
   }
 
-  async findAllProductReviewWithReplies(
+  async findEveryProductsReviewsWithReplies(
     where: OptionalPick<IReview, 'userId'>,
     pagination: Pagination,
   ): Promise<Paginated<IReviewWithRelations[]>> {
-    return await this.findEveryProductsReviewsWithReplies({
-      where,
-      pagination,
-    });
-  }
-
-  async findManyReviewsWithReplies(
-    where: Optional<Pick<IReview, 'userId' | 'productType'>, 'userId'>,
-    pagination: Pagination,
-  ): Promise<Paginated<IReviewWithRelations[]>> {
-    if (where.productType === 'course') {
-      return await this.findManyWithCourseReviews({ where, pagination });
-    } else {
-      return await this.findManyWithEbookReviews({ where, pagination });
-    }
-  }
-
-  async findEveryProductsReviewsWithReplies({
-    where,
-    pagination,
-  }: {
-    where?: Optional<Pick<IReview, 'userId'>, 'userId'>;
-    pagination: Pagination;
-  }): Promise<Paginated<IReviewWithRelations[]>> {
     const { reviewsWithRelations, totalCount } =
       await this.drizzle.db.transaction(async (tx) => {
         // Alias for teacher account
@@ -350,19 +326,6 @@ export class ReviewQueryRepository {
           .innerJoin(
             latestReviewSnapshotAlias,
             eq(latestReviewSnapshotAlias.id, latestReviewSnapshotSubquery),
-          )
-          .groupBy(
-            dbSchema.reviews.id,
-            dbSchema.users.id,
-            latestReviewSnapshotAlias.id,
-            dbSchema.courseReviews.id,
-            dbSchema.ebookReviews.id,
-            dbSchema.courses.id,
-            dbSchema.courseCategories.id,
-            dbSchema.ebooks.id,
-            dbSchema.ebookCategories.id,
-            dbSchema.teachers.id,
-            teacherAccountAlias.id,
           )
           .where(
             and(
@@ -486,6 +449,17 @@ export class ReviewQueryRepository {
       totalCount,
       data: reviewsWithRelations,
     };
+  }
+
+  async findManyReviewsWithReplies(
+    where: Optional<Pick<IReview, 'userId' | 'productType'>, 'userId'>,
+    pagination: Pagination,
+  ): Promise<Paginated<IReviewWithRelations[]>> {
+    if (where.productType === 'course') {
+      return await this.findManyWithCourseReviews({ where, pagination });
+    } else {
+      return await this.findManyWithEbookReviews({ where, pagination });
+    }
   }
 
   async findManyWithCourseReviews({

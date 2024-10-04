@@ -22,7 +22,7 @@ export class ReviewService {
     where: OptionalPick<IReview, 'userId'>,
     pagination: Pagination,
   ): Promise<Paginated<IReviewWithRelations[]>> {
-    return await this.reviewQueryRepository.findAllProductReviewWithReplies(
+    return await this.reviewQueryRepository.findEveryProductsReviewsWithReplies(
       where,
       pagination,
     );
