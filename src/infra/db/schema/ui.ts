@@ -151,9 +151,10 @@ export const uiCraftComponents = pgTable('ui_craft_components', {
   createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
     .notNull()
     .defaultNow(),
-  updatedAt: timestamp('created_at', { mode: 'date', withTimezone: true })
+  updatedAt: timestamp('updated_at', { mode: 'date', withTimezone: true })
     .notNull()
-    .defaultNow(),
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
 
 export const uiComponentsRelations = relations(uiComponents, ({ one }) => ({

@@ -22,6 +22,12 @@ import * as date from '@src/shared/utils/date';
 export class UiCraftController {
   constructor(private readonly uiCraftService: UiCraftService) {}
 
+  /**
+   * ui 빌더 에디터에서 저장한 UI 컴포넌트 트리를 저장합니다.
+   *
+   * @tag ui-craft
+   * @summary ui 빌더 정보 저장
+   */
   @TypedRoute.Post('/canvas')
   @Roles('admin', 'manager')
   @UseGuards(RolesGuard)
