@@ -6,6 +6,7 @@ import {
   text,
   uniqueIndex,
   uuid,
+  timestamp,
 } from 'drizzle-orm/pg-core';
 import { uiCarouselContentsType, uiCarouselType, uiCategory } from './enum';
 import { relations } from 'drizzle-orm';
@@ -141,6 +142,20 @@ export const uiCarouselReviews = pgTable(
   }),
 );
 
+export const uiCraftComponents = pgTable('ui_craft_components', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  description: text('description'),
+  serializedJson: text('serialized_json').notNull(),
+  path: text('path').notNull(),
+  createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp('created_at', { mode: 'date', withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
 export const uiComponentsRelations = relations(uiComponents, ({ one }) => ({
   repeatTimers: one(uiRepeatTimers),
   carousel: one(uiCarousels),
@@ -210,6 +225,7 @@ export const uiDbSchemas = {
   uiCarousels,
   uiCarouselReviews,
   uiCarouselContents,
+  uiCraftComponents,
 
   // Relations
   uiComponentsRelations,

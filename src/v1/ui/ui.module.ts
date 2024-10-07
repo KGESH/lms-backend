@@ -5,6 +5,7 @@ import { UiCarouselReviewModule } from '@src/v1/ui/component/carousel/carousel-r
 import { UiCarouselMainBannerModule } from '@src/v1/ui/component/carousel/carousel-main-banner/ui-carousel-main-banner.module';
 import { UiBannerModule } from '@src/v1/ui/component/banner/ui-banner.module';
 import { UiMarketingBannerModule } from '@src/v1/ui/component/marketing-banner/ui-marketing-banner.module';
+import { UiCraftModule } from '@src/v1/ui/craft/ui-craft.module';
 
 const modules = [
   UiComponentModule,
@@ -13,6 +14,7 @@ const modules = [
   UiCarouselMainBannerModule,
   UiBannerModule,
   UiMarketingBannerModule,
+  UiCraftModule,
 ];
 
 @Module({
