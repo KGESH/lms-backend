@@ -22,11 +22,13 @@ export class UiCraftQueryRepository {
   async findCraftUiComponentByPath(
     where: Pick<IUiCraftComponent, 'path'>,
   ): Promise<IUiCraftComponent | null> {
+    console.log('where.path', where.path);
     const craftUiComponent =
       await this.drizzle.db.query.uiCraftComponents.findFirst({
         where: eq(dbSchema.uiCraftComponents.path, where.path),
       });
 
+    console.log('craftUiComponent', craftUiComponent);
     return craftUiComponent ?? null;
   }
 }

@@ -14,3 +14,7 @@ export type UiCraftComponentUpsertDto = Omit<
   UiCraftComponentDto,
   'id' | 'createdAt' | 'updatedAt'
 >;
+
+export type UiCraftCanvasQuery = {
+  path: string;
+};
