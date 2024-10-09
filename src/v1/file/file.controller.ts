@@ -77,7 +77,7 @@ export class FileController {
    * @summary pre-signed URL 목록 생성.
    */
   @TypedRoute.Post('/private/pre-signed')
-  @Roles('admin', 'manager', 'teacher')
+  @Roles('user', 'admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)
   async createPrivatePreSignedUrls(
     @TypedHeaders() headers: AuthHeaders,
@@ -99,13 +99,17 @@ export class FileController {
   }
 
   /**
-   * 비공개 파일 업로드를 위한 pre-signed URL 목록을 생성합니다.
+   * 비공개 파일 다운로드를 위한 pre-signed URL을 조회합니다.
+   *
+   * 파일 ID를 통해 조회합니다.
+   *
+   * URL의 만료 시간은 **30**분 입니다.
    *
    * @tag file
-   * @summary pre-signed URL 목록 생성.
+   * @summary 비공개 파일 다운로드 pre-signed URL 조회.
    */
   @TypedRoute.Get('/private/pre-signed/:fileId')
-  @Roles('admin', 'manager', 'teacher')
+  @Roles('user', 'admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)
   async getPrivatePreSignedUrl(
     @TypedHeaders() headers: AuthHeaders,
