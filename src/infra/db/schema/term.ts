@@ -21,7 +21,8 @@ export const terms = pgTable('terms', {
     .defaultNow(),
   updatedAt: timestamp('updated_at', { mode: 'date', withTimezone: true })
     .notNull()
-    .defaultNow(),
+    .defaultNow()
+    .$onUpdate(() => new Date()),
   deletedAt: timestamp('deleted_at', { mode: 'date', withTimezone: true }),
 });
 
@@ -86,7 +87,8 @@ export const userTerms = pgTable(
       withTimezone: true,
     })
       .notNull()
-      .defaultNow(),
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   (table) => ({
     userIdIdx: index('idx_user_terms_user_id').on(table.userId),

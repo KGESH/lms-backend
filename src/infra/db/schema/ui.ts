@@ -8,7 +8,12 @@ import {
   uuid,
   timestamp,
 } from 'drizzle-orm/pg-core';
-import { uiCarouselContentsType, uiCarouselType, uiCategory } from './enum';
+import {
+  uiCarouselContentsType,
+  uiCarouselType,
+  uiCategory,
+  uiCraftStatus,
+} from './enum';
 import { relations } from 'drizzle-orm';
 
 export const uiComponents = pgTable(
@@ -148,6 +153,7 @@ export const uiCraftComponents = pgTable('ui_craft_components', {
   description: text('description'),
   serializedJson: text('serialized_json').notNull(),
   path: text('path').notNull(),
+  status: uiCraftStatus('status').default('draft').notNull(),
   createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
     .notNull()
     .defaultNow(),
@@ -155,6 +161,7 @@ export const uiCraftComponents = pgTable('ui_craft_components', {
     .notNull()
     .defaultNow()
     .$onUpdate(() => new Date()),
+  deletedAt: timestamp('deleted_at', { mode: 'date', withTimezone: true }),
 });
 
 export const uiComponentsRelations = relations(uiComponents, ({ one }) => ({

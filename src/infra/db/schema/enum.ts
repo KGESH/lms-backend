@@ -88,3 +88,9 @@ export const otpUsage = pgEnum('otp_usage', [
   'password_reset',
   'delete_account',
 ]);
+
+export const uiCraftStatus = pgEnum('ui_craft_status', [
+  'draft',
+  'published',
+  'archived',
+]);

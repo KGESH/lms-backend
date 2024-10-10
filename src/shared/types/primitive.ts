@@ -83,3 +83,5 @@ export type CarouselContentType = 'video' | 'image';
 export type TermType = 'mandatory' | 'optional';
 
 export type OtpUsage = 'login' | 'signup' | 'password_reset' | 'delete_account';
+
+export type UiCraftStatus = 'draft' | 'published' | 'archived';

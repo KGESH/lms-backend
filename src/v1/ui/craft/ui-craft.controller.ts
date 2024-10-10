@@ -55,6 +55,7 @@ export class UiCraftController {
       ...canvas,
       createdAt: date.toISOString(canvas.createdAt),
       updatedAt: date.toISOString(canvas.updatedAt),
+      deletedAt: date.toIsoStringOrNull(canvas.deletedAt),
     };
   }
 
@@ -93,6 +94,7 @@ export class UiCraftController {
       ...canvas,
       createdAt: date.toISOString(canvas.createdAt),
       updatedAt: date.toISOString(canvas.updatedAt),
+      deletedAt: date.toIsoStringOrNull(canvas.deletedAt),
     };
   }
 }
