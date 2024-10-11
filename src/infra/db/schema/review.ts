@@ -109,7 +109,7 @@ export const courseReviews = pgTable(
       .references(() => reviews.id, { onDelete: 'cascade' })
       .notNull(),
     courseId: uuid('course_id')
-      .references(() => courses.id)
+      .references(() => courses.id, { onDelete: 'cascade' })
       .notNull(),
     createdAt: timestamp('created_at', {
       mode: 'date',
@@ -138,7 +138,7 @@ export const ebookReviews = pgTable(
       .references(() => reviews.id, { onDelete: 'cascade' })
       .notNull(),
     ebookId: uuid('ebook_id')
-      .references(() => ebooks.id)
+      .references(() => ebooks.id, { onDelete: 'cascade' })
       .notNull(),
     createdAt: timestamp('created_at', {
       mode: 'date',
