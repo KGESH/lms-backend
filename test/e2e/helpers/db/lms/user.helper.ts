@@ -105,7 +105,10 @@ export const seedAdminUser = async (
 
 export const seedPgUsers = async (db: TransactionClient) => {
   const userId = createUuid();
+  const kakaoPgUserId = createUuid();
+
   const userCreateDtos: IUserSignUp[] = [
+    // 토스페이먼츠 심사 계정
     {
       userCreateParams: {
         id: userId,
@@ -128,6 +131,32 @@ export const seedPgUsers = async (db: TransactionClient) => {
         gender: 'male',
         phoneNumber: '+821012345678',
         userId,
+      },
+      userTerms: [],
+    },
+    // 카카오페이 심사 계정
+    {
+      userCreateParams: {
+        id: kakaoPgUserId,
+        displayName: 'test kakao pg user',
+        email: 'testkakao@gmail.com',
+        password: 'testuser1234!@#$',
+        role: 'user',
+        image: null,
+      },
+      accountCreateParams: {
+        providerId: null,
+        providerType: 'email',
+        userId: kakaoPgUserId,
+      },
+      infoCreateParams: {
+        name: 'test kakao pg user',
+        birthDate: '2024-01-01',
+        connectingInformation: null,
+        duplicationInformation: null,
+        gender: 'male',
+        phoneNumber: '+821011111111',
+        userId: kakaoPgUserId,
       },
       userTerms: [],
     },

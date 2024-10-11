@@ -79,6 +79,7 @@ async function seed() {
       },
       db,
     );
+    // 토스페이먼츠, 카카오페이 pg 심사 계정
     const [testPgUser] = await seedPgUsers(db);
     const pgTeacherUser = await seedPgTeacher(db);
     const pgFirstCourse = await seedPgFirstCourse(
