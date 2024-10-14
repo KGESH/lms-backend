@@ -32,7 +32,7 @@ export const termSnapshots = pgTable(
     id: uuid('id').primaryKey().defaultRandom(),
     termId: uuid('term_id')
       .notNull()
-      .references(() => terms.id),
+      .references(() => terms.id, { onDelete: 'cascade' }),
     title: text('title').notNull(),
     description: text('description'),
     content: text('content').notNull(),
@@ -54,7 +54,7 @@ export const signupTerms = pgTable(
     id: uuid('id').primaryKey().defaultRandom(),
     termId: uuid('term_id')
       .notNull()
-      .references(() => terms.id),
+      .references(() => terms.id, { onDelete: 'cascade' }),
     sequence: integer('sequence').notNull().unique(),
     createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
       .notNull()
