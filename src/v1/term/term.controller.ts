@@ -6,6 +6,7 @@ import {
   TypedException,
   TypedHeaders,
   TypedParam,
+  TypedQuery,
   TypedRoute,
 } from '@nestia/core';
 import {
@@ -17,6 +18,8 @@ import {
   TermWithSnapshotDto,
   UpdateTermWithContentDto,
   UserTermDto,
+  TermQuery,
+  DeleteTermDto,
 } from '@src/v1/term/term.dto';
 import {
   signupFormTermToDto,
@@ -36,15 +39,92 @@ import { SignupTermService } from '@src/v1/term/signup-term.service';
 import { UserTermService } from '@src/v1/term/user-term.service';
 import { SessionUser } from '@src/core/decorators/session-user.decorator';
 import { ISessionWithUser } from '@src/v1/auth/session.interface';
+import { TermQueryService } from '@src/v1/term/term-query.service';
+import { withDefaultPagination } from '@src/core/pagination';
+import { Paginated } from '@src/shared/types/pagination';
 
 @Controller('/v1/term')
 export class TermController {
   constructor(
     private readonly termService: TermService,
+    private readonly termQueryService: TermQueryService,
     private readonly signupTermService: SignupTermService,
     private readonly userTermService: UserTermService,
     private readonly signupTermQueryService: SignupTermQueryService,
   ) {}
+
+  /**
+   * 모든 약관 목록을 조회합니다.
+   *
+   * 최신 스냅샷을 함께 조회합니다.
+   *
+   * 로그인 없이 조회할 수 있습니다.
+   *
+   * @tag term
+   * @summary 약관 목록 조회 (public)
+   */
+  @TypedRoute.Get('/')
+  @SkipAuth()
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async getTerms(
+    @TypedHeaders() headers: ApiAuthHeaders,
+    @TypedQuery() query: TermQuery,
+  ): Promise<Paginated<TermWithSnapshotDto[]>> {
+    const {
+      pagination,
+      totalCount,
+      data: terms,
+    } = await this.termQueryService.findManyTermsWithLatestSnapshot(
+      withDefaultPagination(query),
+    );
+
+    return {
+      pagination,
+      totalCount,
+      data: terms.map(termWithSnapshotToDto),
+    };
+  }
+
+  /**
+   * 약관을 조회합니다.
+   *
+   * 최신 스냅샷을 함께 조회합니다.
+   *
+   * 로그인 없이 조회할 수 있습니다.
+   *
+   * @tag term
+   * @summary 약관 조회 (public)
+   */
+  @TypedRoute.Get('/:termId')
+  @SkipAuth()
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async getTerm(
+    @TypedHeaders() headers: ApiAuthHeaders,
+    @TypedParam('termId') termId: Uuid,
+  ): Promise<TermWithSnapshotDto | null> {
+    const termWithLatestSnapshot =
+      await this.termQueryService.findTermWithLatestSnapshot({ id: termId });
+
+    if (!termWithLatestSnapshot) {
+      return null;
+    }
+
+    return termWithSnapshotToDto(termWithLatestSnapshot);
+  }
 
   /**
    * 회원가입 페이지에서 체크박스로 보여줄 약관 목록을 조회합니다.
@@ -54,7 +134,7 @@ export class TermController {
    * @tag term
    * @summary 회원가입 약관 동의 목록 조회 (public)
    */
-  @TypedRoute.Get('/signup')
+  @TypedRoute.Get('/signup/form')
   @SkipAuth()
   @TypedException<TypeGuardError>({
     status: 400,
@@ -81,7 +161,7 @@ export class TermController {
    * @tag term
    * @summary 회원가입 약관 동의 목록 생성 (public)
    */
-  @TypedRoute.Post('/signup')
+  @TypedRoute.Post('/signup/form')
   @Roles('admin', 'manager')
   @UseGuards(RolesGuard)
   @TypedException<TypeGuardError>({
@@ -108,6 +188,44 @@ export class TermController {
       await this.signupTermService.createSignupFormTerms(body);
 
     return signupFormTerms.map(SignupTermToDto);
+  }
+
+  /**
+   * 약관을 생성합니다.
+   *
+   * 약관 생성시 스냅샷(약관 본문)이 함께 생성됩니다.
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag term
+   * @summary 약관 생성
+   */
+  @TypedRoute.Post('/')
+  @Roles('admin', 'manager')
+  @UseGuards(RolesGuard)
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'Not enough [role] to access this resource.',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async createTerm(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedBody() body: CreateTermWithSnapshotDto,
+  ): Promise<TermWithSnapshotDto> {
+    const { snapshot: snapshotCreateParams, ...termCreateParams } = body;
+    const createdTerm = await this.termService.createTerm(
+      termCreateParams,
+      snapshotCreateParams,
+    );
+
+    return termWithSnapshotToDto(createdTerm);
   }
 
   /**
@@ -148,44 +266,6 @@ export class TermController {
     );
 
     return userTerms.map(userTermToDto);
-  }
-
-  /**
-   * 약관을 생성합니다.
-   *
-   * 약관 생성시 스냅샷(약관 본문)이 함께 생성됩니다.
-   *
-   * 관리자 세션 id를 헤더에 담아서 요청합니다.
-   *
-   * @tag term
-   * @summary 약관 생성
-   */
-  @TypedRoute.Post('/')
-  @Roles('admin', 'manager')
-  @UseGuards(RolesGuard)
-  @TypedException<TypeGuardError>({
-    status: 400,
-    description: 'invalid request',
-  })
-  @TypedException<IErrorResponse<403>>({
-    status: 403,
-    description: 'Not enough [role] to access this resource.',
-  })
-  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
-    status: INVALID_LMS_SECRET,
-    description: 'invalid LMS api secret',
-  })
-  async createTerm(
-    @TypedHeaders() headers: AuthHeaders,
-    @TypedBody() body: CreateTermWithSnapshotDto,
-  ): Promise<TermWithSnapshotDto> {
-    const { snapshot: snapshotCreateParams, ...termCreateParams } = body;
-    const createdTerm = await this.termService.createTerm(
-      termCreateParams,
-      snapshotCreateParams,
-    );
-
-    return termWithSnapshotToDto(createdTerm);
   }
 
   /**
@@ -231,5 +311,44 @@ export class TermController {
     );
 
     return termWithSnapshotToDto(createdTerm);
+  }
+
+  /**
+   * 약관을 삭제합니다.
+   *
+   * 연관된 모든 스냅샷이 함꼐 사라집니다.
+   *
+   * Hard delete로 구현되어 있습니다.
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag term
+   * @summary 약관 삭제
+   */
+  @TypedRoute.Delete('/:termId')
+  @Roles('admin', 'manager')
+  @UseGuards(RolesGuard)
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'Not enough [role] to access this resource.',
+  })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'Term not found.',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async deleteTerm(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedParam('termId') termId: Uuid,
+  ): Promise<DeleteTermDto> {
+    const deletedId = await this.termService.deleteTerm({ id: termId });
+    return { deletedId };
   }
 }

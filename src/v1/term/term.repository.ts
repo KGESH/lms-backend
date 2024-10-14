@@ -30,7 +30,7 @@ export class TermRepository {
   async deleteTerm(
     where: Pick<ITerm, 'id'>,
     db = this.drizzle.db,
-  ): Promise<Uuid> {
+  ): Promise<ITerm['id']> {
     await db
       .delete(dbSchema.terms)
       .where(eq(dbSchema.terms.id, where.id))

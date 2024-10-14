@@ -96,4 +96,8 @@ export class TermService {
       snapshot,
     };
   }
+
+  async deleteTerm(where: Pick<ITerm, 'id'>): Promise<ITerm['id']> {
+    return await this.termRepository.deleteTerm(where);
+  }
 }

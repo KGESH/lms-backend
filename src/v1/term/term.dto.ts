@@ -1,5 +1,6 @@
 import { ISO8601, TermType, UInt, Uuid } from '@src/shared/types/primitive';
 import { OptionalPick } from '@src/shared/types/optional';
+import { Pagination } from '@src/shared/types/pagination';
 
 export type TermDto = {
   id: Uuid;
@@ -47,6 +48,10 @@ export type UpdateTermWithContentDto = {
   termContentUpdateParams?: UpdateTermContentDto;
 };
 
+export type DeleteTermDto = {
+  deletedId: TermDto['id'];
+};
+
 export type SignupTermDto = {
   id: Uuid;
   termId: Uuid;
@@ -81,3 +86,5 @@ export type SignupFormTermDto = TermWithSnapshotDto & {
 export type UserAgreedTermDto = TermWithSnapshotDto & {
   userTerm: UserTermDto;
 };
+
+export type TermQuery = Partial<Pagination>;
