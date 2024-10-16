@@ -48,3 +48,5 @@ export type FileDto = {
 };
 
 export type CreateFileDto = Omit<FileDto, 'createdAt'>;
+
+export type DeleteFileDto = Pick<FileDto, 'id'>;

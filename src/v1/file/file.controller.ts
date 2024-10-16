@@ -4,6 +4,7 @@ import { S3Service } from '@src/infra/s3/s3.service';
 import {
   CreateFileDto,
   CreatePreSignedUrlDto,
+  DeleteFileDto,
   FileDto,
   FilePreSignedUrlDto,
   PreSignedUrlDto,
@@ -40,6 +41,29 @@ export class FileController {
     const files = await this.fileService.createManyFiles(body);
 
     return files.map(fileToDto);
+  }
+
+  /**
+   * 파일 엔티티 목록을 삭제합니다.
+   *
+   * Soft delete로 구현되어 있습니다.
+   *
+   * deletedAt 필드에 삭제 시간이 기록된 엔티티는 batch job을 통해 추후 삭제됩니다.
+   *
+   * @tag file
+   * @summary 파일 엔티티 목록을 삭제
+   */
+  @TypedRoute.Delete('/')
+  @Roles('user', 'admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
+  async deleteFiles(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedBody() body: DeleteFileDto[],
+  ): Promise<FileDto['id'][]> {
+    const fileIds = body.map(({ id }) => id);
+    const deletedIds = await this.fileService.softDeleteManyFiles(fileIds);
+
+    return deletedIds;
   }
 
   /**
