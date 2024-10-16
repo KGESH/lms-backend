@@ -6,6 +6,7 @@ import { UiCarouselMainBannerModule } from '@src/v1/ui/component/carousel/carous
 import { UiBannerModule } from '@src/v1/ui/component/banner/ui-banner.module';
 import { UiMarketingBannerModule } from '@src/v1/ui/component/marketing-banner/ui-marketing-banner.module';
 import { UiCraftModule } from '@src/v1/ui/craft/ui-craft.module';
+import { UiPopupModule } from '@src/v1/ui/component/popup/ui-popup.module';
 
 const modules = [
   UiComponentModule,
@@ -15,6 +16,7 @@ const modules = [
   UiBannerModule,
   UiMarketingBannerModule,
   UiCraftModule,
+  UiPopupModule,
 ];
 
 @Module({
