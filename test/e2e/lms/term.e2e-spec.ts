@@ -97,12 +97,6 @@ describe('TermController (e2e)', () => {
         drizzle.db,
       );
 
-      console.log(
-        '[Seed termsWithSnapshot]',
-        JSON.stringify(termsWithSnapshot, null, 4),
-      );
-      console.log('[Seed signupTerms]', JSON.stringify(signupTerms, null, 4));
-
       const response = await SignupTermAPI.form.getSignupFormTerms({
         host,
         headers: { LmsSecret },
@@ -113,10 +107,6 @@ describe('TermController (e2e)', () => {
       }
 
       const signupFormTerms = response.data;
-      console.log(
-        '[TEST signupFormTerms]',
-        JSON.stringify(signupFormTerms, null, 4),
-      );
       expect(signupFormTerms[0].name).toEqual(termsWithSnapshot[0].term.name);
       expect(signupFormTerms[0].snapshot.id).toEqual(
         termsWithSnapshot[0].snapshot.id,

@@ -139,9 +139,17 @@ describe('UiPopupController (e2e)', () => {
         ...uiPopup,
         ui: {
           ...uiPopup.ui,
-          richTextContent: 'updated ui popup content',
-          buttonLabel: 'Get Promo',
-          linkUrl: 'https://galglismoney.com/promo/get-random-promo',
+          title: 'updated ui popup title',
+          description: null,
+          metadata: null,
+          json: {
+            v2: {
+              button: {
+                label: 'Get Promo',
+                href: 'https://galglismoney.com/promo/get-random-promo',
+              },
+            },
+          },
         },
       };
 
@@ -162,11 +170,11 @@ describe('UiPopupController (e2e)', () => {
       }
 
       const updatedUiPopup = updateResponse.data;
-      expect(updatedUiPopup.ui.richTextContent).toEqual(
-        'updated ui popup content',
-      );
-      expect(updatedUiPopup.ui.buttonLabel).toEqual('Get Promo');
-      expect(updatedUiPopup.ui.linkUrl).toEqual(
+      expect(updatedUiPopup.ui.title).toEqual('updated ui popup title');
+      expect(updatedUiPopup.ui.description).toBeNull();
+      expect(updatedUiPopup.ui.metadata).toBeNull();
+      expect(updatedUiPopup.ui.json.v2.button.label).toEqual('Get Promo');
+      expect(updatedUiPopup.ui.json.v2.button.href).toEqual(
         'https://galglismoney.com/promo/get-random-promo',
       );
     });
