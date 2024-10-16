@@ -8,9 +8,9 @@ export type UiPopupDto = UiComponentDto<
     id: Uuid;
     uiComponentId: Uuid;
     title: string;
-    richTextContent: string;
-    buttonLabel: string | null;
-    linkUrl: string | null;
+    description: string | null;
+    metadata: string | null;
+    json: Record<string, unknown>;
   }
 >;
 

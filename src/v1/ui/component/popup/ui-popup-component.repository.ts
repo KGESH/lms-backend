@@ -46,9 +46,9 @@ export class UiPopupComponentRepository {
             id,
             uiComponentId,
             title: params.ui.title,
-            richTextContent: params.ui.richTextContent,
-            buttonLabel: params.ui.buttonLabel,
-            linkUrl: params.ui.linkUrl,
+            description: params.ui.description,
+            metadata: params.ui.metadata,
+            json: params.ui.json,
           })
           .returning();
         return { uiComponent, uiPopup };
