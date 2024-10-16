@@ -44,7 +44,7 @@ describe('FileController (e2e)', () => {
         { count: 1, role: 'admin' },
         drizzle.db,
       );
-      const fileId = '5a617cff-93dc-4f32-9030-fbbb2ce327f0';
+      const fileId = '33617cff-93dc-4f32-9030-fbbb2ce327f0';
       const createDtos: CreatePreSignedUrlDto[] = [
         {
           fileId: fileId,
@@ -68,7 +68,6 @@ describe('FileController (e2e)', () => {
 
       const [preSignedUrl] = response.data;
       expect(preSignedUrl.fileId).toEqual(fileId);
-      console.log(preSignedUrl.url);
 
       const uploadResponse = await fetch(preSignedUrl.url, {
         method: 'PUT',
@@ -167,6 +166,57 @@ describe('FileController (e2e)', () => {
         expect(
           files.find((file) => file.filename === 'test file.pdf'),
         ).toBeDefined();
+      });
+    });
+
+    describe('[Delete files]', () => {
+      it('should be delete many file entities success', async () => {
+        const [fileOwner] = await seedUsers(
+          { count: 1, role: 'user' },
+          drizzle.db,
+        );
+
+        const uploadedFiles: CreateFileDto[] = [
+          {
+            id: typia.random<Uuid>(),
+            type: 'image',
+            filename: 'test_thumbnail.png',
+            metadata: null,
+            url: typia.random<Uri>(),
+          },
+        ];
+
+        const response = await FileAPI.createFiles(
+          {
+            host,
+            headers: { LmsSecret, UserSessionId: fileOwner.userSession.id },
+          },
+          uploadedFiles,
+        );
+
+        if (!response.success) {
+          const message = JSON.stringify(response.data, null, 4);
+          throw new Error(`[assert] ${message}`);
+        }
+
+        const files = response.data;
+        expect(
+          files.find((file) => file.filename === 'test_thumbnail.png'),
+        ).toBeDefined();
+
+        const deleteResponse = await FileAPI.deleteFiles(
+          {
+            host,
+            headers: { LmsSecret, UserSessionId: fileOwner.userSession.id },
+          },
+          [{ id: uploadedFiles[0].id }],
+        );
+        if (!deleteResponse.success) {
+          const message = JSON.stringify(deleteResponse.data, null, 4);
+          throw new Error(`[assert] ${message}`);
+        }
+        const deletedIds = deleteResponse.data;
+        expect(deletedIds[0]).toEqual(uploadedFiles[0].id);
       });
     });
   });
