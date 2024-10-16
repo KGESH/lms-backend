@@ -4,6 +4,7 @@ import {
   pgTable,
   real,
   text,
+  json,
   uniqueIndex,
   uuid,
   timestamp,
@@ -96,9 +97,9 @@ export const uiPopups = pgTable(
       .notNull()
       .references(() => uiComponents.id, { onDelete: 'cascade' }),
     title: text('title').notNull(),
-    richTextContent: text('rich_text_content').notNull(),
-    buttonLabel: text('button_label'),
-    linkUrl: text('link_url'),
+    description: text('description'),
+    metadata: text('metadata'),
+    json: json('json').notNull().$type<Record<string, unknown>>(),
   },
   (table) => ({
     uiComponentIdIdx: uniqueIndex('idx_ui_popups_ui_component_id').on(
