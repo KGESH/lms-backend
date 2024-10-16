@@ -55,10 +55,15 @@ export const signupTerms = pgTable(
     termId: uuid('term_id')
       .notNull()
       .references(() => terms.id, { onDelete: 'cascade' }),
-    sequence: integer('sequence').notNull().unique(),
+    sequence: integer('sequence').notNull(),
     createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
       .notNull()
       .defaultNow(),
+    updatedAt: timestamp('updated_at', { mode: 'date', withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+    deletedAt: timestamp('deleted_at', { mode: 'date', withTimezone: true }),
   },
   (table) => ({
     termIdIdx: index('idx_signup_terms_term_id').on(table.termId),
