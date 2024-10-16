@@ -97,6 +97,12 @@ describe('TermController (e2e)', () => {
         drizzle.db,
       );
 
+      console.log(
+        '[Seed termsWithSnapshot]',
+        JSON.stringify(termsWithSnapshot, null, 4),
+      );
+      console.log('[Seed signupTerms]', JSON.stringify(signupTerms, null, 4));
+
       const response = await SignupTermAPI.form.getSignupFormTerms({
         host,
         headers: { LmsSecret },
@@ -107,6 +113,10 @@ describe('TermController (e2e)', () => {
       }
 
       const signupFormTerms = response.data;
+      console.log(
+        '[TEST signupFormTerms]',
+        JSON.stringify(signupFormTerms, null, 4),
+      );
       expect(signupFormTerms[0].name).toEqual(termsWithSnapshot[0].term.name);
       expect(signupFormTerms[0].snapshot.id).toEqual(
         termsWithSnapshot[0].snapshot.id,
@@ -313,6 +323,113 @@ describe('TermController (e2e)', () => {
           expect(foundTerm).toBeNull();
         });
       });
+    });
+  });
+
+  describe('Update many signup form terms sequence', () => {
+    it('should be create many signup terms success', async () => {
+      const admin = (
+        await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+      )[0];
+      const base = await createTermWithSnapshot(
+        {
+          name: '이용 약관',
+          type: 'mandatory',
+        },
+        {
+          title: '(갈길이머니) 이용 약관',
+          content: '이용 약관 본문',
+          description: '관리자 메모',
+          metadata: null,
+          updatedReason: null,
+        },
+        drizzle.db,
+      );
+      const marketing = await createTermWithSnapshot(
+        {
+          name: '마케팅 정보 수신 동의',
+          type: 'optional',
+        },
+        {
+          title: '(갈길이머니) 마케팅 정보 수신 동의',
+          content: '마케팅 정보 수신 동의 본문',
+          description: '관리자 메모',
+          metadata: null,
+          updatedReason: null,
+        },
+        drizzle.db,
+      );
+
+      const createResponse = await SignupTermAPI.form.createSignupFormTerms(
+        {
+          host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
+          },
+        },
+        [
+          {
+            sequence: 0,
+            termId: base.term.id,
+          },
+          {
+            sequence: 1,
+            termId: marketing.term.id,
+          },
+        ],
+      );
+      if (!createResponse.success) {
+        const message = JSON.stringify(createResponse.data, null, 4);
+        throw new Error(`[assert] ${message}`);
+      }
+
+      const signupTerms = createResponse.data;
+      const baseSignupTerm = signupTerms.find(
+        (signupTerm) => signupTerm.termId === base.term.id,
+      )!;
+      const marketingSignupTerm = signupTerms.find(
+        (signupTerm) => signupTerm.termId === marketing.term.id,
+      )!;
+
+      expect(baseSignupTerm.sequence).toEqual(0);
+      expect(marketingSignupTerm.sequence).toEqual(1);
+
+      const updatedSequenceResponse =
+        await SignupTermAPI.form.updateSignupFormTerms(
+          {
+            host,
+            headers: {
+              LmsSecret,
+              UserSessionId: admin.userSession.id,
+            },
+          },
+          [
+            {
+              id: baseSignupTerm.id,
+              sequence: 55,
+            },
+            {
+              id: marketingSignupTerm.id,
+              sequence: 66,
+            },
+          ],
+        );
+      if (!updatedSequenceResponse.success) {
+        const message = JSON.stringify(updatedSequenceResponse.data, null, 4);
+        throw new Error(`[assert] ${message}`);
+      }
+
+      const updatedSignupTerms = updatedSequenceResponse.data;
+      const updatedBaseSignupTerm = updatedSignupTerms.find(
+        (signupTerm) => signupTerm.termId === base.term.id,
+      )!;
+      const updatedMarketingSignupTerm = updatedSignupTerms.find(
+        (signupTerm) => signupTerm.termId === marketing.term.id,
+      )!;
+
+      expect(updatedBaseSignupTerm.sequence).toEqual(55);
+      expect(updatedMarketingSignupTerm.sequence).toEqual(66);
     });
   });
 });
