@@ -61,7 +61,8 @@ export class FileController {
     @TypedBody() body: DeleteFileDto[],
   ): Promise<FileDto['id'][]> {
     const fileIds = body.map(({ id }) => id);
-    const deletedIds = await this.fileService.softDeleteManyFiles(fileIds);
+    const deletedIds =
+      await this.fileService.softDeleteManyFilesOrRollback(fileIds);
 
     return deletedIds;
   }

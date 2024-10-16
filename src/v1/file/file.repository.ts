@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { IFile, IFileCreate } from '@src/v1/file/file.interface';
 import { dbSchema } from '@src/infra/db/schema';
@@ -22,10 +22,17 @@ export class FileRepository {
     ids: IFile['id'][],
     db = this.drizzle.db,
   ): Promise<IFile['id'][]> {
-    await db
+    const deletedIds = await db
       .update(dbSchema.files)
       .set({ deletedAt: date.now('date') })
-      .where(inArray(dbSchema.files.id, ids));
+      .where(inArray(dbSchema.files.id, ids))
+      .returning({ id: dbSchema.files.id });
+
+    if (deletedIds.length !== ids.length) {
+      throw new NotFoundException(
+        'File count does not match the number of deleted files',
+      );
+    }
 
     return ids;
   }
