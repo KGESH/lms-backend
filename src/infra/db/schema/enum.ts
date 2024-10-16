@@ -31,6 +31,7 @@ export const uiCategory = pgEnum('ui_categories', [
   'repeat_timer',
   'banner',
   'marketing_banner',
+  'popup',
 ]);
 
 export const uiCarouselType = pgEnum('ui_carousel_type', [
