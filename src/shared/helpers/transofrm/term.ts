@@ -32,9 +32,11 @@ export const termSnapshotToDto = (
   createdAt: date.toISOString(snapshot.createdAt),
 });
 
-export const SignupTermToDto = (signupTerm: ISignupTerm): SignupTermDto => ({
+export const signupTermToDto = (signupTerm: ISignupTerm): SignupTermDto => ({
   ...signupTerm,
   createdAt: date.toISOString(signupTerm.createdAt),
+  updatedAt: date.toISOString(signupTerm.updatedAt),
+  deletedAt: date.toIsoStringOrNull(signupTerm.deletedAt),
 });
 
 export const termWithSnapshotToDto = (
@@ -48,7 +50,7 @@ export const signupFormTermToDto = (
   termRelations: ISignupFormTerm,
 ): SignupFormTermDto => ({
   ...termWithSnapshotToDto(termRelations),
-  signupTerm: SignupTermToDto(termRelations.signupTerm),
+  signupTerm: signupTermToDto(termRelations.signupTerm),
 });
 
 export const userTermToDto = (userTerm: IUserTerm): UserTermDto => ({

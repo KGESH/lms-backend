@@ -20,10 +20,12 @@ import {
   UserTermDto,
   TermQuery,
   DeleteTermDto,
+  UpdateSignupTermDto,
+  DeleteSignupTermDto,
 } from '@src/v1/term/term.dto';
 import {
   signupFormTermToDto,
-  SignupTermToDto,
+  signupTermToDto,
   termWithSnapshotToDto,
   userTermToDto,
 } from '@src/shared/helpers/transofrm/term';
@@ -124,70 +126,6 @@ export class TermController {
     }
 
     return termWithSnapshotToDto(termWithLatestSnapshot);
-  }
-
-  /**
-   * 회원가입 페이지에서 체크박스로 보여줄 약관 목록을 조회합니다.
-   *
-   * 로그인 없이 조회할 수 있습니다.
-   *
-   * @tag term
-   * @summary 회원가입 약관 동의 목록 조회 (public)
-   */
-  @TypedRoute.Get('/signup/form')
-  @SkipAuth()
-  @TypedException<TypeGuardError>({
-    status: 400,
-    description: 'invalid request',
-  })
-  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
-    status: INVALID_LMS_SECRET,
-    description: 'invalid LMS api secret',
-  })
-  async getSignupFormTerms(
-    @TypedHeaders() headers: ApiAuthHeaders,
-  ): Promise<SignupFormTermDto[]> {
-    const signupFormTerms =
-      await this.signupTermQueryService.findSignupFormTerms();
-
-    return signupFormTerms.map(signupFormTermToDto);
-  }
-
-  /**
-   * 회원가입 페이지에서 체크박스로 보여줄 약관 목록을 생성합니다.
-   *
-   * 관리자 세션 id를 헤더에 담아서 요청합니다.
-   *
-   * @tag term
-   * @summary 회원가입 약관 동의 목록 생성 (public)
-   */
-  @TypedRoute.Post('/signup/form')
-  @Roles('admin', 'manager')
-  @UseGuards(RolesGuard)
-  @TypedException<TypeGuardError>({
-    status: 400,
-    description: 'invalid request',
-  })
-  @TypedException<IErrorResponse<403>>({
-    status: 403,
-    description: 'Not enough [role] to access this resource.',
-  })
-  @TypedException<IErrorResponse<409>>({
-    status: 409,
-    description: 'Signup form term sequence conflict.',
-  })
-  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
-    status: INVALID_LMS_SECRET,
-    description: 'invalid LMS api secret',
-  })
-  async createSignupFormTerms(
-    @TypedHeaders() headers: AuthHeaders,
-    @TypedBody() body: CreateSignupTermDto[],
-  ): Promise<SignupTermDto[]> {
-    const signupFormTerms =
-      await this.signupTermService.createSignupFormTerms(body);
-
-    return signupFormTerms.map(SignupTermToDto);
   }
 
   /**
@@ -349,6 +287,139 @@ export class TermController {
     @TypedParam('termId') termId: Uuid,
   ): Promise<DeleteTermDto> {
     const deletedId = await this.termService.deleteTerm({ id: termId });
+    return { deletedId };
+  }
+
+  /**
+   * 회원가입 페이지에서 체크박스로 보여줄 약관 목록을 조회합니다.
+   *
+   * 로그인 없이 조회할 수 있습니다.
+   *
+   * @tag term
+   * @summary 회원가입 약관 동의 목록 조회 (public)
+   */
+  @TypedRoute.Get('/signup/form')
+  @SkipAuth()
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async getSignupFormTerms(
+    @TypedHeaders() headers: ApiAuthHeaders,
+  ): Promise<SignupFormTermDto[]> {
+    const signupFormTerms =
+      await this.signupTermQueryService.findSignupFormTerms();
+
+    return signupFormTerms.map(signupFormTermToDto);
+  }
+
+  /**
+   * 회원가입 페이지에서 체크박스로 보여줄 약관 목록을 생성합니다.
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag term
+   * @summary 회원가입 약관 동의 목록 생성
+   */
+  @TypedRoute.Post('/signup/form')
+  @Roles('admin', 'manager')
+  @UseGuards(RolesGuard)
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'Not enough [role] to access this resource.',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async createSignupFormTerms(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedBody() body: CreateSignupTermDto[],
+  ): Promise<SignupTermDto[]> {
+    const signupFormTerms =
+      await this.signupTermService.createSignupFormTerms(body);
+
+    return signupFormTerms.map(signupTermToDto);
+  }
+
+  /**
+   * 회원가입 페이지에서 체크박스로 보여줄 약관 목록의 순서를 수정합니다.
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag term
+   * @summary 회원가입 약관 동의 목록 순서 수정
+   */
+  @TypedRoute.Patch('/signup/form')
+  @Roles('admin', 'manager')
+  @UseGuards(RolesGuard)
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'Not enough [role] to access this resource.',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async updateSignupFormTerms(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedBody() body: UpdateSignupTermDto[],
+  ): Promise<SignupTermDto[]> {
+    const signupFormTerms =
+      await this.signupTermService.updateSignupFormTerms(body);
+
+    return signupFormTerms.map(signupTermToDto);
+  }
+
+  /**
+   * 회원가입 페이지에서 체크박스로 보여줄 약관을 삭제합니다.
+   *
+   * Soft delete로 구현되어 있습니다.
+   *
+   * 관리자 세션 id를 헤더에 담아서 요청합니다.
+   *
+   * @tag term
+   * @summary 회원가입 약관 동의 목록 순서 수정
+   */
+  @TypedRoute.Delete('/signup/form/:signupTermId')
+  @Roles('admin', 'manager')
+  @UseGuards(RolesGuard)
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'Not enough [role] to access this resource.',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 404,
+    description: 'Signup term not found.',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async deleteSignupFormTerms(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedParam('signupTermId') signupTermId: Uuid,
+  ): Promise<DeleteSignupTermDto> {
+    const deletedId = await this.signupTermService.deleteSignupFormTerm({
+      id: signupTermId,
+    });
+
     return { deletedId };
   }
 }

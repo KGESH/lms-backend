@@ -37,9 +37,13 @@ export type ISignupTerm = {
   termId: Uuid;
   sequence: UInt;
   createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
 };
 
-export type ISignupTermCreate = Omit<ISignupTerm, 'id' | 'createdAt'>;
+export type ISignupTermCreate = Pick<ISignupTerm, 'termId' | 'sequence'>;
+
+export type ISignupTermUpdate = Pick<ISignupTerm, 'id' | 'sequence'>;
 
 export type IUserTerm = {
   id: Uuid;

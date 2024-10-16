@@ -57,9 +57,17 @@ export type SignupTermDto = {
   termId: Uuid;
   sequence: UInt;
   createdAt: ISO8601;
+  updatedAt: ISO8601;
+  deletedAt: ISO8601 | null;
 };
 
-export type CreateSignupTermDto = Omit<SignupTermDto, 'id' | 'createdAt'>;
+export type CreateSignupTermDto = Pick<SignupTermDto, 'termId' | 'sequence'>;
+
+export type UpdateSignupTermDto = Pick<SignupTermDto, 'id' | 'sequence'>;
+
+export type DeleteSignupTermDto = {
+  deletedId: SignupTermDto['id'];
+};
 
 export type UserTermDto = {
   id: Uuid;
