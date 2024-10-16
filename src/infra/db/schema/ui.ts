@@ -88,6 +88,25 @@ export const uiMarketingBanners = pgTable(
   }),
 );
 
+export const uiPopups = pgTable(
+  'ui_popups',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    uiComponentId: uuid('ui_component_id')
+      .notNull()
+      .references(() => uiComponents.id, { onDelete: 'cascade' }),
+    title: text('title').notNull(),
+    richTextContent: text('rich_text_content').notNull(),
+    buttonLabel: text('button_label'),
+    linkUrl: text('link_url'),
+  },
+  (table) => ({
+    uiComponentIdIdx: uniqueIndex('idx_ui_popups_ui_component_id').on(
+      table.uiComponentId,
+    ),
+  }),
+);
+
 export const uiCarousels = pgTable(
   'ui_carousels',
   {
@@ -195,6 +214,13 @@ export const uiMarketingBannersRelations = relations(
   }),
 );
 
+export const uiPopupsRelations = relations(uiPopups, ({ one }) => ({
+  uiComponent: one(uiComponents, {
+    fields: [uiPopups.uiComponentId],
+    references: [uiComponents.id],
+  }),
+}));
+
 export const uiCarouselsRelations = relations(uiCarousels, ({ one, many }) => ({
   uiComponent: one(uiComponents, {
     fields: [uiCarousels.uiComponentId],
@@ -234,6 +260,7 @@ export const uiDbSchemas = {
   uiCarouselReviews,
   uiCarouselContents,
   uiCraftComponents,
+  uiPopups,
 
   // Relations
   uiComponentsRelations,
@@ -243,4 +270,5 @@ export const uiDbSchemas = {
   uiCarouselsRelations,
   uiCarouselReviewsRelations,
   uiCarouselContentsRelations,
+  uiPopupsRelations,
 };

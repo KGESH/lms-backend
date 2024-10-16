@@ -3,6 +3,7 @@ export const UI_CATEGORY = {
   REPEAT_TIMER: 'repeat_timer',
   BANNER: 'banner',
   MARKETING_BANNER: 'marketing_banner',
+  POPUP: 'popup',
 } as const;
 
 export type UiCategory = (typeof UI_CATEGORY)[keyof typeof UI_CATEGORY];
@@ -14,6 +15,8 @@ export type UiRepeatTimer = typeof UI_CATEGORY.REPEAT_TIMER;
 export type UiBanner = typeof UI_CATEGORY.BANNER;
 
 export type UiMarketingBanner = typeof UI_CATEGORY.MARKETING_BANNER;
+
+export type UiPopup = typeof UI_CATEGORY.POPUP;
 
 export const UI_CAROUSEL_TYPE = {
   MAIN_BANNER: 'carousel.main_banner',
