@@ -60,6 +60,57 @@ describe('UiPopupController (e2e)', () => {
     });
   });
 
+  describe('Get many UI popups', () => {
+    it('should be get many UI popups success', async () => {
+      const admin = (
+        await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
+      )[0];
+
+      const createDto: CreateUiPopupDto = typia.random<CreateUiPopupDto>();
+
+      const createResponse = await PopupAPI.createUiPopup(
+        {
+          host,
+          headers: {
+            LmsSecret,
+            UserSessionId: admin.userSession.id,
+          },
+        },
+        createDto,
+      );
+      if (!createResponse.success) {
+        const message = JSON.stringify(createResponse.data, null, 4);
+        throw new Error(`[assert] ${message}`);
+      }
+
+      const uiPopup = createResponse.data;
+
+      const getResponse = await PopupAPI.getUiPopups(
+        {
+          host,
+          headers: { LmsSecret },
+        },
+        {
+          page: 1,
+          pageSize: 10,
+          orderBy: 'desc',
+        },
+      );
+      if (!getResponse.success) {
+        const message = JSON.stringify(getResponse.data, null, 4);
+        throw new Error(`[assert] ${message}`);
+      }
+
+      const { data, totalCount, pagination } = getResponse.data;
+
+      expect(data[0].ui.title).toEqual(uiPopup.ui.title);
+      expect(totalCount).toEqual(1);
+      expect(pagination.page).toEqual(1);
+      expect(pagination.pageSize).toEqual(10);
+      expect(pagination.orderBy).toEqual('desc');
+    });
+  });
+
   describe('Get UI popup', () => {
     it('should be get UI popup success', async () => {
       const admin = (
@@ -138,7 +189,6 @@ describe('UiPopupController (e2e)', () => {
       const updateDto: UpdateUiPopupDto = {
         ...uiPopup,
         ui: {
-          ...uiPopup.ui,
           title: 'updated ui popup title',
           description: null,
           metadata: null,
