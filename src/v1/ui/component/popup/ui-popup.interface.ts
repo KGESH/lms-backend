@@ -10,13 +10,22 @@ export type IUiPopup = {
   description: string | null;
   metadata: string | null;
   json: Record<string, unknown>;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
 };
 
 export type IUiPopupComponent = IUiComponent<UiPopup, IUiPopup>;
 
 export type IUiPopupComponentCreate = Optional<
-  IUiComponent<UiPopup, Optional<IUiPopup, 'id' | 'uiComponentId'>>,
+  IUiComponent<
+    UiPopup,
+    Omit<
+      Optional<IUiPopup, 'id' | 'uiComponentId'>,
+      'createdAt' | 'updatedAt' | 'deletedAt'
+    >
+  >,
   'id'
 >;
 
-export type IUiPopupComponentUpdate = Partial<IUiPopupComponent>;
+export type IUiPopupComponentUpdate = Partial<IUiPopupComponentCreate>;

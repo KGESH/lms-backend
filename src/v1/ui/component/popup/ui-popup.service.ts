@@ -9,6 +9,7 @@ import {
 import { TransactionClient } from '@src/infra/db/drizzle.types';
 import { UiPopupComponentRepository } from '@src/v1/ui/component/popup/ui-popup-component.repository';
 import { UiPopupComponentQueryRepository } from '@src/v1/ui/component/popup/ui-popup-component-query.repository';
+import { Paginated, Pagination } from '@src/shared/types/pagination';
 
 @Injectable()
 export class UiPopupService {
@@ -17,6 +18,12 @@ export class UiPopupService {
     private readonly uiPopupComponentRepository: UiPopupComponentRepository,
     private readonly uiPopupComponentQueryRepository: UiPopupComponentQueryRepository,
   ) {}
+
+  async findUiPopups(
+    query: Pagination,
+  ): Promise<Paginated<IUiPopupComponent[]>> {
+    return await this.uiPopupComponentQueryRepository.findManyUiPopups(query);
+  }
 
   async findUiPopup(
     where: Pick<IUiPopup, 'uiComponentId'>,

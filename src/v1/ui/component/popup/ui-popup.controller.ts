@@ -4,6 +4,7 @@ import {
   TypedException,
   TypedHeaders,
   TypedParam,
+  TypedQuery,
   TypedRoute,
 } from '@nestia/core';
 import { TypeGuardError } from 'typia';
@@ -12,6 +13,7 @@ import { Uuid } from '@src/shared/types/primitive';
 import {
   CreateUiPopupDto,
   UiPopupDto,
+  UiPopupQuery,
   UpdateUiPopupDto,
 } from '@src/v1/ui/component/popup/ui-popup.dto';
 import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
@@ -20,10 +22,46 @@ import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
 import { IErrorResponse } from '@src/shared/types/response';
 import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
+import { withDefaultPagination } from '@src/core/pagination';
+import { Paginated } from '@src/shared/types/pagination';
+import { uiPopupToDto } from '@src/shared/helpers/transofrm/popup';
 
 @Controller('v1/ui/component/popup')
 export class UiPopupController {
   constructor(private readonly uiPopupService: UiPopupService) {}
+
+  /**
+   * 팝업 UI 목록을 조회합니다.
+   *
+   * @tag ui
+   * @summary 팝업 UI 목록을 조회합니다.
+   */
+  @TypedRoute.Get('/')
+  @SkipAuth()
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async getUiPopups(
+    @TypedHeaders() headers: ApiAuthHeaders,
+    @TypedQuery() query: UiPopupQuery,
+  ): Promise<Paginated<UiPopupDto[]>> {
+    const {
+      pagination,
+      totalCount,
+      data: paginatedPopups,
+    } = await this.uiPopupService.findUiPopups(withDefaultPagination(query));
+
+    return {
+      pagination,
+      totalCount,
+      data: paginatedPopups.map(uiPopupToDto),
+    };
+  }
 
   /**
    * 팝업 UI를 조회합니다.
@@ -48,7 +86,12 @@ export class UiPopupController {
     const uiPopup = await this.uiPopupService.findUiPopup({
       uiComponentId,
     });
-    return uiPopup;
+
+    if (!uiPopup) {
+      return null;
+    }
+
+    return uiPopupToDto(uiPopup);
   }
 
   /**
@@ -82,13 +125,9 @@ export class UiPopupController {
     @TypedHeaders() headers: AuthHeaders,
     @TypedBody() body: CreateUiPopupDto,
   ): Promise<UiPopupDto> {
-    const uiPopup = await this.uiPopupService.createUiPopup({
-      ...body,
-      ui: {
-        ...body.ui,
-      },
-    });
-    return uiPopup;
+    const uiPopup = await this.uiPopupService.createUiPopup(body);
+
+    return uiPopupToDto(uiPopup);
   }
 
   /**
@@ -127,6 +166,7 @@ export class UiPopupController {
       { uiComponentId },
       body,
     );
-    return updated;
+
+    return uiPopupToDto(updated);
   }
 }
