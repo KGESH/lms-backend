@@ -100,6 +100,14 @@ export const uiPopups = pgTable(
     description: text('description'),
     metadata: text('metadata'),
     json: json('json').notNull().$type<Record<string, unknown>>(),
+    createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp('updated_at', { mode: 'date', withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+    deletedAt: timestamp('deleted_at', { mode: 'date', withTimezone: true }),
   },
   (table) => ({
     uiComponentIdIdx: uniqueIndex('idx_ui_popups_ui_component_id').on(
