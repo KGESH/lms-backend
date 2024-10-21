@@ -257,7 +257,9 @@ export const courseEnrollments = pgTable(
   'course_enrollments',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('user_id').notNull(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
     courseId: uuid('course_id').notNull(),
     createdAt: timestamp('created_at', {
       mode: 'date',

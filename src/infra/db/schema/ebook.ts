@@ -222,7 +222,9 @@ export const ebookEnrollments = pgTable(
   'ebook_enrollments',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('user_id').notNull(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
     ebookId: uuid('ebook_id').notNull(),
     createdAt: timestamp('created_at', {
       mode: 'date',

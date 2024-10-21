@@ -65,7 +65,7 @@ export const reviewReplies = pgTable(
       .references(() => reviews.id, { onDelete: 'cascade' })
       .notNull(),
     userId: uuid('user_id')
-      .references(() => users.id)
+      .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
     createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
       .notNull()

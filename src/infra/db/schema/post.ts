@@ -70,7 +70,7 @@ export const posts = pgTable(
     id: uuid('id').primaryKey().defaultRandom(),
     userId: uuid('user_id')
       .notNull()
-      .references((): AnyPgColumn => users.id),
+      .references((): AnyPgColumn => users.id, { onDelete: 'cascade' }),
     categoryId: uuid('category_id')
       .notNull()
       .references((): AnyPgColumn => postCategories.id),
