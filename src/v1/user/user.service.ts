@@ -80,8 +80,13 @@ export class UserService {
     return assertUserWithoutPassword(user);
   }
 
-  async findUserByEmail(query: Pick<IUser, 'email'>): Promise<IUser | null> {
-    const user = await this.userQueryRepository.findUserByEmail(query);
+  async findUserByEmailIncludedSoftDeletedUser(
+    query: Pick<IUser, 'email'>,
+  ): Promise<IUser | null> {
+    const user =
+      await this.userQueryRepository.findUserByEmailIncludedSoftDeletedUser(
+        query,
+      );
     return user;
   }
 
@@ -142,5 +147,13 @@ export class UserService {
     );
 
     return assertUserWithoutPassword(updated);
+  }
+
+  async deleteUser(
+    where: Pick<IUser, 'id'>,
+    tx: TransactionClient,
+  ): Promise<IUserWithoutPassword['id']> {
+    const user = await this.findUserByIdOrThrow(where);
+    return await this.userRepository.softDelete({ id: user.id }, tx);
   }
 }

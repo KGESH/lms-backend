@@ -32,7 +32,8 @@ export class AuthService {
   ) {}
 
   async login(params: IUserLogin): Promise<IUserWithoutPassword> {
-    const user = await this.userService.findUserByEmail(params);
+    const user =
+      await this.userService.findUserByEmailIncludedSoftDeletedUser(params);
 
     if (!user?.password || !params.password) {
       throw new NotFoundException('User not found');
@@ -53,9 +54,11 @@ export class AuthService {
   async signUpUser(
     userSignupParams: IUserSignUp,
   ): Promise<IUserWithoutPassword> {
-    const exist = await this.userService.findUserByEmail({
-      email: userSignupParams.userCreateParams.email,
-    });
+    const exist = await this.userService.findUserByEmailIncludedSoftDeletedUser(
+      {
+        email: userSignupParams.userCreateParams.email,
+      },
+    );
 
     if (exist) {
       throw new ConflictException('User already exists');
@@ -138,5 +141,25 @@ export class AuthService {
     );
 
     return updated;
+  }
+
+  async deleteAccount(
+    where: Pick<IUserWithoutPassword, 'id'>,
+  ): Promise<IUserWithoutPassword['id']> {
+    return await this.userService.deleteUser(where, this.drizzle.db);
+  }
+
+  async restoreAccount(
+    where: Pick<IUserWithoutPassword, 'id'>,
+  ): Promise<IUserWithoutPassword['id']> {
+    const updated = await this.userService.updateUser(
+      where,
+      {
+        deletedAt: null,
+      },
+      this.drizzle.db,
+    );
+
+    return updated.id;
   }
 }

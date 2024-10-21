@@ -13,7 +13,7 @@ export class AuthAdminService {
   ) {}
 
   async createEmailUser(params: IUserSignUp): Promise<IUserWithoutPassword> {
-    const exist = await this.userService.findUserByEmail({
+    const exist = await this.userService.findUserByEmailIncludedSoftDeletedUser({
       email: params.userCreateParams.email,
     });
 

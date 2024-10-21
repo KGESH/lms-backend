@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import { dbSchema } from '@src/infra/db/schema';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { IUser, IUserCreate, IUserUpdate } from '@src/v1/user/user.interface';
 import { hash } from '@src/shared/helpers/hash';
 import { TransactionClient } from '@src/infra/db/drizzle.types';
+import * as date from '@src/shared/utils/date';
 
 @Injectable()
 export class UserRepository {
@@ -43,8 +44,20 @@ export class UserRepository {
     return updated;
   }
 
-  // Todo: Impl soft delete
-  delete(where: Partial<IUser>, db: TransactionClient): Promise<IUser> {
-    throw new Error('Method not implemented.');
+  async softDelete(
+    where: Pick<IUser, 'id'>,
+    db: TransactionClient,
+  ): Promise<IUser['id']> {
+    await db
+      .update(dbSchema.users)
+      .set({ deletedAt: date.now('date') })
+      .where(eq(dbSchema.users.id, where.id));
+
+    return where.id;
+  }
+
+  // Hard delete
+  async deleteMany(ids: IUser['id'][], db = this.drizzle.db): Promise<void> {
+    await db.delete(dbSchema.users).where(inArray(dbSchema.users.id, ids));
   }
 }

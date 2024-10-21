@@ -12,7 +12,8 @@ export class KakaoAuthService {
   ) {}
 
   async login(params: IKakaoLogin): Promise<IUserWithoutPassword> {
-    const existUser = await this.userService.findUserByEmail(params);
+    const existUser =
+      await this.userService.findUserByEmailIncludedSoftDeletedUser(params);
 
     if (!existUser) {
       const user = await this.authService.signUpUser({

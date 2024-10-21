@@ -50,7 +50,9 @@ export class UserQueryRepository {
     return userInfo.user;
   }
 
-  async findUserByEmail(where: Pick<IUser, 'email'>): Promise<IUser | null> {
+  async findUserByEmailIncludedSoftDeletedUser(
+    where: Pick<IUser, 'email'>,
+  ): Promise<IUser | null> {
     const user = await this.drizzle.db.query.users.findFirst({
       where: eq(dbSchema.users.email, where.email),
     });

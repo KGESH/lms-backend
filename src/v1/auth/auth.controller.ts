@@ -13,7 +13,7 @@ import {
 } from '@src/v1/auth/auth.dto';
 import { KakaoLoginDto } from '@src/v1/auth/kakao-auth.dto';
 import { KakaoAuthService } from '@src/v1/auth/kakao-auth.service';
-import { UserWithoutPasswordDto } from '@src/v1/user/user.dto';
+import { UserDto, UserWithoutPasswordDto } from '@src/v1/user/user.dto';
 import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '@src/shared/types/response';
 import { userToDto } from '@src/shared/helpers/transofrm/user';
@@ -164,5 +164,74 @@ export class AuthController {
       },
     );
     return userToDto(user);
+  }
+
+  /**
+   * 탈퇴한 회원을 복구합니다.
+   *
+   * 회원 탈퇴 후 30일 이내에 복구가 가능합니다.
+   *
+   * @tag auth
+   * @summary 탈퇴한 회원 복구
+   */
+  @TypedRoute.Patch('/account')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'user not found',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async restoreAccount(
+    @TypedHeaders() headers: AuthHeaders,
+    @SessionUser() session: ISessionWithUser,
+  ): Promise<Pick<UserDto, 'id'>> {
+    const deletedUserId = await this.authService.restoreAccount({
+      id: session.userId,
+    });
+
+    return { id: deletedUserId };
+  }
+
+  /**
+   * 회원 탈퇴를 진행합니다.
+   *
+   * 30일의 탈퇴 대기 기간을 거친 후, 회원 탈퇴가 완료됩니다.
+   *
+   * 회원 탈퇴 시, 사용자의 모든 데이터가 삭제되며, 복구가 불가능합니다.
+   *
+   * 이 API 호출시, user 테이블의 데이터는 삭제되지 않고, deleted_at 컬럼에 삭제 시간이 기록됩니다.
+   *
+   *
+   * @tag auth
+   * @summary 회원 탈퇴
+   */
+  @TypedRoute.Delete('/account')
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'user not found',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
+  async deleteAccount(
+    @TypedHeaders() headers: AuthHeaders,
+    @SessionUser() session: ISessionWithUser,
+  ): Promise<Pick<UserDto, 'id'>> {
+    const deletedUserId = await this.authService.deleteAccount({
+      id: session.userId,
+    });
+
+    return { id: deletedUserId };
   }
 }
