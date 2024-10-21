@@ -148,4 +148,55 @@ describe('AuthController (e2e)', () => {
       expect(updatedUser.role).toEqual('teacher');
     });
   });
+
+  describe('[Delete user account]', () => {
+    it('should be delete user account success', async () => {
+      const [{ user, userSession }] = await seedUsers(
+        { count: 1, role: 'admin' },
+        drizzle.db,
+      );
+
+      const response = await AuthAPI.account.deleteAccount({
+        host,
+        headers: { LmsSecret, UserSessionId: userSession.id },
+      });
+      if (!response.success) {
+        const message = JSON.stringify(response.data, null, 4);
+        throw new Error(`[assert] ${message}`);
+      }
+
+      const deletedUser = response.data;
+      expect(deletedUser.id).toEqual(user.id);
+    });
+
+    it('should be restore deleted user account success', async () => {
+      const [{ user, userSession }] = await seedUsers(
+        { count: 1, role: 'admin' },
+        drizzle.db,
+      );
+      const deletedResponse = await AuthAPI.account.deleteAccount({
+        host,
+        headers: { LmsSecret, UserSessionId: userSession.id },
+      });
+      if (!deletedResponse.success) {
+        const message = JSON.stringify(deletedResponse.data, null, 4);
+        throw new Error(`[assert] ${message}`);
+      }
+
+      const deletedUser = deletedResponse.data;
+      expect(deletedUser.id).toEqual(user.id);
+
+      const restoreResponse = await AuthAPI.account.restoreAccount({
+        host,
+        headers: { LmsSecret, UserSessionId: userSession.id },
+      });
+      if (!restoreResponse.success) {
+        const message = JSON.stringify(restoreResponse.data, null, 4);
+        throw new Error(`[assert] ${message}`);
+      }
+
+      const restoredUser = restoreResponse.data;
+      expect(restoredUser.id).toEqual(user.id);
+    });
+  });
 });
