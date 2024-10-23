@@ -117,7 +117,10 @@ describe('UiPopupController (e2e)', () => {
         await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
       )[0];
 
-      const createDto: CreateUiPopupDto = typia.random<CreateUiPopupDto>();
+      const createDto: CreateUiPopupDto = {
+        ...typia.random<CreateUiPopupDto>(),
+        path: '/test',
+      };
 
       const createResponse = await PopupAPI.createUiPopup(
         {
@@ -154,6 +157,24 @@ describe('UiPopupController (e2e)', () => {
       }
 
       expect(fetchedUiPopup.ui.title).toEqual(uiPopup.ui.title);
+
+      const findByPathResponse = await UiComponentAPI.getUiComponentsByPath(
+        {
+          host,
+          headers: { LmsSecret },
+        },
+        {
+          path: '/test',
+        },
+      );
+      if (!findByPathResponse.success) {
+        const message = JSON.stringify(findByPathResponse.data, null, 4);
+        throw new Error(`[assert] ${message}`);
+      }
+
+      const fetchedUiPopupByPath = findByPathResponse.data.popups[0];
+      expect(fetchedUiPopupByPath.ui.title).toEqual(uiPopup.ui.title);
+      expect(fetchedUiPopupByPath.path).toEqual('/test');
     });
   });
 
