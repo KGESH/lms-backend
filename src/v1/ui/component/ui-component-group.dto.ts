@@ -3,11 +3,13 @@ import { UiCarouselMainBannerWithContentsDto } from '@src/v1/ui/component/carous
 import { UiCarouselReviewWithItemsDto } from '@src/v1/ui/component/carousel/carousel-review/ui-carousel-review.dto';
 import { UiBannerDto } from '@src/v1/ui/component/banner/ui-banner.dto';
 import { UiMarketingBannerDto } from '@src/v1/ui/component/marketing-banner/ui-marketing-banner.dto';
+import { UiPopupDto } from '@src/v1/ui/component/popup/ui-popup.dto';
 
-export type IUiComponentGroup = {
+export type UiComponents = {
   banners: UiBannerDto[];
   marketingBanners: UiMarketingBannerDto[];
   repeatTimers: UiRepeatTimerDto[];
+  popups: UiPopupDto[];
   carousel: {
     mainBannerCarousels: UiCarouselMainBannerWithContentsDto[];
     reviewCarousels: UiCarouselReviewWithItemsDto[];

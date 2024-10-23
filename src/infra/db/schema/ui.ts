@@ -197,6 +197,7 @@ export const uiComponentsRelations = relations(uiComponents, ({ one }) => ({
   carousel: one(uiCarousels),
   banners: one(uiBanners),
   marketingBanners: one(uiMarketingBanners),
+  popups: one(uiPopups),
 }));
 
 export const uiRepeatTimersRelations = relations(uiRepeatTimers, ({ one }) => ({

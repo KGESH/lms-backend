@@ -3,8 +3,8 @@ import { TransactionClient } from '@src/infra/db/drizzle.types';
 import { UiComponentRepository } from '@src/v1/ui/component/ui-component.repository';
 import { IUiComponentBase } from '@src/v1/ui/component/ui-component.interface';
 import { UiComponentQueryRepository } from '@src/v1/ui/component/ui-component-query.repository';
-import { IUiComponentGroup } from '@src/v1/ui/component/ui-component-group.interface';
-import { Uuid } from "@src/shared/types/primitive";
+import { IUiComponents } from '@src/v1/ui/component/ui-component-group.interface';
+import { Uuid } from '@src/shared/types/primitive';
 
 @Injectable()
 export class UiComponentService {
@@ -15,7 +15,7 @@ export class UiComponentService {
 
   async getUiComponentsByPath(
     where: Pick<IUiComponentBase, 'path'>,
-  ): Promise<IUiComponentGroup> {
+  ): Promise<IUiComponents> {
     return await this.uiComponentQueryRepository.getUiComponentsByPath(where);
   }
 

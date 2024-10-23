@@ -19,7 +19,8 @@ import { ApiAuthHeaders, AuthHeaders } from '@src/v1/auth/auth.headers';
 import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '@src/shared/types/response';
 import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
-import { IUiComponentGroup } from '@src/v1/ui/component/ui-component-group.dto';
+import { UiComponents } from '@src/v1/ui/component/ui-component-group.dto';
+import { uiComponentGroupToDto } from '@src/shared/helpers/transofrm/ui';
 
 @Controller('v1/ui/component')
 export class UiComponentController {
@@ -47,11 +48,11 @@ export class UiComponentController {
   async getUiComponentsByPath(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedQuery() query: UiComponentQuery,
-  ): Promise<IUiComponentGroup> {
+  ): Promise<UiComponents> {
     const uiComponents = await this.uiComponentService.getUiComponentsByPath({
       path: query.path,
     });
-    return uiComponents;
+    return uiComponentGroupToDto(uiComponents);
   }
 
   /**
