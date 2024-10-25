@@ -8,7 +8,7 @@ import { and, eq } from 'drizzle-orm';
 export class LessonContentHistoryQueryRepository {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async findLessonContentWithHistory(
+  async findLessonContentAccessHistory(
     where: Pick<ILessonContentHistory, 'userId' | 'lessonContentId'>,
   ): Promise<ILessonContentHistory | null> {
     const history =

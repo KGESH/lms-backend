@@ -23,7 +23,7 @@ import { CourseAccessGuard } from '@src/core/guards/course-access.guard';
 import { SessionUser } from '@src/core/decorators/session-user.decorator';
 import { ISessionWithUser } from '@src/v1/auth/session.interface';
 import { LessonContentWithHistoryDto } from '@src/v1/course/chapter/lesson/lesson-content/history/lesson-content-history.dto';
-import * as date from '@src/shared/utils/date';
+import { lessonContentWithHistoryToDto } from '@src/shared/helpers/transofrm/lesson-content';
 
 @Controller(
   'v1/course/:courseId/chapter/:chapterId/lesson/:lessonId/lesson-content',
@@ -88,7 +88,7 @@ export class LessonContentController {
    * @param courseId - 조회할 레슨 컨텐츠가 속한 강의의 id
    * @param chapterId - 조회할 레슨 컨텐츠가 속한 챕터의 id
    * @param lessonId - 조회할 레슨 컨텐츠가 속한 레슨의 id
-   * @param id - 조회할 레슨 컨텐츠의 id
+   * @param lessonContentId - 조회할 레슨 컨텐츠의 id
    */
   @TypedRoute.Get('/:id')
   @UseGuards(CourseAccessGuard)
@@ -100,29 +100,25 @@ export class LessonContentController {
     status: 403,
     description: 'User is not enrolled in the course',
   })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'LessonContent not found',
+  })
   async getLessonContent(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
     @TypedParam('chapterId') chapterId: Uuid,
     @TypedParam('lessonId') lessonId: Uuid,
-    @TypedParam('id') id: Uuid,
+    @TypedParam('id') lessonContentId: Uuid,
     @SessionUser() session: ISessionWithUser,
   ): Promise<LessonContentWithHistoryDto | null> {
     const lessonContent =
       await this.lessonContentQueryService.getLessonContentWithHistory(
         session.user,
-        { lessonContentId: id },
+        { lessonContentId },
       );
 
-    return {
-      ...lessonContent,
-      history: lessonContent.history
-        ? {
-            ...lessonContent.history,
-            createdAt: date.toISOString(lessonContent.history.createdAt),
-          }
-        : null,
-    };
+    return lessonContentWithHistoryToDto(lessonContent);
   }
 
   /**

@@ -12,9 +12,9 @@ import { IUserWithoutPassword } from '@src/v1/user/user.interface';
 @Injectable()
 export class LessonContentQueryService {
   constructor(
+    private readonly lessonContentQueryRepository: LessonContentQueryRepository,
     private readonly lessonContentHistoryRepository: LessonContentHistoryRepository,
     private readonly lessonContentHistoryQueryRepository: LessonContentHistoryQueryRepository,
-    private readonly lessonContentQueryRepository: LessonContentQueryRepository,
   ) {}
 
   async findLessonContents(
@@ -46,8 +46,11 @@ export class LessonContentQueryService {
     }
 
     const existHistory =
-      await this.lessonContentHistoryQueryRepository.findLessonContentWithHistory(
-        { ...where, userId: user.id },
+      await this.lessonContentHistoryQueryRepository.findLessonContentAccessHistory(
+        {
+          userId: user.id,
+          lessonContentId: where.lessonContentId,
+        },
       );
 
     const history =
