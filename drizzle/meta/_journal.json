@@ -85,6 +85,13 @@
       "when": 1729257628989,
       "tag": "0011_white_jean_grey",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1729861775554,
+      "tag": "0012_strange_sleeper",
+      "breakpoints": true
     }
   ]
 }

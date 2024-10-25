@@ -78,6 +78,18 @@ export const ebookContents = pgTable(
   }),
 );
 
+export const ebookContentAccessHistory = pgTable(
+  'ebook_content_access_history',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id').notNull(),
+    ebookContentId: uuid('ebook_content_id').notNull(),
+    createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+);
+
 export const ebookProducts = pgTable(
   'ebook_products',
   {
@@ -279,6 +291,20 @@ export const ebookContentsRelations = relations(ebookContents, ({ one }) => ({
   }),
 }));
 
+export const ebookContentAccessHistoryRelations = relations(
+  ebookContentAccessHistory,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [ebookContentAccessHistory.userId],
+      references: [users.id],
+    }),
+    ebookContent: one(ebookContents, {
+      fields: [ebookContentAccessHistory.ebookContentId],
+      references: [ebookContents.id],
+    }),
+  }),
+);
+
 export const ebookProductsRelations = relations(
   ebookProducts,
   ({ one, many }) => ({
@@ -390,6 +416,7 @@ export const ebookDbSchema = {
   ebookCategories,
   ebooks,
   ebookContents,
+  ebookContentAccessHistory,
   ebookProducts,
   ebookProductSnapshots,
   ebookProductSnapshotPricing,
@@ -404,6 +431,7 @@ export const ebookDbSchema = {
   ebookCategoriesRelations,
   ebooksRelations,
   ebookContentsRelations,
+  ebookContentAccessHistoryRelations,
   ebookProductsRelations,
   ebookProductSnapshotsRelations,
   ebookProductSnapshotPricingRelations,
