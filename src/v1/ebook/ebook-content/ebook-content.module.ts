@@ -5,6 +5,8 @@ import { EbookContentService } from '@src/v1/ebook/ebook-content/ebook-content.s
 import { EbookModule } from '@src/v1/ebook/ebook.module';
 import { EbookContentQueryRepository } from '@src/v1/ebook/ebook-content/ebook-content-query.repository';
 import { EbookContentQueryService } from '@src/v1/ebook/ebook-content/ebook-content-query.service';
+import { EbookContentHistoryRepository } from '@src/v1/ebook/ebook-content/history/ebook-content-history.repository';
+import { EbookContentHistoryQueryRepository } from '@src/v1/ebook/ebook-content/history/ebook-content-history-query.repository';
 
 const modules = [EbookModule];
 
@@ -13,6 +15,8 @@ const providers = [
   EbookContentQueryService,
   EbookContentRepository,
   EbookContentQueryRepository,
+  EbookContentHistoryRepository,
+  EbookContentHistoryQueryRepository,
 ];
 
 @Module({

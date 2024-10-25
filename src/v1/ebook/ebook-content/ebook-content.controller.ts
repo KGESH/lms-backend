@@ -18,10 +18,16 @@ import {
   EbookContentDto,
   EbookContentUpdateDto,
 } from '@src/v1/ebook/ebook-content/ebook-content.dto';
-import { ebookContentToDto } from '@src/shared/helpers/transofrm/ebook-content';
+import {
+  ebookContentToDto,
+  ebookContentWithHistoryToDto,
+} from '@src/shared/helpers/transofrm/ebook-content';
 import { EbookAccessGuard } from '@src/core/guards/ebook-access.guard';
 import { EbookContentQueryService } from '@src/v1/ebook/ebook-content/ebook-content-query.service';
 import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
+import { EbookContentWithHistoryDto } from '@src/v1/ebook/ebook-content/history/ebook-content-history.dto';
+import { SessionUser } from '@src/core/decorators/session-user.decorator';
+import { ISessionWithUser } from '@src/v1/auth/session.interface';
 
 @Controller('v1/ebook/:ebookId/content')
 export class EbookContentController {
@@ -66,9 +72,13 @@ export class EbookContentController {
   }
 
   /**
-   * 특정 전자책 컨텐츠를 조회합니다.
+   * 특정 전자책 컨텐츠와 조회 이력(다운로드 이력)을 조회합니다.
    *
-   * 세션 사용자 role이 'user'라면 해당 'course'를 구매한 사용자만 조회할 수 있습니다.
+   * 세션 사용자 role이 'user'라면 해당 'ebook'을 구매한 사용자만 조회할 수 있습니다.
+   *
+   * API를 호출한 세션 사용자 id와 전자책 컨텐츠 id를 통해 해당 전자책 컨텐츠의 최초 조회 이력을 확인합니다.
+   *
+   * 조회 이력이 없다면 생성 이후 반환하며, 조회 이력이 있다면 조회 이력을 반환합니다.
    *
    * 제목, 설명, 컨텐츠 타입, 컨텐츠 URL, 메타데이터, 표기 순서 정보를 제공합니다.
    *
@@ -95,17 +105,19 @@ export class EbookContentController {
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('ebookId') ebookId: Uuid,
     @TypedParam('id') ebookContentId: Uuid,
-  ): Promise<EbookContentDto | null> {
+    @SessionUser() session: ISessionWithUser,
+  ): Promise<EbookContentWithHistoryDto | null> {
     const ebookContent =
-      await this.ebookContentQueryService.findEbookContentById({
-        id: ebookContentId,
-      });
+      await this.ebookContentQueryService.getEbookContentWithHistory(
+        session.user,
+        { ebookContentId },
+      );
 
     if (!ebookContent) {
       return null;
     }
 
-    return ebookContentToDto(ebookContent);
+    return ebookContentWithHistoryToDto(ebookContent);
   }
 
   /**
