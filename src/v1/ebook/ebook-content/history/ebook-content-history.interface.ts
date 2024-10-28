@@ -1,5 +1,5 @@
 import { Uuid } from '@src/shared/types/primitive';
-import { IEbookContent } from '@src/v1/ebook/ebook-content/ebook-content.interface';
+import { IEbookContentWithFile } from '@src/v1/ebook/ebook-content/ebook-content.interface';
 
 export type IEbookContentHistory = {
   id: Uuid;
@@ -13,6 +13,6 @@ export type IEbookContentHistoryCreate = Pick<
   'userId' | 'ebookContentId'
 >;
 
-export type IEbookContentWithHistory = IEbookContent & {
+export type IEbookContentWithHistory = IEbookContentWithFile & {
   history: IEbookContentHistory | null;
 };

@@ -20,6 +20,7 @@ export class LessonContentRepository {
       .insert(dbSchema.lessonContents)
       .values(params)
       .returning();
+
     return lessonContents;
   }
 
@@ -33,17 +34,18 @@ export class LessonContentRepository {
       .set(params)
       .where(eq(dbSchema.lessonContents.id, where.id))
       .returning();
+
     return updated;
   }
 
   async deleteLessonContent(
     where: Pick<ILessonContent, 'id'>,
     db = this.drizzle.db,
-  ): Promise<ILessonContent> {
-    const [deleted] = await db
+  ): Promise<ILessonContent['id']> {
+    await db
       .delete(dbSchema.lessonContents)
-      .where(eq(dbSchema.lessonContents.id, where.id))
-      .returning();
-    return deleted;
+      .where(eq(dbSchema.lessonContents.id, where.id));
+
+    return where.id;
   }
 }

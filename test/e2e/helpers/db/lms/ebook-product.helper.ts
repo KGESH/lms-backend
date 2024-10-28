@@ -36,11 +36,8 @@ import {
   IProductSnapshotUiContentCreate,
 } from '../../../../../src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
 import { createManyFiles } from './file.helper';
-import {
-  IProductThumbnail,
-  IProductThumbnailCreate,
-} from '../../../../../src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
-import { IFileCreate } from "@src/v1/file/file.interface";
+import { IProductThumbnail } from '../../../../../src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
+import { IFileCreate } from '@src/v1/file/file.interface';
 
 export const createEbookProduct = async (
   params: IEbookProductCreate,

@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { EbookContentRepository } from '@src/v1/ebook/ebook-content/ebook-content.repository';
 import {
   IEbookContent,
-  IEbookContentCreate, IEbookContentUpdate
-} from "@src/v1/ebook/ebook-content/ebook-content.interface";
+  IEbookContentCreate,
+  IEbookContentUpdate,
+} from '@src/v1/ebook/ebook-content/ebook-content.interface';
 import { TransactionClient } from '@src/infra/db/drizzle.types';
 import { EbookContentQueryRepository } from '@src/v1/ebook/ebook-content/ebook-content-query.repository';
 

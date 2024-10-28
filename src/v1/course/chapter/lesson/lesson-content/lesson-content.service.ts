@@ -13,7 +13,6 @@ import { LessonContentQueryRepository } from '@src/v1/course/chapter/lesson/less
 import { LessonContentRepository } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.repository';
 import { LessonQueryService } from '@src/v1/course/chapter/lesson/lesson-query.service';
 import { Uuid } from '@src/shared/types/primitive';
-import { DrizzleService } from '@src/infra/db/drizzle.service';
 
 @Injectable()
 export class LessonContentService {
@@ -21,7 +20,6 @@ export class LessonContentService {
     private readonly lessonQueryService: LessonQueryService,
     private readonly lessonContentRepository: LessonContentRepository,
     private readonly lessonContentQueryRepository: LessonContentQueryRepository,
-    private readonly drizzle: DrizzleService,
   ) {}
 
   async createLessonContents(
@@ -170,7 +168,7 @@ export class LessonContentService {
   async deleteLessonContent(
     where: Pick<ILessonContent, 'id'>,
     tx?: TransactionClient,
-  ): Promise<ILessonContent> {
+  ): Promise<ILessonContent['id']> {
     await this.lessonContentQueryRepository.findLessonContentOrThrow({
       id: where.id,
     });

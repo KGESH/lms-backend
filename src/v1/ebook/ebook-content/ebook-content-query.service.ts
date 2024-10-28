@@ -1,6 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { EbookContentQueryRepository } from '@src/v1/ebook/ebook-content/ebook-content-query.repository';
-import { IEbookContent } from '@src/v1/ebook/ebook-content/ebook-content.interface';
+import {
+  IEbookContent,
+  IEbookContentWithFile,
+} from '@src/v1/ebook/ebook-content/ebook-content.interface';
 import { IUserWithoutPassword } from '@src/v1/user/user.interface';
 import {
   IEbookContentHistory,
@@ -23,20 +26,26 @@ export class EbookContentQueryService {
     return await this.ebookContentQueryRepository.findEbookContents(where);
   }
 
-  async findEbookContentById(
+  async findEbookContentWithFileOrThrow(
     where: Pick<IEbookContent, 'id'>,
-  ): Promise<IEbookContent | null> {
-    return await this.ebookContentQueryRepository.findEbookContent(where);
+  ): Promise<IEbookContentWithFile> {
+    const ebookContentWithFile =
+      await this.ebookContentQueryRepository.findEbookContentWithFile(where);
+
+    if (!ebookContentWithFile) {
+      throw new NotFoundException('EbookContent not found');
+    }
+
+    return ebookContentWithFile;
   }
 
   async getEbookContentWithHistory(
     user: IUserWithoutPassword,
     where: Pick<IEbookContentHistory, 'ebookContentId'>,
   ): Promise<IEbookContentWithHistory> {
-    const ebookContent =
-      await this.ebookContentQueryRepository.findEbookContentOrThrow({
-        id: where.ebookContentId,
-      });
+    const ebookContent = await this.findEbookContentWithFileOrThrow({
+      id: where.ebookContentId,
+    });
 
     if (user.role !== 'user') {
       return {

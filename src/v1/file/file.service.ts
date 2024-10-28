@@ -3,6 +3,7 @@ import { FileRepository } from '@src/v1/file/file.repository';
 import {
   IFile,
   IFileCreate,
+  IFileUpdate,
   IPreSignedUrl,
   IPreSignedUrlCreate,
 } from '@src/v1/file/file.interface';
@@ -25,11 +26,24 @@ export class FileService {
   ): Promise<IPreSignedUrl[]> {
     const urls = await Promise.all(
       params.map((param) =>
-        this.s3Service.createPreSignedUrl(param.filename, access),
+        this.s3Service.createPreSignedUrl(param.id, access),
       ),
     );
 
     // Aggregate the pre-signed URLs with the input params
+    return params.map((param, index) => ({
+      ...param,
+      url: urls[index],
+    }));
+  }
+
+  async createVideoPreSignedUrl(
+    params: IPreSignedUrlCreate[],
+  ): Promise<IPreSignedUrl[]> {
+    const urls = await Promise.all(
+      params.map((param) => this.s3Service.createVideoPreSignedUrl(param.id)),
+    );
+
     return params.map((param, index) => ({
       ...param,
       url: urls[index],
@@ -50,6 +64,15 @@ export class FileService {
   ): Promise<IFile[]> {
     const files = await this.fileRepository.createManyFiles(params, tx);
     return files;
+  }
+
+  async updateFile(
+    where: Pick<IFile, 'id'>,
+    params: IFileUpdate,
+    tx?: TransactionClient,
+  ): Promise<IFile> {
+    const file = await this.fileRepository.updateFile(where, params, tx);
+    return file;
   }
 
   async softDeleteManyFiles(

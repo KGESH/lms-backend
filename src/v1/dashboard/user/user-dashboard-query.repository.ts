@@ -24,6 +24,7 @@ export class UserDashboardQueryRepository {
         with: {
           lessonContent: {
             with: {
+              file: true,
               lesson: {
                 with: {
                   chapter: true,

@@ -57,13 +57,16 @@ export class S3Service {
     return url;
   }
 
-  async upload(fileId: string, data: any) {
-    try {
-      const url = await this.createPreSignedUrl(fileId);
-      return await this.http.put(url, data);
-    } catch (e) {
-      this.logger.error(e);
-      throw e;
-    }
+  async createVideoPreSignedUrl(fileId: string): Promise<string> {
+    const command = new PutObjectCommand({
+      Bucket: this.configsService.env.AWS_S3_VIDEO_INPUT_BUCKET,
+      Key: fileId,
+    });
+
+    const url = await getSignedUrl(this.s3, command, {
+      expiresIn: this.configsService.env.AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS,
+    });
+
+    return url;
   }
 }

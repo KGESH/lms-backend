@@ -41,19 +41,20 @@ describe('UserDashboardController (e2e)', () => {
       const lessonContent = lesson.lessonContents[0];
 
       // Make sure the user access to the lesson content (create resource access history)
-      const getLessonContentResponse = await LessonContentAPI.getLessonContent(
-        {
-          host,
-          headers: {
-            LmsSecret,
-            UserSessionId: purchasedUser.userSession.id,
+      const getLessonContentResponse =
+        await LessonContentAPI.getLessonContentWithFile(
+          {
+            host,
+            headers: {
+              LmsSecret,
+              UserSessionId: purchasedUser.userSession.id,
+            },
           },
-        },
-        course.id,
-        chapter.id,
-        lesson.id,
-        lessonContent.id,
-      );
+          course.id,
+          chapter.id,
+          lesson.id,
+          lessonContent.id,
+        );
       if (!getLessonContentResponse.success || !getLessonContentResponse.data) {
         const message = JSON.stringify(getLessonContentResponse.data, null, 4);
         throw new Error(`assert - ${message}`);

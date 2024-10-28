@@ -40,7 +40,7 @@ describe('EbookContentController (e2e)', () => {
         drizzle.db,
       );
 
-      const response = await EbookAPI.content.getEbookContent(
+      const response = await EbookAPI.content.getEbookContentWithFile(
         {
           host,
           headers: { LmsSecret, UserSessionId: student.userSession.id },
@@ -60,6 +60,7 @@ describe('EbookContentController (e2e)', () => {
         ebookContents[0].id,
       );
       expect(foundEbookContent!.history!.userId).toEqual(student.user.id);
+      expect(foundEbookContent!.file).toBeNull();
     });
   });
 });

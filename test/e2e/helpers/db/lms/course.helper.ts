@@ -84,6 +84,7 @@ export const createRandomCourse = async (db: TransactionClient) => {
           Array.from({ length: 10 }, () => ({
             ...typia.random<ILessonContentCreate>(),
             lessonId: lesson.id,
+            fileId: null,
           })),
           db,
         );

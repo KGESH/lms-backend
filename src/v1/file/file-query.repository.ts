@@ -3,6 +3,7 @@ import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { IFile } from '@src/v1/file/file.interface';
 import { dbSchema } from '@src/infra/db/schema';
 import { eq } from 'drizzle-orm';
+import { assertFile } from '@src/shared/helpers/assert/file';
 
 @Injectable()
 export class FileQueryRepository {
@@ -13,6 +14,10 @@ export class FileQueryRepository {
       where: eq(dbSchema.files.id, where.id),
     });
 
-    return file ?? null;
+    if (!file) {
+      return null;
+    }
+
+    return assertFile(file);
   }
 }

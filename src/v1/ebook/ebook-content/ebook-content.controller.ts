@@ -101,7 +101,7 @@ export class EbookContentController {
     status: INVALID_LMS_SECRET,
     description: 'invalid LMS api secret',
   })
-  async getEbookContent(
+  async getEbookContentWithFile(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('ebookId') ebookId: Uuid,
     @TypedParam('id') ebookContentId: Uuid,

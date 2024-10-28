@@ -59,10 +59,10 @@ export const ebookContents = pgTable(
   {
     id: uuid('id').primaryKey().defaultRandom(),
     ebookId: uuid('ebook_id').notNull(),
+    fileId: uuid('file_id').references(() => files.id),
     title: text('title').notNull(),
     description: text('description'),
     contentType: lessonContentType('content_type').notNull(),
-    url: text('url'),
     metadata: text('metadata'),
     sequence: integer('sequence'),
     createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
@@ -75,6 +75,7 @@ export const ebookContents = pgTable(
   },
   (table) => ({
     ebookIdIndex: index('idx_ebook_contents_ebook_id').on(table.ebookId),
+    fileIdIndex: index('idx_ebook_contents_file_id').on(table.fileId),
   }),
 );
 
@@ -288,6 +289,10 @@ export const ebookContentsRelations = relations(ebookContents, ({ one }) => ({
   ebook: one(ebooks, {
     fields: [ebookContents.ebookId],
     references: [ebooks.id],
+  }),
+  file: one(files, {
+    fields: [ebookContents.fileId],
+    references: [files.id],
   }),
 }));
 

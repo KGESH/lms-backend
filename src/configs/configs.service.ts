@@ -36,6 +36,8 @@ export class ConfigsService {
       AWS_S3_SECRET: process.env.AWS_S3_SECRET,
       AWS_S3_BUCKET: process.env.AWS_S3_BUCKET,
       AWS_S3_PRIVATE_BUCKET: process.env.AWS_S3_PRIVATE_BUCKET,
+      AWS_S3_VIDEO_INPUT_BUCKET: process.env.AWS_S3_VIDEO_INPUT_BUCKET,
+      AWS_VIDEO_CDN_BASE_URL: process.env.AWS_VIDEO_CDN_BASE_URL,
       AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS:
         +`${process.env.AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS}`,
       AWS_S3_PRIVATE_PRESIGNED_URL_EXPIRE_SECONDS:
@@ -71,6 +73,8 @@ export class ConfigsService {
       AWS_S3_SECRET: this.dotEnv.get('AWS_S3_SECRET'),
       AWS_S3_BUCKET: this.dotEnv.get('AWS_S3_BUCKET'),
       AWS_S3_PRIVATE_BUCKET: this.dotEnv.get('AWS_S3_PRIVATE_BUCKET'),
+      AWS_S3_VIDEO_INPUT_BUCKET: this.dotEnv.get('AWS_S3_VIDEO_INPUT_BUCKET'),
+      AWS_VIDEO_CDN_BASE_URL: this.dotEnv.get('AWS_VIDEO_CDN_BASE_URL'),
       AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS: +this.dotEnv.get(
         'AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS',
       ),

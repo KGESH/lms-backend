@@ -19,6 +19,8 @@ export type IAwsConfigs = {
   AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS: number;
   AWS_S3_PRIVATE_PRESIGNED_URL_EXPIRE_SECONDS: number;
   AWS_S3_PRIVATE_BUCKET: string;
+  AWS_S3_VIDEO_INPUT_BUCKET: string;
+  AWS_VIDEO_CDN_BASE_URL: string;
 };
 
 export type IPortoneConfigs = {

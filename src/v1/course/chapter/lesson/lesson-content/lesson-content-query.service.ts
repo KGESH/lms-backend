@@ -1,5 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { ILessonContent } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.interface';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ILessonContent,
+  ILessonContentWithFile,
+} from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.interface';
 import { LessonContentQueryRepository } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content-query.repository';
 import { LessonContentHistoryRepository } from '@src/v1/course/chapter/lesson/lesson-content/history/lesson-content-history.repository';
 import { LessonContentHistoryQueryRepository } from '@src/v1/course/chapter/lesson/lesson-content/history/lesson-content-history-query.repository';
@@ -23,20 +26,26 @@ export class LessonContentQueryService {
     return await this.lessonContentQueryRepository.findManyByLessonId(where);
   }
 
-  async findLessonContentById(
+  async findLessonContentWithFileOrThrow(
     where: Pick<ILessonContent, 'id'>,
-  ): Promise<ILessonContent | null> {
-    return await this.lessonContentQueryRepository.findLessonContent(where);
+  ): Promise<ILessonContentWithFile> {
+    const lessonContentWithFile =
+      await this.lessonContentQueryRepository.findLessonContentWithFile(where);
+
+    if (!lessonContentWithFile) {
+      throw new NotFoundException('LessonContent not found');
+    }
+
+    return lessonContentWithFile;
   }
 
   async getLessonContentWithHistory(
     user: IUserWithoutPassword,
     where: Pick<ILessonContentHistory, 'lessonContentId'>,
   ): Promise<ILessonContentWithHistory> {
-    const lessonContent =
-      await this.lessonContentQueryRepository.findLessonContentOrThrow({
-        id: where.lessonContentId,
-      });
+    const lessonContent = await this.findLessonContentWithFileOrThrow({
+      id: where.lessonContentId,
+    });
 
     if (user.role !== 'user') {
       return {

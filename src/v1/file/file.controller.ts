@@ -8,12 +8,15 @@ import {
   FileDto,
   FilePreSignedUrlDto,
   PreSignedUrlDto,
+  UpdateFileDto,
 } from '@src/v1/file/file.dto';
 import { AuthHeaders } from '@src/v1/auth/auth.headers';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
 import { FileService } from '@src/v1/file/file.service';
 import { fileToDto } from '@src/shared/helpers/transofrm/file';
+import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
+import { SkipApiGuard } from '@src/core/decorators/skip-api.decorator';
 
 @Controller('v1/file')
 export class FileController {
@@ -41,6 +44,27 @@ export class FileController {
     const files = await this.fileService.createManyFiles(body);
 
     return files.map(fileToDto);
+  }
+
+  /**
+   * 파일 엔티티 목록을 생성합니다.
+   *
+   * pre-signed URL을 사용한 파일 업로드 성공 이후 호출해야합니다.
+   *
+   * @tag file
+   * @summary 파일 엔티티 목록을 생성
+   */
+  @TypedRoute.Patch('/:fileId')
+  @Roles('user', 'admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
+  async updateFile(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedParam('fileId') fileId: FileDto['id'],
+    @TypedBody() body: UpdateFileDto,
+  ): Promise<FileDto> {
+    const file = await this.fileService.updateFile({ id: fileId }, body);
+
+    return fileToDto(file);
   }
 
   /**
@@ -114,6 +138,37 @@ export class FileController {
         id: params.fileId,
       })),
       'private',
+    );
+
+    return preSignedUrls.map((preSignedUrl) => ({
+      fileId: preSignedUrl.id,
+      filename: preSignedUrl.filename,
+      url: preSignedUrl.url,
+    }));
+  }
+
+  /**
+   * 비공개 비디오 업로드를 위한 pre-signed URL 목록을 생성합니다.
+   *
+   * 생성된 pre-signed URL을 사용하여 비디오 업로드가 완료되면 해상도 변환 작업이 시작됩니다. (lambda trigger)
+   *
+   * @tag file
+   * @summary 비디오 전용 pre-signed URL 목록 생성.
+   */
+  @TypedRoute.Post('/private/pre-signed/video')
+  @SkipAuth()
+  @SkipApiGuard()
+  @Roles('admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
+  async createPrivateVideoPreSignedUrls(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedBody() body: CreatePreSignedUrlDto[],
+  ): Promise<FilePreSignedUrlDto[]> {
+    const preSignedUrls = await this.fileService.createVideoPreSignedUrl(
+      body.map((params) => ({
+        ...params,
+        id: params.fileId,
+      })),
     );
 
     return preSignedUrls.map((preSignedUrl) => ({

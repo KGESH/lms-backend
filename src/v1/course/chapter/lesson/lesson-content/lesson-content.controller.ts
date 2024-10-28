@@ -23,7 +23,10 @@ import { CourseAccessGuard } from '@src/core/guards/course-access.guard';
 import { SessionUser } from '@src/core/decorators/session-user.decorator';
 import { ISessionWithUser } from '@src/v1/auth/session.interface';
 import { LessonContentWithHistoryDto } from '@src/v1/course/chapter/lesson/lesson-content/history/lesson-content-history.dto';
-import { lessonContentWithHistoryToDto } from '@src/shared/helpers/transofrm/lesson-content';
+import {
+  lessonContentToDto,
+  lessonContentWithHistoryToDto,
+} from '@src/shared/helpers/transofrm/lesson-content';
 
 @Controller(
   'v1/course/:courseId/chapter/:chapterId/lesson/:lessonId/lesson-content',
@@ -65,11 +68,12 @@ export class LessonContentController {
   ): Promise<LessonContentDto[]> {
     const lessonContents =
       await this.lessonContentQueryService.findLessonContents({ lessonId });
-    return lessonContents;
+
+    return lessonContents.map(lessonContentToDto);
   }
 
   /**
-   * 특정 레슨 컨텐츠와 조회 이력(다운로드 이력)을 조회합니다.
+   * 특정 레슨 컨텐츠(실제 컨텐츠, 파일 url 포함)와 조회 이력(다운로드 이력)을 조회합니다.
    *
    * API를 호출한 세션 사용자 id와 레슨 컨텐츠 id를 통해 해당 레슨 컨텐츠의 최초 조회 이력을 확인합니다.
    *
@@ -104,7 +108,7 @@ export class LessonContentController {
     status: 404,
     description: 'LessonContent not found',
   })
-  async getLessonContent(
+  async getLessonContentWithFile(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('courseId') courseId: Uuid,
     @TypedParam('chapterId') chapterId: Uuid,
@@ -150,12 +154,12 @@ export class LessonContentController {
     @TypedParam('lessonId') lessonId: Uuid,
     @TypedBody() body: LessonContentCreateDto[],
   ): Promise<LessonContentDto[]> {
-    const lessonContent = await this.lessonContentService.createLessonContents(
+    const lessonContents = await this.lessonContentService.createLessonContents(
       lessonId,
       body.map((params) => ({ ...params, lessonId })),
     );
 
-    return lessonContent;
+    return lessonContents.map(lessonContentToDto);
   }
 
   /**
@@ -197,7 +201,8 @@ export class LessonContentController {
       { id, lessonId },
       body,
     );
-    return lessonContent;
+
+    return lessonContentToDto(lessonContent);
   }
 
   /**
@@ -231,10 +236,12 @@ export class LessonContentController {
     @TypedParam('chapterId') chapterId: Uuid,
     @TypedParam('lessonId') lessonId: Uuid,
     @TypedParam('id') id: Uuid,
-  ): Promise<LessonContentDto> {
-    const lessonContent = await this.lessonContentService.deleteLessonContent({
-      id,
-    });
-    return lessonContent;
+  ): Promise<Pick<LessonContentDto, 'id'>> {
+    const deletedLessonContentId =
+      await this.lessonContentService.deleteLessonContent({
+        id,
+      });
+
+    return { id: deletedLessonContentId };
   }
 }

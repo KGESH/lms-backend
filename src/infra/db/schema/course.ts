@@ -87,15 +87,16 @@ export const lessonContents = pgTable(
   {
     id: uuid('id').primaryKey().defaultRandom(),
     lessonId: uuid('lesson_id').notNull(),
+    fileId: uuid('file_id').references(() => files.id),
     title: text('title').notNull(),
     description: text('description'),
     contentType: lessonContentType('content_type').notNull(),
-    url: text('url'),
     metadata: text('metadata'),
     sequence: integer('sequence'),
   },
   (table) => ({
     lessonIdIdx: index('idx_lesson_contents_lesson_id').on(table.lessonId),
+    fileIdIdx: index('idx_lesson_contents_file_id').on(table.fileId),
   }),
 );
 
@@ -463,6 +464,10 @@ export const lessonContentsRelations = relations(lessonContents, ({ one }) => ({
   lesson: one(lessons, {
     fields: [lessonContents.lessonId],
     references: [lessons.id],
+  }),
+  file: one(files, {
+    fields: [lessonContents.fileId],
+    references: [files.id],
   }),
 }));
 

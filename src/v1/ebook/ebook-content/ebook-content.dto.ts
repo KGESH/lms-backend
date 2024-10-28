@@ -9,23 +9,31 @@ import {
 export type EbookContentDto = {
   id: Uuid;
   ebookId: Uuid;
+  fileId: Uuid | null;
   title: string;
   description: string | null;
   contentType: EbookContentType;
-  url: Uri | null;
   metadata: string | null;
   sequence: UInt | null;
   createdAt: ISO8601;
   updatedAt: ISO8601;
 };
 
+export type EbookContentWithFileDto = EbookContentDto & {
+  file: {
+    url: Uri | null;
+    filename: string | null;
+    type: EbookContentType;
+  } | null;
+};
+
 export type EbookContentCreateDto = Pick<
   EbookContentDto,
   | 'ebookId'
+  | 'fileId'
   | 'title'
   | 'description'
   | 'contentType'
-  | 'url'
   | 'metadata'
   | 'sequence'
 >;

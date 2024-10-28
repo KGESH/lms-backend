@@ -1,5 +1,5 @@
 import { Uuid } from '@src/shared/types/primitive';
-import { ILessonContent } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.interface';
+import { ILessonContentWithFile } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.interface';
 
 export type ILessonContentHistory = {
   id: Uuid;
@@ -13,6 +13,6 @@ export type ILessonContentHistoryCreate = Pick<
   'userId' | 'lessonContentId'
 >;
 
-export type ILessonContentWithHistory = ILessonContent & {
+export type ILessonContentWithHistory = ILessonContentWithFile & {
   history: ILessonContentHistory | null;
 };

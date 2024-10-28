@@ -2,7 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { DrizzleService } from '@src/infra/db/drizzle.service';
 import { dbSchema } from '@src/infra/db/schema';
-import { ILessonContent } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.interface';
+import {
+  ILessonContent,
+  ILessonContentWithFile,
+} from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.interface';
+import { assertLessonContentWithFile } from '@src/shared/helpers/assert/lesson-content';
 
 @Injectable()
 export class LessonContentQueryRepository {
@@ -40,5 +44,23 @@ export class LessonContentQueryRepository {
     return await this.drizzle.db.query.lessonContents.findMany({
       where: eq(dbSchema.lessonContents.lessonId, where.lessonId),
     });
+  }
+
+  async findLessonContentWithFile(
+    where: Pick<ILessonContent, 'id'>,
+  ): Promise<ILessonContentWithFile | null> {
+    const lessonContentWithFile =
+      await this.drizzle.db.query.lessonContents.findFirst({
+        where: eq(dbSchema.lessonContents.id, where.id),
+        with: {
+          file: true,
+        },
+      });
+
+    if (!lessonContentWithFile) {
+      return null;
+    }
+
+    return assertLessonContentWithFile(lessonContentWithFile);
   }
 }

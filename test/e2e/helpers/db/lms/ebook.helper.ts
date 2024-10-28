@@ -15,7 +15,10 @@ import {
 } from '../../../../../src/v1/ebook/ebook-content/ebook-content.interface';
 import { eq } from 'drizzle-orm';
 
-export const findEbook = async (where: Pick<IEbook, 'id'>, db: TransactionClient) => {
+export const findEbook = async (
+  where: Pick<IEbook, 'id'>,
+  db: TransactionClient,
+) => {
   const ebook = await db.query.ebooks.findFirst({
     where: eq(dbSchema.ebooks.id, where.id),
   });
@@ -70,6 +73,7 @@ export const createRandomEbook = async (db: TransactionClient) => {
   const ebookContents = await createManyEbookContents(
     Array.from({ length: 5 }, () => ({
       ...typia.random<IEbookContentCreate>(),
+      fileId: null,
       ebookId: ebook.id,
     })),
     db,

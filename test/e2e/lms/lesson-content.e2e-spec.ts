@@ -39,7 +39,7 @@ describe('LessonContentController (e2e)', () => {
       const lessonId = lessonContents[0].lessonId;
       const { chapterId } = lessons.find((lesson) => lesson.id === lessonId)!;
 
-      const response = await LessonContentAPI.getLessonContent(
+      const response = await LessonContentAPI.getLessonContentWithFile(
         {
           host,
           headers: {
@@ -80,7 +80,7 @@ describe('LessonContentController (e2e)', () => {
       const lessonId = lessonContents[0].lessonId;
       const { chapterId } = lessons.find((lesson) => lesson.id === lessonId)!;
 
-      const response = await LessonContentAPI.getLessonContent(
+      const response = await LessonContentAPI.getLessonContentWithFile(
         {
           host,
           headers: {

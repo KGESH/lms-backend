@@ -1,7 +1,7 @@
 import { Uuid } from '@src/shared/types/primitive';
-import { ILessonContent } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.interface';
-import { IUserWithoutPassword } from "@src/v1/user/user.interface";
-import { IOrder } from "@src/v1/order/order.interface";
+import { ILessonContentWithFile } from '@src/v1/course/chapter/lesson/lesson-content/lesson-content.interface';
+import { IUserWithoutPassword } from '@src/v1/user/user.interface';
+import { IOrder } from '@src/v1/order/order.interface';
 
 export type IUserCourseResourceHistory = {
   courseId: Uuid;
@@ -9,11 +9,11 @@ export type IUserCourseResourceHistory = {
     id: Uuid;
     lessonContentId: Uuid;
     createdAt: Date;
-    lessonContent: ILessonContent;
+    lessonContent: ILessonContentWithFile;
   };
 };
 
 export type IPurchasedUser = {
   user: IUserWithoutPassword;
-  order: IOrder
-}
+  order: IOrder;
+};

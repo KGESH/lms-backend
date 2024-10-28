@@ -1,5 +1,5 @@
 import { ISO8601, Uuid } from '@src/shared/types/primitive';
-import { EbookContentDto } from '@src/v1/ebook/ebook-content/ebook-content.dto';
+import { EbookContentWithFileDto } from '@src/v1/ebook/ebook-content/ebook-content.dto';
 
 export type EbookContentHistoryDto = {
   id: Uuid;
@@ -8,6 +8,6 @@ export type EbookContentHistoryDto = {
   createdAt: ISO8601;
 };
 
-export type EbookContentWithHistoryDto = EbookContentDto & {
+export type EbookContentWithHistoryDto = EbookContentWithFileDto & {
   history: EbookContentHistoryDto | null;
 };

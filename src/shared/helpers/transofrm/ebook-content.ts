@@ -16,8 +16,9 @@ export const ebookContentToDto = (
 
 export const ebookContentWithHistoryToDto = (
   ebookContentWithHistory: IEbookContentWithHistory,
-): EbookContentWithHistoryDto | null => ({
+): EbookContentWithHistoryDto => ({
   ...ebookContentToDto(ebookContentWithHistory),
+  file: ebookContentWithHistory.file,
   history: ebookContentWithHistory.history
     ? {
         ...ebookContentWithHistory.history,
