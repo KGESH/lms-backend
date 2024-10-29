@@ -15,8 +15,6 @@ import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
 import { FileService } from '@src/v1/file/file.service';
 import { fileToDto } from '@src/shared/helpers/transofrm/file';
-import { SkipAuth } from '@src/core/decorators/skip-auth.decorator';
-import { SkipApiGuard } from '@src/core/decorators/skip-api.decorator';
 
 @Controller('v1/file')
 export class FileController {
@@ -156,8 +154,6 @@ export class FileController {
    * @summary 비디오 전용 pre-signed URL 목록 생성.
    */
   @TypedRoute.Post('/private/pre-signed/video')
-  @SkipAuth()
-  @SkipApiGuard()
   @Roles('admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)
   async createPrivateVideoPreSignedUrls(
@@ -199,6 +195,33 @@ export class FileController {
       fileId,
       'private',
     );
+
+    return {
+      fileId,
+      filename: fileId,
+      url: preSignedUrl,
+    };
+  }
+
+  /**
+   * 관리자가 비디오 업로드 이후 원본 파일 확인을 위한 pre-signed URL을 조회합니다.
+   *
+   * 파일 ID를 통해 조회합니다.
+   *
+   * URL의 만료 시간은 **30**분 입니다.
+   *
+   * @tag file
+   * @summary 비디오 원본 pre-signed URL 조회.
+   */
+  @TypedRoute.Get('/private/pre-signed/video/:fileId')
+  @Roles('admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
+  async getPrivateVideoSourcePreSignedUrl(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedParam('fileId') fileId: string,
+  ): Promise<FilePreSignedUrlDto> {
+    const preSignedUrl =
+      await this.s3Service.getVideoSourcePreSignedUrl(fileId);
 
     return {
       fileId,

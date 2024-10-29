@@ -57,6 +57,19 @@ export class S3Service {
     return url;
   }
 
+  async getVideoSourcePreSignedUrl(fileId: string): Promise<string> {
+    const command = new GetObjectCommand({
+      Bucket: this.configsService.env.AWS_S3_VIDEO_INPUT_BUCKET,
+      Key: fileId,
+    });
+
+    const url = await getSignedUrl(this.s3, command, {
+      expiresIn: this.configsService.env.AWS_S3_PRESIGNED_URL_EXPIRE_SECONDS,
+    });
+
+    return url;
+  }
+
   async createVideoPreSignedUrl(fileId: string): Promise<string> {
     const command = new PutObjectCommand({
       Bucket: this.configsService.env.AWS_S3_VIDEO_INPUT_BUCKET,
