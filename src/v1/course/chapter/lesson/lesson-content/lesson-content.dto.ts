@@ -8,6 +8,7 @@ import {
 export type LessonContentDto = {
   id: Uuid;
   lessonId: Uuid;
+  fileId: Uuid | null;
   title: string;
   description: string | null;
   contentType: LessonContentType;
@@ -25,10 +26,8 @@ export type LessonContentWithFileDto = LessonContentDto & {
 
 export type LessonContentCreateDto = Pick<
   LessonContentDto,
-  'title' | 'description' | 'contentType' | 'metadata'
-> & {
-  fileId: Uuid | null;
-};
+  'fileId' | 'title' | 'description' | 'contentType' | 'metadata'
+>;
 
 export type LessonContentUpdateDto = Omit<
   Partial<LessonContentDto>,

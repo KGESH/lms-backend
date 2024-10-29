@@ -9,7 +9,6 @@ export type ILessonContent = {
   title: string;
   description: string | null;
   contentType: LessonContentType;
-  // url: Uri | null;
   metadata: string | null;
   sequence: UInt | null;
 };
