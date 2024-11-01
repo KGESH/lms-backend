@@ -9,10 +9,7 @@ import {
   createRandomEbookProduct,
   seedEbookProducts,
 } from '../helpers/db/lms/ebook-product.helper';
-import {
-  CreateEbookProductDto,
-  UpdateEbookProductDto,
-} from '@src/v1/product/ebook-product/ebook-product.dto';
+import { CreateEbookProductDto } from '@src/v1/product/ebook-product/ebook-product.dto';
 import { createRandomEbook } from '../helpers/db/lms/ebook.helper';
 import { ConfigsService } from '@src/configs/configs.service';
 import { seedUsers } from '../helpers/db/lms/user.helper';
@@ -64,24 +61,41 @@ describe('EbookProductController (e2e)', () => {
   describe('[Create ebook product]', () => {
     it('should be create ebook product success', async () => {
       const { ebook } = await createRandomEbook(drizzle.db);
-      const [uploadedFile] = await createManyFiles(
-        [
-          {
-            id: typia.random<Uuid>(),
-            filename: 'mock-thumbnail.png',
-            metadata: null,
-            type: 'image',
-            url: typia.random<Uri>(),
-          },
-        ],
-        drizzle.db,
-      );
+      const [uploadedThumbnailFile, uploadedPreviewFile] =
+        await createManyFiles(
+          [
+            {
+              id: typia.random<Uuid>(),
+              filename: 'mock-thumbnail.png',
+              metadata: null,
+              type: 'image',
+              url: typia.random<Uri>(),
+            },
+            {
+              id: typia.random<Uuid>(),
+              filename: 'mock-preview.png',
+              metadata: null,
+              type: 'image',
+              url: typia.random<Uri>(),
+            },
+          ],
+          drizzle.db,
+        );
       const createDto: CreateEbookProductDto = {
         ...typia.random<CreateEbookProductDto>(),
         thumbnail: {
-          id: uploadedFile.id,
+          id: uploadedThumbnailFile.id,
         },
         title: 'mock-product',
+        content: {
+          richTextContent: 'mock content',
+        },
+        tableOfContent: {
+          richTextContent: 'mock TOC',
+        },
+        preview: {
+          fileId: uploadedPreviewFile.id,
+        },
         description: null,
         pricing: {
           amount: '100000',
@@ -145,6 +159,9 @@ describe('EbookProductController (e2e)', () => {
       expect(product.description).toEqual(null);
       expect(product.ebookId).toEqual(ebook.id);
       expect(product.pricing.amount).toEqual('100000');
+      expect(product.content.richTextContent).toEqual('mock content');
+      expect(product.tableOfContent.richTextContent).toEqual('mock TOC');
+      expect(product.preview.fileId).toEqual(uploadedPreviewFile.id);
       expect(product.announcement.richTextContent).toEqual('테스트 공지사항');
       expect(product.refundPolicy.richTextContent).toEqual('테스트 환불정책');
       expect(
@@ -161,7 +178,7 @@ describe('EbookProductController (e2e)', () => {
   });
 
   describe('[Update ebook product]', () => {
-    it('should be update ebook product success', async () => {
+    it('should be update ebook product (create a new snapshot) success', async () => {
       const { ebookId, lastSnapshot } = (
         await seedEbookProducts({ count: 1 }, drizzle.db)
       )[0];
@@ -170,11 +187,16 @@ describe('EbookProductController (e2e)', () => {
         await seedUsers({ count: 1, role: 'admin' }, drizzle.db)
       )[0];
 
-      const updateDto: UpdateEbookProductDto = {
-        snapshot: {
-          title: 'updated product title',
-          description: 'updated description',
-          availableDays: null,
+      const updateDto: CreateEbookProductDto = {
+        title: 'updated product title',
+        description: 'updated description',
+        availableDays: lastSnapshot.availableDays,
+        thumbnail: { id: lastSnapshot.thumbnail.id },
+        tableOfContent: {
+          richTextContent: 'updated TOC',
+        },
+        preview: {
+          fileId: lastSnapshot.preview.fileId,
         },
         pricing: {
           amount: '10000',
@@ -195,22 +217,19 @@ describe('EbookProductController (e2e)', () => {
           validTo: date.now('iso'),
           value: '33.33',
         },
-        uiContents: {
-          create: [
-            {
-              type: 'target_description',
-              content: 'mock new content',
-              description: null,
-              metadata: null,
-              sequence: 1,
-              url: null,
-            },
-          ],
-          update: [],
-        },
+        uiContents: [
+          {
+            type: 'target_description',
+            content: 'mock updated content',
+            description: null,
+            metadata: null,
+            sequence: 1,
+            url: null,
+          },
+        ],
       };
 
-      const response = await EbookProductAPI.updateProductEbook(
+      const response = await EbookProductAPI.createProductEbook(
         {
           host,
           headers: {
@@ -240,7 +259,7 @@ describe('EbookProductController (e2e)', () => {
       );
       expect(updated.discount!.value).toEqual('33.33');
       expect(
-        updated.uiContents.find((ui) => ui.content === 'mock new content'),
+        updated.uiContents.find((ui) => ui.content === 'mock updated content'),
       ).toBeDefined();
     });
   });

@@ -38,6 +38,14 @@ import {
 import { createManyFiles } from './file.helper';
 import { IProductThumbnail } from '../../../../../src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
 import { IFileCreate } from '@src/v1/file/file.interface';
+import {
+  IEbookProductSnapshotTableOfContent,
+  IEbookProductSnapshotTableOfContentCreate,
+} from '@src/v1/product/ebook-product/snapshot/content/product-snapshot-content.interface';
+import {
+  IEbookProductSnapshotPreview,
+  IEbookProductSnapshotPreviewCreate,
+} from '@src/v1/product/ebook-product/snapshot/preview/ebook-product-snapshot-preview.interface';
 
 export const createEbookProduct = async (
   params: IEbookProductCreate,
@@ -107,6 +115,30 @@ export const createEbookProductSnapshotContent = async (
   return content;
 };
 
+export const createEbookProductSnapshotTableOfContent = async (
+  params: IEbookProductSnapshotTableOfContentCreate,
+  db: TransactionClient,
+): Promise<IEbookProductSnapshotTableOfContent> => {
+  const [content] = await db
+    .insert(dbSchema.ebookProductSnapshotTableOfContents)
+    .values(params)
+    .returning();
+
+  return content;
+};
+
+export const createEbookProductSnapshotPreview = async (
+  params: IEbookProductSnapshotPreviewCreate,
+  db: TransactionClient,
+): Promise<IEbookProductSnapshotPreview> => {
+  const [content] = await db
+    .insert(dbSchema.ebookProductSnapshotPreviews)
+    .values(params)
+    .returning();
+
+  return content;
+};
+
 export const createEbookProductSnapshotUiContent = async (
   params: IProductSnapshotUiContentCreate[],
   db: TransactionClient,
@@ -162,6 +194,18 @@ export const createRandomEbookProduct = async (
     },
     db,
   );
+  const [mockUploadedPreviewFile] = await createManyFiles(
+    [
+      {
+        id: typia.random<Uuid>(),
+        filename: 'mock-preview.png',
+        metadata: null,
+        type: 'image',
+        url: 'https://aceternity.com/images/products/previews/new/editrix.png',
+      },
+    ],
+    db,
+  );
   const thumbnail = await createEbookProductThumbnail(
     {
       id: typia.random<Uuid>(),
@@ -200,6 +244,20 @@ export const createRandomEbookProduct = async (
     {
       productSnapshotId: snapshot.id,
       richTextContent: '테스트 전자책 상품 설명입니다.',
+    },
+    db,
+  );
+  const tableOfContent = await createEbookProductSnapshotTableOfContent(
+    {
+      productSnapshotId: snapshot.id,
+      richTextContent: '테스트 전자책 목차입니다.',
+    },
+    db,
+  );
+  const preview = await createEbookProductSnapshotPreview(
+    {
+      productSnapshotId: snapshot.id,
+      fileId: mockUploadedPreviewFile.id,
     },
     db,
   );
@@ -245,6 +303,8 @@ export const createRandomEbookProduct = async (
       announcement,
       refundPolicy,
       content,
+      tableOfContent,
+      preview,
       pricing,
       discount,
       uiContents,
