@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   IEbookProduct,
   IEbookProductCreate,
@@ -17,7 +21,6 @@ import {
   IEbookProductWithPricing,
   IEbookProductWithRelations,
 } from '@src/v1/product/ebook-product/ebook-product-relations.interface';
-import { NonNullableInfer } from '@src/shared/types/non-nullable-infer';
 import { Optional } from '@src/shared/types/optional';
 import { EbookProductSnapshotContentRepository } from '@src/v1/product/ebook-product/ebook-product-snapshot-content.repository';
 import { IProductSnapshotContentCreate } from '@src/v1/product/common/snapshot/content/product-snapshot-content.interface';
@@ -34,6 +37,10 @@ import {
 import { EbookProductSnapshotUiContentRepository } from '@src/v1/product/ebook-product/ebook-product-snapshot-ui-content.repository';
 import { IProductThumbnailCreate } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
 import { ProductThumbnailService } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.service';
+import { EbookProductSnapshotTableOfContentRepository } from '@src/v1/product/ebook-product/ebook-product-snapshot-table-of-content.repository';
+import { IEbookProductSnapshotTableOfContentCreate } from '@src/v1/product/ebook-product/snapshot/content/product-snapshot-content.interface';
+import { EbookProductSnapshotPreviewRepository } from '@src/v1/product/ebook-product/ebook-product-snapshot-preview.repository';
+import { IEbookProductSnapshotPreviewCreate } from '@src/v1/product/ebook-product/snapshot/preview/ebook-product-snapshot-preview.interface';
 
 @Injectable()
 export class EbookProductService {
@@ -45,6 +52,8 @@ export class EbookProductService {
     private readonly ebookProductSnapshotPricingRepository: EbookProductSnapshotPricingRepository,
     private readonly ebookProductSnapshotDiscountRepository: EbookProductSnapshotDiscountRepository,
     private readonly ebookProductSnapshotContentRepository: EbookProductSnapshotContentRepository,
+    private readonly ebookProductSnapshotTableOfContentRepository: EbookProductSnapshotTableOfContentRepository,
+    private readonly ebookProductSnapshotPreviewRepository: EbookProductSnapshotPreviewRepository,
     private readonly ebookProductSnapshotUiContentRepository: EbookProductSnapshotUiContentRepository,
     private readonly ebookProductSnapshotAnnouncementRepository: EbookProductSnapshotAnnouncementRepository,
     private readonly ebookProductSnapshotRefundPolicyRepository: EbookProductSnapshotRefundPolicyRepository,
@@ -118,6 +127,8 @@ export class EbookProductService {
     ebookProductSnapshotCreateParams,
     ebookProductSnapshotThumbnailCreateParams,
     ebookProductSnapshotContentCreateParams,
+    ebookProductSnapshotTableOfContentParams,
+    ebookProductSnapshotPreviewCreateParams,
     ebookProductSnapshotAnnouncementCreateParams,
     ebookProductSnapshotRefundPolicyCreateParams,
     ebookProductSnapshotPricingCreateParams,
@@ -132,6 +143,14 @@ export class EbookProductService {
     ebookProductSnapshotThumbnailCreateParams: IProductThumbnailCreate;
     ebookProductSnapshotContentCreateParams: Optional<
       IProductSnapshotContentCreate,
+      'productSnapshotId'
+    >;
+    ebookProductSnapshotTableOfContentParams: Optional<
+      IEbookProductSnapshotTableOfContentCreate,
+      'productSnapshotId'
+    >;
+    ebookProductSnapshotPreviewCreateParams: Optional<
+      IEbookProductSnapshotPreviewCreate,
       'productSnapshotId'
     >;
     ebookProductSnapshotAnnouncementCreateParams: Optional<
@@ -155,8 +174,17 @@ export class EbookProductService {
       'productSnapshotId'
     >[];
   }): Promise<IEbookProductWithRelations> {
+    if (
+      ebookProductSnapshotThumbnailCreateParams.id ===
+      ebookProductSnapshotPreviewCreateParams.fileId
+    ) {
+      throw new BadRequestException(
+        'Thumbnail and preview cannot be the same file',
+      );
+    }
+
     const existProduct =
-      await this.ebookProductQueryRepository.findEbookProductWithLastSnapshot({
+      await this.ebookProductQueryRepository.findEbookProductWithRelations({
         ebookId: ebookProductCreateParams.ebookId,
       });
 
@@ -170,6 +198,17 @@ export class EbookProductService {
           },
           tx,
         ));
+      // If thumbnail file updated, soft delete the prev thumbnail file.
+      if (
+        existProduct?.lastSnapshot &&
+        existProduct?.lastSnapshot.thumbnail.id !==
+          ebookProductSnapshotThumbnailCreateParams.id
+      ) {
+        await this.ebookProductSnapshotRepository.softDeleteThumbnailFile(
+          { thumbnailId: existProduct.lastSnapshot.thumbnail.id },
+          tx,
+        );
+      }
       const snapshot = await this.ebookProductSnapshotRepository.create(
         {
           ...ebookProductSnapshotCreateParams,
@@ -179,34 +218,75 @@ export class EbookProductService {
         },
         tx,
       );
-      const content = await this.ebookProductSnapshotContentRepository.create({
-        ...ebookProductSnapshotContentCreateParams,
-        productSnapshotId: snapshot.id,
-        id: createUuid(),
-      });
+      const content = await this.ebookProductSnapshotContentRepository.create(
+        {
+          ...ebookProductSnapshotContentCreateParams,
+          productSnapshotId: snapshot.id,
+          id: createUuid(),
+        },
+        tx,
+      );
+      const tableOfContent =
+        await this.ebookProductSnapshotTableOfContentRepository.create(
+          {
+            ...ebookProductSnapshotTableOfContentParams,
+            productSnapshotId: snapshot.id,
+            id: createUuid(),
+          },
+          tx,
+        );
+      // If preview file updated, soft delete the prev preview file.
+      if (
+        existProduct?.lastSnapshot &&
+        existProduct?.lastSnapshot.preview.fileId !==
+          ebookProductSnapshotPreviewCreateParams.fileId
+      ) {
+        await this.ebookProductSnapshotPreviewRepository.softDeletePreviewFile(
+          { fileId: existProduct.lastSnapshot.preview.fileId },
+          tx,
+        );
+      }
+      const preview = await this.ebookProductSnapshotPreviewRepository.create(
+        {
+          ...ebookProductSnapshotPreviewCreateParams,
+          productSnapshotId: snapshot.id,
+          id: createUuid(),
+        },
+        tx,
+      );
       const announcement =
-        await this.ebookProductSnapshotAnnouncementRepository.create({
-          ...ebookProductSnapshotAnnouncementCreateParams,
-          productSnapshotId: snapshot.id,
-          id: createUuid(),
-        });
+        await this.ebookProductSnapshotAnnouncementRepository.create(
+          {
+            ...ebookProductSnapshotAnnouncementCreateParams,
+            productSnapshotId: snapshot.id,
+            id: createUuid(),
+          },
+          tx,
+        );
       const refundPolicy =
-        await this.ebookProductSnapshotRefundPolicyRepository.create({
-          ...ebookProductSnapshotRefundPolicyCreateParams,
+        await this.ebookProductSnapshotRefundPolicyRepository.create(
+          {
+            ...ebookProductSnapshotRefundPolicyCreateParams,
+            productSnapshotId: snapshot.id,
+            id: createUuid(),
+          },
+          tx,
+        );
+      const pricing = await this.ebookProductSnapshotPricingRepository.create(
+        {
+          ...ebookProductSnapshotPricingCreateParams,
           productSnapshotId: snapshot.id,
           id: createUuid(),
-        });
-      const pricing = await this.ebookProductSnapshotPricingRepository.create({
-        ...ebookProductSnapshotPricingCreateParams,
-        productSnapshotId: snapshot.id,
-        id: createUuid(),
-      });
+        },
+        tx,
+      );
       const discount = await this.ebookProductSnapshotDiscountRepository.create(
         {
           ...ebookProductSnapshotDiscountCreateParams,
           productSnapshotId: snapshot.id,
           id: createUuid(),
         },
+        tx,
       );
       const uiContents =
         ebookProductSnapshotUiContentCreateParams.length > 0
@@ -215,6 +295,7 @@ export class EbookProductService {
                 ...params,
                 productSnapshotId: snapshot.id,
               })),
+              tx,
             )
           : [];
 
@@ -224,6 +305,8 @@ export class EbookProductService {
           ...snapshot,
           announcement,
           content,
+          tableOfContent,
+          preview,
           refundPolicy,
           pricing,
           discount,
@@ -241,12 +324,15 @@ export class EbookProductService {
     return createdEbookProduct;
   }
 
+  // @Deprecated. Use updateEbookProduct instead.
   async updateEbookProduct(
     where: Pick<IEbookProduct, 'ebookId'>,
     {
       ebookProductSnapshotUpdateParams,
       ebookProductSnapshotThumbnailUpdateParams,
       ebookProductSnapshotContentUpdateParams,
+      ebookProductSnapshotTableOfContentUpdateParams,
+      ebookProductSnapshotPreviewUpdateParams,
       ebookProductSnapshotAnnouncementUpdateParams,
       ebookProductSnapshotRefundPolicyUpdateParams,
       ebookProductSnapshotPricingUpdateParams,
@@ -261,6 +347,14 @@ export class EbookProductService {
       ebookProductSnapshotContentUpdateParams?: Pick<
         IProductSnapshotContentCreate,
         'richTextContent'
+      >;
+      ebookProductSnapshotTableOfContentUpdateParams?: Pick<
+        IEbookProductSnapshotTableOfContentCreate,
+        'richTextContent'
+      >;
+      ebookProductSnapshotPreviewUpdateParams?: Pick<
+        IEbookProductSnapshotPreviewCreate,
+        'fileId'
       >;
       ebookProductSnapshotAnnouncementUpdateParams?: Pick<
         IProductSnapshotAnnouncementCreate,
@@ -323,6 +417,25 @@ export class EbookProductService {
         },
         tx,
       );
+      const tableOfContent =
+        await this.ebookProductSnapshotTableOfContentRepository.create(
+          {
+            ...existProduct.lastSnapshot.tableOfContent,
+            ...ebookProductSnapshotTableOfContentUpdateParams,
+            productSnapshotId: snapshot.id,
+            id: createUuid(),
+          },
+          tx,
+        );
+      const preview = await this.ebookProductSnapshotPreviewRepository.create(
+        {
+          ...existProduct.lastSnapshot.preview,
+          ...ebookProductSnapshotPreviewUpdateParams,
+          productSnapshotId: snapshot.id,
+          id: createUuid(),
+        },
+        tx,
+      );
       const announcement =
         await this.ebookProductSnapshotAnnouncementRepository.create(
           {
@@ -343,12 +456,15 @@ export class EbookProductService {
           },
           tx,
         );
-      const pricing = await this.ebookProductSnapshotPricingRepository.create({
-        ...existProduct.lastSnapshot.pricing,
-        ...ebookProductSnapshotPricingUpdateParams,
-        productSnapshotId: snapshot.id,
-        id: createUuid(),
-      });
+      const pricing = await this.ebookProductSnapshotPricingRepository.create(
+        {
+          ...existProduct.lastSnapshot.pricing,
+          ...ebookProductSnapshotPricingUpdateParams,
+          productSnapshotId: snapshot.id,
+          id: createUuid(),
+        },
+        tx,
+      );
       const discount = await this.ebookProductSnapshotDiscountRepository.create(
         {
           ...existProduct.lastSnapshot.discount,
@@ -356,6 +472,7 @@ export class EbookProductService {
           productSnapshotId: snapshot.id,
           id: createUuid(),
         },
+        tx,
       );
 
       const existUi = existProduct.lastSnapshot.uiContents;
@@ -410,6 +527,8 @@ export class EbookProductService {
           ...snapshot,
           announcement,
           content,
+          tableOfContent,
+          preview,
           refundPolicy,
           pricing,
           discount,

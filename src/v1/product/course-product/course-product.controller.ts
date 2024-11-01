@@ -252,8 +252,9 @@ export class CourseProductController {
    * discount: 상품 할인 정보.
    *
    * @tag product-course
-   * @summary 강의 상품 생성 - Role('admin', 'manager')
+   * @summary 강의 상품 수정(스냅샷 생성) - Role('admin', 'manager')
    * @param courseId - 강의 ID
+   * @deprecated Use POST /v1/product/course/:courseId instead
    */
   @TypedRoute.Patch('/:courseId')
   @Roles('admin', 'manager')

@@ -11,6 +11,14 @@ import {
   UpdateUiContentsDto,
 } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.dto';
 import { CreateProductContentDto } from '@src/v1/product/common/snapshot/product-snapshot.dto';
+import {
+  CreateEbookProductSnapshotTableOfContentDto,
+  EbookProductSnapshotTableOfContentDto,
+} from '@src/v1/product/ebook-product/snapshot/content/ebook-product-snapshot-table-of-content.dto';
+import {
+  CreateEbookProductSnapshotPreviewDto,
+  EbookProductSnapshotPreviewDto,
+} from '@src/v1/product/ebook-product/snapshot/preview/ebook-product-snapshot-preview.dto';
 
 export type EbookProductDto = {
   /**
@@ -54,6 +62,16 @@ export type EbookProductDto = {
    * 상품 콘텐츠
    */
   content: ProductSnapshotContentDto;
+
+  /**
+   * 전자책 목차
+   */
+  tableOfContent: EbookProductSnapshotTableOfContentDto;
+
+  /**
+   * 전자책 미리보기
+   */
+  preview: EbookProductSnapshotPreviewDto;
 
   /**
    * 상품 공지사항
@@ -102,7 +120,10 @@ export type CreateEbookProductDto = Pick<
   EbookProductDto,
   'title' | 'description' | 'availableDays'
 > &
-  CreateProductContentDto;
+  CreateProductContentDto & {
+    preview: Pick<CreateEbookProductSnapshotPreviewDto, 'fileId'>;
+    tableOfContent: CreateEbookProductSnapshotTableOfContentDto;
+  };
 
 export type UpdateEbookProductParams = {
   snapshot: Pick<EbookProductDto, 'title' | 'description' | 'availableDays'>;
@@ -113,6 +134,8 @@ export type UpdateEbookProductDto = Partial<
   Pick<
     CreateEbookProductDto,
     | 'content'
+    | 'tableOfContent'
+    | 'preview'
     | 'pricing'
     | 'thumbnail'
     | 'announcement'
@@ -125,7 +148,12 @@ export type UpdateEbookProductDto = Partial<
 export type PaginatedEbookProducts = Paginated<
   Omit<
     EbookProductDto,
-    'announcement' | 'content' | 'refundPolicy' | 'uiContents'
+    | 'announcement'
+    | 'content'
+    | 'tableOfContent'
+    | 'preview'
+    | 'refundPolicy'
+    | 'uiContents'
   >[]
 >;
 

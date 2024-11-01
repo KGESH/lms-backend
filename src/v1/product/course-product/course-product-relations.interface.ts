@@ -25,15 +25,13 @@ export type ICourseProductWithPricing = ICourseProduct & {
 
 export type ICourseProductWithRelations = ICourseProduct & {
   course: ICourseWithRelations;
-  lastSnapshot:
-    | (IProductSnapshot & {
-        thumbnail: IProductThumbnail;
-        announcement: IProductSnapshotAnnouncement;
-        refundPolicy: IProductSnapshotRefundPolicy;
-        pricing: IProductSnapshotPricing;
-        discount: IProductSnapshotDiscount;
-        content: IProductSnapshotContent;
-        uiContents: IProductSnapshotUiContent[];
-      })
-    | null;
+  lastSnapshot: IProductSnapshot & {
+    thumbnail: IProductThumbnail;
+    announcement: IProductSnapshotAnnouncement;
+    refundPolicy: IProductSnapshotRefundPolicy;
+    pricing: IProductSnapshotPricing;
+    discount: IProductSnapshotDiscount;
+    content: IProductSnapshotContent;
+    uiContents: IProductSnapshotUiContent[];
+  };
 };

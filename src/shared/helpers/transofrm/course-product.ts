@@ -1,4 +1,3 @@
-import { NonNullableInfer } from '@src/shared/types/non-nullable-infer';
 import {
   ICourseProductWithPricing,
   ICourseProductWithRelations,
@@ -8,7 +7,7 @@ import * as date from '@src/shared/utils/date';
 import { courseRelationsToDto } from '@src/shared/helpers/transofrm/course';
 
 export const courseProductToDto = (
-  product: NonNullableInfer<ICourseProductWithRelations>,
+  product: ICourseProductWithRelations,
 ): CourseProductDto => {
   return {
     courseId: product.courseId,

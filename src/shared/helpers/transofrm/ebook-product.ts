@@ -21,6 +21,8 @@ export const ebookProductToDto = (
     deletedAt: date.toIsoStringOrNull(product.lastSnapshot.deletedAt),
     announcement: product.lastSnapshot.announcement,
     content: product.lastSnapshot.content,
+    tableOfContent: product.lastSnapshot.tableOfContent,
+    preview: product.lastSnapshot.preview,
     refundPolicy: product.lastSnapshot.refundPolicy,
     pricing: product.lastSnapshot.pricing,
     discount: {
@@ -39,7 +41,12 @@ export const ebookProductWithPricingToDto = (
   product: IEbookProductWithPricing,
 ): Omit<
   EbookProductDto,
-  'announcement' | 'content' | 'refundPolicy' | 'uiContents'
+  | 'announcement'
+  | 'content'
+  | 'tableOfContent'
+  | 'preview'
+  | 'refundPolicy'
+  | 'uiContents'
 > => {
   return {
     ebookId: product.ebookId,

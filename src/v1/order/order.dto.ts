@@ -27,6 +27,8 @@ export type OrderCoursePurchasedDto = Omit<OrderCourseDto, 'product'> & {
   product: Omit<
     CourseProductDto,
     | 'content'
+    | 'tableOfContent'
+    | 'preview'
     | 'announcement'
     | 'refundPolicy'
     | 'pricing'
@@ -44,6 +46,8 @@ export type OrderEbookPurchasedDto = Omit<OrderEbookDto, 'product'> & {
   product: Omit<
     EbookProductDto,
     | 'content'
+    | 'tableOfContent'
+    | 'preview'
     | 'announcement'
     | 'refundPolicy'
     | 'pricing'

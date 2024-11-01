@@ -226,6 +226,25 @@ export const ebookProductSnapshotTableOfContents = pgTable(
   }),
 );
 
+export const ebookProductSnapshotPreviews = pgTable(
+  'ebook_product_snapshot_previews',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    productSnapshotId: uuid('product_snapshot_id').notNull(),
+    fileId: uuid('file_id')
+      .notNull()
+      .references(() => files.id, { onDelete: 'cascade' }),
+  },
+  (table) => ({
+    productSnapshotIdIndex: index(
+      'idx_ebook_product_snapshot_previews_product_snapshot_id',
+    ).on(table.productSnapshotId),
+    fileIdIndex: index('idx_ebook_product_snapshot_previews_file_id').on(
+      table.fileId,
+    ),
+  }),
+);
+
 export const ebookProductSnapshotUiContents = pgTable(
   'ebook_product_snapshot_ui_contents',
   {
@@ -350,6 +369,7 @@ export const ebookProductSnapshotsRelations = relations(
     refundPolicy: one(ebookProductSnapshotRefundPolicies),
     content: one(ebookProductSnapshotContents),
     tableOfContent: one(ebookProductSnapshotTableOfContents),
+    preview: one(ebookProductSnapshotPreviews),
     pricing: one(ebookProductSnapshotPricing),
     discount: one(ebookProductSnapshotDiscounts),
     ebookOrders: many(ebookOrders),
@@ -396,6 +416,21 @@ export const ebookProductSnapshotTableOfContentsRelations = relations(
     }),
   }),
 );
+
+export const ebookProductSnapshotPreviewsRelations = relations(
+  ebookProductSnapshotPreviews,
+  ({ one }) => ({
+    productSnapshot: one(ebookProductSnapshots, {
+      fields: [ebookProductSnapshotPreviews.productSnapshotId],
+      references: [ebookProductSnapshots.id],
+    }),
+    file: one(files, {
+      fields: [ebookProductSnapshotPreviews.fileId],
+      references: [files.id],
+    }),
+  }),
+);
+
 export const ebookProductSnapshotPricingRelations = relations(
   ebookProductSnapshotPricing,
   ({ one }) => ({
@@ -454,6 +489,7 @@ export const ebookDbSchema = {
   ebookProductSnapshotRefundPolicies,
   ebookProductSnapshotContents,
   ebookProductSnapshotTableOfContents,
+  ebookProductSnapshotPreviews,
   ebookProductSnapshotUiContents,
   ebookEnrollments,
 
@@ -470,6 +506,7 @@ export const ebookDbSchema = {
   ebookProductSnapshotRefundPoliciesRelations,
   ebookProductSnapshotContentsRelations,
   ebookProductSnapshotTableOfContentsRelations,
+  ebookProductSnapshotPreviewsRelations,
   ebookProductSnapshotUiContentsRelations,
   ebookEnrollmentsRelations,
 };

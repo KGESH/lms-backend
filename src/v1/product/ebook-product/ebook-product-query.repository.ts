@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as typia from 'typia';
 import { dbSchema } from '@src/infra/db/schema';
 import { asc, desc, eq, isNull, sql } from 'drizzle-orm';
@@ -17,6 +17,8 @@ import { IProductSnapshotRefundPolicy } from '@src/v1/product/common/snapshot/re
 import { Paginated, Pagination } from '@src/shared/types/pagination';
 import { IProductSnapshotDiscount } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
 import { IProductThumbnail } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
+import { IEbookProductSnapshotTableOfContent } from '@src/v1/product/ebook-product/snapshot/content/product-snapshot-content.interface';
+import { IEbookProductSnapshotPreview } from '@src/v1/product/ebook-product/snapshot/preview/ebook-product-snapshot-preview.interface';
 
 @Injectable()
 export class EbookProductQueryRepository {
@@ -211,6 +213,8 @@ export class EbookProductQueryRepository {
             announcement: true,
             refundPolicy: true,
             content: true,
+            tableOfContent: true,
+            preview: true,
             pricing: true,
             discount: true,
             uiContents: true,
@@ -241,6 +245,12 @@ export class EbookProductQueryRepository {
           lastSnapshot.refundPolicy,
         ),
         content: typia.assert<IProductSnapshotContent>(lastSnapshot.content),
+        tableOfContent: typia.assert<IEbookProductSnapshotTableOfContent>(
+          lastSnapshot.tableOfContent,
+        ),
+        preview: typia.assert<IEbookProductSnapshotPreview>(
+          lastSnapshot.preview,
+        ),
         pricing: typia.assert<IProductSnapshotPricing>({
           ...lastSnapshot.pricing,
           amount: typia.assert<Price>(`${lastSnapshot.pricing!.amount}`),
@@ -293,17 +303,5 @@ export class EbookProductQueryRepository {
       },
       lastSnapshot: product.snapshots[0] ?? null,
     } satisfies IEbookProductWithLastSnapshot);
-  }
-
-  async findEbookProductWithLastSnapshotOrThrow({
-    ebookId,
-  }: Pick<IEbookProduct, 'ebookId'>): Promise<IEbookProductWithLastSnapshot> {
-    const product = await this.findEbookProductWithLastSnapshot({ ebookId });
-
-    if (!product) {
-      throw new NotFoundException('Ebook product not found');
-    }
-
-    return product;
   }
 }

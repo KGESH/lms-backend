@@ -13,6 +13,8 @@ import { EbookProductSnapshotAnnouncementRepository } from '@src/v1/product/eboo
 import { EbookProductSnapshotRefundPolicyRepository } from '@src/v1/product/ebook-product/ebook-product-snapshot-refund-policy.repository';
 import { EbookProductSnapshotUiContentRepository } from '@src/v1/product/ebook-product/ebook-product-snapshot-ui-content.repository';
 import { ProductThumbnailModule } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.module';
+import { EbookProductSnapshotTableOfContentRepository } from '@src/v1/product/ebook-product/ebook-product-snapshot-table-of-content.repository';
+import { EbookProductSnapshotPreviewRepository } from '@src/v1/product/ebook-product/ebook-product-snapshot-preview.repository';
 
 const modules = [EbookModule, UserModule, ProductThumbnailModule];
 
@@ -27,6 +29,8 @@ const providers = [
   EbookProductSnapshotAnnouncementRepository,
   EbookProductSnapshotRefundPolicyRepository,
   EbookProductSnapshotUiContentRepository,
+  EbookProductSnapshotTableOfContentRepository,
+  EbookProductSnapshotPreviewRepository,
 ];
 
 @Module({

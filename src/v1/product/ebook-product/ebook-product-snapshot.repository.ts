@@ -26,7 +26,7 @@ export class EbookProductSnapshotRepository {
   }
 
   // Soft delete
-  async delete(
+  async softDelete(
     where: Pick<IProductSnapshot, 'id'>,
     db: TransactionClient,
   ): Promise<IProductSnapshot> {
@@ -36,5 +36,15 @@ export class EbookProductSnapshotRepository {
       .where(eq(dbSchema.ebookProductSnapshots.id, where.id))
       .returning();
     return deleted;
+  }
+
+  async softDeleteThumbnailFile(
+    where: Pick<IProductSnapshot, 'thumbnailId'>,
+    db = this.drizzle.db,
+  ): Promise<void> {
+    await db
+      .update(dbSchema.files)
+      .set({ deletedAt: date.now('date') })
+      .where(eq(dbSchema.files.id, where.thumbnailId));
   }
 }

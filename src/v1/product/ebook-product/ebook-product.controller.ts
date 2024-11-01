@@ -197,6 +197,12 @@ export class EbookProductController {
       ebookProductSnapshotContentCreateParams: {
         richTextContent: body.content.richTextContent,
       },
+      ebookProductSnapshotTableOfContentParams: {
+        richTextContent: body.tableOfContent.richTextContent,
+      },
+      ebookProductSnapshotPreviewCreateParams: {
+        fileId: body.preview.fileId,
+      },
       ebookProductSnapshotAnnouncementCreateParams: {
         richTextContent: body.announcement.richTextContent,
       },
@@ -236,6 +242,10 @@ export class EbookProductController {
    *
    * content: 상품 상세 페이지 rich text content.
    *
+   * tableOfContent: 전자책 목차
+   *
+   * preview: 전자책 미리보기
+   *
    * uiContents: 상품 상세 페이지 UI 컨텐츠.
    *
    * refundPolicy: 상품 상세 페이지 환불 정책 rich text content.
@@ -245,8 +255,9 @@ export class EbookProductController {
    * discount: 상품 할인 정보.
    *
    * @tag product-ebook
-   * @summary 전자책 상품 생성 - Role('admin', 'manager')
+   * @summary 전자책 상품 수정(스냅샷 생성) - Role('admin', 'manager')
    * @param ebookId - 전자책 ID
+   * @deprecated Use POST /v1/product/ebook/:ebookId instead
    */
   @TypedRoute.Patch('/:ebookId')
   @Roles('admin', 'manager')
@@ -275,6 +286,7 @@ export class EbookProductController {
         ebookProductSnapshotThumbnailUpdateParams: body.thumbnail,
         ebookProductSnapshotAnnouncementUpdateParams: body.announcement,
         ebookProductSnapshotContentUpdateParams: body.content,
+        ebookProductSnapshotTableOfContentUpdateParams: body.tableOfContent,
         ebookProductSnapshotRefundPolicyUpdateParams: body.refundPolicy,
         ebookProductSnapshotPricingUpdateParams: body.pricing,
         ebookProductSnapshotDiscountUpdateParams: body.discount

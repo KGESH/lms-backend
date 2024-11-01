@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import {
   ICourseProduct,
   ICourseProductCreate,
@@ -13,11 +13,9 @@ import { IProductSnapshotCreate } from '@src/v1/product/common/snapshot/product-
 import { IProductSnapshotPricingCreate } from '@src/v1/product/common/snapshot/pricing/product-snapshot-pricing.interface';
 import { IProductSnapshotDiscountCreate } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
 import {
-  ICourseProductWithLastSnapshot,
   ICourseProductWithPricing,
   ICourseProductWithRelations,
 } from '@src/v1/product/course-product/course-product-relations.interface';
-import { NonNullableInfer } from '@src/shared/types/non-nullable-infer';
 import { Optional } from '@src/shared/types/optional';
 import { CourseProductSnapshotContentRepository } from '@src/v1/product/course-product/course-product-snapshot-content.repository';
 import { IProductSnapshotContentCreate } from '@src/v1/product/common/snapshot/content/product-snapshot-content.interface';
@@ -38,6 +36,7 @@ import { ProductThumbnailService } from '@src/v1/product/common/snapshot/thumbna
 
 @Injectable()
 export class CourseProductService {
+  private readonly logger = new Logger(CourseProductService.name);
   constructor(
     private readonly courseQueryService: CourseQueryService,
     private readonly productThumbnailService: ProductThumbnailService,
@@ -86,7 +85,7 @@ export class CourseProductService {
 
   async findCourseProductWithRelationsOrThrow(
     where: Pick<ICourseProduct, 'courseId'>,
-  ): Promise<NonNullableInfer<ICourseProductWithRelations>> {
+  ): Promise<ICourseProductWithRelations> {
     const courseProduct = await this.findCourseProductWithRelations(where);
 
     if (!courseProduct?.lastSnapshot) {
@@ -96,24 +95,6 @@ export class CourseProductService {
     return {
       ...courseProduct,
       lastSnapshot: courseProduct.lastSnapshot,
-    };
-  }
-
-  async findCourseProductOrThrow(
-    where: Pick<ICourseProduct, 'courseId'>,
-  ): Promise<NonNullableInfer<ICourseProductWithLastSnapshot>> {
-    const product =
-      await this.courseProductQueryRepository.findCourseProductWithLastSnapshot(
-        where,
-      );
-
-    if (!product?.lastSnapshot) {
-      throw new NotFoundException('Course product snapshot not found');
-    }
-
-    return {
-      ...product,
-      lastSnapshot: product.lastSnapshot,
     };
   }
 
@@ -158,17 +139,11 @@ export class CourseProductService {
       IProductSnapshotUiContentCreate,
       'productSnapshotId'
     >[];
-  }): Promise<NonNullableInfer<ICourseProductWithRelations>> {
-    const course = await this.courseQueryService.findCourseByIdOrThrow({
-      id: courseProductCreateParams.courseId,
-    });
-
+  }): Promise<ICourseProductWithRelations> {
     const existProduct =
-      await this.courseProductQueryRepository.findCourseProductWithLastSnapshot(
-        {
-          courseId: course.id,
-        },
-      );
+      await this.courseProductQueryRepository.findCourseProductWithRelations({
+        courseId: courseProductCreateParams.courseId,
+      });
 
     await this.drizzle.db.transaction(async (tx) => {
       const courseProduct =
@@ -180,6 +155,17 @@ export class CourseProductService {
           },
           tx,
         ));
+      // If thumbnail file updated, soft delete the prev thumbnail file.
+      if (
+        existProduct?.lastSnapshot &&
+        existProduct?.lastSnapshot.thumbnail.id !==
+          courseProductSnapshotThumbnailCreateParams.id
+      ) {
+        await this.courseProductSnapshotRepository.softDeleteThumbnailFile(
+          { thumbnailId: existProduct.lastSnapshot.thumbnail.id },
+          tx,
+        );
+      }
       const snapshot = await this.courseProductSnapshotRepository.create(
         {
           ...courseProductSnapshotCreateParams,
@@ -243,7 +229,7 @@ export class CourseProductService {
 
     const createdCourseProduct =
       await this.findCourseProductWithRelationsOrThrow({
-        courseId: course.id,
+        courseId: courseProductCreateParams.courseId,
       });
 
     return createdCourseProduct;
@@ -291,7 +277,7 @@ export class CourseProductService {
         update: IProductSnapshotUiContentUpdate[];
       };
     },
-  ): Promise<NonNullableInfer<ICourseProductWithRelations>> {
+  ): Promise<ICourseProductWithRelations> {
     const existProduct =
       await this.findCourseProductWithRelationsOrThrow(where);
 
