@@ -69,7 +69,7 @@ export type EbookProductDto = {
   tableOfContent: EbookProductSnapshotTableOfContentDto;
 
   /**
-   * 전자책 미리보기
+   * 전자책 미리보기. (public pre-signed url를 먼저 생성하여 저장)
    */
   preview: EbookProductSnapshotPreviewDto;
 
