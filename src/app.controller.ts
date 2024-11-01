@@ -21,4 +21,18 @@ export class AppController {
     this.logger.verbose('ping');
     return this.appService.ping();
   }
+
+  /**
+   * Backend SDK Version
+   *
+   * @tag ping
+   * @summary Backend SDK Version (public)
+   */
+  @Get('sdk-version')
+  @SkipAuth()
+  @SkipApiGuard()
+  async getBackendSDKVersion(): Promise<string> {
+    this.logger.verbose('getBackendSDKVersion');
+    return await this.appService.getBackendSDKVersion();
+  }
 }
