@@ -212,6 +212,20 @@ export const ebookProductSnapshotContents = pgTable(
   }),
 );
 
+export const ebookProductSnapshotTableOfContents = pgTable(
+  'ebook_product_snapshot_table_of_contents',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    productSnapshotId: uuid('product_snapshot_id').notNull(),
+    richTextContent: text('rich_text_content').notNull(),
+  },
+  (table) => ({
+    productSnapshotIdIndex: index(
+      'idx_ebook_product_snapshot_table_of_contents_product_snapshot_id',
+    ).on(table.productSnapshotId),
+  }),
+);
+
 export const ebookProductSnapshotUiContents = pgTable(
   'ebook_product_snapshot_ui_contents',
   {
@@ -335,6 +349,7 @@ export const ebookProductSnapshotsRelations = relations(
     announcement: one(ebookProductSnapshotAnnouncements),
     refundPolicy: one(ebookProductSnapshotRefundPolicies),
     content: one(ebookProductSnapshotContents),
+    tableOfContent: one(ebookProductSnapshotTableOfContents),
     pricing: one(ebookProductSnapshotPricing),
     discount: one(ebookProductSnapshotDiscounts),
     ebookOrders: many(ebookOrders),
@@ -372,6 +387,15 @@ export const ebookProductSnapshotContentsRelations = relations(
   }),
 );
 
+export const ebookProductSnapshotTableOfContentsRelations = relations(
+  ebookProductSnapshotTableOfContents,
+  ({ one }) => ({
+    productSnapshot: one(ebookProductSnapshots, {
+      fields: [ebookProductSnapshotTableOfContents.productSnapshotId],
+      references: [ebookProductSnapshots.id],
+    }),
+  }),
+);
 export const ebookProductSnapshotPricingRelations = relations(
   ebookProductSnapshotPricing,
   ({ one }) => ({
@@ -429,6 +453,7 @@ export const ebookDbSchema = {
   ebookProductSnapshotAnnouncements,
   ebookProductSnapshotRefundPolicies,
   ebookProductSnapshotContents,
+  ebookProductSnapshotTableOfContents,
   ebookProductSnapshotUiContents,
   ebookEnrollments,
 
@@ -444,6 +469,7 @@ export const ebookDbSchema = {
   ebookProductSnapshotAnnouncementsRelations,
   ebookProductSnapshotRefundPoliciesRelations,
   ebookProductSnapshotContentsRelations,
+  ebookProductSnapshotTableOfContentsRelations,
   ebookProductSnapshotUiContentsRelations,
   ebookEnrollmentsRelations,
 };

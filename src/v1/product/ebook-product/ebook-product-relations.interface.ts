@@ -25,15 +25,14 @@ export type IEbookProductWithPricing = IEbookProduct & {
 
 export type IEbookProductWithRelations = IEbookProduct & {
   ebook: IEbookWithRelations;
-  lastSnapshot:
-    | (IProductSnapshot & {
-        thumbnail: IProductThumbnail;
-        announcement: IProductSnapshotAnnouncement;
-        refundPolicy: IProductSnapshotRefundPolicy;
-        pricing: IProductSnapshotPricing;
-        discount: IProductSnapshotDiscount;
-        content: IProductSnapshotContent;
-        uiContents: IProductSnapshotUiContent[];
-      })
-    | null;
+  lastSnapshot: IProductSnapshot & {
+    thumbnail: IProductThumbnail;
+    announcement: IProductSnapshotAnnouncement;
+    refundPolicy: IProductSnapshotRefundPolicy;
+    pricing: IProductSnapshotPricing;
+    discount: IProductSnapshotDiscount;
+    content: IProductSnapshotContent;
+    // tableOfContent: IProductSnapshotContent; // Todo: replace
+    uiContents: IProductSnapshotUiContent[];
+  };
 };

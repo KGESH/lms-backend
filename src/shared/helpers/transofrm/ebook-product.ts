@@ -1,4 +1,3 @@
-import { NonNullableInfer } from '@src/shared/types/non-nullable-infer';
 import {
   IEbookProductWithPricing,
   IEbookProductWithRelations,
@@ -8,7 +7,7 @@ import * as date from '@src/shared/utils/date';
 import { ebookRelationsToDto } from '@src/shared/helpers/transofrm/ebook';
 
 export const ebookProductToDto = (
-  product: NonNullableInfer<IEbookProductWithRelations>,
+  product: IEbookProductWithRelations,
 ): EbookProductDto => {
   return {
     ebookId: product.ebookId,

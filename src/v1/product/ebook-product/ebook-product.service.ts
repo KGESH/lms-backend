@@ -82,7 +82,7 @@ export class EbookProductService {
 
   async findEbookProductWithRelationsOrThrow(
     where: Pick<IEbookProduct, 'ebookId'>,
-  ): Promise<NonNullableInfer<IEbookProductWithRelations>> {
+  ): Promise<IEbookProductWithRelations> {
     const ebookProduct = await this.findEbookProductWithRelations(where);
 
     if (!ebookProduct?.lastSnapshot) {
@@ -97,7 +97,7 @@ export class EbookProductService {
 
   async findEbookProductOrThrow(
     where: Pick<IEbookProduct, 'ebookId'>,
-  ): Promise<NonNullableInfer<IEbookProductWithLastSnapshot>> {
+  ): Promise<IEbookProductWithLastSnapshot> {
     const product =
       await this.ebookProductQueryRepository.findEbookProductWithLastSnapshot(
         where,
@@ -154,7 +154,7 @@ export class EbookProductService {
       IProductSnapshotUiContentCreate,
       'productSnapshotId'
     >[];
-  }): Promise<NonNullableInfer<IEbookProductWithRelations>> {
+  }): Promise<IEbookProductWithRelations> {
     const existProduct =
       await this.ebookProductQueryRepository.findEbookProductWithLastSnapshot({
         ebookId: ebookProductCreateParams.ebookId,
@@ -283,7 +283,7 @@ export class EbookProductService {
         update: IProductSnapshotUiContentUpdate[];
       };
     },
-  ): Promise<NonNullableInfer<IEbookProductWithRelations>> {
+  ): Promise<IEbookProductWithRelations> {
     const existProduct = await this.findEbookProductWithRelationsOrThrow(where);
 
     // Create new snapshot using the given parameters.

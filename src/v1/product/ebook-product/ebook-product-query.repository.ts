@@ -231,32 +231,26 @@ export class EbookProductQueryRepository {
         teacher: product.ebook.teacher,
         contents: product.ebook.contents,
       },
-      lastSnapshot: lastSnapshot
-        ? {
-            ...lastSnapshot,
-            thumbnail: typia.assert<IProductThumbnail>(lastSnapshot.thumbnail),
-            announcement: typia.assert<IProductSnapshotAnnouncement>(
-              lastSnapshot.announcement,
-            ),
-            refundPolicy: typia.assert<IProductSnapshotRefundPolicy>(
-              lastSnapshot.refundPolicy,
-            ),
-            content: typia.assert<IProductSnapshotContent>(
-              lastSnapshot.content,
-            ),
-            pricing: typia.assert<IProductSnapshotPricing>({
-              ...lastSnapshot.pricing,
-              amount: typia.assert<Price>(`${lastSnapshot.pricing!.amount}`),
-            }),
-            discount: typia.assert<IProductSnapshotDiscount>({
-              ...lastSnapshot.discount,
-              value: typia.assert<DiscountValue>(
-                `${lastSnapshot.discount!.value}`,
-              ),
-            }),
-            uiContents: lastSnapshot.uiContents ?? [],
-          }
-        : null,
+      lastSnapshot: {
+        ...lastSnapshot,
+        thumbnail: typia.assert<IProductThumbnail>(lastSnapshot.thumbnail),
+        announcement: typia.assert<IProductSnapshotAnnouncement>(
+          lastSnapshot.announcement,
+        ),
+        refundPolicy: typia.assert<IProductSnapshotRefundPolicy>(
+          lastSnapshot.refundPolicy,
+        ),
+        content: typia.assert<IProductSnapshotContent>(lastSnapshot.content),
+        pricing: typia.assert<IProductSnapshotPricing>({
+          ...lastSnapshot.pricing,
+          amount: typia.assert<Price>(`${lastSnapshot.pricing!.amount}`),
+        }),
+        discount: typia.assert<IProductSnapshotDiscount>({
+          ...lastSnapshot.discount,
+          value: typia.assert<DiscountValue>(`${lastSnapshot.discount!.value}`),
+        }),
+        uiContents: lastSnapshot.uiContents ?? [],
+      },
     } satisfies IEbookProductWithRelations);
   }
 
