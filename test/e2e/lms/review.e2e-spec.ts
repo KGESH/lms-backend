@@ -49,7 +49,7 @@ describe('CourseReviewController (e2e)', () => {
         },
         {
           page: 1,
-          pageSize: 6,
+          pageSize: 10,
           orderBy: 'asc',
         },
       );
@@ -62,7 +62,7 @@ describe('CourseReviewController (e2e)', () => {
 
       expect(totalCount).toBe(SEED_REVIEW_COUNT * 2);
       expect(pagination.page).toBe(1);
-      expect(pagination.pageSize).toBe(6);
+      expect(pagination.pageSize).toBe(10);
       // first element is 'ebook' review. [order by asc]
       expect(data.at(0)!.productType).toBe('ebook');
       // last element is 'course' review. [order by asc]

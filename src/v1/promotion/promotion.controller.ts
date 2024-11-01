@@ -43,7 +43,6 @@ export class PromotionController {
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedQuery() query: PromotionQuery,
   ): Promise<Paginated<PromotionPageDto[]>> {
-    console.log('[getPromotions]', query);
     const {
       pagination,
       totalCount,
@@ -52,12 +51,6 @@ export class PromotionController {
       ...withDefaultPagination(query),
       orderByColumn: query.orderByColumn ?? 'createdAt',
     });
-
-    console.log('[getPromotions data]', JSON.stringify(promotions, null, 4));
-    console.log(
-      '[getPromotions dto data]',
-      JSON.stringify(promotions.map(promotionPageToDto), null, 4),
-    );
 
     return {
       totalCount,

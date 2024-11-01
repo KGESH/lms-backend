@@ -63,11 +63,15 @@ export class ReviewController {
         withDefaultPagination(query),
       );
 
-    return {
+    console.log('[GET EVERY REVIEWS]', { totalCount, pagination, data });
+
+    const resp = {
       totalCount,
       pagination,
       data: data.map(reviewToDto),
     };
+    console.log('[GET EVERY REVIEWS] response', resp);
+    return resp;
   }
 
   /**
