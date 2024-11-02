@@ -1,5 +1,11 @@
 import { Controller, Logger, UseGuards } from '@nestjs/common';
-import { TypedBody, TypedHeaders, TypedParam, TypedRoute } from '@nestia/core';
+import {
+  TypedBody,
+  TypedHeaders,
+  TypedParam,
+  TypedQuery,
+  TypedRoute,
+} from '@nestia/core';
 import { S3Service } from '@src/infra/s3/s3.service';
 import {
   CreateFileDto,
@@ -7,6 +13,7 @@ import {
   DeleteFileDto,
   FileDto,
   FilePreSignedUrlDto,
+  FileQuery,
   PreSignedUrlDto,
   UpdateFileDto,
 } from '@src/v1/file/file.dto';
@@ -190,10 +197,12 @@ export class FileController {
   async getPrivatePreSignedUrl(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('fileId') fileId: string,
+    @TypedQuery() query?: FileQuery,
   ): Promise<FilePreSignedUrlDto> {
-    const preSignedUrl = await this.s3Service.getPreSignedUrl(
+    const preSignedUrl = await this.s3Service.getResourcePreSignedUrl(
       fileId,
       'private',
+      query?.from,
     );
 
     return {
@@ -204,29 +213,28 @@ export class FileController {
   }
 
   /**
-   * 관리자가 비디오 업로드 이후 원본 파일 확인을 위한 pre-signed URL을 조회합니다.
+   * 관리자가 비디오 업로드 이후 원본 파일 확인을 위한 pre-signed URL을 조회합니다. (S3)
    *
    * 파일 ID를 통해 조회합니다.
    *
    * URL의 만료 시간은 **30**분 입니다.
    *
    * @tag file
-   * @summary 비디오 원본 pre-signed URL 조회.
+   * @summary 비디오 원본 pre-signed URL 조회. (S3)
    */
   @TypedRoute.Get('/private/pre-signed/video/:fileId')
   @Roles('admin', 'manager', 'teacher')
   @UseGuards(RolesGuard)
-  async getPrivateVideoSourcePreSignedUrl(
+  async getPrivateVideoCdnPreSignedUrl(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('fileId') fileId: string,
   ): Promise<FilePreSignedUrlDto> {
-    const preSignedUrl =
+    const originFileUrl =
       await this.s3Service.getVideoSourcePreSignedUrl(fileId);
-
     return {
       fileId,
       filename: fileId,
-      url: preSignedUrl,
+      url: originFileUrl,
     };
   }
 

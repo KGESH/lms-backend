@@ -20,6 +20,22 @@ type DisplayDateFormat = typeof displayDateFormat;
 
 type DateUnit = 'year' | 'month' | 'week' | 'day' | 'hour' | 'minute';
 
+function outputFormat(
+  date: dayjs.Dayjs,
+  output: DateType | IsoStrType | FormattedType,
+): Date | string {
+  switch (output) {
+    case 'date':
+      return date.toDate();
+    case 'iso':
+      return date.toISOString();
+    case 'formatted':
+      return date.format(displayDateFormat);
+    default:
+      throw new Error('Invalid date type');
+  }
+}
+
 export function now(type: DateType): Date;
 
 export function now(type: IsoStrType): string;
@@ -91,17 +107,7 @@ export function addDate(
   output: DateType | IsoStrType | FormattedType = 'date',
 ): Date | string {
   const calculatedDate = dayjs(date).add(value, unit);
-
-  switch (output) {
-    case 'date':
-      return calculatedDate.toDate();
-    case 'iso':
-      return calculatedDate.toISOString();
-    case 'formatted':
-      return calculatedDate.format(displayDateFormat);
-    default:
-      throw new Error('Invalid date type');
-  }
+  return outputFormat(calculatedDate, output);
 }
 
 export function subtractDate(
@@ -125,15 +131,23 @@ export function subtractDate(
   output: DateType | IsoStrType | FormattedType = 'date',
 ): Date | string {
   const calculatedDate = dayjs(date).subtract(value, unit);
+  return outputFormat(calculatedDate, output);
+}
 
-  switch (output) {
-    case 'date':
-      return calculatedDate.toDate();
-    case 'iso':
-      return calculatedDate.toISOString();
-    case 'formatted':
-      return calculatedDate.format(displayDateFormat);
-    default:
-      throw new Error('Invalid date type');
-  }
+export function startOf(
+  date: DateInput,
+  unit: DateUnit,
+  output: DateType | IsoStrType | FormattedType = 'date',
+): Date | string {
+  const calculatedDate = dayjs(date).startOf(unit);
+  return outputFormat(calculatedDate, output);
+}
+
+export function endOf(
+  date: DateInput,
+  unit: DateUnit,
+  output: DateType | IsoStrType | FormattedType = 'date',
+): Date | string {
+  const calculatedDate = dayjs(date).endOf(unit);
+  return outputFormat(calculatedDate, output);
 }

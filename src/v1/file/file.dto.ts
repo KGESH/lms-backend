@@ -1,15 +1,12 @@
 import { FileType, ISO8601, Uri, Uuid } from '@src/shared/types/primitive';
-import { MEDIA_CONVERT_STATUS } from '@src/v1/file/media-convert/file-media-convert.constant';
-
-export type MediaConvertStatus =
-  (typeof MEDIA_CONVERT_STATUS)[keyof typeof MEDIA_CONVERT_STATUS];
+import { MediaConvertStatus } from '@src/v1/file/media-convert/file-media-convert.constant';
 
 export type PreSignedUrlDto = {
   url: Uri;
 };
 
 export type FilePreSignedUrlDto = {
-  fileId: Uuid;
+  fileId: string;
   filename: string;
   url: Uri;
 };
@@ -115,3 +112,7 @@ export type UpdateFileDto = Partial<
 >;
 
 export type DeleteFileDto = Pick<FileDto, 'id'>;
+
+export type FileQuery = {
+  from?: 's3' | 'cdn';
+};

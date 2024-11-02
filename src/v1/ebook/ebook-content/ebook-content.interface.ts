@@ -29,5 +29,5 @@ export type IEbookContentCreate = Pick<
 export type IEbookContentUpdate = Omit<Partial<IEbookContentCreate>, 'ebookId'>;
 
 export type IEbookContentWithFile = IEbookContent & {
-  file: Pick<IFile, 'url' | 'filename' | 'type'> | null;
+  file: Pick<IFile, 'id' | 'url' | 'filename' | 'type'> | null;
 };

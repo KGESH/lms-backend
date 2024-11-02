@@ -18,6 +18,7 @@ export type LessonContentDto = {
 
 export type LessonContentWithFileDto = LessonContentDto & {
   file: {
+    id: Uuid;
     url: Uri | null;
     filename: string | null;
     type: LessonContentType;

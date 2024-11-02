@@ -172,12 +172,12 @@ export class FileMediaConvertController {
     this.logger.debug('Media convert done event fileId.', fileId);
     this.logger.debug('Media convert done event extension.', extension);
 
-    const updatedFile = await this.fileMediaConvertService.updateVideoUrlToCdn(
-      { id: fileId },
-      fileKey,
-    );
-
-    this.logger.debug('Media convert done event updatedFile.', updatedFile);
+    const updatedFile =
+      await this.fileMediaConvertService.updateVideoConvertStatus(
+        { id: fileId },
+        'done',
+      );
+    this.logger.debug('Media convert done. updatedFile: ', updatedFile);
 
     this.eventEmitter.emit(
       SEND_MEDIA_CONVERT_DONE_EVENT,

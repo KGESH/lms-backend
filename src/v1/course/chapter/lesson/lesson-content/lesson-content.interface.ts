@@ -29,6 +29,11 @@ export type ILessonContentUpdate = Omit<
   'id' | 'lessonId'
 >;
 
+export type ILessonContentFile = Pick<
+  IFile,
+  'id' | 'url' | 'filename' | 'type'
+>;
+
 export type ILessonContentWithFile = ILessonContent & {
-  file: Pick<IFile, 'url' | 'filename' | 'type'> | null;
+  file: ILessonContentFile | null;
 };

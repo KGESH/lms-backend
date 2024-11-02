@@ -5,22 +5,21 @@ import {
 } from '@nestjs/common';
 import { FileService } from '@src/v1/file/file.service';
 import { IFile } from '@src/v1/file/file.interface';
-import { ConfigsService } from '@src/configs/configs.service';
 import { FileQueryService } from '@src/v1/file/file-query.service';
 import { checkVideoEncodingStatus } from '@src/shared/helpers/check-video-encoding';
-import { MEDIA_CONVERT_STATUS } from '@src/v1/file/media-convert/file-media-convert.constant';
+
+import { MediaConvertStatus } from '@src/v1/file/media-convert/file-media-convert.constant';
 
 @Injectable()
 export class FileMediaConvertService {
   constructor(
     private readonly fileService: FileService,
     private readonly fileQueryService: FileQueryService,
-    private readonly configsService: ConfigsService,
   ) {}
 
-  async updateVideoUrlToCdn(
+  async updateVideoConvertStatus(
     where: Pick<IFile, 'id'>,
-    fileKey: string,
+    updateStatus: MediaConvertStatus,
   ): Promise<IFile> {
     const file = await this.fileQueryService.findFile(where);
 
@@ -36,14 +35,8 @@ export class FileMediaConvertService {
       );
     }
 
-    const fileCdnUrl = new URL(
-      fileKey,
-      this.configsService.env.AWS_VIDEO_CDN_BASE_URL,
-    );
-
     return await this.fileService.updateFile(where, {
-      url: fileCdnUrl.href,
-      metadata: MEDIA_CONVERT_STATUS.DONE,
+      metadata: updateStatus,
     });
   }
 }

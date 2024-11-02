@@ -21,6 +21,7 @@ export type EbookContentDto = {
 
 export type EbookContentWithFileDto = EbookContentDto & {
   file: {
+    id: Uuid;
     url: Uri | null;
     filename: string | null;
     type: EbookContentType;

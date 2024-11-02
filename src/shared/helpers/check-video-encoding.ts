@@ -1,6 +1,5 @@
 import { IFile } from '@src/v1/file/file.interface';
-import { MEDIA_CONVERT_STATUS } from '@src/v1/file/media-convert/file-media-convert.constant';
-import { MediaConvertStatus } from '@src/v1/file/file.dto';
+import { MEDIA_CONVERT_STATUS, MediaConvertStatus } from '@src/v1/file/media-convert/file-media-convert.constant';
 
 /**
  * 비디오 파일의 인코딩 상태를 확인합니다.

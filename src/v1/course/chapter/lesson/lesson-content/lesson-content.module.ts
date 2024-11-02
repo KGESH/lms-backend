@@ -8,8 +8,9 @@ import { LessonContentQueryRepository } from '@src/v1/course/chapter/lesson/less
 import { LessonContentHistoryRepository } from '@src/v1/course/chapter/lesson/lesson-content/history/lesson-content-history.repository';
 import { LessonContentHistoryQueryRepository } from '@src/v1/course/chapter/lesson/lesson-content/history/lesson-content-history-query.repository';
 import { FileModule } from '@src/v1/file/file.module';
+import { S3Module } from '@src/infra/s3/s3.module';
 
-const modules = [LessonModule, FileModule];
+const modules = [LessonModule, FileModule, S3Module];
 
 const providers = [
   LessonContentService,

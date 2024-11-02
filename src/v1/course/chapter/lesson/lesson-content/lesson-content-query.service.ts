@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   ILessonContent,
   ILessonContentWithFile,
@@ -11,6 +15,7 @@ import {
   ILessonContentWithHistory,
 } from '@src/v1/course/chapter/lesson/lesson-content/history/lesson-content-history.interface';
 import { IUserWithoutPassword } from '@src/v1/user/user.interface';
+import { S3Service } from '@src/infra/s3/s3.service';
 
 @Injectable()
 export class LessonContentQueryService {
@@ -18,6 +23,7 @@ export class LessonContentQueryService {
     private readonly lessonContentQueryRepository: LessonContentQueryRepository,
     private readonly lessonContentHistoryRepository: LessonContentHistoryRepository,
     private readonly lessonContentHistoryQueryRepository: LessonContentHistoryQueryRepository,
+    private readonly s3Service: S3Service,
   ) {}
 
   async findLessonContents(
@@ -43,9 +49,12 @@ export class LessonContentQueryService {
     user: IUserWithoutPassword,
     where: Pick<ILessonContentHistory, 'lessonContentId'>,
   ): Promise<ILessonContentWithHistory> {
-    const lessonContent = await this.findLessonContentWithFileOrThrow({
+    const lessonContentSource = await this.findLessonContentWithFileOrThrow({
       id: where.lessonContentId,
     });
+
+    const lessonContent =
+      await this._replaceFileUrlToPreSignedUrl(lessonContentSource);
 
     if (user.role !== 'user') {
       return {
@@ -73,5 +82,48 @@ export class LessonContentQueryService {
       ...lessonContent,
       history,
     };
+  }
+
+  private async _replaceFileUrlToPreSignedUrl(
+    content: ILessonContentWithFile,
+  ): Promise<ILessonContentWithFile> {
+    if (!content.file) {
+      return content;
+    }
+
+    switch (content.contentType) {
+      case 'video':
+        const videoUrl = this.s3Service.getVideoOutputPreSignedUrl(
+          content.file.id,
+        );
+        return {
+          ...content,
+          file: {
+            ...content.file,
+            url: videoUrl,
+          },
+        };
+
+      case 'image':
+      case 'file':
+        const resourceUrl = await this.s3Service.getResourcePreSignedUrl(
+          content.file.id,
+          'private',
+          's3',
+        );
+        return {
+          ...content,
+          file: {
+            ...content.file,
+            url: resourceUrl,
+          },
+        };
+
+      case 'text':
+      default:
+        throw new InternalServerErrorException(
+          `Not supported lesson content file type. ${content.contentType}`,
+        );
+    }
   }
 }

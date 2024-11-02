@@ -1,6 +1,7 @@
 import { FileType, Uri, Uuid } from '@src/shared/types/primitive';
 import { RequiredPick } from '@src/shared/types/required-pick';
-import { MediaConvertStatus } from '@src/v1/file/file.dto';
+
+import { MediaConvertStatus } from '@src/v1/file/media-convert/file-media-convert.constant';
 
 export type IFileBase = {
   id: Uuid;
