@@ -1,6 +1,6 @@
 {
   "name": "lms-backend",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "description": "",
   "author": "",
   "private": true,
@@ -9,7 +9,7 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "NODE_ENV=development nest start",
-    "start:dev": "pnpm run nestia:build && NODE_ENV=development nest start --watch",
+    "start:dev": "pnpm run nestia:swagger && NODE_ENV=development nest start --watch",
     "start:debug": "NODE_ENV=development nest start --debug --watch",
     "start:prod": "NODE_ENV=production node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
