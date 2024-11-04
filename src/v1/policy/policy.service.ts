@@ -157,11 +157,10 @@ export class PolicyService {
   }
 
   async deletePolicy(where: Pick<IPolicy, 'id'>): Promise<IPolicy['id']> {
-    await this.findPolicyOrThrow(where);
+    const policy = await this.findPolicyOrThrow(where);
 
     const deletedPolicyId = await this.drizzle.db.transaction(async (tx) => {
-      await this.policyRepository.deletePolicy(where, tx);
-      return where.id;
+      return await this.policyRepository.deletePolicy(policy, tx);
     });
 
     return deletedPolicyId;
@@ -171,15 +170,10 @@ export class PolicyService {
     where: Pick<IPolicy, 'id'>,
   ): Promise<IPolicySnapshot['id']> {
     const policy = await this.findPolicyOrThrow(where);
-    const snapshotId = policy.snapshot.id;
 
-    await this.drizzle.db.transaction(async (tx) => {
-      await this.policySnapshotRepository.deletePolicySnapshot(
-        { id: snapshotId },
-        tx,
-      );
-    });
+    const deletedSnapshotId =
+      await this.policySnapshotRepository.deletePolicySnapshot(policy.snapshot);
 
-    return snapshotId;
+    return deletedSnapshotId;
   }
 }
