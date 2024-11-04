@@ -12,6 +12,7 @@ import { termDbSchema } from './term';
 import { fileDbSchemas } from './file';
 import { otpDbSchemas } from './otp';
 import { promoDbSchema } from './promo';
+import { policyDbSchema } from '@src/infra/db/schema/policy';
 
 export const dbSchema = {
   // 사용자 (일반 사용자, 관리자(매니저), 최고 관리자)
@@ -46,6 +47,9 @@ export const dbSchema = {
 
   // 약관
   ...termDbSchema,
+
+  // 이용 정책
+  ...policyDbSchema,
 
   // 파일
   ...fileDbSchemas,

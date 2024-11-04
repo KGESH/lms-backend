@@ -28,6 +28,7 @@ import { TermModule } from '@src/v1/term/term.module';
 import { OtpModule } from '@src/v1/auth/otp/otp.module';
 import { PromotionModule } from '@src/v1/promotion/promotion.module';
 import { FileMediaConvertModule } from '@src/v1/file/media-convert/file-media-convert.module';
+import { PolicyModule } from '@src/v1/policy/policy.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { FileMediaConvertModule } from '@src/v1/file/media-convert/file-media-co
     CouponModule,
     UserCouponModule,
     TermModule,
+    PolicyModule,
     OtpModule,
     PromotionModule,
     FileMediaConvertModule,
