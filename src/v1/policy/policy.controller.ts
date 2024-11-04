@@ -81,6 +81,10 @@ export class PolicyController {
     status: 400,
     description: 'invalid request',
   })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'Policy not found.',
+  })
   @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
     status: INVALID_LMS_SECRET,
     description: 'invalid LMS api secret',
