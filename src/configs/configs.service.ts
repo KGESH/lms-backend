@@ -52,7 +52,7 @@ export class ConfigsService {
       AWS_CDN_PRE_SIGNED_URL_KEY_GROUP_ID:
         process.env.AWS_CDN_PRE_SIGNED_URL_KEY_GROUP_ID,
       AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY: formatPrivateKey(
-        process.env.AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY,
+        process.env.AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY as string,
       ),
       PORTONE_API_SECRET: process.env.PORTONE_API_SECRET,
       PORTONE_API_BASE_URL: process.env.PORTONE_API_BASE_URL,
@@ -106,9 +106,7 @@ export class ConfigsService {
         'AWS_CDN_PRE_SIGNED_URL_KEY_GROUP_ID',
       ),
       AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY: formatPrivateKey(
-        typia.assert<string>(
-          `${this.dotEnv.get('AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY')}`,
-        ),
+        this.dotEnv.get('AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY')!,
       ),
 
       PORTONE_API_SECRET: this.dotEnv.get('PORTONE_API_SECRET'),
