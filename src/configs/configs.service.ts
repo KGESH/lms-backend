@@ -107,7 +107,7 @@ export class ConfigsService {
       ),
       AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY: formatPrivateKey(
         typia.assert<string>(
-          this.dotEnv.get('AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY'),
+          `${this.dotEnv.get('AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY')}`,
         ),
       ),
 
