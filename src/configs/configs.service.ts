@@ -4,6 +4,7 @@ import { IEnvironment } from '@src/configs/configs.types';
 import * as typia from 'typia';
 import { IS_PRODUCTION } from '@src/shared/utils/is-production';
 import { ConfigError } from '@src/configs/configs.error';
+import { formatPrivateKey } from '@src/shared/helpers/key';
 
 @Injectable()
 export class ConfigsService {
@@ -50,8 +51,9 @@ export class ConfigsService {
         +`${process.env.AWS_CDN_PRE_SIGNED_URL_VALID_DAYS_DURATION}`,
       AWS_CDN_PRE_SIGNED_URL_KEY_GROUP_ID:
         process.env.AWS_CDN_PRE_SIGNED_URL_KEY_GROUP_ID,
-      AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY:
+      AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY: formatPrivateKey(
         process.env.AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY,
+      ),
       PORTONE_API_SECRET: process.env.PORTONE_API_SECRET,
       PORTONE_API_BASE_URL: process.env.PORTONE_API_BASE_URL,
       SMS_API_KEY: process.env.SMS_API_KEY,
@@ -103,9 +105,10 @@ export class ConfigsService {
       AWS_CDN_PRE_SIGNED_URL_KEY_GROUP_ID: this.dotEnv.get(
         'AWS_CDN_PRE_SIGNED_URL_KEY_GROUP_ID',
       ),
-      AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY: this.dotEnv.get(
-        'AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY',
+      AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY: formatPrivateKey(
+        this.dotEnv.get('AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY')!,
       ),
+
       PORTONE_API_SECRET: this.dotEnv.get('PORTONE_API_SECRET'),
       PORTONE_API_BASE_URL: this.dotEnv.get('PORTONE_API_BASE_URL'),
       SMS_API_KEY: this.dotEnv.get('SMS_API_KEY'),

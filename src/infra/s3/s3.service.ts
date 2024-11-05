@@ -8,7 +8,6 @@ import {
 import { ConfigsService } from '@src/configs/configs.service';
 import * as S3Signer from '@aws-sdk/s3-request-presigner';
 import * as CloudfrontSigner from '@aws-sdk/cloudfront-signer';
-import { HttpClientService } from '../http/http-client.service';
 import * as date from '@src/shared/utils/date';
 
 @Injectable()
@@ -18,8 +17,42 @@ export class S3Service {
   constructor(
     @Inject(S3_CLIENT) private readonly s3: S3Client,
     private readonly configsService: ConfigsService,
-    private readonly http: HttpClientService,
   ) {}
+
+  getVideoPreSignedCookies(fileId: string) {
+    const folderPath = new URL(
+      fileId + '/*',
+      this.configsService.env.AWS_VIDEO_CDN_BASE_URL,
+    );
+    this.logger.debug('[Folder Path]', folderPath);
+    const expDate = date.addDate(
+      new Date(),
+      this.configsService.env.AWS_CDN_PRE_SIGNED_URL_VALID_DAYS_DURATION,
+      'day',
+      'date',
+    );
+    const policy = JSON.stringify({
+      Statement: [
+        {
+          Resource: folderPath.href,
+          Condition: {
+            DateLessThan: {
+              'AWS:EpochTime': expDate.getTime(),
+            },
+          },
+        },
+      ],
+    });
+
+    console.log('policy', policy);
+
+    // Generate signed cookies
+    return CloudfrontSigner.getSignedCookies({
+      policy,
+      keyPairId: this.configsService.env.AWS_CDN_PRE_SIGNED_URL_KEY_GROUP_ID,
+      privateKey: this.configsService.env.AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY,
+    });
+  }
 
   /**
    * AWS S3 또는 CDN에 업로드된 파일의 Pre-signed URL을 반환합니다.
@@ -102,14 +135,19 @@ export class S3Service {
     return url;
   }
 
+  getVideoOutputCdnUrl(fileId: string): string {
+    const cdnFileUrl = new URL(
+      fileId,
+      this.configsService.env.AWS_VIDEO_CDN_BASE_URL,
+    );
+    return cdnFileUrl.href;
+  }
+
   /**
    * CDN에 업로드된 동영상 파일의 Pre-signed URL을 반환합니다. (.m3u8 해상도 변환된 동영상)
    */
   getVideoOutputPreSignedUrl(fileId: string): string {
-    const cdnFileUrl = new URL(
-      fileId,
-      this.configsService.env.AWS_VIDEO_CDN_BASE_URL,
-    ).href;
+    const cdnFileUrl = this.getVideoOutputCdnUrl(fileId);
     const expDate = date.endOf(
       date.addDate(
         new Date(),

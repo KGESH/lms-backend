@@ -115,7 +115,7 @@ export class LessonContentController {
     @TypedParam('lessonId') lessonId: Uuid,
     @TypedParam('id') lessonContentId: Uuid,
     @SessionUser() session: ISessionWithUser,
-  ): Promise<LessonContentWithHistoryDto | null> {
+  ): Promise<LessonContentWithHistoryDto> {
     const lessonContent =
       await this.lessonContentQueryService.getLessonContentWithHistory(
         session.user,
@@ -123,6 +123,37 @@ export class LessonContentController {
       );
 
     return lessonContentWithHistoryToDto(lessonContent);
+  }
+
+  @TypedRoute.Get('/:id/video/access')
+  @UseGuards(CourseAccessGuard)
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<403>>({
+    status: 403,
+    description: 'User is not enrolled in the course',
+  })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'LessonContent not found',
+  })
+  async getVideoLessonContentAccessCookies(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedParam('courseId') courseId: Uuid,
+    @TypedParam('chapterId') chapterId: Uuid,
+    @TypedParam('lessonId') lessonId: Uuid,
+    @TypedParam('id') lessonContentId: Uuid,
+    @SessionUser() session: ISessionWithUser,
+  ) {
+    const accessCookies =
+      await this.lessonContentQueryService.getVideoLessonContentAccessCookies(
+        session.user,
+        { lessonContentId },
+      );
+
+    return accessCookies;
   }
 
   /**

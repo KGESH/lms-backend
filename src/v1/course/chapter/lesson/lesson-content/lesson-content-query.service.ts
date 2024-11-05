@@ -84,6 +84,27 @@ export class LessonContentQueryService {
     };
   }
 
+  async getVideoLessonContentAccessCookies(
+    user: IUserWithoutPassword,
+    where: Pick<ILessonContentHistory, 'lessonContentId'>,
+  ) {
+    const lessonContentSource = await this.findLessonContentWithFileOrThrow({
+      id: where.lessonContentId,
+    });
+
+    if (!lessonContentSource.fileId) {
+      throw new InternalServerErrorException(
+        'LessonContent has no file id. Cannot get access cookies.',
+      );
+    }
+
+    const accessCookies = this.s3Service.getVideoPreSignedCookies(
+      lessonContentSource.fileId,
+    );
+
+    return accessCookies;
+  }
+
   private async _replaceFileUrlToPreSignedUrl(
     content: ILessonContentWithFile,
   ): Promise<ILessonContentWithFile> {
@@ -93,9 +114,7 @@ export class LessonContentQueryService {
 
     switch (content.contentType) {
       case 'video':
-        const videoUrl = this.s3Service.getVideoOutputPreSignedUrl(
-          content.file.id,
-        );
+        const videoUrl = this.s3Service.getVideoOutputCdnUrl(content.file.id); // CDN Url without pre-signed
         return {
           ...content,
           file: {
@@ -109,7 +128,7 @@ export class LessonContentQueryService {
         const resourceUrl = await this.s3Service.getResourcePreSignedUrl(
           content.file.id,
           'private',
-          's3',
+          'cdn',
         );
         return {
           ...content,

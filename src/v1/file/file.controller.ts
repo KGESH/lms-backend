@@ -212,6 +212,17 @@ export class FileController {
     };
   }
 
+  @TypedRoute.Get('/private/pre-signed/video/:fileId/cookies')
+  @Roles('admin', 'manager', 'teacher')
+  @UseGuards(RolesGuard)
+  getPrivateVideoPreSignedCookies(
+    @TypedHeaders() headers: AuthHeaders,
+    @TypedParam('fileId') fileId: string,
+  ) {
+    const cookies = this.s3Service.getVideoPreSignedCookies(fileId);
+    return cookies;
+  }
+
   /**
    * 관리자가 비디오 업로드 이후 원본 파일 확인을 위한 pre-signed URL을 조회합니다. (S3)
    *
