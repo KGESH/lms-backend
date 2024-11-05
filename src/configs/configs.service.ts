@@ -106,7 +106,7 @@ export class ConfigsService {
         'AWS_CDN_PRE_SIGNED_URL_KEY_GROUP_ID',
       ),
       AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY: formatPrivateKey(
-        this.dotEnv.get('AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY')!,
+        this.dotEnv.get('AWS_CDN_PRE_SIGNED_URL_PRIVATE_KEY') as string,
       ),
 
       PORTONE_API_SECRET: this.dotEnv.get('PORTONE_API_SECRET'),
