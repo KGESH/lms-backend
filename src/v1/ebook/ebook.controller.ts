@@ -17,13 +17,18 @@ import {
   EbookQuery,
   EbookUpdateDto,
 } from '@src/v1/ebook/ebook.dto';
-import { ebookToDto } from '@src/shared/helpers/transofrm/ebook';
+import {
+  ebookRelationsToDto,
+  ebookToDto,
+} from '@src/shared/helpers/transofrm/ebook';
 import { Roles } from '@src/core/decorators/roles.decorator';
 import { RolesGuard } from '@src/core/guards/roles.guard';
 import { TypeGuardError } from 'typia';
 import { IErrorResponse } from '@src/shared/types/response';
 import { Uuid } from '@src/shared/types/primitive';
 import { withDefaultPagination } from '@src/core/pagination';
+import { EbookWithRelationsDto } from '@src/v1/ebook/ebook-with-relations.dto';
+import { INVALID_LMS_SECRET } from '@src/core/error-code.constant';
 
 @Controller('v1/ebook')
 export class EbookController {
@@ -48,6 +53,14 @@ export class EbookController {
    */
   @TypedRoute.Get('/')
   @SkipAuth()
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
   async getEbooks(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedQuery() query: EbookQuery,
@@ -72,17 +85,25 @@ export class EbookController {
    */
   @TypedRoute.Get('/:id')
   @SkipAuth()
+  @TypedException<TypeGuardError>({
+    status: 400,
+    description: 'invalid request',
+  })
+  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
+    status: INVALID_LMS_SECRET,
+    description: 'invalid LMS api secret',
+  })
   async getEbook(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('id') id: Uuid,
-  ): Promise<EbookDto | null> {
+  ): Promise<EbookWithRelationsDto | null> {
     const ebook = await this.ebookQueryService.findEbookWithRelations({ id });
 
     if (!ebook) {
       return null;
     }
 
-    return ebookToDto(ebook);
+    return ebookRelationsToDto(ebook);
   }
 
   /**

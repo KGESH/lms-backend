@@ -97,6 +97,10 @@ export class EbookContentController {
     status: 403,
     description: 'User is not enrolled in the ebook',
   })
+  @TypedException<IErrorResponse<404>>({
+    status: 404,
+    description: 'EbookContent not found',
+  })
   @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
     status: INVALID_LMS_SECRET,
     description: 'invalid LMS api secret',
@@ -106,16 +110,12 @@ export class EbookContentController {
     @TypedParam('ebookId') ebookId: Uuid,
     @TypedParam('id') ebookContentId: Uuid,
     @SessionUser() session: ISessionWithUser,
-  ): Promise<EbookContentWithHistoryDto | null> {
+  ): Promise<EbookContentWithHistoryDto> {
     const ebookContent =
       await this.ebookContentQueryService.getEbookContentWithHistory(
         session.user,
         { ebookContentId },
       );
-
-    if (!ebookContent) {
-      return null;
-    }
 
     return ebookContentWithHistoryToDto(ebookContent);
   }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EbookQueryRepository } from '@src/v1/ebook/ebook-query.repository';
 import { IEbook, IEbookQuery } from '@src/v1/ebook/ebook.interface';
+import { IEbookWithRelations } from '@src/v1/ebook/ebook-with-relations.interface';
 
 @Injectable()
 export class EbookQueryService {
@@ -10,7 +11,9 @@ export class EbookQueryService {
     return await this.ebookQueryRepository.findManyEbooks(query);
   }
 
-  async findEbookWithRelations(where: Pick<IEbook, 'id'>) {
+  async findEbookWithRelations(
+    where: Pick<IEbook, 'id'>,
+  ): Promise<IEbookWithRelations | null> {
     return await this.ebookQueryRepository.findEbookWithRelations(where);
   }
 }
