@@ -27,19 +27,15 @@ import { createUuid } from '@src/shared/utils/uuid';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
 import { CourseQueryService } from '@src/v1/course/course-query.service';
 import { CourseProductSnapshotUiContentRepository } from '@src/v1/product/course-product/course-product-snapshot-ui-content.repository';
-import {
-  IProductSnapshotUiContentCreate,
-  IProductSnapshotUiContentUpdate,
-} from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
+import { IProductSnapshotUiContentCreate } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
 import { IProductThumbnailCreate } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
 import { ProductThumbnailService } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.service';
+import { Uuid } from '@src/shared/types/primitive';
+import { FileService } from '@src/v1/file/file.service';
 
 @Injectable()
 export class CourseProductService {
-  private readonly logger = new Logger(CourseProductService.name);
   constructor(
-    private readonly courseQueryService: CourseQueryService,
-    private readonly productThumbnailService: ProductThumbnailService,
     private readonly courseProductRepository: CourseProductRepository,
     private readonly courseProductQueryRepository: CourseProductQueryRepository,
     private readonly courseProductSnapshotRepository: CourseProductSnapshotRepository,
@@ -49,6 +45,7 @@ export class CourseProductService {
     private readonly courseProductSnapshotUiContentRepository: CourseProductSnapshotUiContentRepository,
     private readonly courseProductSnapshotAnnouncementRepository: CourseProductSnapshotAnnouncementRepository,
     private readonly courseProductSnapshotRefundPolicyRepository: CourseProductSnapshotRefundPolicyRepository,
+    private readonly fileService: FileService,
     private readonly drizzle: DrizzleService,
   ) {}
 
@@ -155,16 +152,35 @@ export class CourseProductService {
           },
           tx,
         ));
-      // If thumbnail file updated, soft delete the prev thumbnail file.
+      // If thumbnail file updated, soft delete the prev file.
       if (
         existProduct?.lastSnapshot &&
         existProduct?.lastSnapshot.thumbnail.id !==
           courseProductSnapshotThumbnailCreateParams.id
       ) {
-        await this.courseProductSnapshotRepository.softDeleteThumbnailFile(
-          { thumbnailId: existProduct.lastSnapshot.thumbnail.id },
+        await this.fileService.softDeleteManyFiles(
+          [existProduct.lastSnapshot.thumbnail.id],
           tx,
         );
+      }
+      // If ui content file updated, soft delete the prev files.
+      if (
+        existProduct?.lastSnapshot &&
+        existProduct?.lastSnapshot.uiContents.length > 0
+      ) {
+        const prevUiContentFileIds = existProduct.lastSnapshot.uiContents
+          .filter((ui) => ui.fileId)
+          .map((ui) => ui.fileId) as Uuid[];
+        const updatedUiContentFileIds =
+          courseProductSnapshotUiContentCreateParams
+            .filter((ui) => ui.fileId)
+            .map((ui) => ui.fileId) as Uuid[];
+        const deleteFileIds = prevUiContentFileIds.filter(
+          (id) => !updatedUiContentFileIds.includes(id),
+        );
+        if (deleteFileIds.length > 0) {
+          await this.fileService.softDeleteManyFiles(deleteFileIds, tx);
+        }
       }
       const snapshot = await this.courseProductSnapshotRepository.create(
         {
@@ -233,196 +249,5 @@ export class CourseProductService {
       });
 
     return createdCourseProduct;
-  }
-
-  async updateCourseProduct(
-    where: Pick<ICourseProduct, 'courseId'>,
-    {
-      courseProductSnapshotUpdateParams,
-      courseProductSnapshotThumbnailUpdateParams,
-      courseProductSnapshotContentUpdateParams,
-      courseProductSnapshotAnnouncementUpdateParams,
-      courseProductSnapshotRefundPolicyUpdateParams,
-      courseProductSnapshotPricingUpdateParams,
-      courseProductSnapshotDiscountUpdateParams,
-      courseProductSnapshotUiContentParams,
-    }: {
-      courseProductSnapshotUpdateParams?: Omit<
-        IProductSnapshotCreate,
-        'productId' | 'thumbnailId'
-      >;
-      courseProductSnapshotThumbnailUpdateParams?: IProductThumbnailCreate;
-      courseProductSnapshotContentUpdateParams?: Pick<
-        IProductSnapshotContentCreate,
-        'richTextContent'
-      >;
-      courseProductSnapshotAnnouncementUpdateParams?: Pick<
-        IProductSnapshotAnnouncementCreate,
-        'richTextContent'
-      >;
-      courseProductSnapshotRefundPolicyUpdateParams?: Pick<
-        IProductSnapshotRefundPolicyCreate,
-        'richTextContent'
-      >;
-      courseProductSnapshotPricingUpdateParams?: Pick<
-        IProductSnapshotPricingCreate,
-        'amount'
-      >;
-      courseProductSnapshotDiscountUpdateParams?: Omit<
-        IProductSnapshotDiscountCreate,
-        'productSnapshotId'
-      > | null;
-      courseProductSnapshotUiContentParams: {
-        create: Omit<IProductSnapshotUiContentCreate, 'productSnapshotId'>[];
-        update: IProductSnapshotUiContentUpdate[];
-      };
-    },
-  ): Promise<ICourseProductWithRelations> {
-    const existProduct =
-      await this.findCourseProductWithRelationsOrThrow(where);
-
-    // Create new snapshot using the given parameters.
-    // If the parameter is not given, use the existing snapshot. e.g. pricing create params.
-    const updatedProduct = await this.drizzle.db.transaction(async (tx) => {
-      // Soft delete
-      if (courseProductSnapshotThumbnailUpdateParams) {
-        await this.productThumbnailService.deleteProductThumbnail(
-          {
-            id: existProduct.lastSnapshot.thumbnailId,
-          },
-          tx,
-        );
-      }
-
-      const snapshot = await this.courseProductSnapshotRepository.create(
-        {
-          productId: existProduct.id,
-          thumbnailId:
-            courseProductSnapshotThumbnailUpdateParams?.id ??
-            existProduct.lastSnapshot.thumbnail.id,
-          id: createUuid(),
-          ...(courseProductSnapshotUpdateParams ?? {
-            title: existProduct.lastSnapshot.title,
-            description: existProduct.lastSnapshot.description,
-            availableDays: existProduct.lastSnapshot.availableDays,
-          }),
-        },
-        tx,
-      );
-      const content = await this.courseProductSnapshotContentRepository.create(
-        {
-          ...existProduct.lastSnapshot.content,
-          ...courseProductSnapshotContentUpdateParams,
-          productSnapshotId: snapshot.id,
-          id: createUuid(),
-        },
-        tx,
-      );
-      const announcement =
-        await this.courseProductSnapshotAnnouncementRepository.create(
-          {
-            ...existProduct.lastSnapshot.announcement,
-            ...courseProductSnapshotAnnouncementUpdateParams,
-            productSnapshotId: snapshot.id,
-            id: createUuid(),
-          },
-          tx,
-        );
-      const refundPolicy =
-        await this.courseProductSnapshotRefundPolicyRepository.create(
-          {
-            ...existProduct.lastSnapshot.refundPolicy,
-            ...courseProductSnapshotRefundPolicyUpdateParams,
-            productSnapshotId: snapshot.id,
-            id: createUuid(),
-          },
-          tx,
-        );
-      const pricing = await this.courseProductSnapshotPricingRepository.create({
-        ...existProduct.lastSnapshot.pricing,
-        ...courseProductSnapshotPricingUpdateParams,
-        productSnapshotId: snapshot.id,
-        id: createUuid(),
-      });
-      const discount =
-        await this.courseProductSnapshotDiscountRepository.create({
-          ...existProduct.lastSnapshot.discount,
-          ...courseProductSnapshotDiscountUpdateParams,
-          productSnapshotId: snapshot.id,
-          id: createUuid(),
-        });
-
-      const existUi = existProduct.lastSnapshot.uiContents;
-      const createUiParams: IProductSnapshotUiContentCreate[] =
-        courseProductSnapshotUiContentParams?.create.map((params) => ({
-          ...params,
-          productSnapshotId: snapshot.id,
-          id: createUuid(),
-        })) ?? [];
-      const updateUiParams = courseProductSnapshotUiContentParams?.update ?? [];
-      const updateUiIds = updateUiParams.map((ui) => ui.id);
-      const existSameUiParams = existUi
-        .filter((ui) => !updateUiIds.includes(ui.id))
-        .map((ui) => ({
-          ...ui,
-          productSnapshotId: snapshot.id,
-          id: createUuid(),
-        }));
-      const updatedUiParams = existUi
-        .filter((ui) => updateUiIds.includes(ui.id))
-        .map((ui) => {
-          const updateTarget = updateUiParams.find(
-            (updateUi) => updateUi.id === ui.id,
-          );
-          return {
-            type: updateTarget?.type ?? ui.type,
-            content: updateTarget?.content ?? ui.content,
-            description: updateTarget?.description ?? ui.description,
-            sequence: updateTarget?.sequence ?? ui.sequence,
-            url: updateTarget?.url ?? ui.url,
-            metadata: updateTarget?.metadata ?? ui.metadata,
-            productSnapshotId: snapshot.id,
-            id: createUuid(),
-          };
-        });
-      const uiContentCreateParams = [
-        ...existSameUiParams,
-        ...updatedUiParams,
-        ...createUiParams,
-      ];
-      const uiContents =
-        uiContentCreateParams.length > 0
-          ? await this.courseProductSnapshotUiContentRepository.createMany(
-              uiContentCreateParams,
-              tx,
-            )
-          : [];
-
-      return {
-        ...existProduct,
-        lastSnapshot: {
-          ...snapshot,
-          announcement,
-          content,
-          refundPolicy,
-          pricing,
-          discount: discount,
-          uiContents,
-        },
-      };
-    });
-
-    const thumbnail =
-      await this.productThumbnailService.findProductThumbnailOrThrow({
-        id: updatedProduct.lastSnapshot.thumbnailId,
-      });
-
-    return {
-      ...updatedProduct,
-      lastSnapshot: {
-        ...updatedProduct.lastSnapshot,
-        thumbnail,
-      },
-    };
   }
 }

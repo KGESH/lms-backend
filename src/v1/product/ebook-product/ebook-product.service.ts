@@ -30,10 +30,7 @@ import { IProductSnapshotAnnouncementCreate } from '@src/v1/product/common/snaps
 import { IProductSnapshotRefundPolicyCreate } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
 import { createUuid } from '@src/shared/utils/uuid';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
-import {
-  IProductSnapshotUiContentCreate,
-  IProductSnapshotUiContentUpdate,
-} from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
+import { IProductSnapshotUiContentCreate } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
 import { EbookProductSnapshotUiContentRepository } from '@src/v1/product/ebook-product/ebook-product-snapshot-ui-content.repository';
 import { IProductThumbnailCreate } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
 import { ProductThumbnailService } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.service';
@@ -41,6 +38,8 @@ import { EbookProductSnapshotTableOfContentRepository } from '@src/v1/product/eb
 import { IEbookProductSnapshotTableOfContentCreate } from '@src/v1/product/ebook-product/snapshot/content/product-snapshot-content.interface';
 import { EbookProductSnapshotPreviewRepository } from '@src/v1/product/ebook-product/ebook-product-snapshot-preview.repository';
 import { IEbookProductSnapshotPreviewCreate } from '@src/v1/product/ebook-product/snapshot/preview/ebook-product-snapshot-preview.interface';
+import { Uuid } from '@src/shared/types/primitive';
+import { FileService } from '@src/v1/file/file.service';
 
 @Injectable()
 export class EbookProductService {
@@ -57,6 +56,7 @@ export class EbookProductService {
     private readonly ebookProductSnapshotUiContentRepository: EbookProductSnapshotUiContentRepository,
     private readonly ebookProductSnapshotAnnouncementRepository: EbookProductSnapshotAnnouncementRepository,
     private readonly ebookProductSnapshotRefundPolicyRepository: EbookProductSnapshotRefundPolicyRepository,
+    private readonly fileService: FileService,
     private readonly drizzle: DrizzleService,
   ) {}
 
@@ -209,6 +209,25 @@ export class EbookProductService {
           tx,
         );
       }
+      // If ui content file updated, soft delete the prev files.
+      if (
+        existProduct?.lastSnapshot &&
+        existProduct?.lastSnapshot.uiContents.length > 0
+      ) {
+        const prevUiContentFileIds = existProduct.lastSnapshot.uiContents
+          .filter((ui) => ui.fileId)
+          .map((ui) => ui.fileId) as Uuid[];
+        const updatedUiContentFileIds =
+          ebookProductSnapshotUiContentCreateParams
+            .filter((ui) => ui.fileId)
+            .map((ui) => ui.fileId) as Uuid[];
+        const deleteFileIds = prevUiContentFileIds.filter(
+          (id) => !updatedUiContentFileIds.includes(id),
+        );
+        if (deleteFileIds.length > 0) {
+          await this.fileService.softDeleteManyFiles(deleteFileIds, tx);
+        }
+      }
       const snapshot = await this.ebookProductSnapshotRepository.create(
         {
           ...ebookProductSnapshotCreateParams,
@@ -322,232 +341,5 @@ export class EbookProductService {
     );
 
     return createdEbookProduct;
-  }
-
-  // @Deprecated. Use updateEbookProduct instead.
-  async updateEbookProduct(
-    where: Pick<IEbookProduct, 'ebookId'>,
-    {
-      ebookProductSnapshotUpdateParams,
-      ebookProductSnapshotThumbnailUpdateParams,
-      ebookProductSnapshotContentUpdateParams,
-      ebookProductSnapshotTableOfContentUpdateParams,
-      ebookProductSnapshotPreviewUpdateParams,
-      ebookProductSnapshotAnnouncementUpdateParams,
-      ebookProductSnapshotRefundPolicyUpdateParams,
-      ebookProductSnapshotPricingUpdateParams,
-      ebookProductSnapshotDiscountUpdateParams,
-      ebookProductSnapshotUiContentParams,
-    }: {
-      ebookProductSnapshotUpdateParams?: Omit<
-        IProductSnapshotCreate,
-        'productId' | 'thumbnailId'
-      >;
-      ebookProductSnapshotThumbnailUpdateParams?: IProductThumbnailCreate;
-      ebookProductSnapshotContentUpdateParams?: Pick<
-        IProductSnapshotContentCreate,
-        'richTextContent'
-      >;
-      ebookProductSnapshotTableOfContentUpdateParams?: Pick<
-        IEbookProductSnapshotTableOfContentCreate,
-        'richTextContent'
-      >;
-      ebookProductSnapshotPreviewUpdateParams?: Pick<
-        IEbookProductSnapshotPreviewCreate,
-        'fileId'
-      >;
-      ebookProductSnapshotAnnouncementUpdateParams?: Pick<
-        IProductSnapshotAnnouncementCreate,
-        'richTextContent'
-      >;
-      ebookProductSnapshotRefundPolicyUpdateParams?: Pick<
-        IProductSnapshotRefundPolicyCreate,
-        'richTextContent'
-      >;
-      ebookProductSnapshotPricingUpdateParams?: Pick<
-        IProductSnapshotPricingCreate,
-        'amount'
-      >;
-      ebookProductSnapshotDiscountUpdateParams?: Omit<
-        IProductSnapshotDiscountCreate,
-        'productSnapshotId'
-      >;
-      ebookProductSnapshotUiContentParams: {
-        create: Omit<IProductSnapshotUiContentCreate, 'productSnapshotId'>[];
-        update: IProductSnapshotUiContentUpdate[];
-      };
-    },
-  ): Promise<IEbookProductWithRelations> {
-    const existProduct = await this.findEbookProductWithRelationsOrThrow(where);
-
-    // Create new snapshot using the given parameters.
-    // If the parameter is not given, use the existing snapshot. e.g. pricing create params.
-    const updatedProduct = await this.drizzle.db.transaction(async (tx) => {
-      // soft delete
-      if (ebookProductSnapshotThumbnailUpdateParams) {
-        await this.productThumbnailService.deleteProductThumbnail(
-          {
-            id: existProduct.lastSnapshot.thumbnail.id,
-          },
-          tx,
-        );
-      }
-
-      const snapshot = await this.ebookProductSnapshotRepository.create(
-        {
-          productId: existProduct.id,
-          thumbnailId:
-            ebookProductSnapshotThumbnailUpdateParams?.id ??
-            existProduct.lastSnapshot.thumbnail.id,
-          id: createUuid(),
-          ...(ebookProductSnapshotUpdateParams ?? {
-            title: existProduct.lastSnapshot.title,
-            description: existProduct.lastSnapshot.description,
-            availableDays: existProduct.lastSnapshot.availableDays,
-          }),
-        },
-        tx,
-      );
-      const content = await this.ebookProductSnapshotContentRepository.create(
-        {
-          ...existProduct.lastSnapshot.content,
-          ...ebookProductSnapshotContentUpdateParams,
-          productSnapshotId: snapshot.id,
-          id: createUuid(),
-        },
-        tx,
-      );
-      const tableOfContent =
-        await this.ebookProductSnapshotTableOfContentRepository.create(
-          {
-            ...existProduct.lastSnapshot.tableOfContent,
-            ...ebookProductSnapshotTableOfContentUpdateParams,
-            productSnapshotId: snapshot.id,
-            id: createUuid(),
-          },
-          tx,
-        );
-      const preview = await this.ebookProductSnapshotPreviewRepository.create(
-        {
-          ...existProduct.lastSnapshot.preview,
-          ...ebookProductSnapshotPreviewUpdateParams,
-          productSnapshotId: snapshot.id,
-          id: createUuid(),
-        },
-        tx,
-      );
-      const announcement =
-        await this.ebookProductSnapshotAnnouncementRepository.create(
-          {
-            ...existProduct.lastSnapshot.announcement,
-            ...ebookProductSnapshotAnnouncementUpdateParams,
-            productSnapshotId: snapshot.id,
-            id: createUuid(),
-          },
-          tx,
-        );
-      const refundPolicy =
-        await this.ebookProductSnapshotRefundPolicyRepository.create(
-          {
-            ...existProduct.lastSnapshot.refundPolicy,
-            ...ebookProductSnapshotRefundPolicyUpdateParams,
-            productSnapshotId: snapshot.id,
-            id: createUuid(),
-          },
-          tx,
-        );
-      const pricing = await this.ebookProductSnapshotPricingRepository.create(
-        {
-          ...existProduct.lastSnapshot.pricing,
-          ...ebookProductSnapshotPricingUpdateParams,
-          productSnapshotId: snapshot.id,
-          id: createUuid(),
-        },
-        tx,
-      );
-      const discount = await this.ebookProductSnapshotDiscountRepository.create(
-        {
-          ...existProduct.lastSnapshot.discount,
-          ...ebookProductSnapshotDiscountUpdateParams,
-          productSnapshotId: snapshot.id,
-          id: createUuid(),
-        },
-        tx,
-      );
-
-      const existUi = existProduct.lastSnapshot.uiContents;
-      const createUiParams: IProductSnapshotUiContentCreate[] =
-        ebookProductSnapshotUiContentParams?.create.map((params) => ({
-          ...params,
-          productSnapshotId: snapshot.id,
-          id: createUuid(),
-        })) ?? [];
-      const updateUiParams = ebookProductSnapshotUiContentParams?.update ?? [];
-      const updateUiIds = updateUiParams.map((ui) => ui.id);
-      const existSameUiParams = existUi
-        .filter((ui) => !updateUiIds.includes(ui.id))
-        .map((ui) => ({
-          ...ui,
-          productSnapshotId: snapshot.id,
-          id: createUuid(),
-        }));
-      const updatedUiParams = existUi
-        .filter((ui) => updateUiIds.includes(ui.id))
-        .map((ui) => {
-          const updateTarget = updateUiParams.find(
-            (updateUi) => updateUi.id === ui.id,
-          );
-          return {
-            type: updateTarget?.type ?? ui.type,
-            content: updateTarget?.content ?? ui.content,
-            description: updateTarget?.description ?? ui.description,
-            sequence: updateTarget?.sequence ?? ui.sequence,
-            url: updateTarget?.url ?? ui.url,
-            metadata: updateTarget?.metadata ?? ui.metadata,
-            productSnapshotId: snapshot.id,
-            id: createUuid(),
-          };
-        });
-      const uiContentCreateParams = [
-        ...existSameUiParams,
-        ...updatedUiParams,
-        ...createUiParams,
-      ];
-      const uiContents =
-        uiContentCreateParams.length > 0
-          ? await this.ebookProductSnapshotUiContentRepository.createMany(
-              uiContentCreateParams,
-              tx,
-            )
-          : [];
-
-      return {
-        ...existProduct,
-        lastSnapshot: {
-          ...snapshot,
-          announcement,
-          content,
-          tableOfContent,
-          preview,
-          refundPolicy,
-          pricing,
-          discount,
-          uiContents,
-        },
-      };
-    });
-
-    const thumbnail =
-      await this.productThumbnailService.findProductThumbnailOrThrow({
-        id: updatedProduct.lastSnapshot.thumbnailId,
-      });
-
-    return {
-      ...updatedProduct,
-      lastSnapshot: {
-        ...updatedProduct.lastSnapshot,
-        thumbnail,
-      },
-    };
   }
 }

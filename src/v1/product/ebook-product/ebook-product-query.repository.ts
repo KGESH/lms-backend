@@ -19,6 +19,7 @@ import { IProductSnapshotDiscount } from '@src/v1/product/common/snapshot/discou
 import { IProductThumbnail } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
 import { IEbookProductSnapshotTableOfContent } from '@src/v1/product/ebook-product/snapshot/content/product-snapshot-content.interface';
 import { IEbookProductSnapshotPreview } from '@src/v1/product/ebook-product/snapshot/preview/ebook-product-snapshot-preview.interface';
+import { IProductSnapshotUiContentWithFile } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
 
 @Injectable()
 export class EbookProductQueryRepository {
@@ -217,7 +218,11 @@ export class EbookProductQueryRepository {
             preview: true,
             pricing: true,
             discount: true,
-            uiContents: true,
+            uiContents: {
+              with: {
+                file: true,
+              },
+            },
           },
         },
       },
@@ -259,7 +264,13 @@ export class EbookProductQueryRepository {
           ...lastSnapshot.discount,
           value: typia.assert<DiscountValue>(`${lastSnapshot.discount!.value}`),
         }),
-        uiContents: lastSnapshot.uiContents ?? [],
+        uiContents:
+          lastSnapshot.uiContents.map((uiContent) =>
+            typia.assert<IProductSnapshotUiContentWithFile>({
+              ...uiContent,
+              file: uiContent.file ?? null,
+            }),
+          ) ?? [],
       },
     } satisfies IEbookProductWithRelations);
   }

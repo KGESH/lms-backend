@@ -112,6 +112,74 @@ export const lessonContentAccessHistory = pgTable(
   },
 );
 
+export const courseEnrollments = pgTable(
+  'course_enrollments',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    courseId: uuid('course_id').notNull(),
+    createdAt: timestamp('created_at', {
+      mode: 'date',
+      withTimezone: true,
+    })
+      .notNull()
+      .defaultNow(),
+    validUntil: timestamp('valid_until', {
+      mode: 'date',
+      withTimezone: true,
+    }),
+  },
+  (table) => ({
+    userIdIdx: index('idx_course_enrollments_user_id').on(table.userId),
+    courseIdIdx: index('idx_course_enrollments_course_id').on(table.courseId),
+  }),
+);
+
+export const courseEnrollmentProgresses = pgTable(
+  'course_enrollment_progresses',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    enrollmentId: uuid('enrollment_id')
+      .notNull()
+      .references(() => courseEnrollments.id, { onDelete: 'cascade' }),
+    lessonId: uuid('lesson_id')
+      .notNull()
+      .references(() => lessons.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at', {
+      mode: 'date',
+      withTimezone: true,
+    })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => ({
+    enrollmentLessonIdx: index(
+      'idx_course_enrollment_progresses_enrollment_lesson',
+    ).on(table.enrollmentId, table.lessonId),
+  }),
+);
+
+export const courseCertificates = pgTable(
+  'course_certificates',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    enrollmentId: uuid('enrollment_id').notNull(),
+    createdAt: timestamp('created_at', {
+      mode: 'date',
+      withTimezone: true,
+    })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => ({
+    enrollmentIdx: index('idx_course_certificates_enrollment_id').on(
+      table.enrollmentId,
+    ),
+  }),
+);
+
 export const courseProducts = pgTable(
   'course_products',
   {
@@ -240,84 +308,20 @@ export const courseProductSnapshotUiContents = pgTable(
   {
     id: uuid('id').primaryKey().defaultRandom(),
     productSnapshotId: uuid('product_snapshot_id').notNull(),
+    fileId: uuid('file_id').references(() => files.id),
     type: productUiContentType('type').notNull(),
     content: text('content').notNull(),
     description: text('description'),
     sequence: integer('sequence'),
-    url: text('url'),
+    // url: text('url'),
     metadata: text('metadata'),
   },
   (table) => ({
     productSnapshotIdIdx: index(
       'idx_course_product_snapshot_ui_contents_product_snapshot_id',
     ).on(table.productSnapshotId),
-  }),
-);
-
-export const courseEnrollments = pgTable(
-  'course_enrollments',
-  {
-    id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('user_id')
-      .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
-    courseId: uuid('course_id').notNull(),
-    createdAt: timestamp('created_at', {
-      mode: 'date',
-      withTimezone: true,
-    })
-      .notNull()
-      .defaultNow(),
-    validUntil: timestamp('valid_until', {
-      mode: 'date',
-      withTimezone: true,
-    }),
-  },
-  (table) => ({
-    userIdIdx: index('idx_course_enrollments_user_id').on(table.userId),
-    courseIdIdx: index('idx_course_enrollments_course_id').on(table.courseId),
-  }),
-);
-
-export const courseEnrollmentProgresses = pgTable(
-  'course_enrollment_progresses',
-  {
-    id: uuid('id').primaryKey().defaultRandom(),
-    enrollmentId: uuid('enrollment_id')
-      .notNull()
-      .references(() => courseEnrollments.id, { onDelete: 'cascade' }),
-    lessonId: uuid('lesson_id')
-      .notNull()
-      .references(() => lessons.id, { onDelete: 'cascade' }),
-    createdAt: timestamp('created_at', {
-      mode: 'date',
-      withTimezone: true,
-    })
-      .notNull()
-      .defaultNow(),
-  },
-  (table) => ({
-    enrollmentLessonIdx: index(
-      'idx_course_enrollment_progresses_enrollment_lesson',
-    ).on(table.enrollmentId, table.lessonId),
-  }),
-);
-
-export const courseCertificates = pgTable(
-  'course_certificates',
-  {
-    id: uuid('id').primaryKey().defaultRandom(),
-    enrollmentId: uuid('enrollment_id').notNull(),
-    createdAt: timestamp('created_at', {
-      mode: 'date',
-      withTimezone: true,
-    })
-      .notNull()
-      .defaultNow(),
-  },
-  (table) => ({
-    enrollmentIdx: index('idx_course_certificates_enrollment_id').on(
-      table.enrollmentId,
+    fileIdIndex: index('idx_course_product_snapshot_ui_contents_file_id').on(
+      table.fileId,
     ),
   }),
 );
@@ -439,6 +443,10 @@ export const courseProductSnapshotUiContentsRelations = relations(
     productSnapshot: one(courseProductSnapshots, {
       fields: [courseProductSnapshotUiContents.productSnapshotId],
       references: [courseProductSnapshots.id],
+    }),
+    file: one(files, {
+      fields: [courseProductSnapshotUiContents.fileId],
+      references: [files.id],
     }),
   }),
 );

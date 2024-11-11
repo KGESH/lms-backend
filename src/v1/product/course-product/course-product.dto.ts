@@ -11,6 +11,7 @@ import {
   UpdateUiContentsDto,
 } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.dto';
 import { CreateProductContentDto } from '@src/v1/product/common/snapshot/product-snapshot.dto';
+import { ProductThumbnailDto } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.dto';
 
 export type CourseProductDto = {
   /**
@@ -43,7 +44,7 @@ export type CourseProductDto = {
   /**
    * 상품 썸네일
    */
-  thumbnailUrl: Uri;
+  thumbnail: ProductThumbnailDto;
 
   /**
    * 강의 정보

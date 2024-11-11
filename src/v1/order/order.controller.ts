@@ -172,13 +172,16 @@ export class OrderController {
       paidAt: order.paidAt ? date.toISOString(order.paidAt) : null,
       productType: 'ebook',
       product: {
-        ebook: ebookRelationsToDto(ebookProduct.ebook),
         ebookId: ebookProduct.ebookId,
         availableDays: ebookProduct.lastSnapshot.availableDays,
         snapshotId: ebookProduct.lastSnapshot.id,
         title: ebookProduct.lastSnapshot.title,
         description: ebookProduct.lastSnapshot.description,
-        thumbnailUrl: ebookProduct.lastSnapshot.thumbnail.url,
+        ebook: ebookRelationsToDto(ebookProduct.ebook),
+        thumbnail: {
+          ...ebookProduct.lastSnapshot.thumbnail,
+          createdAt: toISOString(ebookProduct.lastSnapshot.thumbnail.createdAt),
+        },
         createdAt: toISOString(ebookProduct.lastSnapshot.createdAt),
         updatedAt: toISOString(ebookProduct.lastSnapshot.updatedAt),
         deletedAt: toIsoStringOrNull(ebookProduct.lastSnapshot.deletedAt),
@@ -215,16 +218,21 @@ export class OrderController {
       paidAt: date.toIsoStringOrNull(order.paidAt),
       productType: 'course',
       product: {
-        course: courseRelationsToDto(courseProduct.course),
         availableDays: courseProduct.lastSnapshot.availableDays,
         courseId: courseProduct.courseId,
-        thumbnailUrl: courseProduct.lastSnapshot.thumbnail.url,
         snapshotId: courseProduct.lastSnapshot.id,
         title: courseProduct.lastSnapshot.title,
         description: courseProduct.lastSnapshot.description,
         createdAt: toISOString(courseProduct.lastSnapshot.createdAt),
         updatedAt: toISOString(courseProduct.lastSnapshot.updatedAt),
         deletedAt: toIsoStringOrNull(courseProduct.lastSnapshot.deletedAt),
+        course: courseRelationsToDto(courseProduct.course),
+        thumbnail: {
+          ...courseProduct.lastSnapshot.thumbnail,
+          createdAt: toISOString(
+            courseProduct.lastSnapshot.thumbnail.createdAt,
+          ),
+        },
       },
     };
   }

@@ -4,11 +4,11 @@ import { RequiredField } from '@src/shared/types/required-field';
 export type ProductSnapshotUiContentDto = {
   id: Uuid;
   productSnapshotId: Uuid;
+  fileId: Uuid | null;
   type: ProductUiContentType;
   content: string;
   description: string | null;
   sequence: UInt | null;
-  url: string | null;
   metadata: string | null;
 };
 

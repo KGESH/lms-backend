@@ -17,6 +17,7 @@ import { IProductSnapshotRefundPolicy } from '@src/v1/product/common/snapshot/re
 import { Paginated, Pagination } from '@src/shared/types/pagination';
 import { IProductSnapshotDiscount } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.interface';
 import { IProductThumbnail } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
+import { IProductSnapshotUiContentWithFile } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
 
 @Injectable()
 export class CourseProductQueryRepository {
@@ -218,7 +219,11 @@ export class CourseProductQueryRepository {
             content: true,
             pricing: true,
             discount: true,
-            uiContents: true,
+            uiContents: {
+              with: {
+                file: true,
+              },
+            },
           },
         },
       },
@@ -260,7 +265,13 @@ export class CourseProductQueryRepository {
           ...lastSnapshot.discount,
           value: `${lastSnapshot.discount!.value}`,
         }),
-        uiContents: lastSnapshot.uiContents ?? [],
+        uiContents:
+          lastSnapshot.uiContents.map((uiContent) =>
+            typia.assert<IProductSnapshotUiContentWithFile>({
+              ...uiContent,
+              file: uiContent.file ?? null,
+            }),
+          ) ?? [],
       },
     };
   }

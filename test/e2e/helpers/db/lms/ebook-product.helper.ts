@@ -32,8 +32,8 @@ import {
 } from '../../../../../src/shared/helpers/mocks/random-price.mock';
 import * as date from '../../../../../src/shared/utils/date';
 import {
-  IProductSnapshotUiContent,
   IProductSnapshotUiContentCreate,
+  IProductSnapshotUiContentWithFile,
 } from '../../../../../src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
 import { createManyFiles } from './file.helper';
 import { IProductThumbnail } from '../../../../../src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
@@ -142,7 +142,7 @@ export const createEbookProductSnapshotPreview = async (
 export const createEbookProductSnapshotUiContent = async (
   params: IProductSnapshotUiContentCreate[],
   db: TransactionClient,
-): Promise<IProductSnapshotUiContent[]> => {
+): Promise<IProductSnapshotUiContentWithFile[]> => {
   if (params.length === 0) {
     return [];
   }
@@ -152,7 +152,10 @@ export const createEbookProductSnapshotUiContent = async (
     .values(params)
     .returning();
 
-  return uiContents;
+  return uiContents.map((uiContent) => ({
+    ...uiContent,
+    file: null,
+  }));
 };
 
 export const createEbookProductSnapshotPricing = async (
@@ -282,6 +285,7 @@ export const createRandomEbookProduct = async (
     typia.random<IProductSnapshotUiContentCreate[]>().map((params) => ({
       ...params,
       productSnapshotId: snapshot.id,
+      fileId: null,
     })),
     db,
   );

@@ -14,7 +14,6 @@ export const ebookProductToDto = (
     snapshotId: product.lastSnapshot.id,
     title: product.lastSnapshot.title,
     description: product.lastSnapshot.description,
-    thumbnailUrl: product.lastSnapshot.thumbnail.url,
     availableDays: product.lastSnapshot.availableDays,
     createdAt: date.toISOString(product.lastSnapshot.createdAt),
     updatedAt: date.toISOString(product.lastSnapshot.updatedAt),
@@ -24,6 +23,10 @@ export const ebookProductToDto = (
     tableOfContent: product.lastSnapshot.tableOfContent,
     preview: product.lastSnapshot.preview,
     refundPolicy: product.lastSnapshot.refundPolicy,
+    thumbnail: {
+      ...product.lastSnapshot.thumbnail,
+      createdAt: date.toISOString(product.lastSnapshot.thumbnail.createdAt),
+    },
     pricing: product.lastSnapshot.pricing,
     discount: {
       ...product.lastSnapshot.discount,
@@ -53,11 +56,14 @@ export const ebookProductWithPricingToDto = (
     snapshotId: product.lastSnapshot.id,
     title: product.lastSnapshot.title,
     description: product.lastSnapshot.description,
-    thumbnailUrl: product.lastSnapshot.thumbnail.url,
     availableDays: product.lastSnapshot.availableDays,
     createdAt: date.toISOString(product.lastSnapshot.createdAt),
     updatedAt: date.toISOString(product.lastSnapshot.updatedAt),
     deletedAt: date.toIsoStringOrNull(product.lastSnapshot.deletedAt),
+    thumbnail: {
+      ...product.lastSnapshot.thumbnail,
+      createdAt: date.toISOString(product.lastSnapshot.thumbnail.createdAt),
+    },
     pricing: product.lastSnapshot.pricing,
     discount: {
       ...product.lastSnapshot.discount,

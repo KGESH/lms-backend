@@ -10,11 +10,8 @@ import { seedCarouselReview } from './test/e2e/helpers/db/ui/carousel-review.hel
 import {
   seedAdminUser,
   seedPgUsers,
-  seedUsers,
 } from './test/e2e/helpers/db/lms/user.helper';
-import { seedTeachers } from './test/e2e/helpers/db/lms/teacher.helper';
 import {
-  seedCourseProducts,
   seedPgFirstCourse,
   seedPgFirstCourseProduct,
   seedPgSecondCourse,
@@ -24,22 +21,9 @@ import {
 } from './test/e2e/helpers/db/lms/course-product.helper';
 import { clearDatabase } from './src/shared/helpers/db';
 import {
-  seedCourseReviews,
-  seedEbookReviews,
-} from './test/e2e/helpers/db/lms/review.helper';
-import {
-  seedCourseOrders,
-  seedEbookOrders,
-} from './test/e2e/helpers/db/lms/order.helper';
-import { seedCourseCategoriesWithChildren } from './test/e2e/helpers/db/lms/course-category.helper';
-import { seedEbooks } from './test/e2e/helpers/db/lms/ebook.helper';
-import { seedEbookProducts } from './test/e2e/helpers/db/lms/ebook-product.helper';
-import { seedPosts } from './test/e2e/helpers/db/lms/post.helper';
-import {
   seedCommunityCategories,
   seedNavbarCategories,
 } from './test/e2e/helpers/db/lms/post-category.helper';
-import { seedCoupons } from './test/e2e/helpers/db/lms/coupon.helper';
 import { seedCarouselMainBanner } from './test/e2e/helpers/db/ui/carousel-main-banner.helper';
 import { seedSignupTerms } from './test/e2e/helpers/db/lms/term.helper';
 
@@ -105,21 +89,6 @@ async function seed() {
     await seedNavbarCategories(db);
     const { freeCategory, discussionCategory, profitCertificationCategory } =
       await seedCommunityCategories(db);
-    // await seedPosts({ count: 1, category: freeCategory }, db);
-    // await seedPosts({ count: 1, category: discussionCategory }, db);
-    // await seedPosts({ count: 1, category: profitCertificationCategory }, db);
-    // await seedCourseProducts({ count: 3 }, db);
-    // await seedCourseReviews({ count: 3 }, db);
-    // await seedCourseOrders({ count: 3 }, db);
-    // await seedEbookOrders({ count: 3 }, db);
-    // await seedEbooks({ count: 3 }, db);
-    // await seedEbookProducts({ count: 3 }, db);
-    // await seedEbookReviews({ count: 3 }, db);
-    // await seedCoupons({ count: 3, user: testPgUser.user }, db);
-    // await seedTeachers({ count: 2 }, db);
-    // await seedUsers({ count: 3, role: 'user' }, db);
-    // await seedUsers({ count: 1, role: 'manager' }, db);
-    // await seedUsers({ count: 1, role: 'teacher' }, db);
     await seedSignupTerms({ count: 3 }, db);
   } catch (e) {
     console.error(e);

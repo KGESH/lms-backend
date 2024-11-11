@@ -41,6 +41,7 @@ export const termSnapshots = pgTable(
     createdAt: timestamp('created_at', { mode: 'date', withTimezone: true })
       .notNull()
       .defaultNow(),
+    // deletedAt: timestamp('deleted_at', { mode: 'date', withTimezone: true }), // @TODO Impl
   },
   (table) => ({
     termIdIdx: index('idx_term_snapshots_term_id').on(table.termId),

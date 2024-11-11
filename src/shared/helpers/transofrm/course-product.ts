@@ -15,12 +15,15 @@ export const courseProductToDto = (
     title: product.lastSnapshot.title,
     description: product.lastSnapshot.description,
     availableDays: product.lastSnapshot.availableDays,
-    thumbnailUrl: product.lastSnapshot.thumbnail.url,
     createdAt: date.toISOString(product.lastSnapshot.createdAt),
     updatedAt: date.toISOString(product.lastSnapshot.updatedAt),
     deletedAt: product.lastSnapshot.deletedAt
       ? date.toISOString(product.lastSnapshot.deletedAt)
       : null,
+    thumbnail: {
+      ...product.lastSnapshot.thumbnail,
+      createdAt: date.toISOString(product.lastSnapshot.thumbnail.createdAt),
+    },
     announcement: product.lastSnapshot.announcement,
     content: product.lastSnapshot.content,
     refundPolicy: product.lastSnapshot.refundPolicy,
@@ -50,11 +53,14 @@ export const courseProductWithPricingToDto = (
     snapshotId: product.lastSnapshot.id,
     title: product.lastSnapshot.title,
     availableDays: product.lastSnapshot.availableDays,
-    thumbnailUrl: product.lastSnapshot.thumbnail.url,
     description: product.lastSnapshot.description,
     createdAt: date.toISOString(product.lastSnapshot.createdAt),
     updatedAt: date.toISOString(product.lastSnapshot.updatedAt),
     deletedAt: date.toIsoStringOrNull(product.lastSnapshot.deletedAt),
+    thumbnail: {
+      ...product.lastSnapshot.thumbnail,
+      createdAt: date.toISOString(product.lastSnapshot.thumbnail.createdAt),
+    },
     pricing: product.lastSnapshot.pricing,
     discount: {
       ...product.lastSnapshot.discount,

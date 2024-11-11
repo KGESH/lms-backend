@@ -113,7 +113,8 @@ describe('EbookProductController (e2e)', () => {
             metadata: null,
             description: 'mock main banner',
             sequence: 1,
-            url: 'https://www.youtube.com',
+            fileId: null,
+            // url: 'https://www.youtube.com',
           },
           {
             type: 'target_description',
@@ -121,7 +122,7 @@ describe('EbookProductController (e2e)', () => {
             metadata: null,
             description: null,
             sequence: 1,
-            url: null,
+            fileId: null,
           },
           {
             type: 'tag',
@@ -129,7 +130,7 @@ describe('EbookProductController (e2e)', () => {
             metadata: null,
             description: null,
             sequence: 1,
-            url: null,
+            fileId: null,
           },
         ],
       };
@@ -164,9 +165,6 @@ describe('EbookProductController (e2e)', () => {
       expect(product.preview.fileId).toEqual(uploadedPreviewFile.id);
       expect(product.announcement.richTextContent).toEqual('테스트 공지사항');
       expect(product.refundPolicy.richTextContent).toEqual('테스트 환불정책');
-      expect(
-        product.uiContents.find((ui) => ui.type === 'main_banner')!.url,
-      ).toEqual('https://www.youtube.com');
       expect(
         product.uiContents.find((ui) => ui.type === 'target_description')!
           .content,
@@ -224,7 +222,8 @@ describe('EbookProductController (e2e)', () => {
             description: null,
             metadata: null,
             sequence: 1,
-            url: null,
+            fileId: null,
+            // fileId: null,
           },
         ],
       };

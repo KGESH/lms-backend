@@ -19,6 +19,7 @@ import {
   CreateEbookProductSnapshotPreviewDto,
   EbookProductSnapshotPreviewDto,
 } from '@src/v1/product/ebook-product/snapshot/preview/ebook-product-snapshot-preview.dto';
+import { ProductThumbnailDto } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.dto';
 
 export type EbookProductDto = {
   /**
@@ -51,7 +52,7 @@ export type EbookProductDto = {
   /**
    * 상품 썸네일
    */
-  thumbnailUrl: Uri;
+  thumbnail: ProductThumbnailDto;
 
   /**
    * 강의 정보

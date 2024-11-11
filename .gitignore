@@ -71,3 +71,7 @@ swagger.json
 
 # db snapshots
 .snaplet
+
+# AWS cloudfront pre signed url keys
+cdn*.pem
+cdn*.pem

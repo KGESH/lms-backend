@@ -12,7 +12,6 @@ import { Uuid } from '@src/shared/types/primitive';
 import {
   CreateCourseProductDto,
   CourseProductDto,
-  UpdateCourseProductDto,
   CourseProductQuery,
   PaginatedCourseProducts,
 } from '@src/v1/product/course-product/course-product.dto';
@@ -222,83 +221,5 @@ export class CourseProductController {
     });
 
     return courseProductToDto(product);
-  }
-
-  /**
-   * 강의 상품 상세 페이지를 수정합니다. (스냅샷)
-   *
-   * 관리자 세션 id를 헤더에 담아서 요청합니다.
-   **
-   * 사용자는 가장 최신의 스냅샷을 조회할 수 있습니다.
-   *
-   * 업데이트할 필드만 body에 담아서 요청합니다.
-   *
-   * body에 담기지 않은 필드는 이전 스냅샷의 값을 그대로 사용합니다.
-   *
-   * title: 상품 제목.
-   *
-   * description: 상품 설명 (사용처 미확정).
-   *
-   * announcement: 상품 상세 페이지 공지사항 rich text content.
-   *
-   * content: 상품 상세 페이지 rich text content.
-   *
-   * uiContents: 상품 상세 페이지 UI 컨텐츠.
-   *
-   * refundPolicy: 상품 상세 페이지 환불 정책 rich text content.
-   *
-   * pricing: 상품 가격 정보.
-   *
-   * discount: 상품 할인 정보.
-   *
-   * @tag product-course
-   * @summary 강의 상품 수정(스냅샷 생성) - Role('admin', 'manager')
-   * @param courseId - 강의 ID
-   * @deprecated Use POST /v1/product/course/:courseId instead
-   */
-  @TypedRoute.Patch('/:courseId')
-  @Roles('admin', 'manager')
-  @UseGuards(RolesGuard)
-  @TypedException<TypeGuardError>({
-    status: 400,
-    description: 'invalid request',
-  })
-  @TypedException<TypeGuardError>({
-    status: 404,
-    description: 'Course product snapshot not found',
-  })
-  @TypedException<IErrorResponse<INVALID_LMS_SECRET>>({
-    status: INVALID_LMS_SECRET,
-    description: 'invalid LMS api secret',
-  })
-  async updateProductCourse(
-    @TypedHeaders() headers: AuthHeaders,
-    @TypedParam('courseId') courseId: Uuid,
-    @TypedBody() body: UpdateCourseProductDto,
-  ): Promise<CourseProductDto> {
-    const updated = await this.courseProductService.updateCourseProduct(
-      { courseId },
-      {
-        courseProductSnapshotUpdateParams: body.snapshot,
-        courseProductSnapshotThumbnailUpdateParams: body.thumbnail,
-        courseProductSnapshotAnnouncementUpdateParams: body.announcement,
-        courseProductSnapshotContentUpdateParams: body.content,
-        courseProductSnapshotRefundPolicyUpdateParams: body.refundPolicy,
-        courseProductSnapshotPricingUpdateParams: body.pricing,
-        courseProductSnapshotDiscountUpdateParams: body.discount
-          ? {
-              ...body.discount,
-              validFrom: date.toDateOrNull(body.discount.validFrom),
-              validTo: date.toDateOrNull(body.discount.validTo),
-            }
-          : null,
-        courseProductSnapshotUiContentParams: {
-          create: body.uiContents?.create ?? [],
-          update: body.uiContents?.update ?? [],
-        },
-      },
-    );
-
-    return courseProductToDto(updated);
   }
 }

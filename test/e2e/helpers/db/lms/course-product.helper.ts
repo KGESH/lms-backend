@@ -32,14 +32,11 @@ import {
   generateRandomPrice,
 } from '../../../../../src/shared/helpers/mocks/random-price.mock';
 import {
-  IProductSnapshotUiContent,
   IProductSnapshotUiContentCreate,
+  IProductSnapshotUiContentWithFile,
 } from '../../../../../src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
 import { createManyFiles } from './file.helper';
-import {
-  IProductThumbnail,
-  IProductThumbnailCreate,
-} from '../../../../../src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
+import { IProductThumbnail } from '../../../../../src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
 import { ICourseWithRelations } from '../../../../../src/v1/course/course-with-relations.interface';
 import { MOCK_REFUND_POLICY } from './mock/refund-policy.mock';
 import { MOCK_ANNOUNCEMENT } from './mock/announcement.mock';
@@ -124,7 +121,7 @@ export const createCourseProductSnapshotContent = async (
 export const createCourseProductSnapshotUiContent = async (
   params: IProductSnapshotUiContentCreate[],
   db: TransactionClient,
-): Promise<IProductSnapshotUiContent[]> => {
+): Promise<IProductSnapshotUiContentWithFile[]> => {
   if (params.length === 0) {
     return [];
   }
@@ -134,7 +131,10 @@ export const createCourseProductSnapshotUiContent = async (
     .values(params)
     .returning();
 
-  return uiContents;
+  return uiContents.map((uiContent) => ({
+    ...uiContent,
+    file: null,
+  }));
 };
 
 export const createCourseProductSnapshotPricing = async (
@@ -249,6 +249,7 @@ export const createRandomCourseProduct = async (
     typia.random<IProductSnapshotUiContentCreate[]>().map((params) => ({
       ...params,
       productSnapshotId: snapshot.id,
+      fileId: null,
     })),
     db,
   );
