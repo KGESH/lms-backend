@@ -10,7 +10,6 @@ import {
   CreateFileDto,
   CreatePreSignedUrlDto,
 } from '../../../src/v1/file/file.dto';
-// import { promises as fs } from 'fs';
 
 describe('FileController (e2e)', () => {
   let host: Uri;
