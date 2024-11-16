@@ -5,5 +5,7 @@ export type IHttpClient = {
 
   put<T>(url: string, data: any): Promise<T>;
 
+  patch<T>(url: string, data: any): Promise<T>;
+
   delete<T>(url: string): Promise<T>;
 };

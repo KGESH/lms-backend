@@ -92,7 +92,7 @@ export class EbookCategoryController {
   async getEbookCategory(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('id') id: Uuid,
-    @TypedQuery() query?: EbookCategoryWithChildrenQuery,
+    @TypedQuery() query: EbookCategoryWithChildrenQuery,
   ): Promise<EbookCategoryWithChildrenDto | null> {
     if (query?.withChildren) {
       const categoryWithChildren =

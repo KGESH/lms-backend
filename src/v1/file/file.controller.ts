@@ -197,7 +197,7 @@ export class FileController {
   async getPrivatePreSignedUrl(
     @TypedHeaders() headers: AuthHeaders,
     @TypedParam('fileId') fileId: string,
-    @TypedQuery() query?: FileQuery,
+    @TypedQuery() query: FileQuery,
   ): Promise<FilePreSignedUrlDto> {
     const preSignedUrl = await this.s3Service.getResourcePreSignedUrl(
       fileId,

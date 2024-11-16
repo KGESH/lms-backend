@@ -113,7 +113,7 @@ export class PostCategoryController {
   async getPostCategory(
     @TypedHeaders() headers: ApiAuthHeaders,
     @TypedParam('id') id: Uuid,
-    @TypedQuery() query?: PostCategoryWithChildrenQuery,
+    @TypedQuery() query: PostCategoryWithChildrenQuery,
   ): Promise<PostCategoryWithAccessDto | null> {
     if (query?.withChildren) {
       const category =
