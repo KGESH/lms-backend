@@ -12,7 +12,7 @@ import { termDbSchema } from './term';
 import { fileDbSchemas } from './file';
 import { otpDbSchemas } from './otp';
 import { promoDbSchema } from './promo';
-import { policyDbSchema } from '@src/infra/db/schema/policy';
+import { policyDbSchema } from './policy';
 
 export const dbSchema = {
   // 사용자 (일반 사용자, 관리자(매니저), 최고 관리자)
