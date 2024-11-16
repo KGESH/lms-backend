@@ -662,6 +662,7 @@ export const seedPgFirstCourseProduct = async (
     typia.random<IProductSnapshotUiContentCreate[]>().map((params) => ({
       ...params,
       productSnapshotId: snapshot.id,
+      fileId: null,
     })),
     db,
   );
@@ -736,6 +737,7 @@ export const seedPgSecondCourseProduct = async (
     typia.random<IProductSnapshotUiContentCreate[]>().map((params) => ({
       ...params,
       productSnapshotId: snapshot.id,
+      fileId: null,
     })),
     db,
   );
@@ -810,6 +812,7 @@ export const seedPgThirdCourseProduct = async (
     typia.random<IProductSnapshotUiContentCreate[]>().map((params) => ({
       ...params,
       productSnapshotId: snapshot.id,
+      fileId: null,
     })),
     db,
   );
