@@ -75,3 +75,8 @@ swagger.json
 # AWS cloudfront pre signed url keys
 cdn*.pem
 cdn*.pem
+ecr-deploy.sh
+.env.ui.erd
+.env.stg
+.env.erd
+test/e2e/sample.pdf
