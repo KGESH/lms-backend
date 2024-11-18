@@ -260,7 +260,7 @@ export const createRandomEbookProduct = async (
   const preview = await createEbookProductSnapshotPreview(
     {
       productSnapshotId: snapshot.id,
-      fileId: mockUploadedPreviewFile.id,
+      richTextContent: mockUploadedPreviewFile.id,
     },
     db,
   );

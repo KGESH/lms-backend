@@ -1,4 +1,4 @@
-import { ISO8601, PositiveInt, Uri, Uuid } from '@src/shared/types/primitive';
+import { ISO8601, PositiveInt, Uuid } from '@src/shared/types/primitive';
 import { ProductSnapshotDiscountDto } from '@src/v1/product/common/snapshot/discount/product-snapshot-discount.dto';
 import { ProductSnapshotPricingDto } from '@src/v1/product/common/snapshot/pricing/product-snapshot-pricing.dto';
 import { ProductSnapshotContentDto } from '@src/v1/product/common/snapshot/content/product-snapshot-content.dto';
@@ -122,7 +122,7 @@ export type CreateEbookProductDto = Pick<
   'title' | 'description' | 'availableDays'
 > &
   CreateProductContentDto & {
-    preview: Pick<CreateEbookProductSnapshotPreviewDto, 'fileId'>;
+    preview: Pick<CreateEbookProductSnapshotPreviewDto, 'richTextContent'>;
     tableOfContent: CreateEbookProductSnapshotTableOfContentDto;
   };
 

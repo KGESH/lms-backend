@@ -1,4 +1,4 @@
-import { Controller, UseGuards } from '@nestjs/common';
+import { Controller, UseGuards, BadRequestException } from '@nestjs/common';
 import {
   TypedBody,
   TypedException,
@@ -201,7 +201,7 @@ export class EbookProductController {
         richTextContent: body.tableOfContent.richTextContent,
       },
       ebookProductSnapshotPreviewCreateParams: {
-        fileId: body.preview.fileId,
+        richTextContent: body.preview.richTextContent,
       },
       ebookProductSnapshotAnnouncementCreateParams: {
         richTextContent: body.announcement.richTextContent,

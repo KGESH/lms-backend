@@ -61,26 +61,25 @@ describe('EbookProductController (e2e)', () => {
   describe('[Create ebook product]', () => {
     it('should be create ebook product success', async () => {
       const { ebook } = await createRandomEbook(drizzle.db);
-      const [uploadedThumbnailFile, uploadedPreviewFile] =
-        await createManyFiles(
-          [
-            {
-              id: typia.random<Uuid>(),
-              filename: 'mock-thumbnail.png',
-              metadata: null,
-              type: 'image',
-              url: typia.random<Uri>(),
-            },
-            {
-              id: typia.random<Uuid>(),
-              filename: 'mock-preview.png',
-              metadata: null,
-              type: 'image',
-              url: typia.random<Uri>(),
-            },
-          ],
-          drizzle.db,
-        );
+      const [uploadedThumbnailFile] = await createManyFiles(
+        [
+          {
+            id: typia.random<Uuid>(),
+            filename: 'mock-thumbnail.png',
+            metadata: null,
+            type: 'image',
+            url: typia.random<Uri>(),
+          },
+          {
+            id: typia.random<Uuid>(),
+            filename: 'mock-preview.png',
+            metadata: null,
+            type: 'image',
+            url: typia.random<Uri>(),
+          },
+        ],
+        drizzle.db,
+      );
       const createDto: CreateEbookProductDto = {
         ...typia.random<CreateEbookProductDto>(),
         thumbnail: {
@@ -94,7 +93,7 @@ describe('EbookProductController (e2e)', () => {
           richTextContent: 'mock TOC',
         },
         preview: {
-          fileId: uploadedPreviewFile.id,
+          richTextContent: 'mock preview content',
         },
         description: null,
         pricing: {
@@ -162,7 +161,7 @@ describe('EbookProductController (e2e)', () => {
       expect(product.pricing.amount).toEqual('100000');
       expect(product.content.richTextContent).toEqual('mock content');
       expect(product.tableOfContent.richTextContent).toEqual('mock TOC');
-      expect(product.preview.fileId).toEqual(uploadedPreviewFile.id);
+      expect(product.preview.richTextContent).toEqual('mock preview content');
       expect(product.announcement.richTextContent).toEqual('테스트 공지사항');
       expect(product.refundPolicy.richTextContent).toEqual('테스트 환불정책');
       expect(
@@ -194,7 +193,7 @@ describe('EbookProductController (e2e)', () => {
           richTextContent: 'updated TOC',
         },
         preview: {
-          fileId: lastSnapshot.preview.fileId,
+          richTextContent: 'updated preview content',
         },
         pricing: {
           amount: '10000',

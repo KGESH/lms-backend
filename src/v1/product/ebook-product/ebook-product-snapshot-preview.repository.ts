@@ -17,21 +17,11 @@ export class EbookProductSnapshotPreviewRepository {
     params: IEbookProductSnapshotPreviewCreate,
     db = this.drizzle.db,
   ): Promise<IEbookProductSnapshotPreview> {
-    const [ebookProductContent] = await db
+    const [preview] = await db
       .insert(dbSchema.ebookProductSnapshotPreviews)
-      .values(typia.misc.clone(params))
+      .values(params)
       .returning();
 
-    return ebookProductContent;
-  }
-
-  async softDeletePreviewFile(
-    where: Pick<IEbookProductSnapshotPreview, 'fileId'>,
-    db = this.drizzle.db,
-  ): Promise<void> {
-    await db
-      .update(dbSchema.files)
-      .set({ deletedAt: date.now('date') })
-      .where(eq(dbSchema.files.id, where.fileId));
+    return preview;
   }
 }

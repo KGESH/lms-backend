@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   ICourseProduct,
   ICourseProductCreate,
@@ -25,11 +25,9 @@ import { IProductSnapshotAnnouncementCreate } from '@src/v1/product/common/snaps
 import { IProductSnapshotRefundPolicyCreate } from '@src/v1/product/common/snapshot/refund-policy/product-snapshot-refund-policy.interface';
 import { createUuid } from '@src/shared/utils/uuid';
 import { Paginated, Pagination } from '@src/shared/types/pagination';
-import { CourseQueryService } from '@src/v1/course/course-query.service';
 import { CourseProductSnapshotUiContentRepository } from '@src/v1/product/course-product/course-product-snapshot-ui-content.repository';
 import { IProductSnapshotUiContentCreate } from '@src/v1/product/common/snapshot/ui-content/product-snapshot-ui-content.interface';
 import { IProductThumbnailCreate } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.interface';
-import { ProductThumbnailService } from '@src/v1/product/common/snapshot/thumbnail/product-thumbnail.service';
 import { Uuid } from '@src/shared/types/primitive';
 import { FileService } from '@src/v1/file/file.service';
 

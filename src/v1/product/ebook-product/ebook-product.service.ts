@@ -174,15 +174,6 @@ export class EbookProductService {
       'productSnapshotId'
     >[];
   }): Promise<IEbookProductWithRelations> {
-    if (
-      ebookProductSnapshotThumbnailCreateParams.id ===
-      ebookProductSnapshotPreviewCreateParams.fileId
-    ) {
-      throw new BadRequestException(
-        'Thumbnail and preview cannot be the same file',
-      );
-    }
-
     const existProduct =
       await this.ebookProductQueryRepository.findEbookProductWithRelations({
         ebookId: ebookProductCreateParams.ebookId,
@@ -254,22 +245,11 @@ export class EbookProductService {
           },
           tx,
         );
-      // If preview file updated, soft delete the prev preview file.
-      if (
-        existProduct?.lastSnapshot &&
-        existProduct?.lastSnapshot.preview.fileId !==
-          ebookProductSnapshotPreviewCreateParams.fileId
-      ) {
-        await this.ebookProductSnapshotPreviewRepository.softDeletePreviewFile(
-          { fileId: existProduct.lastSnapshot.preview.fileId },
-          tx,
-        );
-      }
       const preview = await this.ebookProductSnapshotPreviewRepository.create(
         {
-          ...ebookProductSnapshotPreviewCreateParams,
           productSnapshotId: snapshot.id,
-          id: createUuid(),
+          richTextContent:
+            ebookProductSnapshotPreviewCreateParams.richTextContent,
         },
         tx,
       );

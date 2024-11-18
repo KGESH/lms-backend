@@ -231,17 +231,12 @@ export const ebookProductSnapshotPreviews = pgTable(
   {
     id: uuid('id').primaryKey().defaultRandom(),
     productSnapshotId: uuid('product_snapshot_id').notNull(),
-    fileId: uuid('file_id')
-      .notNull()
-      .references(() => files.id, { onDelete: 'cascade' }),
+    richTextContent: text('rich_text_content').notNull(),
   },
   (table) => ({
     productSnapshotIdIndex: index(
       'idx_ebook_product_snapshot_previews_product_snapshot_id',
     ).on(table.productSnapshotId),
-    fileIdIndex: index('idx_ebook_product_snapshot_previews_file_id').on(
-      table.fileId,
-    ),
   }),
 );
 
@@ -427,10 +422,6 @@ export const ebookProductSnapshotPreviewsRelations = relations(
     productSnapshot: one(ebookProductSnapshots, {
       fields: [ebookProductSnapshotPreviews.productSnapshotId],
       references: [ebookProductSnapshots.id],
-    }),
-    file: one(files, {
-      fields: [ebookProductSnapshotPreviews.fileId],
-      references: [files.id],
     }),
   }),
 );
